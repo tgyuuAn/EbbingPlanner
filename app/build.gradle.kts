@@ -44,6 +44,7 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.navigation)
     implementation(projects.core.navigation)
+    implementation(projects.core.commonUi)
     implementation(projects.core.data)
     implementation(projects.core.domain)
 }

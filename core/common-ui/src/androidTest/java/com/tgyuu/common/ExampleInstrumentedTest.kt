@@ -1,4 +1,4 @@
-package com.tgyuu.common_ui
+package com.tgyuu.common
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

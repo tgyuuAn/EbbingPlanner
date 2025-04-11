@@ -1,4 +1,4 @@
-package com.tgyuu.common_ui
+package com.tgyuu.common
 
 import org.junit.Test
 
