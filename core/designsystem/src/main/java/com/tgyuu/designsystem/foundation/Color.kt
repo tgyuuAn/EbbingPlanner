@@ -1,11 +1,46 @@
 package com.tgyuu.designsystem.foundation
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+private val PrimaryDefault = Color(0xFF0F4C75)
+private val PrimaryMiddle = Color(0xFF3282B8)
+private val PrimaryLight = Color(0xFFBBE1FA)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+private val SubDefault = Color(0xFFFF7490)
+private val SubMiddle = Color(0xFFFFB9C7)
+private val SubLight = Color(0xFFFFE3E9)
+
+val DarkBackground = Color(0xFF0F4C75)
+val LightBackground = Color(0xFF0F4C75)
+
+private val Black = Color(0xFF1B1A2A)
+private val Dark1 = Color(0xFF484B4D)
+private val Dark2 = Color(0xFF6C7073)
+private val Dark3 = Color(0xFF909599)
+private val Light1 = Color(0xFFCBD1D9)
+private val Light2 = Color(0xFFE8EBF0)
+private val Light3 = Color(0xFFF4F6FA)
+private val White = Color(0xFFFFFFFF)
+
+private val Error = Color(0xFFFF3059)
+
+@Immutable
+data class EbbingColors(
+    val background: Color = LightBackground,
+    val primaryDefault: Color = PrimaryDefault,
+    val primaryMiddle: Color = PrimaryMiddle,
+    val primaryLight: Color = PrimaryLight,
+    val subDefault: Color = SubDefault,
+    val subMiddle: Color = SubMiddle,
+    val subLight: Color = SubLight,
+    val black: Color = Black,
+    val dark1: Color = Dark1,
+    val dark2: Color = Dark2,
+    val dark3: Color = Dark3,
+    val light1: Color = Light1,
+    val light2: Color = Light2,
+    val light3: Color = Light3,
+    val white: Color = White,
+    val error: Color = Error,
+)
