@@ -1,4 +1,6 @@
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {
         google {
             content {
@@ -21,3 +23,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "EbbingPlanner"
 include(":app")
+include(":core:domain")
+include(":core:data")
+include(":core:designsystem")
+include(":core:common-ui")
+include(":core:common")
+include(":core:network")
+include(":core:navigation")

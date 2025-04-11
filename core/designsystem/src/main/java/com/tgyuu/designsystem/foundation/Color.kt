@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.theme
+package com.tgyuu.designsystem.foundation
 
 import androidx.compose.ui.graphics.Color
 

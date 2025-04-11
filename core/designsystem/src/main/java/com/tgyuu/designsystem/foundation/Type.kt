@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.theme
+package com.tgyuu.designsystem.foundation
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
