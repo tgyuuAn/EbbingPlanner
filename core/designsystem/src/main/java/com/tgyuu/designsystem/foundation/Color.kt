@@ -12,7 +12,7 @@ private val SubMiddle = Color(0xFFFFB9C7)
 private val SubLight = Color(0xFFFFE3E9)
 
 val DarkBackground = Color(0xFF0F4C75)
-val LightBackground = Color(0xFF0F4C75)
+val LightBackground = Color(0xFFFFFFFF)
 
 private val Black = Color(0xFF1B1A2A)
 private val Dark1 = Color(0xFF484B4D)

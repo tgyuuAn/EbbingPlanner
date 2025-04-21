@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
@@ -18,8 +19,12 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.tgyuu.common.event.BottomSheetComposable
+import com.tgyuu.common.ui.EbbingBottomBarAnimation
+import com.tgyuu.designsystem.component.EbbingModalBottomSheet
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
+import com.tgyuu.navigation.shouldHideBottomBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,25 +46,30 @@ class MainActivity : ComponentActivity() {
                 val currentDestination = navController.currentBackStackEntryAsState()
                     .value?.destination
 
-                Scaffold(
-                    containerColor = EbbingTheme.colors.background,
-//                    bottomBar = {
-//                        EbbingBottomBarAnimation(
-//                            visible = currentDestination?.shouldHideBottomBar() == false,
-//                            modifier = Modifier.navigationBarsPadding(),
-//                        ) {
-//                            AppBottomBar(
-//                                currentDestination = currentDestination,
-//                                navigateToBottomNaviDestination = navigateToBottomNaviDestination,
-//                            )
-//                        }
-//                    },
-                    floatingActionButtonPosition = FabPosition.Center,
-                ) { innerPadding ->
-                    AppNavHost(
-                        navController = navController,
-                        modifier = Modifier.padding(innerPadding),
-                    )
+                EbbingModalBottomSheet(
+                    sheetState = sheetState,
+                    sheetContent = bottomSheetContent,
+                ) {
+                    Scaffold(
+                        containerColor = EbbingTheme.colors.background,
+                        bottomBar = {
+                            EbbingBottomBarAnimation(
+                                visible = currentDestination?.shouldHideBottomBar() == false,
+                                modifier = Modifier.navigationBarsPadding(),
+                            ) {
+                                AppBottomBar(
+                                    currentDestination = currentDestination,
+                                    navigateToBottomBarDestination = { navController.navigate(it) },
+                                )
+                            }
+                        },
+                        floatingActionButtonPosition = FabPosition.Center,
+                    ) { innerPadding ->
+                        AppNavHost(
+                            navController = navController,
+                            modifier = Modifier.padding(innerPadding),
+                        )
+                    }
                 }
             }
         }
