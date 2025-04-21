@@ -1,30 +1,31 @@
 package com.tgyuu.designsystem.component.calendar
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.LocalDate
 
 @Composable
 internal fun CalendarController(
     currentDate: LocalDate,
-    onPrevMonthClick: () -> Unit,
-    onNextMonthClick: () -> Unit,
+    onGotoTodayClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -35,24 +36,25 @@ internal fun CalendarController(
             .padding(horizontal = 10.dp)
             .semantics { contentDescription = "달력 컨트롤러" },
     ) {
-        IconButton(onClick = onPrevMonthClick) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = "이전 달"
-            )
+        IconButton(onClick = onGotoTodayClick) {
+            if (currentDate.monthValue != LocalDate.now().monthValue) {
+                Image(
+                    painter = painterResource(R.drawable.ic_return),
+                    contentDescription = "이전 달",
+                    modifier = Modifier.size(16.dp),
+                )
+            } else {
+                Spacer(modifier = Modifier.size(16.dp))
+            }
         }
 
         Text(
             text = "${currentDate.year}년 ${currentDate.monthValue}월",
             textAlign = TextAlign.Center,
-            color = Color.DarkGray,
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
         )
 
-        IconButton(onClick = onNextMonthClick) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "다음 달"
-            )
-        }
+        Spacer(modifier = Modifier.size(40.dp))
     }
 }

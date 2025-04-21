@@ -1,21 +1,29 @@
 package com.tgyuu.designsystem.component.calendar
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.LocalDate
 
 @Composable
@@ -34,6 +42,7 @@ internal fun CalendarBody(
             CalendarDayItem(
                 calendarDate = it,
                 selectedDate = selectedDate,
+                hasEvent = false,
                 onDateSelect = onDateSelect,
             )
         }
@@ -44,15 +53,10 @@ internal fun CalendarBody(
 private fun CalendarDayItem(
     calendarDate: CalendarDate,
     selectedDate: LocalDate?,
+    hasEvent: Boolean,
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val textColor = when {
-        !calendarDate.isCurrentMonth -> Color.LightGray
-        calendarDate.date == selectedDate -> Color.White
-        else -> Color.DarkGray
-    }
-
     Surface(
         shape = RoundedCornerShape(8.dp),
         color = if (calendarDate.date == selectedDate) Color.DarkGray else Color.Transparent,
@@ -60,10 +64,35 @@ private fun CalendarDayItem(
             .padding(horizontal = 8.dp)
             .clickable { onDateSelect(calendarDate.date) },
     ) {
-        Text(
-            text = calendarDate.dayOfMonth.toString(),
-            textAlign = TextAlign.Center,
-            color = textColor,
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(vertical = 4.dp),
+        ) {
+            val textColor = when {
+                !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
+                calendarDate.date == selectedDate -> EbbingTheme.colors.white
+                else -> EbbingTheme.colors.dark1
+            }
+            Text(
+                text = calendarDate.dayOfMonth.toString(),
+                style = EbbingTheme.typography.bodyMM,
+                textAlign = TextAlign.Center,
+                color = textColor,
+            )
+
+            val circleColor = when {
+                !hasEvent -> Color.Transparent
+                !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
+                calendarDate.date == selectedDate -> EbbingTheme.colors.white
+                else -> EbbingTheme.colors.primaryDefault
+            }
+            Spacer(
+                modifier = Modifier
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(circleColor)
+            )
+        }
     }
 }

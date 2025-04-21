@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.DayOfWeek
 
 @Composable
@@ -24,7 +25,8 @@ internal fun CalendarHeader(modifier: Modifier = Modifier) {
             Text(
                 text = weekDayText,
                 textAlign = TextAlign.Center,
-                color = Color.DarkGray,
+                style = EbbingTheme.typography.bodyMM,
+                color = EbbingTheme.colors.dark1,
                 modifier = Modifier
                     .weight(1f)
                     .semantics { contentDescription = "${weekDayText}_${idx}" },
