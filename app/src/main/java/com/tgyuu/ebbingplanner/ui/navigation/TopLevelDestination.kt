@@ -14,19 +14,19 @@ enum class TopLevelDestination(
     val route: KClass<*>,
 ) {
     HOME(
-        iconDrawableId = R.drawable.ic_launcher_background,
+        iconDrawableId = R.drawable.ic_home,
         contentDescription = "홈",
         title = "홈",
         route = HomeRoute::class,
     ),
     DASHBOARD(
-        iconDrawableId = R.drawable.ic_launcher_background,
+        iconDrawableId = R.drawable.ic_dashboard,
         contentDescription = "대시보드",
         title = "대시보드",
         route = DashboardRoute::class,
     ),
     SETTING(
-        iconDrawableId = R.drawable.ic_launcher_background,
+        iconDrawableId = R.drawable.ic_setting,
         contentDescription = "설정",
         title = "설정",
         route = SettingRoute::class,
