@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.tgyuu.dashboard.navigation.dashBoardNavigation
+import com.tgyuu.dashboard.navigation.dashboardNavigation
 import com.tgyuu.home.navigation.homeNavigation
 import com.tgyuu.navigation.HomeRoute
 import com.tgyuu.setting.navigation.settingNavigation
@@ -20,7 +20,7 @@ fun AppNavHost(
         modifier = modifier,
     ) {
         homeNavigation()
-        dashBoardNavigation()
+        dashboardNavigation()
         settingNavigation()
     }
 }

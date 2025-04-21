@@ -25,7 +25,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.DASHBOARD
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.HOME
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.SETTING
-import com.tgyuu.navigation.DashBoardRoute
+import com.tgyuu.navigation.DashboardRoute
 import com.tgyuu.navigation.HomeRoute
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingRoute
@@ -95,7 +95,7 @@ internal fun AppBottomBar(
                     onClick = {
                         when (topLevelRoute) {
                             HOME -> navigateToBottomBarDestination(HomeRoute)
-                            DASHBOARD -> navigateToBottomBarDestination(DashBoardRoute)
+                            DASHBOARD -> navigateToBottomBarDestination(DashboardRoute)
                             SETTING -> navigateToBottomBarDestination(SettingRoute)
                         }
                     }

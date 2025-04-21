@@ -8,7 +8,7 @@ sealed interface Route
 data object HomeRoute : Route
 
 @Serializable
-data object DashBoardRoute : Route
+data object DashboardRoute : Route
 
 @Serializable
 data object SettingRoute : Route
