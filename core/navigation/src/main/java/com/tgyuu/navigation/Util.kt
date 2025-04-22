@@ -5,7 +5,9 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import kotlin.reflect.KClass
 
-private val HIDDEN_BOTTOM_BAR_ROUTES = emptySet<KClass<Route>>()
+private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
+    HomeGraph.AddTodoRoute::class,
+)
 
 fun NavDestination?.shouldHideBottomBar(): Boolean = this?.hierarchy?.any { destination ->
     HIDDEN_BOTTOM_BAR_ROUTES.any {

@@ -37,17 +37,23 @@ import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.model.TodoRO
 
 @Composable
 internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    HomeScreen()
+    HomeScreen(
+        onAddTodoClick = { viewModel.onIntent(OnAddTodoClick) },
+    )
 }
 
 @Composable
-private fun HomeScreen(modifier: Modifier = Modifier) {
+private fun HomeScreen(
+    onAddTodoClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val calendarState = rememberCalendarState()
 
     Column(
@@ -68,6 +74,7 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
 
         EbbingTodoList(
             todoLists = mutableListOf(),
+            onAddTodoClick = onAddTodoClick,
             onCheckedChange = {},
         )
     }
@@ -77,6 +84,7 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
 private fun EbbingTodoList(
     todoLists: List<TodoRO>,
     onCheckedChange: (TodoRO) -> Unit,
+    onAddTodoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -89,7 +97,7 @@ private fun EbbingTodoList(
                 .padding(top = 24.dp, bottom = 12.dp),
         ) {
             Text(
-                text = "오늘 할 일 3",
+                text = "오늘 할 일 ${todoLists.size}",
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
             )
@@ -102,7 +110,7 @@ private fun EbbingTodoList(
                     .size(30.dp)
                     .clip(RoundedCornerShape(6.dp))
                     .background(EbbingTheme.colors.primaryDefault)
-                    .clickable {},
+                    .clickable { onAddTodoClick() },
             )
         }
 
@@ -170,6 +178,8 @@ private fun TodoListCard(
 @Composable
 private fun Preview1() {
     BasePreview {
-        HomeScreen()
+        HomeScreen(
+            onAddTodoClick = {},
+        )
     }
 }

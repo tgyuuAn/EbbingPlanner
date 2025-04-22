@@ -9,6 +9,8 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,12 +27,12 @@ fun EbbingBottomBarAnimation(
     contents: @Composable AnimatedVisibilityScope.() -> Unit,
 ) = AnimatedVisibility(
     visible = visible,
-    enter = fadeIn(tween(BOTTOM_BAR_ANIMATION_DURATION)) + expandVertically(
+    enter = fadeIn(tween(BOTTOM_BAR_ANIMATION_DURATION)) + slideInVertically(
         tween(
             BOTTOM_BAR_ANIMATION_DURATION
         )
     ),
-    exit = fadeOut(tween(BOTTOM_BAR_ANIMATION_DURATION)) + shrinkVertically(
+    exit = fadeOut(tween(BOTTOM_BAR_ANIMATION_DURATION)) + slideOutVertically(
         tween(
             BOTTOM_BAR_ANIMATION_DURATION
         )

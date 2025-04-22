@@ -10,7 +10,7 @@ import javax.inject.Singleton
 typealias BottomSheetContent = @Composable (() -> Unit)
 
 @Singleton
-class EventHelper @Inject constructor() {
+class EventBus @Inject constructor() {
     private val _eventFlow = Channel<EbbingEvent>(BUFFERED)
     val eventFlow = _eventFlow.receiveAsFlow()
 

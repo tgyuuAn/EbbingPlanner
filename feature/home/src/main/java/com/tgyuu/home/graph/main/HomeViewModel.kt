@@ -3,12 +3,19 @@ package com.tgyuu.home.graph.main
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
+import com.tgyuu.navigation.HomeGraph
+import com.tgyuu.navigation.NavigationBus
+import com.tgyuu.navigation.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
+class HomeViewModel @Inject constructor(
+    private val navigationBus: NavigationBus,
+) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
     override suspend fun processIntent(event: HomeIntent) {
-        TODO("Not yet implemented")
+        when (event) {
+            HomeIntent.OnAddTodoClick -> navigationBus.navigate(NavigationEvent.To(HomeGraph.AddTodoRoute))
+        }
     }
 }
