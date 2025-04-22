@@ -6,12 +6,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,23 +26,22 @@ fun EbbingCheck(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor by animateColorAsState(targetValue = if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.light1)
-    val buttonColor by animateColorAsState(targetValue = if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.white)
-    val checkColor by animateColorAsState(targetValue = if (checked) EbbingTheme.colors.white else Color.Transparent)
+    val buttonColor by animateColorAsState(targetValue = if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.light1)
 
     Surface(
         shape = RoundedCornerShape(6.dp),
         border = BorderStroke(
             width = 2.dp,
-            color = borderColor,
+            color = buttonColor,
         ),
         color = buttonColor,
         modifier = modifier.clickable { onCheckedChange(!checked) },
     ) {
         Image(
             painter = painterResource(R.drawable.ic_check),
-            colorFilter = ColorFilter.tint(checkColor),
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.white),
             contentDescription = null,
+            modifier = Modifier.padding(8.dp)
         )
     }
 }
@@ -54,11 +54,13 @@ private fun Preview1() {
             EbbingCheck(
                 checked = true,
                 onCheckedChange = {},
+                modifier = Modifier.size(40.dp),
             )
 
             EbbingCheck(
                 checked = false,
                 onCheckedChange = {},
+                modifier = Modifier.size(40.dp),
             )
         }
     }

@@ -75,7 +75,7 @@ private fun EbbingTodoList(
         Text(
             text = "오늘 할 일 3",
             style = EbbingTheme.typography.headingLSB,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.black,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .padding(top = 24.dp, bottom = 12.dp),
@@ -136,7 +136,7 @@ private fun TodoListCard(
         EbbingCheck(
             checked = checked,
             onCheckedChange = { checked = it },
-            modifier = Modifier.size(30.dp),
+            modifier = Modifier.size(40.dp),
         )
     }
 }
