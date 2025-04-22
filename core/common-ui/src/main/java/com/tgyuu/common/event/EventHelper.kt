@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-typealias BottomSheetComposable = @Composable (() -> Unit)
+typealias BottomSheetContent = @Composable (() -> Unit)
 
 @Singleton
 class EventHelper @Inject constructor() {
@@ -20,6 +20,6 @@ class EventHelper @Inject constructor() {
 }
 
 sealed class EbbingEvent {
-    data class ShowBottomSheet(val content: BottomSheetComposable) : EbbingEvent()
+    data class ShowBottomSheet(val content: BottomSheetContent) : EbbingEvent()
     data object HideBottomSheet : EbbingEvent()
 }

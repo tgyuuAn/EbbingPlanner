@@ -1,4 +1,4 @@
-package com.tgyuu.home.model
+package com.tgyuu.home.graph.main.model
 
 import java.time.LocalDate
 

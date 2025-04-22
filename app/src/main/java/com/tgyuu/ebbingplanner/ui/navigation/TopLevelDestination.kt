@@ -3,7 +3,7 @@ package com.tgyuu.ebbingplanner.ui.navigation
 import androidx.annotation.DrawableRes
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.navigation.DashboardRoute
-import com.tgyuu.navigation.HomeRoute
+import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.SettingRoute
 import kotlin.reflect.KClass
 

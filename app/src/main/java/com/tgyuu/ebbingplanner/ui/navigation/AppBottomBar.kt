@@ -26,7 +26,7 @@ import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.DASHBOARD
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.HOME
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.SETTING
 import com.tgyuu.navigation.DashboardRoute
-import com.tgyuu.navigation.HomeRoute
+import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingRoute
 import com.tgyuu.navigation.isRouteInHierarchy

@@ -1,4 +1,4 @@
-package com.tgyuu.home
+package com.tgyuu.home.graph.main
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.home.model.TodoRO
+import com.tgyuu.home.graph.main.model.TodoRO
 
 @Composable
 internal fun HomeRoute(

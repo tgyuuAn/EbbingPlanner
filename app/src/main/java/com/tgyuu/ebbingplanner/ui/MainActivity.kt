@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.tgyuu.common.event.BottomSheetComposable
+import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.ui.EbbingBottomBarAnimation
 import com.tgyuu.designsystem.component.EbbingModalBottomSheet
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EbbingTheme {
                 val navController = rememberNavController()
-                var bottomSheetContent by remember { mutableStateOf<BottomSheetComposable?>(null) }
+                var bottomSheetContent by remember { mutableStateOf<BottomSheetContent?>(null) }
                 val sheetState = rememberModalBottomSheetState(
                     initialValue = ModalBottomSheetValue.Hidden,
                     skipHalfExpanded = true,
