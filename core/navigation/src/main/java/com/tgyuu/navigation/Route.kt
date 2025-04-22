@@ -12,7 +12,7 @@ sealed class HomeGraph : Route {
     data object HomeRoute : HomeGraph()
 
     @Serializable
-    data object AddTodoRoute : HomeGraph()
+    data class AddTodoRoute(val selectedDate: String) : HomeGraph()
 }
 
 @Serializable

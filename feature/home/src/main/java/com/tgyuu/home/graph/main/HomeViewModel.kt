@@ -13,9 +13,11 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
-    override suspend fun processIntent(event: HomeIntent) {
-        when (event) {
-            HomeIntent.OnAddTodoClick -> navigationBus.navigate(NavigationEvent.To(HomeGraph.AddTodoRoute))
+    override suspend fun processIntent(intent: HomeIntent) {
+        when (intent) {
+            is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
+                NavigationEvent.To(HomeGraph.AddTodoRoute(intent.selectedDate.toString()))
+            )
         }
     }
 }

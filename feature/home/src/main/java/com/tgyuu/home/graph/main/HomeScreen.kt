@@ -1,6 +1,5 @@
 package com.tgyuu.home.graph.main
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,21 +38,23 @@ import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.model.TodoRO
+import java.time.LocalDate
 
 @Composable
 internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     HomeScreen(
-        onAddTodoClick = { viewModel.onIntent(OnAddTodoClick) },
+        onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
     )
 }
 
 @Composable
 private fun HomeScreen(
-    onAddTodoClick: () -> Unit,
+    onAddTodoClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val calendarState = rememberCalendarState()
 
     Column(
@@ -62,7 +63,7 @@ private fun HomeScreen(
     ) {
         EbbingCalendar(
             calendarState = calendarState,
-            onDateSelect = { selectedDate -> Log.d("test", selectedDate.toString()) },
+            onDateSelect = { selectedDate = it },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -74,7 +75,7 @@ private fun HomeScreen(
 
         EbbingTodoList(
             todoLists = mutableListOf(),
-            onAddTodoClick = onAddTodoClick,
+            onAddTodoClick = { onAddTodoClick(selectedDate) },
             onCheckedChange = {},
         )
     }
