@@ -1,5 +1,6 @@
 package com.tgyuu.designsystem.component.calendar
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,9 +59,13 @@ private fun CalendarDayItem(
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val dayItemColor by animateColorAsState(
+        if (calendarDate.date == selectedDate) Color.DarkGray else Color.Transparent
+    )
+
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = if (calendarDate.date == selectedDate) Color.DarkGray else Color.Transparent,
+        color = dayItemColor,
         modifier = modifier
             .padding(horizontal = 8.dp)
             .clickable { onDateSelect(calendarDate.date) },
@@ -69,11 +75,14 @@ private fun CalendarDayItem(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.padding(vertical = 4.dp),
         ) {
-            val textColor = when {
-                !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
-                calendarDate.date == selectedDate -> EbbingTheme.colors.white
-                else -> EbbingTheme.colors.dark1
-            }
+            val textColor by animateColorAsState(
+                when {
+                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
+                    calendarDate.date == selectedDate -> EbbingTheme.colors.white
+                    else -> EbbingTheme.colors.dark1
+                }
+            )
+
             Text(
                 text = if (calendarDate.date == LocalDate.now()) "Today" else "",
                 style = EbbingTheme.typography.captionM,
@@ -88,12 +97,15 @@ private fun CalendarDayItem(
                 color = textColor,
             )
 
-            val circleColor = when {
-                !hasEvent -> Color.Transparent
-                !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
-                calendarDate.date == selectedDate -> EbbingTheme.colors.white
-                else -> EbbingTheme.colors.primaryDefault
-            }
+            val circleColor by animateColorAsState(
+                when {
+                    !hasEvent -> Color.Transparent
+                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
+                    calendarDate.date == selectedDate -> EbbingTheme.colors.white
+                    else -> EbbingTheme.colors.primaryDefault
+                }
+            )
+
             Spacer(
                 modifier = Modifier
                     .size(6.dp)
