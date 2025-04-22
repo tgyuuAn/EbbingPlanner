@@ -66,7 +66,7 @@ private fun CalendarDayItem(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.padding(vertical = 4.dp),
         ) {
             val textColor = when {
@@ -74,6 +74,13 @@ private fun CalendarDayItem(
                 calendarDate.date == selectedDate -> EbbingTheme.colors.white
                 else -> EbbingTheme.colors.dark1
             }
+            Text(
+                text = if (calendarDate.date == LocalDate.now()) "Today" else "",
+                style = EbbingTheme.typography.captionM,
+                textAlign = TextAlign.Center,
+                color = textColor,
+            )
+
             Text(
                 text = calendarDate.dayOfMonth.toString(),
                 style = EbbingTheme.typography.bodyMM,

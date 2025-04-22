@@ -58,15 +58,6 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        Text(
-            text = "오늘 할 일 3",
-            style = EbbingTheme.typography.headingLSB,
-            color = EbbingTheme.colors.dark1,
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(top = 24.dp, bottom = 12.dp),
-        )
-
         EbbingTodoList(
             todoLists = listOf("영단어 외우기", "국어 문학 공부", "지구과학 공부"),
             onCheckedChange = {},
@@ -80,30 +71,41 @@ private fun EbbingTodoList(
     onCheckedChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = modifier.fillMaxSize()) {
-        itemsIndexed(
-            items = todoLists,
-            key = { _, item -> item },
-        ) { idx, item ->
-            TodoListCard(
-                todo = item,
-                onCheckedChange = onCheckedChange,
-                modifier = Modifier.padding(
-                    horizontal = 20.dp,
-                    vertical = 24.dp,
-                )
-            )
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "오늘 할 일 3",
+            style = EbbingTheme.typography.headingLSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(top = 24.dp, bottom = 12.dp),
+        )
 
-            if (idx < todoLists.size - 1) {
-                HorizontalDivider(
-                    thickness = 2.dp,
-                    color = EbbingTheme.colors.light2,
-                    modifier = Modifier.fillMaxWidth(),
+        LazyColumn(modifier = modifier.fillMaxSize()) {
+            itemsIndexed(
+                items = todoLists,
+                key = { _, item -> item },
+            ) { idx, item ->
+                TodoListCard(
+                    todo = item,
+                    onCheckedChange = onCheckedChange,
+                    modifier = Modifier.padding(
+                        horizontal = 20.dp,
+                        vertical = 24.dp,
+                    )
                 )
+
+                if (idx < todoLists.size - 1) {
+                    HorizontalDivider(
+                        thickness = 2.dp,
+                        color = EbbingTheme.colors.light2,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
-        }
 
-        item { Spacer(modifier = Modifier.height(60.dp)) }
+            item { Spacer(modifier = Modifier.height(60.dp)) }
+        }
     }
 }
 
