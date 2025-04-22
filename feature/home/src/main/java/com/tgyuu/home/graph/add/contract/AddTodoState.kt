@@ -1,7 +1,8 @@
 package com.tgyuu.home.graph.add.contract
 
 import com.tgyuu.common.base.UiState
+import java.time.LocalDate
 
 data class AddTodoState(
-    val isLoading: Boolean = false,
+    val selectedDate: LocalDate = LocalDate.now(),
 ) : UiState

@@ -2,4 +2,6 @@ package com.tgyuu.home.graph.add.contract
 
 import com.tgyuu.common.base.UiIntent
 
-sealed class AddTodoIntent : UiIntent {}
+sealed class AddTodoIntent : UiIntent {
+    data object OnSelectedDataChangeClick : AddTodoIntent()
+}
