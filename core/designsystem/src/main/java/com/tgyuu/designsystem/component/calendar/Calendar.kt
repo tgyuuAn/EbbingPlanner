@@ -41,7 +41,11 @@ fun EbbingCalendar(
         CalendarController(
             currentDate = calendarState.currentDisplayDate,
             onGotoTodayClick = {
-                scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
+                scope.launch {
+                    pagerState.animateScrollToPage(initialPage)
+                    calendarState.onDateSelect(LocalDate.now())
+                    onDateSelect(LocalDate.now())
+                }
             },
         )
         CalendarHeader()
