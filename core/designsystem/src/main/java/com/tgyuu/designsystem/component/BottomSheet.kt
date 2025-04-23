@@ -1,7 +1,9 @@
 package com.tgyuu.designsystem.component
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
@@ -18,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -60,16 +64,25 @@ fun EbbingModalBottomSheet(
 @Composable
 fun EbbingBottomSheetHeader(
     title: String,
-    subTitle: String? = null,
     modifier: Modifier = Modifier,
+    subTitle: String? = null,
+    rightComponent: (@Composable () -> Unit)? = null,
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = title,
-            style = EbbingTheme.typography.headingLSB,
-            color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(top = 10.dp),
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = title,
+                style = EbbingTheme.typography.headingLSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.padding(top = 10.dp),
+            )
+
+            rightComponent?.invoke()
+        }
 
         subTitle?.let {
             Text(
@@ -89,7 +102,7 @@ fun EbbingBottomSheetListItemDefault(
     onChecked: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    @DrawableRes image: Int? = null,
+    color: Int? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -98,18 +111,24 @@ fun EbbingBottomSheetListItemDefault(
             .height(62.dp)
             .clickable(enabled = enabled) { onChecked() },
     ) {
-        if (image != null) {
-            Image(
-                painter = painterResource(image),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(
-                    color = if (!enabled) EbbingTheme.colors.dark3
-                    else if (checked) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark1,
-                ),
+        if (color != null) {
+            Spacer(
                 modifier = Modifier
-                    .size(32.dp)
-                    .padding(end = 10.dp),
+                    .padding(end = 10.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color(color))
+                    .then(
+                        if (checked) {
+                            Modifier.border(
+                                width = 1.dp,
+                                color = EbbingTheme.colors.primaryDefault,
+                                shape = CircleShape
+                            )
+                        } else {
+                            Modifier
+                        }
+                    ),
             )
         }
 
@@ -139,4 +158,3 @@ fun EbbingBottomSheetListItemDefault(
         }
     }
 }
-

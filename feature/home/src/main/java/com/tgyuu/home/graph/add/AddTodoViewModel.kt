@@ -1,26 +1,31 @@
 package com.tgyuu.home.graph.add
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
+import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toLocalDateOrThrow
-import com.tgyuu.domain.RepeatCycle
-import com.tgyuu.domain.TodoTag
+import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.add.contract.AddTodoIntent
 import com.tgyuu.home.graph.add.contract.AddTodoState
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class AddTodoViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
 
     init {
@@ -30,22 +35,32 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
     }
 
+    internal fun loadTags() = viewModelScope.launch {
+        val loadedTagList = todoRepository.loadTagList()
+        setState { copy(tagList = loadedTagList) }
+    }
+
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
             AddTodoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
-                EbbingEvent.ShowBottomSheet(intent.content)
+                ShowBottomSheet(intent.content)
             )
 
             is AddTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
             is AddTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
-                EbbingEvent.ShowBottomSheet(intent.content)
+                ShowBottomSheet(intent.content)
             )
 
             is AddTodoIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
             is AddTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
+            is AddTodoIntent.OnTagDropDownClick -> eventBus.sendEvent(
+                ShowBottomSheet(intent.content)
+            )
+
             is AddTodoIntent.OnTagChange -> onTagChange(intent.tag)
+            AddTodoIntent.OnAddTagClick -> {}
             AddTodoIntent.OnSaveClick -> onSaveClick()
         }
     }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,12 +56,13 @@ import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingTextInputDropDown
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.RepeatCycle
-import com.tgyuu.domain.TodoTag
+import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.home.graph.add.contract.AddTodoIntent
 import com.tgyuu.home.graph.add.ui.InputState
 import com.tgyuu.home.graph.add.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.add.ui.bottomsheet.SelectedDateBottomSheet
+import com.tgyuu.home.graph.add.ui.bottomsheet.TagBottomSheet
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -69,6 +71,10 @@ internal fun AddTodoRoute(
     viewModel: AddTodoViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadTags()
+    }
 
     AddTodoScreen(
         selectedDate = state.selectedDate,
@@ -96,7 +102,20 @@ internal fun AddTodoRoute(
             )
         },
         onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
-        onTagDropDownClick = {},
+        onTagDropDownClick = {
+            viewModel.onIntent(
+                AddTodoIntent.OnTagDropDownClick(
+                    {
+                        TagBottomSheet(
+                            originTag = state.tag,
+                            tagList = state.tagList,
+                            updateTag = { viewModel.onIntent(AddTodoIntent.OnTagChange(it)) },
+                            onAddTagClick = { viewModel.onIntent(AddTodoIntent.OnAddTagClick) },
+                        )
+                    }
+                )
+            )
+        },
         onRepeatCycleDropDownClick = {
             viewModel.onIntent(
                 AddTodoIntent.OnRepeatCycleDropDownClick(

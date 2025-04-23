@@ -9,7 +9,7 @@ import com.tgyuu.database.model.tag.TodoTagEntity
 
 @Dao
 interface TodoTagsDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTags(vararg tags: TodoTagEntity)
 
     @Delete

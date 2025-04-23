@@ -1,4 +1,4 @@
-package com.tgyuu.domain
+package com.tgyuu.domain.model
 
 enum class RepeatCycle(val displayName: String, val intervals: List<Int>) {
     SAME_DAY("당일만", listOf(0)),

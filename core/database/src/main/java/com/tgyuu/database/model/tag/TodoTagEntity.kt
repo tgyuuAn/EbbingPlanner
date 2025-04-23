@@ -2,7 +2,7 @@ package com.tgyuu.database.model.tag
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.tgyuu.domain.TodoTag
+import com.tgyuu.domain.model.TodoTag
 import java.time.LocalDate
 
 @Entity(tableName = "todo_tag")
