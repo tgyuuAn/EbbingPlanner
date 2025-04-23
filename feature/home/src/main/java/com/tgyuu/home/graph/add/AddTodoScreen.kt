@@ -55,7 +55,12 @@ import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingTextInputDropDown
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.RepeatCycle
+import com.tgyuu.domain.TodoTag
+import com.tgyuu.home.graph.add.contract.AddTodoIntent
 import com.tgyuu.home.graph.add.ui.InputState
+import com.tgyuu.home.graph.add.ui.bottomsheet.RepeatCycleBottomSheet
+import com.tgyuu.home.graph.add.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.main.model.TodoRO
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -68,19 +73,67 @@ internal fun AddTodoRoute(
 
     AddTodoScreen(
         selectedDate = state.selectedDate,
-        isSaveButtonEnabled = true,
-        onBackClick = {},
-        onSelectedDateChangeClick = {},
-        onSaveClick = {},
+        title = state.title,
+        repeatCycle = state.repeatCycle,
+        restDays = state.restDays,
+        tag = state.tag,
+        isSaveEnabled = state.isSaveEnabled,
+        onBackClick = { viewModel.onIntent(AddTodoIntent.OnBackClick) },
+        onSelectedDateChangeClick = {
+            viewModel.onIntent(
+                AddTodoIntent.OnSelectedDataChangeClick(
+                    {
+                        SelectedDateBottomSheet(
+                            originSelectedDate = state.selectedDate,
+                            updateSelectedDate = {
+                                viewModel.onIntent(
+                                    AddTodoIntent.OnSelectedDateChange(it)
+                                )
+                            },
+                        )
+                    }
+                )
+            )
+        },
+        onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
+        onTagDropDownClick = {},
+        onRepeatCycleDropDownClick = {
+            viewModel.onIntent(
+                AddTodoIntent.OnRepeatCycleDropDownClick(
+                    {
+                        RepeatCycleBottomSheet(
+                            originRepeatCycle = state.repeatCycle,
+                            updateRepeatCycle = {
+                                viewModel.onIntent(
+                                    AddTodoIntent.OnRepeatCycleChange(
+                                        it
+                                    )
+                                )
+                            },
+                        )
+                    }
+                )
+            )
+        },
+        onRestDayChange = { viewModel.onIntent(AddTodoIntent.OnRestDayChange(it)) },
+        onSaveClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
     )
 }
 
 @Composable
 private fun AddTodoScreen(
     selectedDate: LocalDate,
-    isSaveButtonEnabled: Boolean,
+    title: String,
+    repeatCycle: RepeatCycle,
+    restDays: Set<DayOfWeek>,
+    tag: TodoTag?,
+    isSaveEnabled: Boolean,
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
+    onTitleChange: (String) -> Unit,
+    onTagDropDownClick: () -> Unit,
+    onRepeatCycleDropDownClick: () -> Unit,
+    onRestDayChange: (DayOfWeek) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -96,15 +149,11 @@ private fun AddTodoScreen(
             rightComponent = {
                 Text(
                     text = "저장",
-                    style = EbbingTheme.typography.bodyMM,
-                    color = if (isSaveButtonEnabled) {
-                        EbbingTheme.colors.primaryDefault
-                    } else {
-                        EbbingTheme.colors.dark3
-                    },
+                    style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                     modifier = Modifier.throttledClickable(
                         throttleTime = 1500L,
-                        enabled = isSaveButtonEnabled
+                        enabled = isSaveEnabled
                     ) {
                         onSaveClick()
                         focusManager.clearFocus()
@@ -134,26 +183,24 @@ private fun AddTodoScreen(
 
             TitleContent(
                 scrollState = scrollState,
-                title = "",
+                title = title,
                 titleInputState = InputState.DEFAULT,
-                onTitleChanged = {},
+                onTitleChange = onTitleChange,
             )
 
             TagContent(
-                tag = "",
-                tagInputState = InputState.DEFAULT,
-                onTagDropDownClicked = {},
+                tag = tag,
+                onTagDropDownClick = onTagDropDownClick,
             )
 
             RepeatCycleContent(
-                repeatCycle = "",
-                repeatCycleInputState = InputState.DEFAULT,
-                onRepeatCycleDropDownClicked = {},
+                repeatCycle = repeatCycle,
+                onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             )
 
             RestDayContent(
-                restDays = setOf(DayOfWeek.MONDAY),
-                onRestDayChanged = {},
+                restDays = restDays,
+                onRestDayChange = onRestDayChange,
             )
 
             ScheduleContent(
@@ -247,7 +294,7 @@ private fun TitleContent(
     scrollState: ScrollState,
     title: String,
     titleInputState: InputState,
-    onTitleChanged: (String) -> Unit,
+    onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -265,7 +312,7 @@ private fun TitleContent(
         value = title,
         hint = "무엇을 학습하실건가요?",
         keyboardType = KeyboardType.Text,
-        onValueChange = onTitleChanged,
+        onValueChange = onTitleChange,
         limit = 20,
         rightComponent = {
             if (title.isNotEmpty()) {
@@ -275,7 +322,7 @@ private fun TitleContent(
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .size(20.dp)
-                        .clickable { onTitleChanged("") },
+                        .clickable { onTitleChange("") },
                 )
             }
         },
@@ -305,13 +352,10 @@ private fun TitleContent(
 
 @Composable
 private fun TagContent(
-    tag: String,
-    tagInputState: InputState,
-    onTagDropDownClicked: () -> Unit,
+    tag: TodoTag?,
+    onTagDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isSaveFailed: Boolean = (tagInputState == InputState.WARNING && tag.isEmpty())
-
     Text(
         text = "태그",
         style = EbbingTheme.typography.bodyMSB,
@@ -320,37 +364,20 @@ private fun TagContent(
     )
 
     EbbingTextInputDropDown(
-        value = tag,
-        onDropDownClick = onTagDropDownClicked,
+        value = tag?.name ?: "",
+        onDropDownClick = onTagDropDownClick,
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth(),
     )
-
-    EbbingVisibleAnimation(visible = isSaveFailed) {
-        if (isSaveFailed) {
-            Text(
-                text = "필수 항목을 입력해 주세요.",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.error,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-        }
-    }
 }
 
 @Composable
 private fun RepeatCycleContent(
-    repeatCycle: String,
-    repeatCycleInputState: InputState,
-    onRepeatCycleDropDownClicked: () -> Unit,
+    repeatCycle: RepeatCycle,
+    onRepeatCycleDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isSaveFailed: Boolean =
-        (repeatCycleInputState == InputState.WARNING && repeatCycle.isEmpty())
-
     Text(
         text = "반복 주기",
         style = EbbingTheme.typography.bodyMSB,
@@ -359,31 +386,18 @@ private fun RepeatCycleContent(
     )
 
     EbbingTextInputDropDown(
-        value = repeatCycle,
-        onDropDownClick = onRepeatCycleDropDownClicked,
+        value = repeatCycle.displayName,
+        onDropDownClick = onRepeatCycleDropDownClick,
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth(),
     )
-
-    EbbingVisibleAnimation(visible = isSaveFailed) {
-        if (isSaveFailed) {
-            Text(
-                text = "필수 항목을 입력해 주세요.",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.error,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-        }
-    }
 }
 
 @Composable
 private fun RestDayContent(
     restDays: Set<DayOfWeek>,
-    onRestDayChanged: (DayOfWeek) -> Unit,
+    onRestDayChange: (DayOfWeek) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Text(
@@ -403,7 +417,7 @@ private fun RestDayContent(
             EbbingChip(
                 label = it.toKorean(),
                 selected = it in restDays,
-                onChipClicked = { onRestDayChanged(it) },
+                onChipClicked = { onRestDayChange(it) },
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1f),
@@ -494,10 +508,18 @@ private fun PreviewAddTodo() {
     BasePreview {
         AddTodoScreen(
             selectedDate = LocalDate.now(),
-            isSaveButtonEnabled = true,
+            title = "토익",
+            repeatCycle = RepeatCycle.D1_7_15_30_60,
+            restDays = setOf(DayOfWeek.MONDAY),
+            tag = null,
+            isSaveEnabled = true,
             onSelectedDateChangeClick = {},
             onSaveClick = {},
             onBackClick = {},
+            onTitleChange = {},
+            onTagDropDownClick = {},
+            onRepeatCycleDropDownClick = {},
+            onRestDayChange = {},
         )
     }
 }

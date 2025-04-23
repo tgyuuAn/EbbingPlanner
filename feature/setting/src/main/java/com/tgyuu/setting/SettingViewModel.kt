@@ -9,7 +9,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor() :
     BaseViewModel<SettingState, SettingIntent>(SettingState()) {
-    override suspend fun processIntent(event: SettingIntent) {
+    override suspend fun processIntent(intent: SettingIntent) {
         TODO("Not yet implemented")
     }
 }

@@ -20,6 +20,8 @@ class EventBus @Inject constructor() {
 }
 
 sealed class EbbingEvent {
+    data class ShowSnackBar(val msg: String) : EbbingEvent()
+    data object HideSnackBar : EbbingEvent()
     data class ShowBottomSheet(val content: BottomSheetContent) : EbbingEvent()
     data object HideBottomSheet : EbbingEvent()
 }

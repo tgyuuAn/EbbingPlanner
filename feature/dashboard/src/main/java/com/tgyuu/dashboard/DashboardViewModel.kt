@@ -10,7 +10,7 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
 
 ) : BaseViewModel<DashboardState, DashboardIntent>(DashboardState()) {
-    override suspend fun processIntent(event: DashboardIntent) {
+    override suspend fun processIntent(intent: DashboardIntent) {
         TODO("Not yet implemented")
     }
 }

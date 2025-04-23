@@ -11,6 +11,7 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,8 +29,11 @@ import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.ui.EbbingBottomBarAnimation
+import com.tgyuu.common.ui.addFocusCleaner
 import com.tgyuu.common.ui.repeatOnStarted
 import com.tgyuu.designsystem.component.EbbingModalBottomSheet
+import com.tgyuu.designsystem.component.EbbingSnackBar
+import com.tgyuu.designsystem.component.EbbingSnackBarHost
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
@@ -61,6 +66,7 @@ class MainActivity : ComponentActivity() {
             EbbingTheme {
                 val scope = rememberCoroutineScope()
                 val navController = rememberNavController()
+                val snackBarHostState = remember { SnackbarHostState() }
                 var bottomSheetContent by remember { mutableStateOf<BottomSheetContent?>(null) }
                 val sheetState = rememberModalBottomSheetState(
                     initialValue = ModalBottomSheetValue.Hidden,
@@ -87,6 +93,12 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     EbbingEvent.HideBottomSheet -> scope.launch { sheetState.hide() }
+                                    is EbbingEvent.ShowSnackBar -> scope.launch {
+                                        snackBarHostState.currentSnackbarData?.dismiss()
+                                        snackBarHostState.showSnackbar(event.msg)
+                                    }
+
+                                    EbbingEvent.HideSnackBar -> snackBarHostState.currentSnackbarData?.dismiss()
                                 }
                             }
                         }
@@ -100,8 +112,16 @@ class MainActivity : ComponentActivity() {
                     sheetState = sheetState,
                     sheetContent = bottomSheetContent,
                 ) {
+                    val focusManager = LocalFocusManager.current
+
                     Scaffold(
                         containerColor = EbbingTheme.colors.background,
+                        snackbarHost = {
+                            EbbingSnackBarHost(
+                                hostState = snackBarHostState,
+                                snackbar = { snackBarData -> EbbingSnackBar(snackBarData) },
+                            )
+                        },
                         bottomBar = {
                             EbbingBottomBarAnimation(
                                 visible = currentDestination?.shouldHideBottomBar() == false,
@@ -117,7 +137,8 @@ class MainActivity : ComponentActivity() {
                     ) { innerPadding ->
                         AppNavHost(
                             navController = navController,
-                            modifier = Modifier.padding(innerPadding),
+                            modifier = Modifier.padding(innerPadding)
+                                .addFocusCleaner(focusManager),
                         )
                     }
                 }

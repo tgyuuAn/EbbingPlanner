@@ -34,7 +34,7 @@ abstract class BaseViewModel<S : UiState, E : UiIntent>(
 
     fun onIntent(event: E) = viewModelScope.launch { _events.send(event) }
 
-    protected abstract suspend fun processIntent(event: E)
+    protected abstract suspend fun processIntent(intent: E)
 
     protected fun setState(reduce: S.() -> S) = viewModelScope.launch {
         _reducer.send(reduce)
