@@ -3,9 +3,11 @@ package com.tgyuu.home.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.tgyuu.home.graph.add.AddTodoRoute
+import com.tgyuu.home.graph.addag.AddTagRoute
+import com.tgyuu.home.graph.addtodo.AddTodoRoute
 import com.tgyuu.home.graph.main.HomeRoute
 import com.tgyuu.navigation.HomeBaseRoute
+import com.tgyuu.navigation.HomeGraph.AddTagRoute
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 
@@ -17,6 +19,10 @@ fun NavGraphBuilder.homeGraph() {
 
         composable<AddTodoRoute> {
             AddTodoRoute()
+        }
+
+        composable<AddTagRoute> {
+            AddTagRoute()
         }
     }
 }

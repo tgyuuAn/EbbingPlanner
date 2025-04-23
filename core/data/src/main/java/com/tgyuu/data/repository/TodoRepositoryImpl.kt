@@ -11,4 +11,6 @@ class TodoRepositoryImpl @Inject constructor(
 ) : TodoRepository {
     override suspend fun loadTagList(): List<TodoTag> = localTokenDataSource.getTags()
         .map(TodoTagEntity::toDomain)
+
+    override suspend fun addTag(todoTag: TodoTag) = localTokenDataSource.insertTags(todoTag)
 }

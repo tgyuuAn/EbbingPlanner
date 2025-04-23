@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.add
+package com.tgyuu.home.graph.addtodo
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
@@ -58,11 +58,11 @@ import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.home.graph.add.contract.AddTodoIntent
-import com.tgyuu.home.graph.add.ui.InputState
-import com.tgyuu.home.graph.add.ui.bottomsheet.RepeatCycleBottomSheet
-import com.tgyuu.home.graph.add.ui.bottomsheet.SelectedDateBottomSheet
-import com.tgyuu.home.graph.add.ui.bottomsheet.TagBottomSheet
+import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
+import com.tgyuu.home.graph.addtodo.ui.InputState
+import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
+import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
+import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -79,6 +79,7 @@ internal fun AddTodoRoute(
     AddTodoScreen(
         selectedDate = state.selectedDate,
         title = state.title,
+        priority = state.priority,
         repeatCycle = state.repeatCycle,
         restDays = state.restDays,
         tag = state.tag,
@@ -102,6 +103,7 @@ internal fun AddTodoRoute(
             )
         },
         onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
+        onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
         onTagDropDownClick = {
             viewModel.onIntent(
                 AddTodoIntent.OnTagDropDownClick(
@@ -123,11 +125,7 @@ internal fun AddTodoRoute(
                         RepeatCycleBottomSheet(
                             originRepeatCycle = state.repeatCycle,
                             updateRepeatCycle = {
-                                viewModel.onIntent(
-                                    AddTodoIntent.OnRepeatCycleChange(
-                                        it
-                                    )
-                                )
+                                viewModel.onIntent(AddTodoIntent.OnRepeatCycleChange(it))
                             },
                         )
                     }
@@ -143,6 +141,7 @@ internal fun AddTodoRoute(
 private fun AddTodoScreen(
     selectedDate: LocalDate,
     title: String,
+    priority: String?,
     repeatCycle: RepeatCycle,
     restDays: Set<DayOfWeek>,
     tag: TodoTag?,
@@ -151,6 +150,7 @@ private fun AddTodoScreen(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onPriorityChange: (String) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -194,7 +194,7 @@ private fun AddTodoScreen(
                     withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                         append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
                     }
-                    append(" 부터\n시작하는 일정을 만듭니다.")
+                    append(" 부터\n시작하는 일정을 만들어요.")
                 },
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
@@ -211,6 +211,11 @@ private fun AddTodoScreen(
             TagContent(
                 tag = tag,
                 onTagDropDownClick = onTagDropDownClick,
+            )
+
+            PriorityContent(
+                priority = priority,
+                onPriorityChange = onPriorityChange,
             )
 
             RepeatCycleContent(
@@ -306,12 +311,38 @@ private fun TagContent(
 
     EbbingTextInputDropDown(
         value = tag?.name ?: "",
+        color = tag?.color,
         onDropDownClick = onTagDropDownClick,
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth(),
     )
 }
+
+@Composable
+private fun PriorityContent(
+    priority: String?,
+    onPriorityChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = "우선순위",
+        style = EbbingTheme.typography.bodyMSB,
+        color = EbbingTheme.colors.dark1,
+        modifier = Modifier.padding(top = 32.dp),
+    )
+
+    EbbingTextInputDefault(
+        value = priority ?: "",
+        onValueChange = onPriorityChange,
+        hint = "얼마나 중요한 일정인가요?",
+        keyboardType = KeyboardType.Number,
+        modifier = modifier
+            .padding(top = 8.dp)
+            .fillMaxWidth(),
+    )
+}
+
 
 @Composable
 private fun RepeatCycleContent(
@@ -447,6 +478,7 @@ private fun PreviewAddTodo() {
         AddTodoScreen(
             selectedDate = LocalDate.now(),
             title = "토익",
+            priority = "3",
             repeatCycle = RepeatCycle.D1_7_15_30_60,
             restDays = setOf(DayOfWeek.MONDAY),
             tag = null,
@@ -458,6 +490,7 @@ private fun PreviewAddTodo() {
             onSaveClick = {},
             onBackClick = {},
             onTitleChange = {},
+            onPriorityChange = {},
             onTagDropDownClick = {},
             onRepeatCycleDropDownClick = {},
             onRestDayChange = {},

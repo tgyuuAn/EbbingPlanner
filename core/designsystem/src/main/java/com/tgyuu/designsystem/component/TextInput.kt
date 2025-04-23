@@ -2,15 +2,18 @@ package com.tgyuu.designsystem.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -121,6 +125,7 @@ fun EbbingTextInputDropDown(
     onDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
     hint: String = "",
+    color: Int? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -131,6 +136,16 @@ fun EbbingTextInputDropDown(
             .padding(horizontal = 16.dp, vertical = 14.dp)
             .clickable { onDropDownClick() },
     ) {
+        if (color != null) {
+            Spacer(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color(color))
+            )
+        }
+
         Text(
             text = value.ifEmpty { hint },
             style = EbbingTheme.typography.bodyMM,

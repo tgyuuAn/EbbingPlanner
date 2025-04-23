@@ -11,8 +11,8 @@ class NavigationBus @Inject constructor() {
     private val _navigationFlow = Channel<NavigationEvent>(BUFFERED)
     val navigationFlow = _navigationFlow.receiveAsFlow()
 
-    fun navigate(navigationEvent: NavigationEvent) {
-        _navigationFlow.trySend(navigationEvent)
+    suspend fun navigate(navigationEvent: NavigationEvent) {
+        _navigationFlow.send(navigationEvent)
     }
 }
 

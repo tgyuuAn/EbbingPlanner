@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.add.contract
+package com.tgyuu.home.graph.addtodo.contract
 
 import com.tgyuu.common.base.UiState
 import com.tgyuu.domain.model.DefaultTodoTag
@@ -10,6 +10,7 @@ import java.time.LocalDate
 data class AddTodoState(
     val selectedDate: LocalDate = LocalDate.now(),
     val title: String = "",
+    val priority: String? = null,
     val tag: TodoTag = DefaultTodoTag,
     val tagList: List<TodoTag> = emptyList(),
     val repeatCycle: RepeatCycle = RepeatCycle.SAME_DAY,

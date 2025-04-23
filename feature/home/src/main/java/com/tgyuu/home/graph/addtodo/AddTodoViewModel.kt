@@ -1,5 +1,6 @@
-package com.tgyuu.home.graph.add
+package com.tgyuu.home.graph.addtodo
 
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
@@ -10,8 +11,9 @@ import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.home.graph.add.contract.AddTodoIntent
-import com.tgyuu.home.graph.add.contract.AddTodoState
+import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
+import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,6 +51,7 @@ class AddTodoViewModel @Inject constructor(
 
             is AddTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
+            is AddTodoIntent.OnPriorityChange -> onPriorityChange(intent.priorty)
             is AddTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
@@ -60,7 +63,7 @@ class AddTodoViewModel @Inject constructor(
             )
 
             is AddTodoIntent.OnTagChange -> onTagChange(intent.tag)
-            AddTodoIntent.OnAddTagClick -> {}
+            AddTodoIntent.OnAddTagClick -> onAddTagClick()
             AddTodoIntent.OnSaveClick -> onSaveClick()
         }
     }
@@ -75,8 +78,15 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(title = title) }
     }
 
-    private fun onTagChange(tag: TodoTag) {
-        //Todo
+    private fun onPriorityChange(priority: String) {
+        if (!priority.isDigitsOnly()) return
+        if (priority.length >= 4) return
+
+        setState { copy(priority = priority) }
+    }
+
+    private fun onTagChange(todoTag: TodoTag) {
+        setState { copy(tag = todoTag) }
     }
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycle) {
@@ -100,6 +110,11 @@ class AddTodoViewModel @Inject constructor(
         }
 
         setState { copy(restDays = newRestDays) }
+    }
+
+    private suspend fun onAddTagClick() {
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(NavigationEvent.To(HomeGraph.AddTagRoute))
     }
 
     private fun onSaveClick() {

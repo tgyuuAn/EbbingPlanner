@@ -22,4 +22,13 @@ data class TodoTagEntity(
         createdAt = createdAt,
         updatedAt = updatedAt,
     )
-}	
+}
+
+fun TodoTag.toEntity() = TodoTagEntity(
+    id = this.id,
+    name = this.name,
+    color = this.color,
+    startDate = this.startDate,
+    createdAt = this.createdAt,
+    updatedAt = this.updatedAt,
+)
