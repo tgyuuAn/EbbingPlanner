@@ -42,8 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.tgyuu.common.daysBetween
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
@@ -61,7 +61,6 @@ import com.tgyuu.home.graph.add.contract.AddTodoIntent
 import com.tgyuu.home.graph.add.ui.InputState
 import com.tgyuu.home.graph.add.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.add.ui.bottomsheet.SelectedDateBottomSheet
-import com.tgyuu.home.graph.main.model.TodoRO
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -78,6 +77,7 @@ internal fun AddTodoRoute(
         restDays = state.restDays,
         tag = state.tag,
         isSaveEnabled = state.isSaveEnabled,
+        schedules = state.schedules,
         onBackClick = { viewModel.onIntent(AddTodoIntent.OnBackClick) },
         onSelectedDateChangeClick = {
             viewModel.onIntent(
@@ -128,6 +128,7 @@ private fun AddTodoScreen(
     restDays: Set<DayOfWeek>,
     tag: TodoTag?,
     isSaveEnabled: Boolean,
+    schedules: List<LocalDate>,
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
@@ -203,86 +204,7 @@ private fun AddTodoScreen(
                 onRestDayChange = onRestDayChange,
             )
 
-            ScheduleContent(
-                selectedDate = selectedDate,
-                schedules = listOf(
-                    TodoRO(
-                        id = 1,
-                        infoId = 100,
-                        title = "프로젝트 기획서 작성",
-                        description = "새 서비스 런칭을 위한 기획서를 작성하고 팀에 공유합니다.",
-                        tagId = 10,
-                        name = "기획",
-                        color = 0xFFBB86FC.toInt(),
-                        date = LocalDate.of(2025, 4, 25),
-                        memo = "팀 회의 전까지 초안 완성",
-                        priority = 2,
-                        isDone = false,
-                        createdAt = LocalDate.of(2025, 4, 20),
-                        updatedAt = LocalDate.of(2025, 4, 20)
-                    ),
-                    TodoRO(
-                        id = 2,
-                        infoId = 101,
-                        title = "UI 디자인 검토",
-                        description = "디자이너가 보낸 화면 설계 시안을 리뷰하고 피드백을 남깁니다.",
-                        tagId = 11,
-                        name = "디자인",
-                        color = 0xFF03DAC5.toInt(),
-                        date = LocalDate.of(2025, 4, 26),
-                        memo = "상세 컴포넌트별 코멘트 필요",
-                        priority = 3,
-                        isDone = false,
-                        createdAt = LocalDate.of(2025, 4, 21),
-                        updatedAt = LocalDate.of(2025, 4, 21)
-                    ),
-                    TodoRO(
-                        id = 3,
-                        infoId = 102,
-                        title = "API 문서 작성",
-                        description = "백엔드 팀과 협업하여 새 API 명세서를 완성합니다.",
-                        tagId = 12,
-                        name = "백엔드",
-                        color = 0xFFFF5722.toInt(),
-                        date = LocalDate.of(2025, 4, 27),
-                        memo = "예외 케이스까지 상세 기재",
-                        priority = 1,
-                        isDone = false,
-                        createdAt = LocalDate.of(2025, 4, 22),
-                        updatedAt = LocalDate.of(2025, 4, 22)
-                    ),
-                    TodoRO(
-                        id = 4,
-                        infoId = 103,
-                        title = "유닛 테스트 작성",
-                        description = "Compose 화면 로직과 ViewModel에 대한 유닛 테스트를 작성합니다.",
-                        tagId = 13,
-                        name = "테스트",
-                        color = 0xFF4CAF50.toInt(),
-                        date = LocalDate.of(2025, 4, 28),
-                        memo = "테스트 커버리지 80% 목표",
-                        priority = 2,
-                        isDone = false,
-                        createdAt = LocalDate.of(2025, 4, 23),
-                        updatedAt = LocalDate.of(2025, 4, 23)
-                    ),
-                    TodoRO(
-                        id = 5,
-                        infoId = 104,
-                        title = "릴리스 노트 작성",
-                        description = "다음 버전 배포를 위한 릴리스 노트를 작성하고 배포 채널에 공유합니다.",
-                        tagId = 14,
-                        name = "배포",
-                        color = 0xFFFFC107.toInt(),
-                        date = LocalDate.of(2025, 4, 29),
-                        memo = "특이사항 및 알려진 이슈 포함",
-                        priority = 3,
-                        isDone = false,
-                        createdAt = LocalDate.of(2025, 4, 23),
-                        updatedAt = LocalDate.of(2025, 4, 23)
-                    )
-                )
-            )
+            ScheduleContent(schedules = schedules)
 
             Spacer(modifier = Modifier.height(60.dp))
         }
@@ -428,8 +350,7 @@ private fun RestDayContent(
 
 @Composable
 private fun ScheduleContent(
-    schedules: List<TodoRO>,
-    selectedDate: LocalDate,
+    schedules: List<LocalDate>,
     modifier: Modifier = Modifier,
 ) {
     EbbingVisibleAnimation(schedules.isNotEmpty()) {
@@ -453,7 +374,6 @@ private fun ScheduleContent(
                     ScheduleCard(
                         idx = idx + 1,
                         schedule = item,
-                        selectedDate = selectedDate,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
@@ -470,8 +390,7 @@ private fun ScheduleContent(
 @Composable
 private fun ScheduleCard(
     idx: Int,
-    schedule: TodoRO,
-    selectedDate: LocalDate,
+    schedule: LocalDate,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -487,14 +406,14 @@ private fun ScheduleCard(
         )
 
         Text(
-            text = schedule.date.toFormattedString(),
+            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.dark1,
         )
 
         Text(
-            text = "${daysBetween(selectedDate, schedule.date)}일 뒤",
+            text = schedule.toRelativeDayDescription(),
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.dark1,
@@ -512,6 +431,9 @@ private fun PreviewAddTodo() {
             repeatCycle = RepeatCycle.D1_7_15_30_60,
             restDays = setOf(DayOfWeek.MONDAY),
             tag = null,
+            schedules = RepeatCycle.D1_7_15_30_60.intervals.map {
+                LocalDate.now().plusDays(it.toLong())
+            },
             isSaveEnabled = true,
             onSelectedDateChangeClick = {},
             onSaveClick = {},

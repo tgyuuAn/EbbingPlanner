@@ -14,4 +14,19 @@ data class AddTodoState(
     val restDays: Set<DayOfWeek> = emptySet(),
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
+
+    val schedules: List<LocalDate>
+        get() = repeatCycle.intervals.map { interval ->
+            selectedDate
+                .plusDays(interval.toLong())
+                .nextValidDate()
+        }
+
+    private fun LocalDate.nextValidDate(): LocalDate {
+        var d = this
+        while (d.dayOfWeek in restDays) {
+            d = d.plusDays(1)
+        }
+        return d
+    }
 }
