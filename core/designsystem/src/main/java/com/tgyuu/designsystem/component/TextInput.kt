@@ -151,7 +151,7 @@ fun EbbingTextInputDropDown(
 
 @Preview
 @Composable
-private fun Preview1() {
+private fun PreviewTextInput() {
     BasePreview {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             EbbingTextInputDefault(

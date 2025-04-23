@@ -48,7 +48,7 @@ fun EbbingCheck(
 
 @Preview
 @Composable
-private fun Preview1() {
+private fun PreviewCheck() {
     BasePreview {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             EbbingCheck(
