@@ -40,15 +40,17 @@ fun EbbingModalBottomSheet(
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetState = sheetState,
         sheetContent = {
-            Column(modifier = Modifier.navigationBarsPadding()) {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(28.dp)
-                        .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
-                )
+            if (sheetState.isVisible) {
+                Column(modifier = Modifier.navigationBarsPadding()) {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(28.dp)
+                            .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
+                    )
 
-                sheetContent?.invoke()
+                    sheetContent?.invoke()
+                }
             }
         },
         modifier = modifier.fillMaxWidth(),
