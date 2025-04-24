@@ -25,16 +25,19 @@ class HomeViewModel @Inject constructor(
     private val eventBus: EventBus,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
 
+    private var allSchedules: List<TodoSchedule> = emptyList()
+
     internal suspend fun loadSchedules() {
-        val schedules = todoRepository.loadSchedules()
-        val todosByDate: Map<LocalDate, List<TodoSchedule>> = schedules.groupBy { it.date }
-        val todosByInfo: Map<Int, List<TodoSchedule>> = schedules.groupBy { it.infoId }
+        allSchedules = todoRepository.loadSchedules()
+
+        val byDate = buildByDateMap(allSchedules, currentState.sortType)
+        val byInfo = allSchedules.groupBy { it.infoId }
 
         setState {
             copy(
                 isLoading = false,
-                schedulesByDateMap = todosByDate,
-                schedulesByTodoInfo = todosByInfo
+                schedulesByDateMap = byDate,
+                schedulesByTodoInfo = byInfo
             )
         }
     }
@@ -122,24 +125,13 @@ class HomeViewModel @Inject constructor(
         val delayed = schedule.copy(date = nextDate)
         todoRepository.updateTodo(delayed)
 
+        allSchedules = allSchedules.map { if (it.id == schedule.id) delayed else it }
+        val newByDate = buildByDateMap(allSchedules, currentState.sortType)
+        val newByInfo = allSchedules.groupBy { it.infoId }
         setState {
-            val updatedByInfo = schedulesByTodoInfo
-                .mapValues { (_, list) ->
-                    list.map { if (it.id == schedule.id) delayed else it }
-                }
-            val removed =
-                schedulesByDateMap[schedule.date]?.filter { it.id != schedule.id } ?: emptyList()
-            val added = (schedulesByDateMap[nextDate] ?: emptyList()) + delayed
-            val updatedByDate = schedulesByDateMap
-                .toMutableMap()
-                .apply {
-                    this[schedule.date] = removed
-                    this[nextDate] = added
-                }
-
             copy(
-                schedulesByTodoInfo = updatedByInfo,
-                schedulesByDateMap = updatedByDate
+                schedulesByDateMap    = newByDate,
+                schedulesByTodoInfo   = newByInfo
             )
         }
 
@@ -153,7 +145,29 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onUpdateSortType(sortType: SortType) {
-        setState { copy(sortType = sortType) }
+        val byDate = buildByDateMap(allSchedules, sortType)
+
+        setState {
+            copy(
+                sortType = sortType,
+                schedulesByDateMap = byDate,
+            )
+        }
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+    }
+
+    private fun buildByDateMap(
+        schedules: List<TodoSchedule>,
+        sortType: SortType
+    ): Map<LocalDate, List<TodoSchedule>> {
+        val grouped = schedules.groupBy { it.date }
+
+        return grouped.mapValues { (_, list) ->
+            when (sortType) {
+                SortType.CREATED -> list.sortedBy { it.createdAt }
+                SortType.NAME -> list.sortedBy { it.title }
+                SortType.PRIORITY -> list.sortedByDescending { it.priority }
+            }
+        }
     }
 }

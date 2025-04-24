@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -315,12 +316,25 @@ private fun TodoListCard(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier,
     ) {
-        EbbingCheck(
-            checked = todo.isDone,
-            colorValue = todo.color,
-            onCheckedChange = { onCheckedChange(todo) },
-            modifier = Modifier.size(24.dp),
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            EbbingCheck(
+                checked = todo.isDone,
+                colorValue = todo.color,
+                onCheckedChange = { onCheckedChange(todo) },
+                modifier = Modifier.size(24.dp),
+            )
+
+            Text(
+                text = todo.priority.toString(),
+                style = EbbingTheme.typography.bodySSB,
+                color = Color(todo.color),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
