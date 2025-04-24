@@ -28,3 +28,13 @@ data class ScheduleEntity(
     val isDone: Boolean = false,
     val createdAt: LocalDate = LocalDate.now(),
 )
+
+fun TodoSchedule.toEntity() = ScheduleEntity(
+    id = this.id,
+    infoId = this.infoId,
+    date = this.date,
+    memo = this.memo,
+    priority = this.priority,
+    isDone = this.isDone,
+    createdAt = this.createdAt,
+)

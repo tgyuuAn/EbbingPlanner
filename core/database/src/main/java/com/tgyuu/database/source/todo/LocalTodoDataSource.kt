@@ -12,4 +12,6 @@ interface LocalTodoDataSource {
         dates: List<LocalDate>,
         priority: Int?,
     )
+
+    suspend fun updateTodo(todoSchedule: TodoSchedule)
 }

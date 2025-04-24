@@ -19,4 +19,6 @@ interface TodoRepository {
         schedules: List<LocalDate>,
         priority: Int?,
     )
+
+    suspend fun updateTodo(todoSchedule: TodoSchedule)
 }

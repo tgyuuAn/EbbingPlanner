@@ -46,6 +46,7 @@ import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
+import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckedChange
 import java.time.LocalDate
 
 @Composable
@@ -63,6 +64,7 @@ internal fun HomeRoute(
         schedulesByDateMap = state.schedulesByDateMap,
         schedulesByTodoInfo = state.schedulesByTodoInfo,
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
+        onCheckedChange = { viewModel.onIntent(OnCheckedChange(it)) }
     )
 }
 
@@ -72,6 +74,7 @@ private fun HomeScreen(
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
     onAddTodoClick: (LocalDate) -> Unit,
+    onCheckedChange: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
@@ -109,7 +112,7 @@ private fun HomeScreen(
                 todoLists = schedulesByDateMap[selectedDate] ?: emptyList(),
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onAddTodoClick = { onAddTodoClick(selectedDate) },
-                onCheckedChange = {},
+                onCheckedChange = onCheckedChange,
                 onEditScheduleClick = {},
             )
         }
@@ -136,7 +139,7 @@ private fun EbbingTodoList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .padding(top = 24.dp, bottom = 12.dp),
+                    .padding(top = 24.dp, bottom = 24.dp),
             ) {
                 Text(
                     text = "오늘 할 일 ${todoLists.size}",
@@ -270,6 +273,7 @@ private fun Preview1() {
             schedulesByDateMap = emptyMap(),
             schedulesByTodoInfo = emptyMap(),
             onAddTodoClick = {},
+            onCheckedChange = {},
         )
     }
 }

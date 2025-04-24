@@ -32,7 +32,7 @@ interface SchedulesDao {
     suspend fun loadAllSchedulesWithInfoAndTag(): List<TodoSchedule>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateSchedules(schedules: List<ScheduleEntity>)
+    suspend fun updateSchedules(schedule: ScheduleEntity)
 
     @Delete
     suspend fun deleteSchedules(schedules: List<ScheduleEntity>)

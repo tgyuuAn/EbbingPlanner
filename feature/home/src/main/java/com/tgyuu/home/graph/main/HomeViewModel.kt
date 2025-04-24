@@ -21,14 +21,6 @@ class HomeViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
 
-    override suspend fun processIntent(intent: HomeIntent) {
-        when (intent) {
-            is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
-                NavigationEvent.To(HomeGraph.AddTodoRoute(intent.selectedDate.toFormattedString()))
-            )
-        }
-    }
-
     internal suspend fun loadSchedules() {
         val schedules = todoRepository.loadSchedules()
         val todosByDate: Map<LocalDate, List<TodoSchedule>> = schedules.groupBy { it.date }
@@ -39,6 +31,40 @@ class HomeViewModel @Inject constructor(
                 isLoading = false,
                 schedulesByDateMap = todosByDate,
                 schedulesByTodoInfo = todosByInfo
+            )
+        }
+    }
+
+    override suspend fun processIntent(intent: HomeIntent) {
+        when (intent) {
+            is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
+                NavigationEvent.To(HomeGraph.AddTodoRoute(intent.selectedDate.toFormattedString()))
+            )
+
+            is HomeIntent.OnCheckedChange -> onCheckedChange(intent.todoSchedule)
+        }
+    }
+
+    private suspend fun onCheckedChange(schedule: TodoSchedule) {
+        val newSchedule = schedule.copy(isDone = !schedule.isDone)
+        todoRepository.updateTodo(newSchedule)
+
+        setState {
+            val updatedByInfo = schedulesByTodoInfo
+                .mapValues { (infoId, list) ->
+                    if (infoId == schedule.infoId) {
+                        list.map { if (it.id == schedule.id) newSchedule else it }
+                    } else list
+                }
+
+            val updatedByDate = schedulesByDateMap
+                .mapValues { (_, list) ->
+                    list.map { if (it.id == schedule.id) newSchedule else it }
+                }
+
+            copy(
+                schedulesByTodoInfo = updatedByInfo,
+                schedulesByDateMap = updatedByDate
             )
         }
     }

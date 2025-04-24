@@ -2,6 +2,7 @@ package com.tgyuu.database.source.todo
 
 import com.tgyuu.database.dao.SchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
+import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 import javax.inject.Inject
@@ -24,4 +25,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
         dates = dates,
         priority = priority,
     )
+
+    override suspend fun updateTodo(todoSchedule: TodoSchedule) =
+        schedulesDao.updateSchedules(todoSchedule.toEntity())
 }
