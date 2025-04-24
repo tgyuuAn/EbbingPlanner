@@ -94,6 +94,7 @@ internal fun AddTodoRoute(
                     {
                         SelectedDateBottomSheet(
                             originSelectedDate = state.selectedDate,
+                            schedulesByDateMap = emptyMap(),
                             updateSelectedDate = {
                                 viewModel.onIntent(
                                     AddTodoIntent.OnSelectedDateChange(it)
@@ -197,7 +198,7 @@ private fun AddTodoScreen(
                     withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                         append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
                     }
-                    append(" 부터\n시작하는 일정을 만들어요.")
+                    append(" 부터\n시작하는 일정을 만들어요")
                 },
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,

@@ -6,6 +6,7 @@ import java.time.LocalDate
 interface LocalTodoDataSource {
     suspend fun getSchedules(): List<TodoSchedule>
     suspend fun getSchedule(id: Int): TodoSchedule
+    suspend fun getScheduleByTodoInfo(id: Int): List<TodoSchedule>
 
     suspend fun addTodo(
         title: String,

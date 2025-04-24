@@ -8,4 +8,9 @@ data class HomeState(
     val isLoading: Boolean = true,
     val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> = emptyMap(),
     val schedulesByTodoInfo: Map<Int, List<TodoSchedule>> = emptyMap(),
+//    val sortType: SortType,
 ) : UiState
+
+enum class SortType {
+
+}

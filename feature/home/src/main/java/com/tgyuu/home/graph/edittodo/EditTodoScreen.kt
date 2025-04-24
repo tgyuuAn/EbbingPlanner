@@ -76,6 +76,7 @@ internal fun EditTodoRoute(
                     {
                         SelectedDateBottomSheet(
                             originSelectedDate = state.selectedDate,
+                            schedulesByDateMap = state.schedulesByDateMap,
                             updateSelectedDate = {
                                 viewModel.onIntent(
                                     EditTodoIntent.OnSelectedDateChange(it)

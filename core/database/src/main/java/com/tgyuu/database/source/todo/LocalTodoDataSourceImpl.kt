@@ -17,6 +17,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun getSchedule(id: Int): TodoSchedule =
         schedulesDao.loadScheduleWithInfoAndTag(id)
 
+    override suspend fun getScheduleByTodoInfo(id: Int): List<TodoSchedule> =
+        schedulesDao.loadScheduleWithInfoAndTagByInfoId(id)
+
     override suspend fun addTodo(
         title: String,
         tagId: Int,

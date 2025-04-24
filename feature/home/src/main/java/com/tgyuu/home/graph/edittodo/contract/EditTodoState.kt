@@ -8,6 +8,7 @@ import com.tgyuu.home.graph.InputState
 import java.time.LocalDate
 
 data class EditTodoState(
+    val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> = emptyMap(),
     val originSchedule: TodoSchedule? = null,
     val selectedDate: LocalDate = LocalDate.now(),
     val title: String = "",

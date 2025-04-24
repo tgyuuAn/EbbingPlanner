@@ -17,6 +17,7 @@ import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -35,11 +36,18 @@ class EditTodoViewModel @Inject constructor(
 
         viewModelScope.launch {
             val originSchedule = todoRepository.loadSchedule(scheduleId)
-            val originTag = todoRepository.loadTag(originSchedule.tagId)
+
+            val originTagDeferred = async { todoRepository.loadTag(originSchedule.tagId) }
+            val sameInfoSchedulesDeferred =
+                async { todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId) }
+
+            val originTag = originTagDeferred.await()
+            val schedulesByDateMap = sameInfoSchedulesDeferred.await()
 
             setState {
                 copy(
                     originSchedule = originSchedule,
+                    schedulesByDateMap = schedulesByDateMap.groupBy { it.date },
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
                     priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
@@ -90,8 +98,21 @@ class EditTodoViewModel @Inject constructor(
     }
 
     private suspend fun onSelectedDateChange(date: LocalDate) {
-        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        if (date == currentState.selectedDate) return
 
+        val scheduledDates: Set<LocalDate> =
+            currentState.schedulesByDateMap[date]
+                ?.map { it.date }
+                ?.toSet()
+                ?: emptySet()
+
+        if (date in scheduledDates) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 해당 날짜에 일정이 있습니다."))
+            eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+            return
+        }
+
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         setState { copy(selectedDate = date) }
     }
 
@@ -130,6 +151,7 @@ class EditTodoViewModel @Inject constructor(
 
         val newSchedule = newState.originSchedule!!.copy(
             title = newState.title,
+            date = newState.selectedDate,
             tagId = newState.tag.id,
             name = newState.tag.name,
             color = newState.tag.color,

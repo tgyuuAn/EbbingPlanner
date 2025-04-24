@@ -13,11 +13,13 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
+import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 @Composable
 internal fun SelectedDateBottomSheet(
     originSelectedDate: LocalDate,
+    schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     updateSelectedDate: (LocalDate) -> Unit,
 ) {
     var newSelectedDate by remember(originSelectedDate) { mutableStateOf(originSelectedDate) }
@@ -28,7 +30,7 @@ internal fun SelectedDateBottomSheet(
     ) {
         EbbingCalendar(
             calendarState = calendarState,
-            schedulesByDateMap = emptyMap(),
+            schedulesByDateMap = schedulesByDateMap,
             onDateSelect = { newSelectedDate = it },
             modifier = Modifier
                 .fillMaxWidth()
