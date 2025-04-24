@@ -1,5 +1,6 @@
 package com.tgyuu.designsystem.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,6 +12,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -33,6 +35,36 @@ fun EbbingSolidButton(
             disabledContentColor = EbbingTheme.colors.white,
         ),
         contentPadding = PaddingValues(vertical = 14.dp, horizontal = 12.dp),
+        modifier = modifier
+            .height(52.dp)
+            .widthIn(min = 100.dp),
+    ) {
+        Text(
+            text = label,
+            style = EbbingTheme.typography.bodyMSB,
+        )
+    }
+}
+
+@Composable
+fun EbbingOutlinedButton(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = RoundedCornerShape(8.dp),
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = shape,
+        border = BorderStroke(width = 1.dp, color = EbbingTheme.colors.primaryDefault),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = EbbingTheme.colors.white,
+            contentColor = EbbingTheme.colors.primaryDefault,
+            disabledContainerColor = EbbingTheme.colors.light1,
+            disabledContentColor = EbbingTheme.colors.primaryDefault,
+        ),
         modifier = modifier
             .height(52.dp)
             .widthIn(min = 100.dp),
