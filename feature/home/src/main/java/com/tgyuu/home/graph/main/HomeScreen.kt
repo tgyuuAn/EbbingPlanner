@@ -52,6 +52,10 @@ import com.tgyuu.home.graph.main.bottomsheet.EditScheduleBottomSheet
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckedChange
+import com.tgyuu.home.graph.main.dialog.DelayDialog
+import com.tgyuu.home.graph.main.dialog.DeleteDialog
+import com.tgyuu.home.graph.main.dialog.DialogType
+import com.tgyuu.home.graph.main.dialog.DialogType.Delete
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -60,9 +64,35 @@ internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var isShowDialog by remember { mutableStateOf(false) }
+    var dialogType by remember { mutableStateOf<DialogType?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.loadSchedules()
+    }
+
+    if (isShowDialog && dialogType != null) {
+        when (val dt = dialogType) {
+            is Delete -> DeleteDialog(
+                schedule = dt.schedule,
+                onDismissRequest = { isShowDialog = false },
+                onDeleteClick = {
+                    isShowDialog = false
+                    viewModel.onIntent(HomeIntent.OnDeleteScheduleClick(dt.schedule))
+                },
+            )
+
+            is DialogType.Delay -> DelayDialog(
+                schedule = dt.schedule,
+                onDismissRequest = { isShowDialog = false },
+                onDelayClick = {
+                    isShowDialog = false
+                    viewModel.onIntent(HomeIntent.OnDelayScheduleClick(dt.schedule))
+                },
+            )
+
+            else -> Unit
+        }
     }
 
     HomeScreen(
@@ -76,8 +106,14 @@ internal fun HomeRoute(
                 EditScheduleBottomSheet(
                     selectedSchedule = it,
                     onUpdateClick = { viewModel.onIntent(HomeIntent.OnUpdateScheduleClick(it)) },
-                    onDelayClick = { viewModel.onIntent(HomeIntent.OnDelayScheduleClick(it)) },
-                    onDeleteClick = { viewModel.onIntent(HomeIntent.OnDeleteScheduleClick(it)) },
+                    onDelayClick = {
+                        dialogType = DialogType.Delay(it)
+                        isShowDialog = true
+                    },
+                    onDeleteClick = {
+                        dialogType = DialogType.Delete(it)
+                        isShowDialog = true
+                    },
                 )
             }))
         },
@@ -137,6 +173,7 @@ private fun HomeScreen(
         } else {
             EbbingTodoList(
                 listState = listState,
+                selectedDate = selectedDate,
                 todoLists = schedulesByDateMap[selectedDate] ?: emptyList(),
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onAddTodoClick = { onAddTodoClick(selectedDate) },
@@ -150,6 +187,7 @@ private fun HomeScreen(
 @Composable
 private fun EbbingTodoList(
     listState: LazyListState,
+    selectedDate: LocalDate,
     todoLists: List<TodoSchedule>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
     onCheckedChange: (TodoSchedule) -> Unit,
@@ -170,8 +208,11 @@ private fun EbbingTodoList(
                     .padding(horizontal = 20.dp)
                     .padding(top = 24.dp, bottom = 24.dp),
             ) {
+                val displayDate = if (selectedDate == LocalDate.now()) "오늘"
+                else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일"
+
                 Text(
-                    text = "오늘 할 일 ${todoLists.size}",
+                    text = "${displayDate}  할 일 ${todoLists.size}",
                     style = EbbingTheme.typography.headingMSB,
                     color = EbbingTheme.colors.black,
                 )

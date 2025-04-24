@@ -82,7 +82,7 @@ private fun CalendarDayItem(
         ) {
             val textColor by animateColorAsState(
                 when {
-                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
+                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.light1
                     calendarDate.date == selectedDate -> EbbingTheme.colors.white
                     else -> EbbingTheme.colors.dark1
                 }

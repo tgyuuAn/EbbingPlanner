@@ -44,8 +44,8 @@ internal fun EditScheduleBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(62.dp)
-                    .clickable { onUpdateClick(selectedSchedule) },
+                    .clickable { onUpdateClick(selectedSchedule) }
+                    .height(62.dp),
             )
 
             Text(
@@ -56,8 +56,8 @@ internal fun EditScheduleBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(62.dp)
-                    .clickable { onDeleteClick(selectedSchedule) },
+                    .clickable { onDeleteClick(selectedSchedule) }
+                    .height(62.dp),
             )
 
             Text(
@@ -68,8 +68,8 @@ internal fun EditScheduleBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(62.dp)
-                    .clickable { onDelayClick(selectedSchedule) },
+                    .clickable { onDelayClick(selectedSchedule) }
+                    .height(62.dp),
             )
         }
     }
