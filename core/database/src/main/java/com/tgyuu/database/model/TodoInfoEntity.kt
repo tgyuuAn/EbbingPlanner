@@ -21,5 +21,6 @@ data class TodoInfoEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
     val tagId: Int,
+    val priority: Int,
     val createdAt: LocalDate = LocalDate.now(),
 )

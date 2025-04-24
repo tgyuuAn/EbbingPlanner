@@ -7,6 +7,5 @@ import com.tgyuu.database.model.TodoTagEntity
 
 @Dao
 interface TodoInfosDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTodoInfo(tag: TodoTagEntity)
+
 }

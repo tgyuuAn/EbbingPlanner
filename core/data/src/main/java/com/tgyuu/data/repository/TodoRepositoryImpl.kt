@@ -2,6 +2,7 @@ package com.tgyuu.data.repository
 
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.source.tag.LocalTagDataSource
+import com.tgyuu.database.source.todo.LocalTodoDataSource
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
@@ -28,6 +29,12 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun addTodo(
         title: String,
         tagId: Int,
-        schedules: List<LocalDate>
-    ) = localTodoDataSource.insertTodo(title = title, tagId = tagId, schedules = schedules)
+        dates: List<LocalDate>,
+        priority: Int?,
+    ) = localTodoDataSource.addTodo(
+        title = title,
+        tagId = tagId,
+        dates = dates,
+        priority = priority,
+    )
 }

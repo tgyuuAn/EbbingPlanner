@@ -1,12 +1,16 @@
 package com.tgyuu.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
+import androidx.room.Delete
 import androidx.room.OnConflictStrategy
-import com.tgyuu.database.model.TodoTagEntity
+import androidx.room.Update
+import com.tgyuu.database.model.ScheduleEntity
 
 @Dao
 interface SchedulesDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTag(tag: TodoTagEntity)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateSchedules(schedules: List<ScheduleEntity>)
+
+    @Delete
+    suspend fun deleteSchedules(schedules: List<ScheduleEntity>)
 }

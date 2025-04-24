@@ -6,6 +6,7 @@ interface LocalTodoDataSource {
     suspend fun addTodo(
         title: String,
         tagId: Int,
-        schedules: List<LocalDate>,
+        dates: List<LocalDate>,
+        priority: Int?,
     )
 }

@@ -10,7 +10,7 @@ data class TodoTag(
 )
 
 val DefaultTodoTag = TodoTag(
-    id = 0,
+    id = 1,
     name = "미지정",
     color = 0XFFBBE1FA.toInt(),
     createdAt = LocalDate.now(),

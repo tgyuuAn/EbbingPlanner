@@ -53,13 +53,13 @@ abstract class DatabaseBindsModule {
 
     @Binds
     @Singleton
-    abstract fun bindsLocalProfileDataSource(
+    abstract fun bindsLocalTagDataSource(
         localTagDataSourceImpl: LocalTagDataSourceImpl
     ): LocalTagDataSource
 
     @Binds
     @Singleton
-    abstract fun bindsLocalProfileDataSource(
+    abstract fun bindsLocalTodoDataSource(
         localTodoDataSourceImpl: LocalTodoDataSourceImpl
     ): LocalTodoDataSource
 }

@@ -3,6 +3,7 @@ package com.tgyuu.database.di
 import com.tgyuu.database.EbbingDatabase
 import com.tgyuu.database.dao.SchedulesDao
 import com.tgyuu.database.dao.TodoTagsDao
+import com.tgyuu.database.dao.TodoWithSchedulesDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,4 +21,9 @@ internal object DaosModule {
     fun providesSchedulesDao(
         database: EbbingDatabase,
     ): SchedulesDao = database.schedulesDao()
+
+    @Provides
+    fun providesTodoWithSchedulesDao(
+        database: EbbingDatabase,
+    ): TodoWithSchedulesDao = database.todoWithSchedulesDao()
 }	

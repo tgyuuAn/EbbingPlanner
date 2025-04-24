@@ -22,10 +22,14 @@ data class AddTodoState(
     val isInputFieldIncomplete: Boolean = titleInputState == InputState.WARNING
 
     val schedules: List<LocalDate>
-        get() = repeatCycle.intervals.map { interval ->
-            selectedDate
+        get() = repeatCycle.intervals.fold(mutableListOf()) { acc, interval ->
+            val base = acc.lastOrNull() ?: selectedDate
+
+            val next = base
                 .plusDays(interval.toLong())
                 .nextValidDate()
+
+            acc.apply { add(next) }
         }
 
     private fun LocalDate.nextValidDate(): LocalDate {

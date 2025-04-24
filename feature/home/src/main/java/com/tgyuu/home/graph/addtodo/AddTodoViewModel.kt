@@ -135,6 +135,7 @@ class AddTodoViewModel @Inject constructor(
             title = currentState.title,
             schedules = currentState.schedules,
             tagId = currentState.tag.id,
+            priority = currentState.priority?.toIntOrNull(),
         )
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
         navigationBus.navigate(NavigationEvent.Up)

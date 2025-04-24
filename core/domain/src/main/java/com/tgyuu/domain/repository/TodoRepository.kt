@@ -15,5 +15,6 @@ interface TodoRepository {
         title: String,
         tagId: Int,
         schedules: List<LocalDate>,
+        priority: Int?,
     )
 }
