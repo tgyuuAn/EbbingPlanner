@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.main
 
+import androidx.lifecycle.SavedStateHandle
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.domain.model.TodoSchedule
@@ -17,7 +18,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
+    private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
+
     override suspend fun processIntent(intent: HomeIntent) {
         when (intent) {
             is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
@@ -29,10 +32,13 @@ class HomeViewModel @Inject constructor(
     internal suspend fun loadSchedules() {
         val schedules = todoRepository.loadSchedules()
         val todosByDate: Map<LocalDate, List<TodoSchedule>> = schedules.groupBy { it.date }
+        val todosByInfo: Map<Int, List<TodoSchedule>> = schedules.groupBy { it.infoId }
+
         setState {
             copy(
                 isLoading = false,
-                schedulesByDateMap = todosByDate
+                schedulesByDateMap = todosByDate,
+                schedulesByTodoInfo = todosByInfo
             )
         }
     }

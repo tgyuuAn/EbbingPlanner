@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,16 +24,17 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 @Composable
 fun EbbingCheck(
     checked: Boolean,
+    colorValue: Int,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val buttonColor by animateColorAsState(targetValue = if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.light1)
+    val buttonColor by animateColorAsState(targetValue = if (checked) Color(colorValue) else EbbingTheme.colors.white)
 
     Surface(
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(8.dp),
         border = BorderStroke(
             width = 2.dp,
-            color = buttonColor,
+            color = Color(colorValue),
         ),
         color = buttonColor,
         modifier = modifier.clickable { onCheckedChange(!checked) },
@@ -53,12 +55,14 @@ private fun PreviewCheck() {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             EbbingCheck(
                 checked = true,
+                colorValue = 0xFF0F4C75.toInt(),
                 onCheckedChange = {},
                 modifier = Modifier.size(40.dp),
             )
 
             EbbingCheck(
                 checked = false,
+                colorValue = 0xFF0F4C75.toInt(),
                 onCheckedChange = {},
                 modifier = Modifier.size(40.dp),
             )

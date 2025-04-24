@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 class CalendarState(val originSelectedDate: LocalDate = LocalDate.now()) {
     var currentDisplayDate by mutableStateOf(originSelectedDate)
-    var selectedDate by mutableStateOf<LocalDate?>(null)
+    var selectedDate by mutableStateOf<LocalDate>(originSelectedDate)
 
     fun onDateSelect(date: LocalDate) {
         selectedDate = date

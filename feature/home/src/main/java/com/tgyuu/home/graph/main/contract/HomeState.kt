@@ -6,6 +6,6 @@ import java.time.LocalDate
 
 data class HomeState(
     val isLoading: Boolean = true,
-    val selectedDate: LocalDate = LocalDate.now(),
     val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> = emptyMap(),
+    val schedulesByTodoInfo: Map<Int, List<TodoSchedule>> = emptyMap(),
 ) : UiState

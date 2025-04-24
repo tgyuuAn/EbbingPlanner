@@ -7,13 +7,13 @@ import com.tgyuu.home.graph.addag.AddTagRoute
 import com.tgyuu.home.graph.addtodo.AddTodoRoute
 import com.tgyuu.home.graph.main.HomeRoute
 import com.tgyuu.navigation.HomeBaseRoute
+import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.HomeGraph.AddTagRoute
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
-import com.tgyuu.navigation.HomeGraph.HomeRoute
 
 fun NavGraphBuilder.homeGraph() {
-    navigation<HomeBaseRoute>(startDestination = HomeRoute) {
-        composable<HomeRoute> {
+    navigation<HomeBaseRoute>(startDestination = HomeGraph.HomeRoute()) {
+        composable<HomeGraph.HomeRoute> {
             HomeRoute()
         }
 
