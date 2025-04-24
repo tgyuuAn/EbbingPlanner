@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.main.dialog
+package com.tgyuu.home.graph.main.ui.dialog
 
 import com.tgyuu.domain.model.TodoSchedule
 

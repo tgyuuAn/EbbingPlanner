@@ -8,9 +8,11 @@ data class HomeState(
     val isLoading: Boolean = true,
     val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> = emptyMap(),
     val schedulesByTodoInfo: Map<Int, List<TodoSchedule>> = emptyMap(),
-//    val sortType: SortType,
+    val sortType: SortType = SortType.CREATED,
 ) : UiState
 
-enum class SortType {
-
+enum class SortType(val displayName: String) {
+    CREATED("생성순"),
+    NAME("이름순"),
+    PRIORITY("우선순");
 }

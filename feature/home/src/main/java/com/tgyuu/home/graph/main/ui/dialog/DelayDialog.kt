@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.main.dialog
+package com.tgyuu.home.graph.main.ui.dialog
 
 import androidx.compose.runtime.Composable
 import com.tgyuu.designsystem.component.EbbingDialog

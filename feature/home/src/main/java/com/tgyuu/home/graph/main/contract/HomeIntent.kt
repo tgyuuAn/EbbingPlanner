@@ -8,6 +8,8 @@ import java.time.LocalDate
 sealed interface HomeIntent : UiIntent {
     data class OnAddTodoClick(val selectedDate: LocalDate) : HomeIntent
     data class OnCheckedChange(val schedule: TodoSchedule) : HomeIntent
+    data class OnSortTypeClick(val content: BottomSheetContent) : HomeIntent
+    data class OnUpdateSortType(val sortType: SortType) : HomeIntent
     data class OnEditScheduleClick(val content: BottomSheetContent) : HomeIntent
     data class OnUpdateScheduleClick(val schedule: TodoSchedule) : HomeIntent
     data class OnDeleteScheduleClick(val schedule: TodoSchedule) : HomeIntent

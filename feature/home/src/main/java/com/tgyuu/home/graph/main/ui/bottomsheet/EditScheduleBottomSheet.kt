@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.main.bottomsheet
+package com.tgyuu.home.graph.main.ui.bottomsheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

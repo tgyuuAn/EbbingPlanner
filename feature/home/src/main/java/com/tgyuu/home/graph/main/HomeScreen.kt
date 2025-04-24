@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,14 +49,17 @@ import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.home.graph.main.bottomsheet.EditScheduleBottomSheet
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckedChange
-import com.tgyuu.home.graph.main.dialog.DelayDialog
-import com.tgyuu.home.graph.main.dialog.DeleteDialog
-import com.tgyuu.home.graph.main.dialog.DialogType
-import com.tgyuu.home.graph.main.dialog.DialogType.Delete
+import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
+import com.tgyuu.home.graph.main.contract.SortType
+import com.tgyuu.home.graph.main.ui.bottomsheet.EditScheduleBottomSheet
+import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
+import com.tgyuu.home.graph.main.ui.dialog.DelayDialog
+import com.tgyuu.home.graph.main.ui.dialog.DeleteDialog
+import com.tgyuu.home.graph.main.ui.dialog.DialogType
+import com.tgyuu.home.graph.main.ui.dialog.DialogType.Delete
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -99,10 +103,19 @@ internal fun HomeRoute(
     HomeScreen(
         isLoading = state.isLoading,
         workedDate = workedDate,
+        sortType = state.sortType,
         schedulesByDateMap = state.schedulesByDateMap,
         schedulesByTodoInfo = state.schedulesByTodoInfo,
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
         onCheckedChange = { viewModel.onIntent(OnCheckedChange(it)) },
+        onSortTypeClick = {
+            viewModel.onIntent(OnSortTypeClick({
+                SortTypeBottomSheet(
+                    originSortType = state.sortType,
+                    onUpdateClick = { viewModel.onIntent(HomeIntent.OnUpdateSortType(it)) },
+                )
+            }))
+        },
         onEditScheduleClick = {
             viewModel.onIntent(HomeIntent.OnEditScheduleClick({
                 EditScheduleBottomSheet(
@@ -113,7 +126,7 @@ internal fun HomeRoute(
                         isShowDialog = true
                     },
                     onDeleteClick = {
-                        dialogType = DialogType.Delete(it)
+                        dialogType = Delete(it)
                         isShowDialog = true
                     },
                 )
@@ -126,10 +139,12 @@ internal fun HomeRoute(
 private fun HomeScreen(
     isLoading: Boolean,
     workedDate: LocalDate,
+    sortType: SortType,
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
     onAddTodoClick: (LocalDate) -> Unit,
     onCheckedChange: (TodoSchedule) -> Unit,
+    onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -180,11 +195,13 @@ private fun HomeScreen(
         } else {
             EbbingTodoList(
                 listState = listState,
+                sortType = sortType,
                 selectedDate = selectedDate,
                 todoLists = schedulesByDateMap[selectedDate] ?: emptyList(),
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onAddTodoClick = { onAddTodoClick(selectedDate) },
                 onCheckedChange = onCheckedChange,
+                onSortTypeClick = onSortTypeClick,
                 onEditScheduleClick = onEditScheduleClick,
             )
         }
@@ -194,21 +211,22 @@ private fun HomeScreen(
 @Composable
 private fun EbbingTodoList(
     listState: LazyListState,
+    sortType: SortType,
     selectedDate: LocalDate,
     todoLists: List<TodoSchedule>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
     onCheckedChange: (TodoSchedule) -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
     onAddTodoClick: () -> Unit,
+    onSortTypeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Crossfade(
-        targetState = todoLists,
+        targetState = sortType to todoLists,
         animationSpec = tween(durationMillis = 300)
-    ) { todoLists ->
+    ) { (sortType, todoLists) ->
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -220,9 +238,31 @@ private fun EbbingTodoList(
 
                 Text(
                     text = "${displayDate}  할 일 ${todoLists.size}",
-                    style = EbbingTheme.typography.headingMSB,
+                    style = EbbingTheme.typography.bodyMSB,
                     color = EbbingTheme.colors.black,
+                    modifier = Modifier.weight(1f),
                 )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .clickable { onSortTypeClick() },
+                ) {
+                    Text(
+                        text = sortType.displayName,
+                        style = EbbingTheme.typography.bodyMSB,
+                        color = EbbingTheme.colors.black,
+                    )
+
+                    Image(
+                        painter = painterResource(R.drawable.ic_textinput_dropdown),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
 
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -351,11 +391,13 @@ private fun Preview1() {
         HomeScreen(
             isLoading = true,
             workedDate = LocalDate.now(),
+            sortType = SortType.PRIORITY,
             schedulesByDateMap = emptyMap(),
             schedulesByTodoInfo = emptyMap(),
             onAddTodoClick = {},
             onCheckedChange = {},
             onEditScheduleClick = {},
+            onSortTypeClick = {},
         )
     }
 }

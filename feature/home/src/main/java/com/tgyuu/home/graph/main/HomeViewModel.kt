@@ -1,16 +1,15 @@
 package com.tgyuu.home.graph.main
 
-import androidx.lifecycle.SavedStateHandle
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
+import com.tgyuu.home.graph.main.contract.SortType
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.EditTodoRoute
 import com.tgyuu.navigation.NavigationBus
@@ -54,6 +53,8 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
             is HomeIntent.OnDeleteScheduleClick -> onDeleteSchedule(intent.schedule)
             is HomeIntent.OnUpdateScheduleClick -> onUpdateScheduleClick(intent.schedule.id)
+            is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
         }
     }
 
@@ -149,5 +150,10 @@ class HomeViewModel @Inject constructor(
     private suspend fun onUpdateScheduleClick(scheduleId: Int) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         navigationBus.navigate(To(EditTodoRoute(scheduleId)))
+    }
+
+    private suspend fun onUpdateSortType(sortType: SortType) {
+        setState { copy(sortType = sortType) }
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 }
