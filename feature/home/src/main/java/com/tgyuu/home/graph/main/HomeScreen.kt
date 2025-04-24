@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,26 +32,39 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.designsystem.component.BasePreview
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
-import com.tgyuu.home.graph.main.model.TodoRO
 import java.time.LocalDate
 
 @Composable
 internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    HomeScreen(
-        onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
-    )
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadSchedules()
+    }
+
+    if (state.isLoading) {
+
+    } else {
+        HomeScreen(
+            schedulesByDateMap = state.schedulesByDateMap,
+            onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
+        )
+    }
 }
 
 @Composable
 private fun HomeScreen(
+    schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     onAddTodoClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -74,7 +88,7 @@ private fun HomeScreen(
         )
 
         EbbingTodoList(
-            todoLists = mutableListOf(),
+            todoLists = schedulesByDateMap[selectedDate] ?: emptyList(),
             onAddTodoClick = { onAddTodoClick(selectedDate) },
             onCheckedChange = {},
         )
@@ -83,8 +97,8 @@ private fun HomeScreen(
 
 @Composable
 private fun EbbingTodoList(
-    todoLists: List<TodoRO>,
-    onCheckedChange: (TodoRO) -> Unit,
+    todoLists: List<TodoSchedule>,
+    onCheckedChange: (TodoSchedule) -> Unit,
     onAddTodoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -145,8 +159,8 @@ private fun EbbingTodoList(
 
 @Composable
 private fun TodoListCard(
-    todo: TodoRO,
-    onCheckedChange: (TodoRO) -> Unit,
+    todo: TodoSchedule,
+    onCheckedChange: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var checked by remember { mutableStateOf(false) }
@@ -180,6 +194,7 @@ private fun TodoListCard(
 private fun Preview1() {
     BasePreview {
         HomeScreen(
+            schedulesByDateMap = emptyMap(),
             onAddTodoClick = {},
         )
     }

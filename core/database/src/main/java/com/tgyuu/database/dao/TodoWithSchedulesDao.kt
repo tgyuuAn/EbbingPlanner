@@ -32,7 +32,14 @@ interface TodoWithSchedulesDao {
         ).toInt()
 
         insertSchedules(
-            dates.map { date -> ScheduleEntity(infoId = infoId, date = date, memo = "") }
+            dates.map { date ->
+                ScheduleEntity(
+                    infoId = infoId,
+                    date = date,
+                    memo = "",
+                    priority = priority ?: 0,
+                )
+            }
         )
     }
 }

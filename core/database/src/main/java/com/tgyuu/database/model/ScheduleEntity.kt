@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 @Entity(
@@ -23,7 +24,7 @@ data class ScheduleEntity(
     val infoId: Int,
     val date: LocalDate,
     val memo: String,
-    val priority: Int = 0,
+    val priority: Int,
     val isDone: Boolean = false,
     val createdAt: LocalDate = LocalDate.now(),
 )

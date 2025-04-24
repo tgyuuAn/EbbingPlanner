@@ -4,6 +4,7 @@ import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
 import com.tgyuu.domain.model.DefaultTodoTag
+import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import java.time.LocalDate
@@ -13,6 +14,8 @@ class TodoRepositoryImpl @Inject constructor(
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
 ) : TodoRepository {
+    override suspend fun loadSchedules(): List<TodoSchedule> = localTodoDataSource.getSchedules()
+
     override suspend fun loadTagList(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
 
