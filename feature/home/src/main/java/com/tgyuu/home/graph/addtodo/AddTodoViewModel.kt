@@ -11,6 +11,7 @@ import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.home.graph.InputState.Companion.getStringInputState
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.navigation.HomeGraph
@@ -32,7 +33,7 @@ class AddTodoViewModel @Inject constructor(
 
     init {
         val dateStr = savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("selectedDate가 없습니다.")
+            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
 
         setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
     }
@@ -119,6 +120,23 @@ class AddTodoViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(HomeGraph.AddTagRoute))
     }
 
-    private fun onSaveClick() {
+    private suspend fun onSaveClick() {
+        val newState = currentState.copy(
+            titleInputState = getStringInputState(currentState.title.trim())
+        )
+
+        if (newState.isInputFieldIncomplete) {
+            setState { newState }
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            return
+        }
+
+        todoRepository.addTodo(
+            title = currentState.title,
+            schedules = currentState.schedules,
+            tagId = currentState.tag.id,
+        )
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
+        navigationBus.navigate(NavigationEvent.Up)
     }
 }

@@ -7,7 +7,6 @@ data class TodoInfo(
     val title: String,
     val description: String,
     val tagId: Int,
-    val startDate: LocalDate,
     val createdAt: LocalDate,
     val updatedAt: LocalDate,
 )

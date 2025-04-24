@@ -1,0 +1,25 @@
+package com.tgyuu.database.model
+
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import java.time.LocalDate
+
+@Entity(
+    tableName = "todo_info",
+    foreignKeys = [
+        ForeignKey(
+            entity = TodoTagEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["tagId"],
+        )
+    ],
+    indices = [Index(value = ["tagId"])]
+)
+data class TodoInfoEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val title: String,
+    val tagId: Int,
+    val createdAt: LocalDate = LocalDate.now(),
+)

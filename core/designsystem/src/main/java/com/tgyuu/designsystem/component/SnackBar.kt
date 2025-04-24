@@ -33,7 +33,7 @@ fun EbbingSnackBar(
             .padding(bottom = 60.dp, start = 20.dp, end = 20.dp)
             .wrapContentSize()
             .clip(RoundedCornerShape(12.dp))
-            .background(EbbingTheme.colors.dark2)
+            .background(EbbingTheme.colors.dark3)
             .padding(horizontal = 20.dp, vertical = 8.dp),
     ) {
         Text(

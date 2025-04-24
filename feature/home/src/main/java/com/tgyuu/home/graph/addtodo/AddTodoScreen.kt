@@ -58,8 +58,8 @@ import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.InputState
+import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
@@ -79,6 +79,7 @@ internal fun AddTodoRoute(
     AddTodoScreen(
         selectedDate = state.selectedDate,
         title = state.title,
+        titleInputState = state.titleInputState,
         priority = state.priority,
         repeatCycle = state.repeatCycle,
         restDays = state.restDays,
@@ -141,6 +142,7 @@ internal fun AddTodoRoute(
 private fun AddTodoScreen(
     selectedDate: LocalDate,
     title: String,
+    titleInputState: InputState,
     priority: String?,
     repeatCycle: RepeatCycle,
     restDays: Set<DayOfWeek>,
@@ -204,7 +206,7 @@ private fun AddTodoScreen(
             TitleContent(
                 scrollState = scrollState,
                 title = title,
-                titleInputState = InputState.DEFAULT,
+                titleInputState = titleInputState,
                 onTitleChange = onTitleChange,
             )
 
@@ -478,6 +480,7 @@ private fun PreviewAddTodo() {
         AddTodoScreen(
             selectedDate = LocalDate.now(),
             title = "토익",
+            titleInputState = InputState.DEFAULT,
             priority = "3",
             repeatCycle = RepeatCycle.D1_7_15_30_60,
             restDays = setOf(DayOfWeek.MONDAY),

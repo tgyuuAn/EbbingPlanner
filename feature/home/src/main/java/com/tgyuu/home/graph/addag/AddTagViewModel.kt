@@ -48,7 +48,7 @@ class AddTagViewModel @Inject constructor(
 
         if (newState.isInputFieldIncomplete) {
             setState { newState }
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }
 

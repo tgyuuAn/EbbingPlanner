@@ -1,25 +1,33 @@
 package com.tgyuu.data.repository
 
-import com.tgyuu.database.model.tag.TodoTagEntity
+import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
-    private val localTokenDataSource: LocalTagDataSource,
+    private val localTagDataSource: LocalTagDataSource,
+    private val localTodoDataSource: LocalTodoDataSource,
 ) : TodoRepository {
-    override suspend fun loadTagList(): List<TodoTag> = localTokenDataSource.getTags()
+    override suspend fun loadTagList(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
 
-    override suspend fun addDefaultTag() = localTokenDataSource.insertTag(DefaultTodoTag)
+    override suspend fun addDefaultTag() = localTagDataSource.insertTag(DefaultTodoTag)
 
     override suspend fun addTag(
         name: String,
         color: Int,
-    ) = localTokenDataSource.insertTag(
+    ) = localTagDataSource.insertTag(
         name = name,
         color = color,
     )
+
+    override suspend fun addTodo(
+        title: String,
+        tagId: Int,
+        schedules: List<LocalDate>
+    ) = localTodoDataSource.insertTodo(title = title, tagId = tagId, schedules = schedules)
 }

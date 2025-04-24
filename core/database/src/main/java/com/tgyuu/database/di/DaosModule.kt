@@ -1,6 +1,7 @@
 package com.tgyuu.database.di
 
 import com.tgyuu.database.EbbingDatabase
+import com.tgyuu.database.dao.SchedulesDao
 import com.tgyuu.database.dao.TodoTagsDao
 import dagger.Module
 import dagger.Provides
@@ -14,4 +15,9 @@ internal object DaosModule {
     fun providesTodoTagsDao(
         database: EbbingDatabase,
     ): TodoTagsDao = database.todoTagsDao()
+
+    @Provides
+    fun providesSchedulesDao(
+        database: EbbingDatabase,
+    ): SchedulesDao = database.schedulesDao()
 }	

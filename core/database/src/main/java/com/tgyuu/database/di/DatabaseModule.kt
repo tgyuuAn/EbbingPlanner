@@ -2,9 +2,13 @@ package com.tgyuu.database.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.tgyuu.database.EbbingDatabase
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSourceImpl
+import com.tgyuu.database.source.todo.LocalTodoDataSource
+import com.tgyuu.database.source.todo.LocalTodoDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -24,7 +28,23 @@ internal object DatabaseProvidesModule {
         context,
         EbbingDatabase::class.java,
         EbbingDatabase.NAME,
-    ).build()
+    ).addCallback(object : RoomDatabase.Callback() {
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            super.onCreate(db)
+            // todo_tag 삭제 후 todo_info.tagId 를 0으로!
+            db.execSQL(
+                """
+                  CREATE TRIGGER reset_tag_id_after_delete
+                  AFTER DELETE ON todo_tag
+                  BEGIN
+                    UPDATE todo_info
+                    SET tagId = 0
+                    WHERE tagId = OLD.id;
+                  END;
+               """.trimIndent()
+            )
+        }
+    }).build()
 }
 
 @Module
@@ -36,4 +56,10 @@ abstract class DatabaseBindsModule {
     abstract fun bindsLocalProfileDataSource(
         localTagDataSourceImpl: LocalTagDataSourceImpl
     ): LocalTagDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindsLocalProfileDataSource(
+        localTodoDataSourceImpl: LocalTodoDataSourceImpl
+    ): LocalTodoDataSource
 }

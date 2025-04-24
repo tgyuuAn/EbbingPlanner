@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.tgyuu.database.model.tag.TodoTagEntity
+import com.tgyuu.database.model.TodoTagEntity
 
 @Dao
 interface TodoTagsDao {

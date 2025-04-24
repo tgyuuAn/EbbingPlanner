@@ -1,8 +1,8 @@
 package com.tgyuu.database.source.tag
 
 import com.tgyuu.database.dao.TodoTagsDao
-import com.tgyuu.database.model.tag.TodoTagEntity
-import com.tgyuu.database.model.tag.toEntity
+import com.tgyuu.database.model.TodoTagEntity
+import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoTag
 import javax.inject.Inject
 
