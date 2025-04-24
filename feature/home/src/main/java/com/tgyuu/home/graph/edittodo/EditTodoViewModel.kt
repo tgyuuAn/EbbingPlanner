@@ -7,6 +7,7 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.toFormattedString
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.InputState.Companion.getStringInputState
@@ -55,7 +56,13 @@ class EditTodoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditTodoIntent) {
         when (intent) {
-            EditTodoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            EditTodoIntent.OnBackClick -> navigationBus.navigate(
+                NavigationEvent.To(
+                    route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),
+                    popUpTo = true,
+                )
+            )
+
             is EditTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
@@ -122,6 +129,12 @@ class EditTodoViewModel @Inject constructor(
 
         todoRepository.updateTodo(newSchedule)
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정을 업데이트 하였습니다"))
-        navigationBus.navigate(NavigationEvent.Up)
+
+        navigationBus.navigate(
+            NavigationEvent.To(
+                route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),
+                popUpTo = true,
+            )
+        )
     }
 }

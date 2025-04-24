@@ -9,7 +9,7 @@ data object HomeBaseRoute : Route
 
 sealed class HomeGraph : Route {
     @Serializable
-    data object HomeRoute : HomeGraph()
+    data class HomeRoute(val workedDate: String? = null) : HomeGraph()
 
     @Serializable
     data class AddTodoRoute(val selectedDate: String) : HomeGraph()

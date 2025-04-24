@@ -22,10 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.tgyuu.common.ui.NoRippleInteractionSource
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.DASHBOARD
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.HOME
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.SETTING
-import com.tgyuu.navigation.DashboardRoute
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingRoute
@@ -94,8 +92,8 @@ internal fun AppBottomBar(
                     interactionSource = remember { NoRippleInteractionSource() },
                     onClick = {
                         when (topLevelRoute) {
-                            HOME -> navigateToBottomBarDestination(HomeRoute)
-                            DASHBOARD -> navigateToBottomBarDestination(DashboardRoute)
+                            HOME -> navigateToBottomBarDestination(HomeRoute())
+//                            DASHBOARD -> navigateToBottomBarDestination(DashboardRoute)
                             SETTING -> navigateToBottomBarDestination(SettingRoute)
                         }
                     }

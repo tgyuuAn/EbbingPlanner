@@ -61,6 +61,7 @@ import java.time.LocalDate
 
 @Composable
 internal fun HomeRoute(
+    workedDate: LocalDate,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -97,6 +98,7 @@ internal fun HomeRoute(
 
     HomeScreen(
         isLoading = state.isLoading,
+        workedDate = workedDate,
         schedulesByDateMap = state.schedulesByDateMap,
         schedulesByTodoInfo = state.schedulesByTodoInfo,
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
@@ -123,6 +125,7 @@ internal fun HomeRoute(
 @Composable
 private fun HomeScreen(
     isLoading: Boolean,
+    workedDate: LocalDate,
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
     onAddTodoClick: (LocalDate) -> Unit,
@@ -132,8 +135,12 @@ private fun HomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
+
+    LaunchedEffect(workedDate) {
+        calendarState.onDateSelect(workedDate)
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -343,6 +350,7 @@ private fun Preview1() {
     BasePreview {
         HomeScreen(
             isLoading = true,
+            workedDate = LocalDate.now(),
             schedulesByDateMap = emptyMap(),
             schedulesByTodoInfo = emptyMap(),
             onAddTodoClick = {},
