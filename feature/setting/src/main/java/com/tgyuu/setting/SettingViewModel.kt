@@ -10,6 +10,15 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor() :
     BaseViewModel<SettingState, SettingIntent>(SettingState()) {
     override suspend fun processIntent(intent: SettingIntent) {
-        TODO("Not yet implemented")
+        when (intent) {
+            SettingIntent.OnInquiryClick -> {}
+            SettingIntent.OnNoticeClick -> {}
+            SettingIntent.OnPrivacyAndPolicyClick -> {}
+            SettingIntent.OnTermsOfUseClick -> {}
+        }
+    }
+
+    internal fun setAppVersion(version: String) = setState {
+        copy(version = version)
     }
 }

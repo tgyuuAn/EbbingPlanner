@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setting_guidance">안내</string>
+    <string name="setting_announcement">공지사항</string>
+    <string name="setting_privacy_policy">개인정보처리방침</string>
+    <string name="setting_term">이용약관</string>
+    <string name="setting_version">버전 정보 %1$s</string>
+    <string name="setting_inquiry">문의</string>
+    <string name="setting_contact_us">문의하기</string>
+</resources>
