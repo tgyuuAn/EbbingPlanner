@@ -9,8 +9,11 @@ import javax.inject.Inject
 class LocalTagDataSourceImpl @Inject constructor(
     private val todoTagsDao: TodoTagsDao,
 ) : LocalTagDataSource {
-    override suspend fun insertTags(vararg tags: TodoTag) =
-        todoTagsDao.insertTags(tags.map(TodoTag::toEntity))
+    override suspend fun insertTag(todoTag: TodoTag) = todoTagsDao.insertTag(todoTag.toEntity())
+    override suspend fun insertTag(
+        name: String,
+        color: Int,
+    ) = todoTagsDao.insertTag(TodoTagEntity(name = name, color = color))
 
     override suspend fun deleteTags(vararg tags: TodoTag) =
         todoTagsDao.deleteTags(tags.map(TodoTag::toEntity))

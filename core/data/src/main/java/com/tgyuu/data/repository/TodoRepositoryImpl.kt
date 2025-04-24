@@ -2,6 +2,7 @@ package com.tgyuu.data.repository
 
 import com.tgyuu.database.model.tag.TodoTagEntity
 import com.tgyuu.database.source.tag.LocalTagDataSource
+import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import javax.inject.Inject
@@ -12,5 +13,13 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTagList(): List<TodoTag> = localTokenDataSource.getTags()
         .map(TodoTagEntity::toDomain)
 
-    override suspend fun addTag(todoTag: TodoTag) = localTokenDataSource.insertTags(todoTag)
+    override suspend fun addDefaultTag() = localTokenDataSource.insertTag(DefaultTodoTag)
+
+    override suspend fun addTag(
+        name: String,
+        color: Int,
+    ) = localTokenDataSource.insertTag(
+        name = name,
+        color = color,
+    )
 }

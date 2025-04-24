@@ -85,7 +85,9 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(priority = priority) }
     }
 
-    private fun onTagChange(todoTag: TodoTag) {
+    private suspend fun onTagChange(todoTag: TodoTag) {
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+
         setState { copy(tag = todoTag) }
     }
 
@@ -96,7 +98,7 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private suspend fun onRestDayChange(restDay: DayOfWeek) {
-        val origin = state.value.restDays
+        val origin = currentState.restDays
 
         val newRestDays = if (origin.contains(restDay)) {
             origin - restDay
@@ -118,6 +120,5 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onSaveClick() {
-        //Todo
     }
 }

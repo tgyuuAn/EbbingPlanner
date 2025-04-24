@@ -1,21 +1,28 @@
 package com.tgyuu.home.graph.addag
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,13 +32,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.common.ui.EbbingVisibleAnimation
+import com.tgyuu.common.ui.clickable
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.BasePreview
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.home.graph.addtodo.ui.InputState
+import com.tgyuu.home.graph.InputState
+import com.tgyuu.home.graph.addag.contract.AddTagIntent
+import com.tgyuu.home.graph.addag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
 internal fun AddTagRoute(
@@ -40,17 +50,36 @@ internal fun AddTagRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AddTagScreen(
-        isSaveEnabled = true,
-        onBackClick = {},
-        onSaveClick = {},
+        isSaveEnabled = state.isSaveEnabled,
+        name = state.name,
+        nameInputState = state.nameInputState,
+        colorValue = state.colorValue,
+        onBackClick = { viewModel.onIntent(AddTagIntent.OnBackClick) },
+        onSaveClick = { viewModel.onIntent(AddTagIntent.OnSaveClick) },
+        onNameChange = { viewModel.onIntent(AddTagIntent.OnNameChange(it)) },
+        onColorDropDownClick = {
+            viewModel.onIntent(
+                AddTagIntent.OnColorDropDownClick({
+                    ColorBottomSheet(
+                        originColor = state.colorValue,
+                        updateColor = { viewModel.onIntent(AddTagIntent.OnColorChange(it)) }
+                    )
+                })
+            )
+        },
     )
 }
 
 @Composable
 private fun AddTagScreen(
     isSaveEnabled: Boolean,
+    name: String,
+    nameInputState: InputState,
+    colorValue: Int,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onColorDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -82,18 +111,21 @@ private fun AddTagScreen(
                 .imePadding(),
         ) {
             Text(
-                text = "새로운 태그를 추가해요.",
+                text = "새로운 태그를 추가해요",
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
             )
 
             NameContent(
-                name = "",
-                nameInputState = InputState.DEFAULT,
-                onNameChange = {},
+                name = name,
+                nameInputState = nameInputState,
+                onNameChange = onNameChange,
             )
 
-            PreviewContent()
+            ColorContent(
+                colorValue = colorValue,
+                onColorDropDownClick = onColorDropDownClick,
+            )
         }
     }
 }
@@ -155,21 +187,32 @@ private fun NameContent(
 
 @Composable
 private fun ColorContent(
-    color: Int,
-    onColorChange: (Int) -> Unit,
+    colorValue: Int,
+    onColorDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = "태그 색상",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-}
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+            .clickable { onColorDropDownClick() },
+    ) {
+        Text(
+            text = "색상",
+            style = EbbingTheme.typography.headingSM,
+            color = EbbingTheme.colors.dark1,
+        )
 
-@Composable
-private fun PreviewContent() {
-
+        Spacer(
+            modifier = Modifier
+                .padding(end = 5.dp)
+                .size(25.dp)
+                .clip(CircleShape)
+                .background(Color(colorValue))
+        )
+    }
 }
 
 @Preview
@@ -178,8 +221,13 @@ private fun PreviewAddTag() {
     BasePreview {
         AddTagScreen(
             isSaveEnabled = true,
+            name = "",
+            nameInputState = InputState.WARNING,
+            colorValue = 0xFFFF6961.toInt(),
             onSaveClick = {},
             onBackClick = {},
+            onNameChange = {},
+            onColorDropDownClick = {}
         )
     }
 }

@@ -8,9 +8,7 @@ import com.tgyuu.database.dao.TodoTagsDao
 import com.tgyuu.database.model.tag.TodoTagEntity
 
 @Database(
-    entities = [
-        TodoTagEntity::class,
-    ],
+    entities = [TodoTagEntity::class, ],
     version = 1,
 )
 @TypeConverters(EbbingConverters::class)

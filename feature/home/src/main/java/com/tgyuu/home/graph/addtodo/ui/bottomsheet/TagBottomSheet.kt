@@ -65,7 +65,7 @@ internal fun TagBottomSheet(
                 EbbingBottomSheetListItemDefault(
                     label = tag.name,
                     color = tag.color,
-                    checked = tag == newTag,
+                    checked = tag.id == newTag.id,
                     onChecked = { newTag = tag },
                     modifier = Modifier.fillMaxWidth()
                 )

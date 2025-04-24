@@ -7,12 +7,12 @@ import java.time.LocalDate
 
 @Entity(tableName = "todo_tag")
 data class TodoTagEntity(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val color: Int,
-    val startDate: LocalDate,
-    val createdAt: LocalDate,
-    val updatedAt: LocalDate,
+    val startDate: LocalDate = LocalDate.now(),
+    val createdAt: LocalDate = LocalDate.now(),
+    val updatedAt: LocalDate = LocalDate.now(),
 ) {
     fun toDomain() = TodoTag(
         id = id,
