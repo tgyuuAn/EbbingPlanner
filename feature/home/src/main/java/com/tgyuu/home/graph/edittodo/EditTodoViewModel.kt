@@ -7,13 +7,9 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toLocalDateOrThrow
-import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.InputState.Companion.getStringInputState
-import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.navigation.HomeGraph
@@ -21,7 +17,6 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -34,10 +29,23 @@ class EditTodoViewModel @Inject constructor(
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
     init {
-        val dateStr = savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
+        val scheduleId = savedStateHandle.get<Int>("scheduleId")
+            ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
-        setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
+        viewModelScope.launch {
+            val originSchedule = todoRepository.loadSchedule(scheduleId)
+            val originTag = todoRepository.loadTag(originSchedule.tagId)
+
+            setState {
+                copy(
+                    originSchedule = originSchedule,
+                    selectedDate = originSchedule.date,
+                    title = originSchedule.title,
+                    priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
+                    tag = originTag,
+                )
+            }
+        }
     }
 
     internal fun loadTags() = viewModelScope.launch {
@@ -55,19 +63,13 @@ class EditTodoViewModel @Inject constructor(
             is EditTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is EditTodoIntent.OnTitleChange -> onTitleChange(intent.title)
             is EditTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
-            is EditTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
-                ShowBottomSheet(intent.content)
-            )
-
-            is EditTodoIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            is EditTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
             is EditTodoIntent.OnTagDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
             is EditTodoIntent.OnTagChange -> onTagChange(intent.tag)
-            AddTodoIntent.OnAddTagClick -> onAddTagClick()
-            AddTodoIntent.OnSaveClick -> onSaveClick()
+            EditTodoIntent.OnAddTagClick -> onAddTagClick()
+            EditTodoIntent.OnSaveClick -> onSaveClick()
         }
     }
 
@@ -94,29 +96,6 @@ class EditTodoViewModel @Inject constructor(
         setState { copy(tag = todoTag) }
     }
 
-    private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycle) {
-        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-
-        setState { copy(repeatCycle = repeatCycle) }
-    }
-
-    private suspend fun onRestDayChange(restDay: DayOfWeek) {
-        val origin = currentState.restDays
-
-        val newRestDays = if (origin.contains(restDay)) {
-            origin - restDay
-        } else {
-            origin + restDay
-        }
-
-        if (newRestDays.size == DayOfWeek.entries.size) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 요일을 휴식할 수는 없습니다"))
-            return
-        }
-
-        setState { copy(restDays = newRestDays) }
-    }
-
     private suspend fun onAddTagClick() {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         navigationBus.navigate(NavigationEvent.To(HomeGraph.AddTagRoute))
@@ -133,17 +112,16 @@ class EditTodoViewModel @Inject constructor(
             return
         }
 
-        todoRepository.addTodo(
-            title = currentState.title,
-            schedules = currentState.schedules,
-            tagId = currentState.tag.id,
-            priority = currentState.priority?.toIntOrNull(),
+        val newSchedule = newState.originSchedule!!.copy(
+            title = newState.title,
+            tagId = newState.tag.id,
+            name = newState.tag.name,
+            color = newState.tag.color,
+            priority = newState.priority?.toIntOrNull() ?: 0,
         )
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
-        navigationBus.navigate(
-            NavigationEvent.TopLevelTo(
-                HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString())
-            )
-        )
+
+        todoRepository.updateTodo(newSchedule)
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정을 업데이트 하였습니다"))
+        navigationBus.navigate(NavigationEvent.Up)
     }
 }

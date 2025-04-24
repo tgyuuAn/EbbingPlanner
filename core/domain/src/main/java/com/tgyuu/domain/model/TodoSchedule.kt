@@ -14,4 +14,5 @@ data class TodoSchedule(
     val priority: Int,
     val isDone: Boolean,
     val createdAt: LocalDate,
+    val infoCreatedAt: LocalDate,
 )

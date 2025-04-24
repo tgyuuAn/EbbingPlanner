@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 @Entity(
@@ -23,4 +24,12 @@ data class TodoInfoEntity(
     val tagId: Int,
     val priority: Int,
     val createdAt: LocalDate = LocalDate.now(),
+)
+
+fun TodoSchedule.toInfoEntity() = TodoInfoEntity(
+    id = this.infoId,
+    title = this.title,
+    tagId = this.tagId,
+    priority = this.priority,
+    createdAt = this.infoCreatedAt,
 )

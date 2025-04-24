@@ -2,6 +2,7 @@ package com.tgyuu.home.graph.main.bottomsheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +28,13 @@ internal fun EditScheduleBottomSheet(
     ) {
         EbbingBottomSheetHeader(
             title = "편집",
-            subTitle = "${selectedSchedule.title}을 어떻게 할까요?"
+            subTitle = "${selectedSchedule.title} 일정을 어떻게 할까요?"
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 22.dp),
+                .padding(top = 20.dp, bottom = 22.dp),
         ) {
             Text(
                 text = "수정하기",
@@ -42,7 +43,8 @@ internal fun EditScheduleBottomSheet(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
+                    .height(62.dp)
                     .clickable { onUpdateClick(selectedSchedule) },
             )
 
@@ -53,7 +55,8 @@ internal fun EditScheduleBottomSheet(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
+                    .height(62.dp)
                     .clickable { onDeleteClick(selectedSchedule) },
             )
 
@@ -64,7 +67,8 @@ internal fun EditScheduleBottomSheet(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
+                    .height(62.dp)
                     .clickable { onDelayClick(selectedSchedule) },
             )
         }

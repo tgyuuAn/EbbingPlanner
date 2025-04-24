@@ -94,7 +94,7 @@ internal fun AppBottomBar(
                     interactionSource = remember { NoRippleInteractionSource() },
                     onClick = {
                         when (topLevelRoute) {
-                            HOME -> navigateToBottomBarDestination(HomeRoute())
+                            HOME -> navigateToBottomBarDestination(HomeRoute)
                             DASHBOARD -> navigateToBottomBarDestination(DashboardRoute)
                             SETTING -> navigateToBottomBarDestination(SettingRoute)
                         }

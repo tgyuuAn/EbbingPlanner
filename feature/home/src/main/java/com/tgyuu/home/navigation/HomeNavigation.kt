@@ -11,10 +11,11 @@ import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.HomeGraph.AddTagRoute
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
+import com.tgyuu.navigation.HomeGraph.HomeRoute
 
 fun NavGraphBuilder.homeGraph() {
-    navigation<HomeBaseRoute>(startDestination = HomeGraph.HomeRoute()) {
-        composable<HomeGraph.HomeRoute> {
+    navigation<HomeBaseRoute>(startDestination = HomeRoute) {
+        composable<HomeRoute> {
             HomeRoute()
         }
 

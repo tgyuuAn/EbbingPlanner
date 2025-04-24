@@ -7,7 +7,6 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
@@ -139,10 +138,6 @@ class AddTodoViewModel @Inject constructor(
             priority = currentState.priority?.toIntOrNull(),
         )
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
-        navigationBus.navigate(
-            NavigationEvent.TopLevelTo(
-                HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString())
-            )
-        )
+        navigationBus.navigate(NavigationEvent.Up)
     }
 }

@@ -20,6 +20,9 @@ interface TodoRepository {
         priority: Int?,
     )
 
+    suspend fun loadSchedule(id: Int): TodoSchedule
+    suspend fun loadTag(id: Int): TodoTag
+
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun deleteTodo(todoSchedule: TodoSchedule)
 }

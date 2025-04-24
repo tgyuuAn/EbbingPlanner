@@ -51,9 +51,7 @@ class HomeViewModel @Inject constructor(
 
             is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
             is HomeIntent.OnDeleteScheduleClick -> onDeleteSchedule(intent.schedule)
-            is HomeIntent.OnUpdateScheduleClick -> navigationBus.navigate(
-                To(EditTodoRoute(intent.schedule.id))
-            )
+            is HomeIntent.OnUpdateScheduleClick -> onUpdateScheduleClick(intent.schedule.id)
         }
     }
 
@@ -103,6 +101,7 @@ class HomeViewModel @Inject constructor(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 지웠습니다."))
     }
 
     private suspend fun onDelaySchedule(schedule: TodoSchedule) {
@@ -142,6 +141,11 @@ class HomeViewModel @Inject constructor(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 지웠습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
+    }
+
+    private suspend fun onUpdateScheduleClick(scheduleId: Int) {
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(EditTodoRoute(scheduleId)))
     }
 }

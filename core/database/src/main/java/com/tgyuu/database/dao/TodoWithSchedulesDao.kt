@@ -4,8 +4,12 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
+import androidx.room.Update
 import com.tgyuu.database.model.ScheduleEntity
 import com.tgyuu.database.model.TodoInfoEntity
+import com.tgyuu.database.model.toEntity
+import com.tgyuu.database.model.toInfoEntity
+import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 @Dao
@@ -41,5 +45,17 @@ interface TodoWithSchedulesDao {
                 )
             }
         )
+    }
+
+    @Update
+    fun updateInfo(info: TodoInfoEntity)
+
+    @Update
+    fun updateSchedule(schedule: ScheduleEntity)
+
+    @Transaction
+    suspend fun updateTodoSchedules(todo: TodoSchedule) {
+        updateInfo(todo.toInfoEntity())
+        updateSchedule(todo.toEntity())
     }
 }

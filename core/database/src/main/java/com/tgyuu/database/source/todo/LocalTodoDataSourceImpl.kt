@@ -14,6 +14,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun getSchedules(): List<TodoSchedule> =
         schedulesDao.loadAllSchedulesWithInfoAndTag()
 
+    override suspend fun getSchedule(id: Int): TodoSchedule =
+        schedulesDao.loadScheduleWithInfoAndTag(id)
+
     override suspend fun addTodo(
         title: String,
         tagId: Int,
@@ -27,7 +30,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
     )
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =
-        schedulesDao.updateSchedules(todoSchedule.toEntity())
+        todoWithSchedulesDao.updateTodoSchedules(todoSchedule)
 
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
         schedulesDao.deleteSchedules(todoSchedule.toEntity())

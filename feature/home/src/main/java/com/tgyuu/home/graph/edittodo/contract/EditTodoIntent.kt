@@ -16,8 +16,5 @@ sealed class EditTodoIntent : UiIntent {
     data class OnTagDropDownClick(val content: BottomSheetContent) : EditTodoIntent()
     data class OnTagChange(val tag: TodoTag) : EditTodoIntent()
     data object OnAddTagClick : EditTodoIntent()
-    data class OnRepeatCycleDropDownClick(val content: BottomSheetContent) : EditTodoIntent()
-    data class OnRepeatCycleChange(val repeatCycle: RepeatCycle) : EditTodoIntent()
-    data class OnRestDayChange(val restDay: DayOfWeek) : EditTodoIntent()
     data object OnSaveClick : EditTodoIntent()
 }
