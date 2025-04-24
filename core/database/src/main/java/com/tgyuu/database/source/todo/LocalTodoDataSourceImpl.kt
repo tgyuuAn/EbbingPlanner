@@ -28,4 +28,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =
         schedulesDao.updateSchedules(todoSchedule.toEntity())
+
+    override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
+        schedulesDao.deleteSchedules(todoSchedule.toEntity())
 }

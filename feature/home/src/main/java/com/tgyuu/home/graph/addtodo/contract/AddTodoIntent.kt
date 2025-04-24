@@ -12,7 +12,7 @@ sealed class AddTodoIntent : UiIntent {
     data class OnSelectedDataChangeClick(val content: BottomSheetContent) : AddTodoIntent()
     data class OnSelectedDateChange(val selectedDate: LocalDate) : AddTodoIntent()
     data class OnTitleChange(val title: String) : AddTodoIntent()
-    data class OnPriorityChange(val priorty: String) : AddTodoIntent()
+    data class OnPriorityChange(val priority: String) : AddTodoIntent()
     data class OnTagDropDownClick(val content: BottomSheetContent) : AddTodoIntent()
     data class OnTagChange(val tag: TodoTag) : AddTodoIntent()
     data object OnAddTagClick : AddTodoIntent()

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,8 +48,11 @@ import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.home.graph.main.bottomsheet.EditScheduleBottomSheet
+import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckedChange
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
@@ -65,7 +70,17 @@ internal fun HomeRoute(
         schedulesByDateMap = state.schedulesByDateMap,
         schedulesByTodoInfo = state.schedulesByTodoInfo,
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
-        onCheckedChange = { viewModel.onIntent(OnCheckedChange(it)) }
+        onCheckedChange = { viewModel.onIntent(OnCheckedChange(it)) },
+        onEditScheduleClick = {
+            viewModel.onIntent(HomeIntent.OnEditScheduleClick({
+                EditScheduleBottomSheet(
+                    selectedSchedule = it,
+                    onUpdateClick = { viewModel.onIntent(HomeIntent.OnUpdateScheduleClick(it)) },
+                    onDelayClick = { viewModel.onIntent(HomeIntent.OnDelayScheduleClick(it)) },
+                    onDeleteClick = { viewModel.onIntent(HomeIntent.OnDeleteScheduleClick(it)) },
+                )
+            }))
+        },
     )
 }
 
@@ -76,8 +91,11 @@ private fun HomeScreen(
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
     onAddTodoClick: (LocalDate) -> Unit,
     onCheckedChange: (TodoSchedule) -> Unit,
+    onEditScheduleClick: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val calendarState = rememberCalendarState()
 
@@ -89,7 +107,14 @@ private fun HomeScreen(
         EbbingCalendar(
             calendarState = calendarState,
             schedulesByDateMap = schedulesByDateMap,
-            onDateSelect = { selectedDate = it },
+            onDateSelect = {
+                if (selectedDate != it) {
+                    scope.launch {
+                        selectedDate = it
+                        listState.animateScrollToItem(0)
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -111,11 +136,12 @@ private fun HomeScreen(
             Spacer(modifier = Modifier.weight(1f))
         } else {
             EbbingTodoList(
+                listState = listState,
                 todoLists = schedulesByDateMap[selectedDate] ?: emptyList(),
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onAddTodoClick = { onAddTodoClick(selectedDate) },
                 onCheckedChange = onCheckedChange,
-                onEditScheduleClick = {},
+                onEditScheduleClick = onEditScheduleClick,
             )
         }
     }
@@ -123,6 +149,7 @@ private fun HomeScreen(
 
 @Composable
 private fun EbbingTodoList(
+    listState: LazyListState,
     todoLists: List<TodoSchedule>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
     onCheckedChange: (TodoSchedule) -> Unit,
@@ -130,8 +157,6 @@ private fun EbbingTodoList(
     onAddTodoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val listState = rememberLazyListState()
-
     Crossfade(
         targetState = todoLists,
         animationSpec = tween(durationMillis = 300)
@@ -281,6 +306,7 @@ private fun Preview1() {
             schedulesByTodoInfo = emptyMap(),
             onAddTodoClick = {},
             onCheckedChange = {},
+            onEditScheduleClick = {},
         )
     }
 }

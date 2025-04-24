@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.addtodo
+package com.tgyuu.home.graph.edittodo
 
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
@@ -14,7 +14,8 @@ import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.InputState.Companion.getStringInputState
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
-import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
+import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -25,12 +26,12 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class AddTodoViewModel @Inject constructor(
+class EditTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
+) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
     init {
         val dateStr = savedStateHandle.get<String>("selectedDate")
@@ -44,27 +45,27 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(tagList = loadedTagList) }
     }
 
-    override suspend fun processIntent(intent: AddTodoIntent) {
+    override suspend fun processIntent(intent: EditTodoIntent) {
         when (intent) {
-            AddTodoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
+            EditTodoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            is EditTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
-            is AddTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
-            is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is AddTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
-            is AddTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
+            is EditTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
+            is EditTodoIntent.OnTitleChange -> onTitleChange(intent.title)
+            is EditTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
+            is EditTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
-            is AddTodoIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            is AddTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
-            is AddTodoIntent.OnTagDropDownClick -> eventBus.sendEvent(
+            is EditTodoIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
+            is EditTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
+            is EditTodoIntent.OnTagDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
-            is AddTodoIntent.OnTagChange -> onTagChange(intent.tag)
+            is EditTodoIntent.OnTagChange -> onTagChange(intent.tag)
             AddTodoIntent.OnAddTagClick -> onAddTagClick()
             AddTodoIntent.OnSaveClick -> onSaveClick()
         }

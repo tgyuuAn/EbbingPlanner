@@ -35,5 +35,5 @@ interface SchedulesDao {
     suspend fun updateSchedules(schedule: ScheduleEntity)
 
     @Delete
-    suspend fun deleteSchedules(schedules: List<ScheduleEntity>)
+    suspend fun deleteSchedules(schedule: ScheduleEntity)
 }

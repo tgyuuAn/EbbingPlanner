@@ -15,6 +15,9 @@ sealed class HomeGraph : Route {
     data class AddTodoRoute(val selectedDate: String) : HomeGraph()
 
     @Serializable
+    data class EditTodoRoute(val scheduleId: Int) : HomeGraph()
+
+    @Serializable
     data object AddTagRoute : HomeGraph()
 }
 

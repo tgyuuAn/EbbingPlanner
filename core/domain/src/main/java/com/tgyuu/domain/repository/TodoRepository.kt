@@ -21,4 +21,5 @@ interface TodoRepository {
     )
 
     suspend fun updateTodo(todoSchedule: TodoSchedule)
+    suspend fun deleteTodo(todoSchedule: TodoSchedule)
 }

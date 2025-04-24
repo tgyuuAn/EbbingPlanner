@@ -14,4 +14,5 @@ interface LocalTodoDataSource {
     )
 
     suspend fun updateTodo(todoSchedule: TodoSchedule)
+    suspend fun deleteTodo(todoSchedule: TodoSchedule)
 }
