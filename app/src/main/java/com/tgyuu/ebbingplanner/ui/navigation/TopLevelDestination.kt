@@ -3,7 +3,7 @@ package com.tgyuu.ebbingplanner.ui.navigation
 import androidx.annotation.DrawableRes
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.navigation.HomeGraph.HomeRoute
-import com.tgyuu.navigation.SettingRoute
+import com.tgyuu.navigation.SettingGraph.SettingRoute
 import kotlin.reflect.KClass
 
 enum class TopLevelDestination(
@@ -18,7 +18,8 @@ enum class TopLevelDestination(
         title = "홈",
         route = HomeRoute::class,
     ),
-//    DASHBOARD(
+
+    //    DASHBOARD(
 //        iconDrawableId = R.drawable.ic_dashboard,
 //        contentDescription = "대시보드",
 //        title = "대시보드",

@@ -2,7 +2,8 @@ package com.tgyuu.designsystem.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,11 +52,9 @@ fun EbbingSubTopBar(
     title: String,
     onNavigationClick: () -> Unit,
     modifier: Modifier = Modifier,
-    rightComponent: @Composable () -> Unit = {},
+    rightComponent: @Composable BoxScope.() -> Unit = {},
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .height(60.dp),
@@ -63,13 +62,16 @@ fun EbbingSubTopBar(
         Image(
             painter = painterResource(R.drawable.ic_arrow_left),
             contentDescription = "뒤로 가기 버튼",
-            modifier = Modifier.clickable { onNavigationClick() }
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .clickable { onNavigationClick() }
         )
 
         Text(
             text = title,
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.black,
+            modifier = Modifier.align(Alignment.Center)
         )
 
         rightComponent()

@@ -1,4 +1,4 @@
-package com.tgyuu.setting.contract
+package com.tgyuu.setting.graph.main.contract
 
 import com.tgyuu.common.base.UiIntent
 

@@ -8,6 +8,7 @@ import kotlin.reflect.KClass
 private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
     HomeGraph.AddTodoRoute::class,
     HomeGraph.AddTagRoute::class,
+    SettingGraph.WebViewRoute::class,
 )
 
 fun NavDestination?.shouldHideBottomBar(): Boolean = this?.hierarchy?.any { destination ->

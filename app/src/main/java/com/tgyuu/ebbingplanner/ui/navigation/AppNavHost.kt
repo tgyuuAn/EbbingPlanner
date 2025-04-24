@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import com.tgyuu.dashboard.navigation.dashboardNavigation
 import com.tgyuu.home.navigation.homeGraph
 import com.tgyuu.navigation.HomeBaseRoute
-import com.tgyuu.setting.navigation.settingNavigation
+import com.tgyuu.setting.navigation.settingGraph
 
 @Composable
 fun AppNavHost(
@@ -20,7 +20,7 @@ fun AppNavHost(
         modifier = modifier,
     ) {
         homeGraph()
-        dashboardNavigation()
-        settingNavigation()
+//        dashboardNavigation()
+        settingGraph()
     }
 }

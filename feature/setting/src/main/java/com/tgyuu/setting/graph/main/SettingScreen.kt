@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 
-package com.tgyuu.setting
+package com.tgyuu.setting.graph.main
 
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
@@ -38,12 +38,13 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.ui.clickable
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.BasePreview
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.setting.contract.SettingIntent
-import com.tgyuu.setting.contract.SettingState
+import com.tgyuu.setting.graph.main.contract.SettingIntent
+import com.tgyuu.setting.graph.main.contract.SettingState
 
 @Composable
 internal fun SettingRoute(
@@ -108,7 +109,7 @@ private fun SettingScreen(
             )
 
             Text(
-                text = stringResource(com.tgyuu.designsystem.R.string.setting_version, state.version),
+                text = stringResource(R.string.setting_version, state.version),
                 style = EbbingTheme.typography.headingSSB,
                 color = EbbingTheme.colors.dark3,
                 modifier = Modifier
@@ -200,7 +201,7 @@ private fun InquiryBody(onContactUsClick: () -> Unit) {
         )
 
         Image(
-            painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_right),
+            painter = painterResource(R.drawable.ic_arrow_right),
             contentDescription = "상세 내용",
             modifier = Modifier.padding(start = 4.dp),
         )
@@ -221,7 +222,7 @@ private fun AnnouncementBody(
     onTermsClick: () -> Unit,
 ) {
     Text(
-        text = stringResource(com.tgyuu.designsystem.R.string.setting_guidance),
+        text = stringResource(R.string.setting_guidance),
         style = EbbingTheme.typography.bodySM,
         color = EbbingTheme.colors.dark2,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -235,14 +236,14 @@ private fun AnnouncementBody(
             .clickable { onNoticeClick() },
     ) {
         Text(
-            text = stringResource(com.tgyuu.designsystem.R.string.setting_announcement),
+            text = stringResource(R.string.setting_announcement),
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
         )
 
         Image(
-            painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_right),
+            painter = painterResource(R.drawable.ic_arrow_right),
             contentDescription = "상세 내용",
             modifier = Modifier.padding(start = 4.dp),
         )
@@ -256,14 +257,14 @@ private fun AnnouncementBody(
             .clickable { onPrivacyPolicy() },
     ) {
         Text(
-            text = stringResource(com.tgyuu.designsystem.R.string.setting_privacy_policy),
+            text = stringResource(R.string.setting_privacy_policy),
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
         )
 
         Image(
-            painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_right),
+            painter = painterResource(R.drawable.ic_arrow_right),
             contentDescription = "상세 내용",
             modifier = Modifier.padding(start = 4.dp),
         )
@@ -277,14 +278,14 @@ private fun AnnouncementBody(
             .clickable { onTermsClick() },
     ) {
         Text(
-            text = stringResource(com.tgyuu.designsystem.R.string.setting_term),
+            text = stringResource(R.string.setting_term),
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
         )
 
         Image(
-            painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_right),
+            painter = painterResource(R.drawable.ic_arrow_right),
             contentDescription = "상세 내용",
             modifier = Modifier.padding(start = 4.dp),
         )

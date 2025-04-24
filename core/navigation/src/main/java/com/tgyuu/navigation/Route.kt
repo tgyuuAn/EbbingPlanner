@@ -7,22 +7,30 @@ sealed interface Route
 @Serializable
 data object HomeBaseRoute : Route
 
-sealed class HomeGraph : Route {
+sealed interface HomeGraph : Route {
     @Serializable
-    data class HomeRoute(val workedDate: String? = null) : HomeGraph()
+    data class HomeRoute(val workedDate: String? = null) : HomeGraph
 
     @Serializable
-    data class AddTodoRoute(val selectedDate: String) : HomeGraph()
+    data class AddTodoRoute(val selectedDate: String) : HomeGraph
 
     @Serializable
-    data class EditTodoRoute(val scheduleId: Int) : HomeGraph()
+    data class EditTodoRoute(val scheduleId: Int) : HomeGraph
 
     @Serializable
-    data object AddTagRoute : HomeGraph()
+    data object AddTagRoute : HomeGraph
 }
 
 @Serializable
 data object DashboardRoute : Route
 
 @Serializable
-data object SettingRoute : Route
+data object SettingBaseRoute : Route
+
+sealed interface SettingGraph : Route {
+    @Serializable
+    data object SettingRoute : SettingGraph
+
+    @Serializable
+    data class WebViewRoute(val title: String, val url: String) : SettingGraph
+}
