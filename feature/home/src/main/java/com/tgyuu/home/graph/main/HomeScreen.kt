@@ -49,12 +49,12 @@ import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckedChange
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
-import com.tgyuu.home.graph.main.contract.SortType
 import com.tgyuu.home.graph.main.ui.bottomsheet.EditScheduleBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
 import com.tgyuu.home.graph.main.ui.dialog.DelayDialog
@@ -226,7 +226,10 @@ private fun EbbingTodoList(
         targetState = sortType to todoLists,
         animationSpec = tween(durationMillis = 300)
     ) { (sortType, todoLists) ->
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier

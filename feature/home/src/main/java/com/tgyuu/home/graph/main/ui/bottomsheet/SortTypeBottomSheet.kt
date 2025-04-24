@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.component.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
-import com.tgyuu.home.graph.main.contract.SortType
+import com.tgyuu.domain.model.SortType
 
 @Composable
 internal fun SortTypeBottomSheet(

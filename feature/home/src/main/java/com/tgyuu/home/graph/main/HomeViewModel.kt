@@ -1,31 +1,41 @@
 package com.tgyuu.home.graph.main
 
+import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
-import com.tgyuu.home.graph.main.contract.SortType
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.EditTodoRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
-
     private var allSchedules: List<TodoSchedule> = emptyList()
+
+    init {
+        viewModelScope.launch {
+            val sortType = configRepository.getSortType()
+            setState { copy(sortType = sortType) }
+        }
+    }
 
     internal suspend fun loadSchedules() {
         allSchedules = todoRepository.loadSchedules()
@@ -130,8 +140,8 @@ class HomeViewModel @Inject constructor(
         val newByInfo = allSchedules.groupBy { it.infoId }
         setState {
             copy(
-                schedulesByDateMap    = newByDate,
-                schedulesByTodoInfo   = newByInfo
+                schedulesByDateMap = newByDate,
+                schedulesByTodoInfo = newByInfo
             )
         }
 
@@ -145,8 +155,9 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onUpdateSortType(sortType: SortType) {
-        val byDate = buildByDateMap(allSchedules, sortType)
+        configRepository.setSortType(sortType)
 
+        val byDate = buildByDateMap(allSchedules, sortType)
         setState {
             copy(
                 sortType = sortType,
@@ -158,7 +169,7 @@ class HomeViewModel @Inject constructor(
 
     private fun buildByDateMap(
         schedules: List<TodoSchedule>,
-        sortType: SortType
+        sortType: SortType,
     ): Map<LocalDate, List<TodoSchedule>> {
         val grouped = schedules.groupBy { it.date }
 
