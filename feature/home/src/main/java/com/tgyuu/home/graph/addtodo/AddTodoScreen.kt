@@ -73,6 +73,7 @@ internal fun AddTodoRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
+        viewModel.loadNewTag()
         viewModel.loadTags()
     }
 

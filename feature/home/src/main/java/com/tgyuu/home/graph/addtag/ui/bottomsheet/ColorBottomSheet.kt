@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.addag.ui.bottomsheet
+package com.tgyuu.home.graph.addtag.ui.bottomsheet
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image

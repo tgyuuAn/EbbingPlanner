@@ -10,7 +10,7 @@ import com.tgyuu.database.model.TodoTagEntity
 @Dao
 interface TodoTagsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTag(tag: TodoTagEntity)
+    suspend fun insertTag(tag: TodoTagEntity): Long
 
     @Delete
     suspend fun deleteTags(tags: List<TodoTagEntity>)

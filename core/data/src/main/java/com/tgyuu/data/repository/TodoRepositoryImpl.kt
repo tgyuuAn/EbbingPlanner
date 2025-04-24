@@ -14,20 +14,29 @@ class TodoRepositoryImpl @Inject constructor(
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
 ) : TodoRepository {
+    private var _recentAddedTagId: Long? = null
+    override val recentAddedTagId: Long?
+        get() = _recentAddedTagId.also { _recentAddedTagId = null }
+
     override suspend fun loadSchedules(): List<TodoSchedule> = localTodoDataSource.getSchedules()
 
     override suspend fun loadTagList(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
 
-    override suspend fun addDefaultTag() = localTagDataSource.insertTag(DefaultTodoTag)
+    override suspend fun addDefaultTag(): Long = localTagDataSource.insertTag(DefaultTodoTag)
 
     override suspend fun addTag(
         name: String,
         color: Int,
-    ) = localTagDataSource.insertTag(
-        name = name,
-        color = color,
-    )
+    ): Long {
+        val newId = localTagDataSource.insertTag(
+            name = name,
+            color = color,
+        )
+
+        _recentAddedTagId = newId
+        return newId
+    }
 
     override suspend fun addTodo(
         title: String,

@@ -5,13 +5,15 @@ import com.tgyuu.domain.model.TodoTag
 import java.time.LocalDate
 
 interface TodoRepository {
+    val recentAddedTagId: Long?
+
     suspend fun loadSchedules(): List<TodoSchedule>
     suspend fun loadTagList(): List<TodoTag>
-    suspend fun addDefaultTag()
+    suspend fun addDefaultTag(): Long
     suspend fun addTag(
         name: String,
         color: Int,
-    )
+    ): Long
 
     suspend fun addTodo(
         title: String,

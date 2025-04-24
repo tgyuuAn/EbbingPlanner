@@ -45,6 +45,15 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(tagList = loadedTagList) }
     }
 
+    internal fun loadNewTag() {
+        todoRepository.recentAddedTagId?.let {
+            viewModelScope.launch {
+                val newTag = todoRepository.loadTag(it.toInt())
+                setState { copy(tag = newTag) }
+            }
+        }
+    }
+
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
             AddTodoIntent.OnBackClick -> navigationBus.navigate(
@@ -125,7 +134,9 @@ class AddTodoViewModel @Inject constructor(
 
     private suspend fun onAddTagClick() {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(NavigationEvent.To(HomeGraph.AddTagRoute))
+        navigationBus.navigate(
+            NavigationEvent.To(HomeGraph.AddTagRoute)
+        )
     }
 
     private suspend fun onSaveClick() {

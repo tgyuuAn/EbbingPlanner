@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.addag
+package com.tgyuu.home.graph.addtag
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,8 +40,8 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.home.graph.InputState
-import com.tgyuu.home.graph.addag.contract.AddTagIntent
-import com.tgyuu.home.graph.addag.ui.bottomsheet.ColorBottomSheet
+import com.tgyuu.home.graph.addtag.contract.AddTagIntent
+import com.tgyuu.home.graph.addtag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
 internal fun AddTagRoute(

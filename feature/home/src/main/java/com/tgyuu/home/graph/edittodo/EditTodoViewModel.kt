@@ -54,6 +54,15 @@ class EditTodoViewModel @Inject constructor(
         setState { copy(tagList = loadedTagList) }
     }
 
+    internal fun loadNewTag() {
+        todoRepository.recentAddedTagId?.let {
+            viewModelScope.launch {
+                val newTag = todoRepository.loadTag(it.toInt())
+                setState { copy(tag = newTag) }
+            }
+        }
+    }
+
     override suspend fun processIntent(intent: EditTodoIntent) {
         when (intent) {
             EditTodoIntent.OnBackClick -> navigationBus.navigate(

@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.addag.contract
+package com.tgyuu.home.graph.addtag.contract
 
 import com.tgyuu.common.base.UiIntent
 import com.tgyuu.common.event.BottomSheetContent

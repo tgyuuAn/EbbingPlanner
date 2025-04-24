@@ -1,12 +1,12 @@
-package com.tgyuu.home.graph.addag
+package com.tgyuu.home.graph.addtag
 
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.InputState.Companion.getStringInputState
-import com.tgyuu.home.graph.addag.contract.AddTagIntent
-import com.tgyuu.home.graph.addag.contract.AddTagState
+import com.tgyuu.home.graph.addtag.contract.AddTagIntent
+import com.tgyuu.home.graph.addtag.contract.AddTagState
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
