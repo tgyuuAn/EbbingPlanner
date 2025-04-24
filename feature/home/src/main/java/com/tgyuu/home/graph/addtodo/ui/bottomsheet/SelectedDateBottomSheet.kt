@@ -28,6 +28,7 @@ internal fun SelectedDateBottomSheet(
     ) {
         EbbingCalendar(
             calendarState = calendarState,
+            schedulesByDateMap = emptyMap(),
             onDateSelect = { newSelectedDate = it },
             modifier = Modifier
                 .fillMaxWidth()

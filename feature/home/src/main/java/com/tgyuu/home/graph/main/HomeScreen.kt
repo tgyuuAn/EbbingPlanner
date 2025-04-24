@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -87,6 +88,7 @@ private fun HomeScreen(
     ) {
         EbbingCalendar(
             calendarState = calendarState,
+            schedulesByDateMap = schedulesByDateMap,
             onDateSelect = { selectedDate = it },
             modifier = Modifier.fillMaxWidth(),
         )
@@ -128,6 +130,8 @@ private fun EbbingTodoList(
     onAddTodoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val listState = rememberLazyListState()
+
     Crossfade(
         targetState = todoLists,
         animationSpec = tween(durationMillis = 300)
@@ -159,7 +163,10 @@ private fun EbbingTodoList(
                 )
             }
 
-            LazyColumn(modifier = modifier.fillMaxSize()) {
+            LazyColumn(
+                state = listState,
+                modifier = modifier.fillMaxSize(),
+            ) {
                 itemsIndexed(
                     items = todoLists,
                     key = { idx, item -> item.id },

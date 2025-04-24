@@ -11,12 +11,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.tgyuu.domain.model.TodoSchedule
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
 fun EbbingCalendar(
     calendarState: CalendarState,
+    schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     modifier: Modifier = Modifier,
     onDateSelect: (LocalDate) -> Unit = {},
 ) {
@@ -57,6 +59,7 @@ fun EbbingCalendar(
             CalendarBody(
                 currentDate = calendarState.currentDisplayDate,
                 selectedDate = calendarState.selectedDate,
+                schedulesByDateMap = schedulesByDateMap,
                 onDateSelect = { selectedDate ->
                     val selectedOffset = yearMonthDiff(
                         from = calendarState.originSelectedDate,

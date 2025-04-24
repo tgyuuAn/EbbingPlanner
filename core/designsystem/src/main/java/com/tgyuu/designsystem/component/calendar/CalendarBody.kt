@@ -5,7 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -26,12 +29,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 @Composable
 internal fun CalendarBody(
     currentDate: LocalDate,
     selectedDate: LocalDate?,
+    schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,7 +49,7 @@ internal fun CalendarBody(
             CalendarDayItem(
                 calendarDate = it,
                 selectedDate = selectedDate,
-                hasEvent = false,
+                events = schedulesByDateMap[it.date] ?: emptyList(),
                 onDateSelect = onDateSelect,
             )
         }
@@ -55,7 +60,7 @@ internal fun CalendarBody(
 private fun CalendarDayItem(
     calendarDate: CalendarDate,
     selectedDate: LocalDate?,
-    hasEvent: Boolean,
+    events: List<TodoSchedule>,
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,21 +102,27 @@ private fun CalendarDayItem(
                 color = textColor,
             )
 
-            val circleColor by animateColorAsState(
-                when {
-                    !hasEvent -> Color.Transparent
-                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
-                    calendarDate.date == selectedDate -> EbbingTheme.colors.white
-                    else -> EbbingTheme.colors.primaryDefault
-                }
-            )
-
-            Spacer(
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = 2.dp,
+                    alignment = Alignment.CenterHorizontally,
+                ),
                 modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(circleColor)
-            )
+                    .fillMaxWidth()
+                    .height(6.dp),
+            ) {
+                events.map { it.color }
+                    .distinct()
+                    .take(4)
+                    .forEach {
+                        Spacer(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(Color(it))
+                        )
+                    }
+            }
         }
     }
 }

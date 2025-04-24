@@ -1,7 +1,6 @@
 package com.tgyuu.designsystem.component.calendar
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +36,7 @@ internal fun CalendarController(
             .semantics { contentDescription = "달력 컨트롤러" },
     ) {
         IconButton(onClick = onGotoTodayClick) {
-            if (!(currentDate.year == LocalDate.now().year && currentDate.monthValue == LocalDate.now().monthValue)) {
+            if (currentDate != LocalDate.now()) {
                 Image(
                     painter = painterResource(R.drawable.ic_return),
                     contentDescription = "이전 달",
