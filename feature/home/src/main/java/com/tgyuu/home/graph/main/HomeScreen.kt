@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.BasePreview
@@ -70,6 +71,7 @@ internal fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
     var isShowDialog by remember { mutableStateOf(false) }
     var dialogType by remember { mutableStateOf<DialogType?>(null) }
 
@@ -117,22 +119,32 @@ internal fun HomeRoute(
                 )
             }))
         },
-        onEditScheduleClick = {
-            viewModel.onIntent(HomeIntent.OnEditScheduleClick({
-                EditScheduleBottomSheet(
-                    selectedSchedule = it,
-                    onUpdateClick = { viewModel.onIntent(HomeIntent.OnUpdateScheduleClick(it)) },
-                    onDelayClick = {
-                        dialogType = DialogType.Delay(it)
-                        isShowDialog = true
-                    },
-                    onDeleteClick = {
-                        dialogType = Delete(it)
-                        isShowDialog = true
-                    },
-                )
-            }))
-        },
+        onEditScheduleClick = { schedule ->
+            viewModel.onIntent(
+                HomeIntent.OnEditScheduleClick {
+                    EditScheduleBottomSheet(
+                        selectedSchedule = schedule,
+                        onDelayClick = { delayedSchedule ->
+                            scope.launch {
+                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                dialogType = DialogType.Delay(delayedSchedule)
+                                isShowDialog = true
+                            }
+                        },
+                        onDeleteClick = { deletedSchedule ->
+                            scope.launch {
+                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                dialogType = DialogType.Delete(deletedSchedule)
+                                isShowDialog = true
+                            }
+                        },
+                        onUpdateClick = { updatedSchedule ->
+                            viewModel.onIntent(HomeIntent.OnUpdateScheduleClick(updatedSchedule))
+                        }
+                    )
+                }
+            )
+        }
     )
 }
 

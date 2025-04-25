@@ -29,8 +29,8 @@ class HomeViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
-    private val eventBus: EventBus,
     private val alarmScheduler: AlarmScheduler,
+    internal val eventBus: EventBus,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
     private var allSchedules: List<TodoSchedule> = emptyList()
 
