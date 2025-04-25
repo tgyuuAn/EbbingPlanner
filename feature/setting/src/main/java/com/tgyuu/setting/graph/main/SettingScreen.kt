@@ -147,6 +147,9 @@ private fun NotificationBody(
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
+    val isOn = ((permissionState?.status == PermissionStatus.Granted || permissionState == null)
+            && notificationEnabled)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -159,9 +162,6 @@ private fun NotificationBody(
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
         )
-
-        val isOn = ((permissionState?.status == PermissionStatus.Granted || permissionState == null)
-                && notificationEnabled)
 
         EbbingToggle(
             checked = isOn,

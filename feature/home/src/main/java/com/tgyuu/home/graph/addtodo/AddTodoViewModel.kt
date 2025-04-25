@@ -165,7 +165,7 @@ class AddTodoViewModel @Inject constructor(
         newState.schedules.forEach { schedule ->
             try {
                 val triggerAtMillis = schedule
-                    .atTime(LocalTime.now().plusSeconds(30))
+                    .atTime(LocalTime.of(18, 30))
                     .atZone(ZoneId.systemDefault())
                     .toInstant()
                     .toEpochMilli()
@@ -177,7 +177,7 @@ class AddTodoViewModel @Inject constructor(
                     triggerAtMillis = triggerAtMillis,
                 )
             } catch (e: Exception) {
-                Log.d("AddTodoViewModel", "알람 등ㄹ록 실패: $schedule", e)
+                Log.d("AddTodoViewModel", "알람 등록 실패: $schedule", e)
             }
         }
 

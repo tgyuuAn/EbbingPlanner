@@ -1,6 +1,7 @@
 package com.tgyuu.home.graph.main
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -19,6 +20,8 @@ import com.tgyuu.navigation.NavigationEvent.To
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +30,7 @@ class HomeViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val alarmScheduler: AlarmScheduler,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
     private var allSchedules: List<TodoSchedule> = emptyList()
 
@@ -134,6 +138,19 @@ class HomeViewModel @Inject constructor(
 
         val delayed = schedule.copy(date = nextDate)
         todoRepository.updateTodo(delayed)
+
+        if (nextDate.isAfter(LocalDate.now())) {
+            val triggerAtMillis = nextDate
+                .atTime(LocalTime.of(18, 30))
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+
+            alarmScheduler.scheduleDailyExact(
+                date = nextDate,
+                triggerAtMillis = triggerAtMillis
+            )
+        }
 
         allSchedules = allSchedules.map { if (it.id == schedule.id) delayed else it }
         val newByDate = buildByDateMap(allSchedules, currentState.sortType)

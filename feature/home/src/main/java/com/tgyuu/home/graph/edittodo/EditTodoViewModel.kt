@@ -3,6 +3,7 @@ package com.tgyuu.home.graph.edittodo
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -20,6 +21,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +30,7 @@ class EditTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val alarmScheduler: AlarmScheduler,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
@@ -159,6 +163,24 @@ class EditTodoViewModel @Inject constructor(
         )
 
         todoRepository.updateTodo(newSchedule)
+
+        currentState.originSchedule?.date?.let { originDate ->
+            if (newSchedule.date != originDate) {
+                // 새 날짜가 오늘 이후면 알람 재등록
+                if (newSchedule.date.isAfter(LocalDate.now())) {
+                    val triggerAtMillis = newSchedule.date
+                        .atTime(LocalTime.of(18, 30))
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+
+                    alarmScheduler.scheduleDailyExact(
+                        date = newSchedule.date,
+                        triggerAtMillis = triggerAtMillis
+                    )
+                }
+            }
+        }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정을 업데이트 하였습니다"))
 
         navigationBus.navigate(
