@@ -93,7 +93,9 @@ private fun AddTagScreen(
                     text = "저장",
                     style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
                     color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                    modifier = Modifier.throttledClickable(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .throttledClickable(
                         throttleTime = 1500L,
                         enabled = isSaveEnabled
                     ) {

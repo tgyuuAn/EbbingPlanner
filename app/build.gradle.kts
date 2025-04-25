@@ -23,12 +23,11 @@ android {
     }
 
     buildTypes {
+        debug { manifestPlaceholders["appName"] = "@string/app_name_dev" }
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = true
+            isShrinkResources = true
+            manifestPlaceholders["appName"] = "@string/app_name"
         }
     }
 
@@ -38,8 +37,8 @@ android {
 }
 
 dependencies {
-    implementation(libs.firebase.messaging)
     implementation(libs.androidx.profileinstaller)
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.navigation)

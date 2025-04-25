@@ -173,7 +173,6 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" }
-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 
 [bundles]
 

@@ -27,5 +27,4 @@ dependencies {
     implementation(libs.okhttp.eventsource)
     implementation(libs.okhttp.logging)
     implementation(libs.firebase.config)
-    implementation(libs.firebase.messaging)
 }

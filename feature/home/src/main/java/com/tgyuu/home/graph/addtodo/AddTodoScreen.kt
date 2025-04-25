@@ -175,13 +175,15 @@ private fun AddTodoScreen(
                     text = "저장",
                     style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
                     color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                    modifier = Modifier.throttledClickable(
-                        throttleTime = 1500L,
-                        enabled = isSaveEnabled
-                    ) {
-                        onSaveClick()
-                        focusManager.clearFocus()
-                    },
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .throttledClickable(
+                            throttleTime = 1500L,
+                            enabled = isSaveEnabled
+                        ) {
+                            onSaveClick()
+                            focusManager.clearFocus()
+                        },
                 )
             },
             modifier = Modifier.padding(horizontal = 20.dp),

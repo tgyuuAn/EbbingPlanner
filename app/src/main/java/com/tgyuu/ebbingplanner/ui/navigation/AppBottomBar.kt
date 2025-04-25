@@ -1,5 +1,6 @@
 package com.tgyuu.ebbingplanner.ui.navigation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -65,6 +66,7 @@ internal fun AppBottomBar(
                 NavigationBarItem(
                     icon = {
                         Column(
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(top = 2.dp),
                         ) {
