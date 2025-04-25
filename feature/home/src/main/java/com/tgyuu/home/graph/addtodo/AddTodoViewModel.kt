@@ -165,7 +165,7 @@ class AddTodoViewModel @Inject constructor(
         newState.schedules.forEach { schedule ->
             try {
                 val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(9, 0))
+                    .atTime(LocalTime.now().plusSeconds(30))
                     .atZone(ZoneId.systemDefault())
                     .toInstant()
                     .toEpochMilli()

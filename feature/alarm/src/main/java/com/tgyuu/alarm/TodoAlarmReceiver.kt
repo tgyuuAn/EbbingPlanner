@@ -7,11 +7,13 @@ import android.content.Intent
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import com.tgyuu.common.toLocalDateOrThrow
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,6 +25,9 @@ class TodoAlarmReceiver : BroadcastReceiver() {
     @Inject
     lateinit var todoRepository: TodoRepository
 
+    @Inject
+    lateinit var configRepository: ConfigRepository
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
         val job = SupervisorJob()
@@ -31,6 +36,10 @@ class TodoAlarmReceiver : BroadcastReceiver() {
         val pendingResult = goAsync()
         scope.launch {
             try {
+                val notificationEnabled =
+                    configRepository.getNotificationEnabled().firstOrNull() ?: return@launch
+                if (!notificationEnabled) return@launch
+
                 val date = intent.getStringExtra("date")?.toLocalDateOrThrow() ?: return@launch
                 val schedules = todoRepository.loadSchedulesByDate(date)
                     .filter { !it.isDone }

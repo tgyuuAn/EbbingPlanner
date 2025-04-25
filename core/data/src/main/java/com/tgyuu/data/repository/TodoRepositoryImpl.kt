@@ -13,7 +13,6 @@ import javax.inject.Inject
 class TodoRepositoryImpl @Inject constructor(
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
-    private val alarmScheduler
 ) : TodoRepository {
     private var _recentAddedTagId: Long? = null
     override val recentAddedTagId: Long?

@@ -67,6 +67,7 @@ internal fun SettingRoute(
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
+        onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
     )
 }
 
@@ -77,6 +78,7 @@ private fun SettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
+    onNotificationToggleClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -98,7 +100,10 @@ private fun SettingScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
         ) {
-            NotificationBody()
+            NotificationBody(
+                state.notificationEnabled,
+                onNotificationToggleClick,
+            )
 
             InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -121,14 +126,19 @@ private fun SettingScreen(
 }
 
 @Composable
-private fun NotificationBody() {
-    val notificationPermission =
-        if (SDK_INT >= TIRAMISU) rememberPermissionState(POST_NOTIFICATIONS)
-        else null
-    val isPermissionGranted = notificationPermission?.status == PermissionStatus.Granted
-            || notificationPermission == null
-
+private fun NotificationBody(
+    notificationEnabled: Boolean,
+    onNotificationToggleClick: () -> Unit,
+) {
     val context = LocalContext.current
+    val permissionState = if (SDK_INT >= TIRAMISU) rememberPermissionState(POST_NOTIFICATIONS)
+    else null
+
+    LaunchedEffect(permissionState?.status) {
+        if (permissionState?.status == PermissionStatus.Granted && !notificationEnabled) {
+            onNotificationToggleClick()
+        }
+    }
 
     Text(
         text = "알림",
@@ -150,9 +160,22 @@ private fun NotificationBody() {
             modifier = Modifier.weight(1f),
         )
 
+        val isOn = ((permissionState?.status == PermissionStatus.Granted || permissionState == null)
+                && notificationEnabled)
+
         EbbingToggle(
-            checked = isPermissionGranted,
-            onCheckedChange = { handlePermission(context, notificationPermission) },
+            checked = isOn,
+            onCheckedChange = { desiredOn ->
+                if (!desiredOn) {
+                    onNotificationToggleClick()
+                } else {
+                    handlePermission(
+                        context = context,
+                        permission = permissionState,
+                        onNotificationToggleClick = onNotificationToggleClick,
+                    )
+                }
+            }
         )
     }
 
@@ -164,10 +187,14 @@ private fun NotificationBody() {
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
-internal fun handlePermission(context: Context, permission: PermissionState?) {
+internal fun handlePermission(
+    context: Context,
+    permission: PermissionState?,
+    onNotificationToggleClick: () -> Unit,
+) {
     permission?.let { state ->
         when (state.status) {
-            PermissionStatus.Granted -> return  // 이미 허용된 상태면 아무 일도 하지 않음
+            PermissionStatus.Granted -> onNotificationToggleClick()
 
             is PermissionStatus.Denied -> {
                 if (state.status.shouldShowRationale) {
@@ -330,6 +357,7 @@ private fun PreviewSettingScreen() {
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},
+            onNotificationToggleClick = {},
         )
     }
 }

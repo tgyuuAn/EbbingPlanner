@@ -1,6 +1,8 @@
 package com.tgyuu.setting.graph.main
 
+import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
@@ -8,13 +10,22 @@ import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
+    private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
-) :
-    BaseViewModel<SettingState, SettingIntent>(SettingState()) {
+) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
+
+    init {
+        viewModelScope.launch {
+            configRepository.getNotificationEnabled()
+                .collect { setState { copy(notificationEnabled = it) } }
+        }
+    }
+
     override suspend fun processIntent(intent: SettingIntent) {
         when (intent) {
             SettingIntent.OnInquiryClick -> navigateToWebView(
@@ -36,11 +47,17 @@ class SettingViewModel @Inject constructor(
                 "이용약관",
                 BuildConfig.EBBING_TERMS_OF_USE_URL
             )
+
+            SettingIntent.OnNotificationToggleClick -> onNotificationToggleClick()
         }
     }
 
     internal fun setAppVersion(version: String) = setState {
         copy(version = version)
+    }
+
+    private suspend fun onNotificationToggleClick() {
+        configRepository.setNotificationEnabled(!currentState.notificationEnabled)
     }
 
     private suspend fun navigateToWebView(title: String, url: String) =

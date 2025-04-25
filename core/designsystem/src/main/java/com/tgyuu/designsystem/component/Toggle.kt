@@ -28,7 +28,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 @Composable
 fun EbbingToggle(
     checked: Boolean,
-    onCheckedChange: () -> Unit,
+    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -51,7 +51,7 @@ fun EbbingToggle(
             .size(width = 34.dp, height = 20.dp)
             .clip(RoundedCornerShape(999.dp))
             .background(if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.light1)
-            .throttledClickable(1000L) { onCheckedChange() }
+            .throttledClickable(1000L) { onCheckedChange(!checked) }
     ) {
         Box(
             modifier = Modifier

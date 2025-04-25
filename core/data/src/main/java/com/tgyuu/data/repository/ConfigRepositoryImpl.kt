@@ -3,6 +3,7 @@ package com.tgyuu.data.repository
 import com.tgyuu.datastore.datasource.LocalUserConfigDataSource
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.repository.ConfigRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -13,4 +14,9 @@ class ConfigRepositoryImpl @Inject constructor(
         localUserConfigDataSource.setSortType(sortType)
 
     override suspend fun getSortType(): SortType = localUserConfigDataSource.sortType.first()
+    override suspend fun getNotificationEnabled(): Flow<Boolean> =
+        localUserConfigDataSource.notificationEnabled
+
+    override suspend fun setNotificationEnabled(enabled: Boolean) =
+        localUserConfigDataSource.setNotificationEnabled(enabled)
 }

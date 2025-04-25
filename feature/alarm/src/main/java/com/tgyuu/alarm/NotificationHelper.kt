@@ -5,9 +5,8 @@ import android.app.NotificationManager
 import android.content.Context
 import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
-import javax.inject.Inject
 
-abstract class NotificationHelper @Inject constructor() {
+abstract class NotificationHelper() {
     fun createNotificationChannel(context: Context) {
         val mgr = context.getSystemService(NotificationManager::class.java)
         val exist = mgr.getNotificationChannel(CHANNEL_ID)
