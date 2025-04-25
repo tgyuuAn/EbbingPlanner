@@ -5,6 +5,8 @@ plugins {
     id("ebbing.android.compose")
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -49,8 +51,13 @@ android {
     }
 }
 
+baselineProfile {
+    dexLayoutOptimization = true
+}
+
 dependencies {
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.profileinstaller)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.navigation)
@@ -63,4 +70,5 @@ dependencies {
     implementation(projects.feature.dashboard)
     implementation(projects.feature.setting)
     implementation(projects.feature.alarm)
+    baselineProfile(projects.baselineprofile)
 }
