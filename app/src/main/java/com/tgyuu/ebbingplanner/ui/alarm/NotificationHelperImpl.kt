@@ -33,12 +33,12 @@ class NotificationHelperImpl @Inject constructor() : NotificationHelper() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val contentText = if (schedules.size > 1) "${schedules.first().title} 을 제외한 ${schedules.size} 개의 일정이 있어요!"
-        else "${schedules.first().title} 일정이 있어요!"
+        val contentTitle = "에빙 플래너 일정 알림"
+        val contentText = "${schedules.first().title} 을 확인하고, 잊지 말고 복습하세요!"
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("오늘은 망각곡선을 갱신할 날이에요")
+            .setContentTitle(contentTitle)
             .setContentText(contentText)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
