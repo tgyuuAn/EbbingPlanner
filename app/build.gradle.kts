@@ -44,10 +44,12 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.navigation)
     implementation(projects.core.commonUi)
+    implementation(projects.core.common)
     implementation(projects.core.data)
     implementation(projects.core.domain)
 
     implementation(projects.feature.home)
     implementation(projects.feature.dashboard)
     implementation(projects.feature.setting)
+    implementation(projects.feature.alarm)
 }

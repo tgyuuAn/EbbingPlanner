@@ -165,14 +165,22 @@ private fun NotificationBody() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 internal fun handlePermission(context: Context, permission: PermissionState?) {
-    permission?.let {
-        if (it.status == PermissionStatus.Granted || !it.status.shouldShowRationale) {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", context.packageName, null)
+    permission?.let { state ->
+        when (state.status) {
+            PermissionStatus.Granted -> return  // 이미 허용된 상태면 아무 일도 하지 않음
+
+            is PermissionStatus.Denied -> {
+                if (state.status.shouldShowRationale) {
+                    // 한 번 거부한 상태 → (선택) 설명 다이얼로그를 띄우거나,
+                    // 사용자가 다시 권한을 허용할 수 있도록 설정 화면으로 보냅니다.
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .apply { data = Uri.fromParts("package", context.packageName, null) }
+                    context.startActivity(intent)
+                } else {
+                    // 최초 요청 혹은 '다시 묻지 않음' 상태 → 권한 요청 다이얼로그
+                    state.launchPermissionRequest()
+                }
             }
-            context.startActivity(intent)
-        } else {
-            it.launchPermissionRequest()
         }
     }
 }

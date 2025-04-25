@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tgyuu.home"
+    namespace = "com.tgyuu.alarm"
 
     defaultConfig {
         val localProperties = Properties()
@@ -19,6 +19,4 @@ android {
 
 dependencies {
     implementation(projects.core.common)
-
-    implementation(projects.feature.alarm)
 }

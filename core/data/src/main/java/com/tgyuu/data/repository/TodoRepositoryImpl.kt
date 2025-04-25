@@ -13,6 +13,7 @@ import javax.inject.Inject
 class TodoRepositoryImpl @Inject constructor(
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
+    private val alarmScheduler
 ) : TodoRepository {
     private var _recentAddedTagId: Long? = null
     override val recentAddedTagId: Long?
@@ -21,6 +22,9 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadSchedules(): List<TodoSchedule> = localTodoDataSource.getSchedules()
     override suspend fun loadSchedulesByTodoInfo(id: Int): List<TodoSchedule> =
         localTodoDataSource.getScheduleByTodoInfo(id)
+
+    override suspend fun loadSchedulesByDate(date: LocalDate): List<TodoSchedule> =
+        localTodoDataSource.getSchedulesByDate(date)
 
     override suspend fun loadTagList(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)

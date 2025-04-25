@@ -1,8 +1,10 @@
 package com.tgyuu.home.graph.addtodo
 
+import android.util.Log
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -23,6 +25,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,6 +35,7 @@ class AddTodoViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val savedStateHandle: SavedStateHandle,
+    private val alarmScheduler: AlarmScheduler,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
 
     init {
@@ -156,6 +161,26 @@ class AddTodoViewModel @Inject constructor(
             tagId = currentState.tag.id,
             priority = currentState.priority?.toIntOrNull(),
         )
+
+        newState.schedules.forEach { schedule ->
+            try {
+                val triggerAtMillis = schedule
+                    .atTime(LocalTime.of(9, 0))
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+
+                if (triggerAtMillis <= System.currentTimeMillis()) return@forEach
+
+                alarmScheduler.scheduleDailyExact(
+                    date = schedule,
+                    triggerAtMillis = triggerAtMillis,
+                )
+            } catch (e: Exception) {
+                Log.d("AddTodoViewModel", "알람 등ㄹ록 실패: $schedule", e)
+            }
+        }
+
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(

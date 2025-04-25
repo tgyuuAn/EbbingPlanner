@@ -9,6 +9,7 @@ interface TodoRepository {
 
     suspend fun loadSchedules(): List<TodoSchedule>
     suspend fun loadSchedulesByTodoInfo(id: Int): List<TodoSchedule>
+    suspend fun loadSchedulesByDate(date: LocalDate): List<TodoSchedule>
     suspend fun loadTagList(): List<TodoTag>
     suspend fun addDefaultTag(): Long
     suspend fun addTag(

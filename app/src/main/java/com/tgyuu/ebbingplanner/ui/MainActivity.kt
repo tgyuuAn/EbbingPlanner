@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
     lateinit var eventBus: EventBus
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
