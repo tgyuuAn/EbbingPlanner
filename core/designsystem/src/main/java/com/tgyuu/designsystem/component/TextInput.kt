@@ -157,7 +157,7 @@ fun EbbingTextInputDropDown(
         )
 
         Image(
-            painter = painterResource(R.drawable.ic_textinput_dropdown),
+            painter = painterResource(R.drawable.ic_arrow_down),
             contentDescription = null,
             colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
             modifier = Modifier.size(24.dp),

@@ -1,10 +1,12 @@
 package com.tgyuu.home.graph.main
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.ui.clickable
+import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
@@ -56,6 +61,7 @@ import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckedChange
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
+import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.home.graph.main.ui.bottomsheet.EditScheduleBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
 import com.tgyuu.home.graph.main.ui.dialog.DelayDialog
@@ -104,11 +110,8 @@ internal fun HomeRoute(
     }
 
     HomeScreen(
-        isLoading = state.isLoading,
         workedDate = workedDate,
-        sortType = state.sortType,
-        schedulesByDateMap = state.schedulesByDateMap,
-        schedulesByTodoInfo = state.schedulesByTodoInfo,
+        state = state,
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
         onCheckedChange = { viewModel.onIntent(OnCheckedChange(it)) },
         onSortTypeClick = {
@@ -150,73 +153,101 @@ internal fun HomeRoute(
 
 @Composable
 private fun HomeScreen(
-    isLoading: Boolean,
     workedDate: LocalDate,
-    sortType: SortType,
-    schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
-    schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
+    state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
     onCheckedChange: (TodoSchedule) -> Unit,
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val localDensity = LocalDensity.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
+    var isExpanded by remember { mutableStateOf(false) }
+    var calendarHeight by remember { mutableStateOf(0.dp) }
+    val animatedTopPadding by animateDpAsState(targetValue = if (isExpanded) 0.dp else calendarHeight)
 
     LaunchedEffect(workedDate) {
         calendarState.onDateSelect(workedDate)
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.fillMaxSize(),
-    ) {
-        EbbingCalendar(
-            calendarState = calendarState,
-            schedulesByDateMap = schedulesByDateMap,
-            onDateSelect = {
-                if (selectedDate != it) {
-                    scope.launch {
-                        selectedDate = it
-                        listState.animateScrollToItem(0)
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    val height = with(localDensity) {
+                        coordinates.size.height.toDp()
                     }
+                    calendarHeight = height
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        HorizontalDivider(
-            thickness = 8.dp,
-            color = EbbingTheme.colors.dark2,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (isLoading) {
-            Spacer(modifier = Modifier.weight(1f))
-
-            CircularProgressIndicator(
-                color = EbbingTheme.colors.primaryDefault,
-                modifier = Modifier.size(50.dp),
-                strokeWidth = 6.dp,
+        ) {
+            EbbingCalendar(
+                calendarState = calendarState,
+                schedulesByDateMap = state.schedulesByDateMap,
+                onDateSelect = {
+                    if (selectedDate != it) {
+                        scope.launch {
+                            selectedDate = it
+                            listState.animateScrollToItem(0)
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.weight(1f))
-        } else {
-            EbbingTodoList(
-                listState = listState,
-                sortType = sortType,
-                selectedDate = selectedDate,
-                todoLists = schedulesByDateMap[selectedDate] ?: emptyList(),
-                schedulesByTodoInfo = schedulesByTodoInfo,
-                onAddTodoClick = { onAddTodoClick(selectedDate) },
-                onCheckedChange = onCheckedChange,
-                onSortTypeClick = onSortTypeClick,
-                onEditScheduleClick = onEditScheduleClick,
+            HorizontalDivider(
+                thickness = 8.dp,
+                color = EbbingTheme.colors.light3,
             )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = animatedTopPadding)
+                .background(EbbingTheme.colors.background)
+        ) {
+            Image(
+                painter = painterResource(
+                    if (!isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                ),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .throttledClickable(500L) { isExpanded = !isExpanded },
+            )
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(
+                        color = EbbingTheme.colors.primaryDefault,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            } else {
+                EbbingTodoList(
+                    listState = listState,
+                    sortType = state.sortType,
+                    selectedDate = selectedDate,
+                    todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
+                    schedulesByTodoInfo = state.schedulesByTodoInfo,
+                    onAddTodoClick = { onAddTodoClick(selectedDate) },
+                    onCheckedChange = onCheckedChange,
+                    onSortTypeClick = onSortTypeClick,
+                    onEditScheduleClick = onEditScheduleClick,
+                )
+            }
         }
     }
 }
@@ -236,7 +267,8 @@ private fun EbbingTodoList(
 ) {
     Crossfade(
         targetState = sortType to todoLists,
-        animationSpec = tween(durationMillis = 300)
+        animationSpec = tween(durationMillis = 300),
+        modifier = modifier,
     ) { (sortType, todoLists) ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -247,7 +279,7 @@ private fun EbbingTodoList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .padding(top = 24.dp, bottom = 24.dp),
+                    .padding(bottom = 24.dp),
             ) {
                 val displayDate = if (selectedDate == LocalDate.now()) "오늘"
                 else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일"
@@ -273,7 +305,7 @@ private fun EbbingTodoList(
                     )
 
                     Image(
-                        painter = painterResource(R.drawable.ic_textinput_dropdown),
+                        painter = painterResource(R.drawable.ic_arrow_down),
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
                         modifier = Modifier.size(24.dp),
@@ -294,7 +326,7 @@ private fun EbbingTodoList(
 
             LazyColumn(
                 state = listState,
-                modifier = modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
             ) {
                 itemsIndexed(
                     items = todoLists,
@@ -419,11 +451,8 @@ private fun TodoListCard(
 private fun Preview1() {
     BasePreview {
         HomeScreen(
-            isLoading = true,
             workedDate = LocalDate.now(),
-            sortType = SortType.PRIORITY,
-            schedulesByDateMap = emptyMap(),
-            schedulesByTodoInfo = emptyMap(),
+            state = HomeState(isLoading = false),
             onAddTodoClick = {},
             onCheckedChange = {},
             onEditScheduleClick = {},
