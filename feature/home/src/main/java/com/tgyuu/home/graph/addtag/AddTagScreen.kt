@@ -27,15 +27,15 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.common.ui.throttledClickable
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.BasePreview
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -96,12 +96,12 @@ private fun AddTagScreen(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
-                        throttleTime = 1500L,
-                        enabled = isSaveEnabled
-                    ) {
-                        onSaveClick()
-                        focusManager.clearFocus()
-                    },
+                            throttleTime = 1500L,
+                            enabled = isSaveEnabled
+                        ) {
+                            onSaveClick()
+                            focusManager.clearFocus()
+                        },
                 )
             },
             modifier = Modifier.padding(horizontal = 20.dp),
@@ -145,7 +145,7 @@ private fun NameContent(
     Text(
         text = "태그 이름",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -204,7 +204,7 @@ private fun ColorContent(
         Text(
             text = "색상",
             style = EbbingTheme.typography.headingSM,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.black,
         )
 
         Spacer(
@@ -217,7 +217,7 @@ private fun ColorContent(
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun PreviewAddTag() {
     BasePreview {

@@ -32,15 +32,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.BasePreview
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingTextInputDropDown
@@ -207,7 +207,7 @@ private fun TitleContent(
     Text(
         text = "제목",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -262,7 +262,7 @@ private fun TagContent(
     Text(
         text = "태그",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -285,7 +285,7 @@ private fun PriorityContent(
     Text(
         text = "우선순위",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -300,7 +300,7 @@ private fun PriorityContent(
     )
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun PreviewAddTodo() {
     BasePreview {

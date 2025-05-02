@@ -16,13 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
@@ -38,7 +40,7 @@ fun EbbingDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Card(
-            colors = cardColors().copy(containerColor = EbbingTheme.colors.white),
+            colors = cardColors().copy(containerColor = EbbingTheme.colors.background),
             shape = RoundedCornerShape(12.dp),
             modifier = modifier.padding(horizontal = 32.dp),
         ) {
@@ -120,6 +122,7 @@ fun EbbingDialogIconTop(
         Image(
             painter = painterResource(iconId),
             contentDescription = contentDescription,
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
             modifier = Modifier
                 .padding(bottom = 8.dp)
                 .size(40.dp),
@@ -184,7 +187,7 @@ fun EbbingDialogBottom(
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 fun PreviewDialog1() {
     BasePreview {
@@ -208,7 +211,7 @@ fun PreviewDialog1() {
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 fun PreviewDialog2() {
     BasePreview {

@@ -38,14 +38,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.ui.clickable
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.BasePreview
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
@@ -190,8 +190,8 @@ private fun HomeScreen(
         )
 
         HorizontalDivider(
-            thickness = 12.dp,
-            color = EbbingTheme.colors.light3,
+            thickness = 8.dp,
+            color = EbbingTheme.colors.dark2,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -283,7 +283,7 @@ private fun EbbingTodoList(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
-                    tint = EbbingTheme.colors.white,
+                    tint = EbbingTheme.colors.background,
                     modifier = Modifier
                         .size(24.dp)
                         .clip(RoundedCornerShape(6.dp))
@@ -405,6 +405,7 @@ private fun TodoListCard(
             Image(
                 painter = painterResource(R.drawable.ic_3dots),
                 contentDescription = null,
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
                 modifier = Modifier
                     .size(20.dp)
                     .clickable { onEditScheduleClick(todo) }
@@ -413,7 +414,7 @@ private fun TodoListCard(
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun Preview1() {
     BasePreview {

@@ -6,7 +6,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 
 private val LocalColors = staticCompositionLocalOf {
-    EbbingColors()
+    lightModeColorScheme
 }
 private val LocalTypography = staticCompositionLocalOf {
     EbbingTypography()
@@ -18,9 +18,7 @@ fun EbbingTheme(
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalColors provides EbbingColors().copy(
-            background = if (darkTheme) DarkBackground else LightBackground
-        )
+        LocalColors provides if (darkTheme) darkModeColorScheme else lightModeColorScheme
     ) {
         CompositionLocalProvider(content = content)
     }

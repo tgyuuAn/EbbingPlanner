@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -36,9 +37,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.ui.clickable
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
@@ -83,8 +85,8 @@ fun EbbingTextInputDefault(
                 }
             }
         ),
-        textStyle = EbbingTheme.typography.bodyMM,
-        cursorBrush = SolidColor(EbbingTheme.colors.primaryDefault),
+        textStyle = EbbingTheme.typography.bodyMM.copy(color = EbbingTheme.colors.black),
+        cursorBrush = SolidColor(EbbingTheme.colors.black),
         decorationBox = { innerTextField ->
             Row {
                 Box(modifier = Modifier.weight(1f)) {
@@ -92,7 +94,7 @@ fun EbbingTextInputDefault(
                         Text(
                             text = hint,
                             style = EbbingTheme.typography.bodyMM,
-                            color = EbbingTheme.colors.dark3,
+                            color = EbbingTheme.colors.black,
                             modifier = Modifier.align(Alignment.CenterStart)
                         )
                     }
@@ -148,8 +150,7 @@ fun EbbingTextInputDropDown(
         Text(
             text = value.ifEmpty { hint },
             style = EbbingTheme.typography.bodyMM,
-            color = if (value.isNotEmpty()) EbbingTheme.colors.black
-            else EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
@@ -158,12 +159,13 @@ fun EbbingTextInputDropDown(
         Image(
             painter = painterResource(R.drawable.ic_textinput_dropdown),
             contentDescription = null,
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
             modifier = Modifier.size(24.dp),
         )
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun PreviewTextInput() {
     BasePreview {
@@ -192,12 +194,11 @@ private fun PreviewTextInput() {
                     .fillMaxWidth()
                     .padding(16.dp),
             )
-
         }
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun Preview2() {
     BasePreview {

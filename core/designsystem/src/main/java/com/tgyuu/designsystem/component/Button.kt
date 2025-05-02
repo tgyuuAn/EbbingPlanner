@@ -13,8 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Composable
@@ -30,9 +31,9 @@ fun EbbingSolidButton(
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = EbbingTheme.colors.primaryDefault,
-            contentColor = EbbingTheme.colors.white,
+            contentColor = EbbingTheme.colors.background,
             disabledContainerColor = EbbingTheme.colors.light1,
-            disabledContentColor = EbbingTheme.colors.white,
+            disabledContentColor = EbbingTheme.colors.background,
         ),
         contentPadding = PaddingValues(vertical = 14.dp, horizontal = 12.dp),
         modifier = modifier
@@ -60,7 +61,7 @@ fun EbbingOutlinedButton(
         shape = shape,
         border = BorderStroke(width = 1.dp, color = EbbingTheme.colors.primaryDefault),
         colors = ButtonDefaults.buttonColors(
-            containerColor = EbbingTheme.colors.white,
+            containerColor = EbbingTheme.colors.background,
             contentColor = EbbingTheme.colors.primaryDefault,
             disabledContainerColor = EbbingTheme.colors.light1,
             disabledContentColor = EbbingTheme.colors.primaryDefault,
@@ -76,7 +77,7 @@ fun EbbingOutlinedButton(
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 fun PreviewPieceSolidButton() {
     BasePreview {

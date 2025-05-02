@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,8 +47,9 @@ import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.BasePreview
 import com.tgyuu.designsystem.component.EbbingChip
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
@@ -256,7 +256,7 @@ private fun TitleContent(
     Text(
         text = "제목",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -311,7 +311,7 @@ private fun TagContent(
     Text(
         text = "태그",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -334,7 +334,7 @@ private fun PriorityContent(
     Text(
         text = "우선순위",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -359,7 +359,7 @@ private fun RepeatCycleContent(
     Text(
         text = "반복 주기",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -381,7 +381,7 @@ private fun RestDayContent(
     Text(
         text = "쉬는 날",
         style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.dark1,
+        color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -414,7 +414,7 @@ private fun ScheduleContent(
             Text(
                 text = "${schedules.size} 개의 학습 일정",
                 style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.dark1,
+                color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 32.dp),
             )
 
@@ -458,26 +458,26 @@ private fun ScheduleCard(
             text = idx.toString(),
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.black,
         )
 
         Text(
             text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.black,
         )
 
         Text(
             text = schedule.toRelativeDayDescription(),
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.black,
         )
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun PreviewAddTodo() {
     BasePreview {

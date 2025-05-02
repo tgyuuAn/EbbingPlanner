@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -40,6 +41,7 @@ internal fun CalendarController(
                 Image(
                     painter = painterResource(R.drawable.ic_return),
                     contentDescription = "이전 달",
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
                     modifier = Modifier.size(16.dp),
                 )
             } else {
@@ -51,7 +53,7 @@ internal fun CalendarController(
             text = "${currentDate.year}년 ${currentDate.monthValue}월",
             textAlign = TextAlign.Center,
             style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.black,
         )
 
         Spacer(modifier = Modifier.size(40.dp))

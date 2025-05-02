@@ -11,13 +11,15 @@ private val SubDefault = Color(0xFFFF7490)
 private val SubMiddle = Color(0xFFFFB9C7)
 private val SubLight = Color(0xFFFFE3E9)
 
-val DarkBackground = Color(0xFF0F4C75)
 val LightBackground = Color(0xFFFFFFFF)
+val DarkBackground = Color(0xFF262729)
 
 private val Black = Color(0xFF1B1A2A)
+
 private val Dark1 = Color(0xFF484B4D)
 private val Dark2 = Color(0xFF6C7073)
 private val Dark3 = Color(0xFF909599)
+
 private val Light1 = Color(0xFFCBD1D9)
 private val Light2 = Color(0xFFE8EBF0)
 private val Light3 = Color(0xFFF4F6FA)
@@ -44,3 +46,15 @@ data class EbbingColors(
     val white: Color = White,
     val error: Color = Error,
 )
+
+internal val darkModeColorScheme = EbbingColors(
+    primaryDefault = PrimaryLight,
+    primaryLight = PrimaryDefault,
+    background = DarkBackground,
+    black = White,
+    white = Black,
+    light3 = Dark2,
+    dark1 = Light1,
+    dark2 = Light2,
+)
+internal val lightModeColorScheme = EbbingColors()

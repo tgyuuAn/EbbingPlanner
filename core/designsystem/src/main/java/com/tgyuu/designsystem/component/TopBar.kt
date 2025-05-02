@@ -15,10 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.ui.clickable
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
@@ -62,6 +64,7 @@ fun EbbingSubTopBar(
         Image(
             painter = painterResource(R.drawable.ic_arrow_left),
             contentDescription = "뒤로 가기 버튼",
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .clickable { onNavigationClick() }
@@ -78,7 +81,7 @@ fun EbbingSubTopBar(
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 fun PreviewTopBar() {
     BasePreview {
@@ -89,7 +92,10 @@ fun PreviewTopBar() {
                 Image(
                     painter = painterResource(R.drawable.ic_close),
                     contentDescription = "오른쪽 버튼",
-                    modifier = Modifier.size(32.dp),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(32.dp),
                 )
             },
             modifier = Modifier

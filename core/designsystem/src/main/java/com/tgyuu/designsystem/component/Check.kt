@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
@@ -28,7 +30,7 @@ fun EbbingCheck(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val buttonColor by animateColorAsState(targetValue = if (checked) Color(colorValue) else EbbingTheme.colors.white)
+    val buttonColor by animateColorAsState(targetValue = if (checked) Color(colorValue) else EbbingTheme.colors.background)
 
     Surface(
         shape = RoundedCornerShape(8.dp),
@@ -41,14 +43,14 @@ fun EbbingCheck(
     ) {
         Image(
             painter = painterResource(R.drawable.ic_check),
-            colorFilter = ColorFilter.tint(EbbingTheme.colors.white),
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.background),
             contentDescription = null,
             modifier = Modifier.padding(8.dp)
         )
     }
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun PreviewCheck() {
     BasePreview {

@@ -39,7 +39,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.BasePreview
+import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme

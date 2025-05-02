@@ -65,7 +65,7 @@ private fun CalendarDayItem(
     modifier: Modifier = Modifier,
 ) {
     val dayItemColor by animateColorAsState(
-        if (calendarDate.date == selectedDate) Color.DarkGray else Color.Transparent
+        if (calendarDate.date == selectedDate) EbbingTheme.colors.black else Color.Transparent
     )
 
     Surface(
@@ -82,9 +82,9 @@ private fun CalendarDayItem(
         ) {
             val textColor by animateColorAsState(
                 when {
-                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.light1
+                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
                     calendarDate.date == selectedDate -> EbbingTheme.colors.white
-                    else -> EbbingTheme.colors.dark1
+                    else -> EbbingTheme.colors.black
                 }
             )
 

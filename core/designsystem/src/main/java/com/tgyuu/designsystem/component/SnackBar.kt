@@ -18,8 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import kotlinx.coroutines.delay
 
@@ -68,7 +69,7 @@ fun EbbingSnackBarHost(
     )
 }
 
-@Preview
+@EbbingPreview
 @Composable
 private fun PreviewSnackBar() {
     BasePreview {

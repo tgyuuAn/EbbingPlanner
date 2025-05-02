@@ -36,6 +36,8 @@ internal fun AppBottomBar(
     navigateToBottomBarDestination: (Route) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val black = EbbingTheme.colors.black
+
     Box(
         modifier = Modifier
             .height(71.dp)
@@ -46,7 +48,7 @@ internal fun AppBottomBar(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.Black.copy(alpha = 0.1f),
+                            black.copy(alpha = 0.1f),
                         ),
                         startY = 0f,
                         endY = shadowHeight
@@ -85,9 +87,9 @@ internal fun AppBottomBar(
                     alwaysShowLabel = false,
                     selected = currentDestination.isRouteInHierarchy(topLevelRoute.route),
                     colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                        selectedIconColor = EbbingTheme.colors.primaryDefault,
+                        selectedIconColor = EbbingTheme.colors.black,
                         unselectedIconColor = EbbingTheme.colors.dark3,
-                        selectedTextColor = EbbingTheme.colors.primaryDefault,
+                        selectedTextColor = EbbingTheme.colors.black,
                         unselectedTextColor = EbbingTheme.colors.dark3,
                         indicatorColor = Color.Transparent,
                     ),
