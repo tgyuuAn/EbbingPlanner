@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import java.time.DayOfWeek
 
 @Composable
 internal fun CalendarHeader(modifier: Modifier = Modifier) {
@@ -19,7 +17,7 @@ internal fun CalendarHeader(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .semantics { contentDescription = "달력 헤더" },
     ) {
-        DayOfWeek.entries.forEachIndexed { idx, weekday ->
+        EbbingDayOfWeek.forEachIndexed { idx, weekday ->
             val weekDayText = weekday.toKorean()
 
             Text(

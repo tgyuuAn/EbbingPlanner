@@ -16,14 +16,6 @@ class CalendarState(val originSelectedDate: LocalDate = LocalDate.now()) {
         currentDisplayDate = date
     }
 
-    fun onNextMonthClick() {
-        currentDisplayDate = currentDisplayDate.plusMonths(1)
-    }
-
-    fun onPreviousMonthClick() {
-        currentDisplayDate = currentDisplayDate.minusMonths(1)
-    }
-
     companion object {
         val Saver: Saver<CalendarState, *> = listSaver(
             save = { listOf(it.originSelectedDate) },

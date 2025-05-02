@@ -1,14 +1,30 @@
 package com.tgyuu.designsystem.component.calendar
 
 import java.time.DayOfWeek
+import java.time.DayOfWeek.FRIDAY
+import java.time.DayOfWeek.MONDAY
+import java.time.DayOfWeek.SATURDAY
+import java.time.DayOfWeek.SUNDAY
+import java.time.DayOfWeek.THURSDAY
+import java.time.DayOfWeek.TUESDAY
+import java.time.DayOfWeek.WEDNESDAY
 import java.time.LocalDate
+
+internal val EbbingDayOfWeek = listOf(
+    SUNDAY,
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+)
 
 data class CalendarDate(
     val date: LocalDate,
     val isCurrentMonth: Boolean,
 ) {
     val dayOfMonth: Int = date.dayOfMonth
-    val dayOfWeek: DayOfWeek = date.dayOfWeek
 }
 
 fun getCalendarDates(date: LocalDate): List<CalendarDate> {
@@ -19,7 +35,7 @@ fun getCalendarDates(date: LocalDate): List<CalendarDate> {
     return previous + current + next
 }
 
-fun getPreviousMonthDatesToShow(date: LocalDate): List<CalendarDate> {
+private fun getPreviousMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     val firstDayOfMonth = date.withDayOfMonth(1)
     val previousMonth = firstDayOfMonth.minusMonths(1)
     val lastDayOfPreviousMonth = previousMonth.lengthOfMonth()
@@ -31,7 +47,7 @@ fun getPreviousMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     }
 }
 
-fun getCurrentMonthDatesToShow(date: LocalDate): List<CalendarDate> {
+private fun getCurrentMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     val yearMonth = date.withDayOfMonth(1)
     val lastDay = yearMonth.lengthOfMonth()
     return (1..lastDay).map { day ->
@@ -39,7 +55,7 @@ fun getCurrentMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     }
 }
 
-fun getNextMonthDatesToShow(date: LocalDate): List<CalendarDate> {
+private fun getNextMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     val totalDayCountUntilNextMonth =
         getPreviousMonthDatesToShow(date).size + getCurrentMonthDatesToShow(date).size
     val remainCount = 42 - totalDayCountUntilNextMonth
@@ -53,11 +69,15 @@ fun getNextMonthDatesToShow(date: LocalDate): List<CalendarDate> {
 /**
  * 해당 월의 달력을 6줄 7칸 기준으로 그릴 때,
  * 1일 전에 보여야 할 이전 달의 요일 목록을 반환합니다.
+ *
  */
 private fun getPreviousMonthDayOfWeeksToShow(date: LocalDate): List<DayOfWeek> {
-    val firstDayOfMonth = getFirstDayOfWeek(date)
-    val count = (firstDayOfMonth.ordinal).coerceIn(0..6)
-    return (0 until count).map { DayOfWeek.of((it + 1)) }
+    val firstDayOfWeek = getFirstDayOfWeek(date)
+    val count = (firstDayOfWeek.value % 7) // SUNDAY(7) % 7 = 0 → 일요일 기준
+
+    return (0 until count).map {
+        DayOfWeek.of((it + 1))
+    }
 }
 
 /**
