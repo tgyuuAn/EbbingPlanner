@@ -1,8 +1,6 @@
 package com.tgyuu.home.graph.main
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -265,87 +263,83 @@ private fun EbbingTodoList(
     onSortTypeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Crossfade(
-        targetState = sortType to todoLists,
-        animationSpec = tween(durationMillis = 300),
-        modifier = modifier,
-    ) { (sortType, todoLists) ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 24.dp),
         ) {
+            val displayDate = if (selectedDate == LocalDate.now()) "오늘"
+            else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일"
+
+            Text(
+                text = "${displayDate}  할 일 ${todoLists.size}",
+                style = EbbingTheme.typography.bodyMSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.weight(1f),
+            )
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 24.dp),
+                    .padding(end = 16.dp)
+                    .clickable { onSortTypeClick() },
             ) {
-                val displayDate = if (selectedDate == LocalDate.now()) "오늘"
-                else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일"
-
                 Text(
-                    text = "${displayDate}  할 일 ${todoLists.size}",
+                    text = sortType.displayName,
                     style = EbbingTheme.typography.bodyMSB,
                     color = EbbingTheme.colors.black,
-                    modifier = Modifier.weight(1f),
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(2.dp),
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .clickable { onSortTypeClick() },
-                ) {
-                    Text(
-                        text = sortType.displayName,
-                        style = EbbingTheme.typography.bodyMSB,
-                        color = EbbingTheme.colors.black,
-                    )
-
-                    Image(
-                        painter = painterResource(R.drawable.ic_arrow_down),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-
-                Icon(
-                    imageVector = Icons.Default.Add,
+                Image(
+                    painter = painterResource(R.drawable.ic_arrow_down),
                     contentDescription = null,
-                    tint = EbbingTheme.colors.background,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(EbbingTheme.colors.primaryDefault)
-                        .clickable { onAddTodoClick() },
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                    modifier = Modifier.size(24.dp),
                 )
             }
 
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                itemsIndexed(
-                    items = todoLists,
-                    key = { idx, item -> item.id },
-                ) { idx, item ->
-                    TodoListCard(
-                        todo = item,
-                        todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
-                        onCheckedChange = onCheckedChange,
-                        onEditScheduleClick = onEditScheduleClick,
-                        modifier = Modifier.padding(
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                tint = EbbingTheme.colors.background,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(EbbingTheme.colors.primaryDefault)
+                    .clickable { onAddTodoClick() },
+            )
+        }
+
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            items(
+                items = todoLists,
+                key = { item -> item.id },
+            ) { item ->
+                TodoListCard(
+                    todo = item,
+                    todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
+                    onCheckedChange = onCheckedChange,
+                    onEditScheduleClick = onEditScheduleClick,
+                    modifier = Modifier
+                        .padding(
                             horizontal = 20.dp,
                             vertical = 6.dp,
                         )
-                    )
-                }
-
-                item { Spacer(modifier = Modifier.height(60.dp)) }
+                        .animateItem()
+                )
             }
+
+            item { Spacer(modifier = Modifier.height(60.dp)) }
         }
     }
 }

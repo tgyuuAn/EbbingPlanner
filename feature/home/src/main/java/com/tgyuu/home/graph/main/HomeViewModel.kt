@@ -79,19 +79,14 @@ class HomeViewModel @Inject constructor(
         val newSchedule = schedule.copy(isDone = !schedule.isDone)
         todoRepository.updateTodo(newSchedule)
 
+        allSchedules = allSchedules.map {
+            if (it.id == schedule.id) newSchedule else it
+        }
+
+        val updatedByInfo = allSchedules.groupBy { it.infoId }
+        val updatedByDate = buildByDateMap(allSchedules, currentState.sortType)
+
         setState {
-            val updatedByInfo = schedulesByTodoInfo
-                .mapValues { (infoId, list) ->
-                    if (infoId == schedule.infoId) {
-                        list.map { if (it.id == schedule.id) newSchedule else it }
-                    } else list
-                }
-
-            val updatedByDate = schedulesByDateMap
-                .mapValues { (_, list) ->
-                    list.map { if (it.id == schedule.id) newSchedule else it }
-                }
-
             copy(
                 schedulesByTodoInfo = updatedByInfo,
                 schedulesByDateMap = updatedByDate
@@ -102,18 +97,11 @@ class HomeViewModel @Inject constructor(
     private suspend fun onDeleteSchedule(schedule: TodoSchedule) {
         todoRepository.deleteTodo(schedule)
 
+        allSchedules = allSchedules.filterNot { it.id == schedule.id }
+        val updatedByInfo = allSchedules.groupBy { it.infoId }
+        val updatedByDate = buildByDateMap(allSchedules, currentState.sortType)
+
         setState {
-            val updatedByInfo = schedulesByTodoInfo
-                .mapValues { (infoId, list) ->
-                    if (infoId == schedule.infoId) list.filter { it.id != schedule.id }
-                    else list
-                }
-
-            val updatedByDate = schedulesByDateMap
-                .mapValues { (_, list) ->
-                    list.filter { it.id != schedule.id }
-                }
-
             copy(
                 schedulesByTodoInfo = updatedByInfo,
                 schedulesByDateMap = updatedByDate
@@ -192,9 +180,9 @@ class HomeViewModel @Inject constructor(
 
         return grouped.mapValues { (_, list) ->
             when (sortType) {
-                SortType.CREATED -> list.sortedBy { it.createdAt }
-                SortType.NAME -> list.sortedBy { it.title }
-                SortType.PRIORITY -> list.sortedBy { it.priority }
+                SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
+                SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
+                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { it.priority }))
             }
         }
     }
