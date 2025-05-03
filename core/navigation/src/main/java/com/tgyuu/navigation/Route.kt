@@ -37,7 +37,7 @@ data object TagBaseRoute : Route
 
 sealed interface TagGraph : Route {
     @Serializable
-    data object TagHomeRoute : TagGraph
+    data object TagRoute : TagGraph
 
     @Serializable
     data object AddTagRoute : TagGraph

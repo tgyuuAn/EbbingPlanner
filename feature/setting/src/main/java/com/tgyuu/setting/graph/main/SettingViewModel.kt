@@ -50,7 +50,7 @@ class SettingViewModel @Inject constructor(
             )
 
             SettingIntent.OnNotificationToggleClick -> onNotificationToggleClick()
-            SettingIntent.OnTagManageClick -> navigationBus.navigate(To(TagGraph.AddTagRoute))
+            SettingIntent.OnTagManageClick -> navigationBus.navigate(To(TagGraph.TagRoute))
         }
     }
 
