@@ -7,7 +7,9 @@ import kotlin.reflect.KClass
 
 private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
     HomeGraph.AddTodoRoute::class,
+    TagGraph.TagRoute::class,
     TagGraph.AddTagRoute::class,
+    TagGraph.EditTagRoute::class,
     SettingGraph.WebViewRoute::class,
 )
 
