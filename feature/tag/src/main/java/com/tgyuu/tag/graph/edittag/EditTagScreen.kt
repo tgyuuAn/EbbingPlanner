@@ -1,4 +1,4 @@
-package com.tgyuu.tag.graph.addtag
+package com.tgyuu.tag.graph.edittag
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,29 +40,29 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
+import com.tgyuu.tag.graph.edittag.contract.EditTagIntent
 import com.tgyuu.tag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
-internal fun AddTagRoute(
-    viewModel: AddTagViewModel = hiltViewModel()
+internal fun EditTagRoute(
+    viewModel: EditTagViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AddTagScreen(
+    EditTagScreen(
         isSaveEnabled = state.isSaveEnabled,
         name = state.name,
         nameInputState = state.nameInputState,
         colorValue = state.colorValue,
-        onBackClick = { viewModel.onIntent(AddTagIntent.OnBackClick) },
-        onSaveClick = { viewModel.onIntent(AddTagIntent.OnSaveClick) },
-        onNameChange = { viewModel.onIntent(AddTagIntent.OnNameChange(it)) },
+        onBackClick = { viewModel.onIntent(EditTagIntent.OnBackClick) },
+        onSaveClick = { viewModel.onIntent(EditTagIntent.OnSaveClick) },
+        onNameChange = { viewModel.onIntent(EditTagIntent.OnNameChange(it)) },
         onColorDropDownClick = {
             viewModel.onIntent(
-                AddTagIntent.OnColorDropDownClick({
+                EditTagIntent.OnColorDropDownClick({
                     ColorBottomSheet(
                         originColor = state.colorValue,
-                        updateColor = { viewModel.onIntent(AddTagIntent.OnColorChange(it)) }
+                        updateColor = { viewModel.onIntent(EditTagIntent.OnColorChange(it)) }
                     )
                 })
             )
@@ -71,7 +71,7 @@ internal fun AddTagRoute(
 }
 
 @Composable
-private fun AddTagScreen(
+private fun EditTagScreen(
     isSaveEnabled: Boolean,
     name: String,
     nameInputState: InputState,
@@ -221,7 +221,7 @@ private fun ColorContent(
 @Composable
 private fun PreviewAddTag() {
     BasePreview {
-        AddTagScreen(
+        EditTagScreen(
             isSaveEnabled = true,
             name = "",
             nameInputState = InputState.WARNING,

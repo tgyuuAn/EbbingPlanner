@@ -6,11 +6,16 @@ import androidx.navigation.navigation
 import com.tgyuu.navigation.TagBaseRoute
 import com.tgyuu.navigation.TagGraph
 import com.tgyuu.tag.graph.addtag.AddTagRoute
+import com.tgyuu.tag.graph.edittag.EditTagRoute
 
 fun NavGraphBuilder.tagGraph() {
     navigation<TagBaseRoute>(startDestination = TagGraph.AddTagRoute) {
         composable<TagGraph.AddTagRoute> {
             AddTagRoute()
+        }
+
+        composable<TagGraph.EditTagRoute> {
+            EditTagRoute()
         }
     }
 }
