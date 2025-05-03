@@ -41,6 +41,7 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.tag.graph.edittag.contract.EditTagIntent
+import com.tgyuu.tag.graph.edittag.contract.EditTagState
 import com.tgyuu.tag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
@@ -50,10 +51,7 @@ internal fun EditTagRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     EditTagScreen(
-        isSaveEnabled = state.isSaveEnabled,
-        name = state.name,
-        nameInputState = state.nameInputState,
-        colorValue = state.colorValue,
+        state = state,
         onBackClick = { viewModel.onIntent(EditTagIntent.OnBackClick) },
         onSaveClick = { viewModel.onIntent(EditTagIntent.OnSaveClick) },
         onNameChange = { viewModel.onIntent(EditTagIntent.OnNameChange(it)) },
@@ -72,10 +70,7 @@ internal fun EditTagRoute(
 
 @Composable
 private fun EditTagScreen(
-    isSaveEnabled: Boolean,
-    name: String,
-    nameInputState: InputState,
-    colorValue: Int,
+    state: EditTagState,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onNameChange: (String) -> Unit,
@@ -86,18 +81,18 @@ private fun EditTagScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "태그 추가",
+            title = "태그 수정",
             onNavigationClick = onBackClick,
             rightComponent = {
                 Text(
                     text = "저장",
-                    style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
                             throttleTime = 1500L,
-                            enabled = isSaveEnabled
+                            enabled = state.isSaveEnabled
                         ) {
                             onSaveClick()
                             focusManager.clearFocus()
@@ -113,19 +108,19 @@ private fun EditTagScreen(
                 .imePadding(),
         ) {
             Text(
-                text = "새로운 태그를 추가해요",
+                text = "${state.originTag?.name} 태그를 수정해요",
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
             )
 
             NameContent(
-                name = name,
-                nameInputState = nameInputState,
+                name = state.name,
+                nameInputState = state.nameInputState,
                 onNameChange = onNameChange,
             )
 
             ColorContent(
-                colorValue = colorValue,
+                colorValue = state.colorValue,
                 onColorDropDownClick = onColorDropDownClick,
             )
         }
@@ -219,13 +214,10 @@ private fun ColorContent(
 
 @EbbingPreview
 @Composable
-private fun PreviewAddTag() {
+private fun PreviewEditTag() {
     BasePreview {
         EditTagScreen(
-            isSaveEnabled = true,
-            name = "",
-            nameInputState = InputState.WARNING,
-            colorValue = 0xFFFF6961.toInt(),
+            state = EditTagState(colorValue = 0xFFFF6961.toInt()),
             onSaveClick = {},
             onBackClick = {},
             onNameChange = {},

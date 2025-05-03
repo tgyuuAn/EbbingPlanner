@@ -155,7 +155,7 @@ class AddTodoViewModel @Inject constructor(
 
         todoRepository.addTodo(
             title = currentState.title,
-            schedules = currentState.schedules,
+            dates = currentState.schedules,
             tagId = currentState.tag.id,
             priority = currentState.priority?.toIntOrNull(),
         )

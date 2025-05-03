@@ -43,5 +43,5 @@ sealed interface TagGraph : Route {
     data object AddTagRoute : TagGraph
 
     @Serializable
-    data object EditTagRoute : TagGraph
+    data class EditTagRoute(val tagId: Int) : TagGraph
 }

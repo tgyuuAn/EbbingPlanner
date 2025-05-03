@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.tgyuu.database.model.TodoTagEntity
 
 @Dao
@@ -13,7 +14,10 @@ interface TodoTagsDao {
     suspend fun insertTag(tag: TodoTagEntity): Long
 
     @Delete
-    suspend fun deleteTags(tags: List<TodoTagEntity>)
+    suspend fun deleteTag(tag: TodoTagEntity)
+
+    @Update
+    suspend fun updateTag(tag: TodoTagEntity)
 
     @Query(value = "SELECT * FROM todo_tag")
     suspend fun getTags(): List<TodoTagEntity>

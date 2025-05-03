@@ -1,5 +1,7 @@
 package com.tgyuu.tag.graph.edittag
 
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -10,6 +12,7 @@ import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.edittag.contract.EditTagIntent
 import com.tgyuu.tag.graph.edittag.contract.EditTagState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,7 +20,25 @@ class EditTagViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
+
+    init {
+        val tagId = savedStateHandle.get<Int>("tagId")
+            ?: throw IllegalArgumentException("해당 태그는 없습니다")
+
+        viewModelScope.launch {
+            val originTag = todoRepository.loadTag(tagId)
+
+            setState {
+                copy(
+                    originTag = originTag,
+                    name = originTag.name,
+                    colorValue = originTag.color,
+                )
+            }
+        }
+    }
 
     override suspend fun processIntent(intent: EditTagIntent) {
         when (intent) {
@@ -52,11 +73,13 @@ class EditTagViewModel @Inject constructor(
             return
         }
 
-        todoRepository.addTag(
-            name = currentState.name.trim(),
-            color = currentState.colorValue,
+        todoRepository.updateTag(
+            todoTag = currentState.originTag!!.copy(
+                name = currentState.name,
+                color = currentState.colorValue,
+            )
         )
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 태그를 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그를 수정하였습니다"))
         navigationBus.navigate(NavigationEvent.Up)
     }
 }

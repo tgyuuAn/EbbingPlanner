@@ -20,7 +20,7 @@ interface TodoRepository {
     suspend fun addTodo(
         title: String,
         tagId: Int,
-        schedules: List<LocalDate>,
+        dates: List<LocalDate>,
         priority: Int?,
     )
 
@@ -29,4 +29,7 @@ interface TodoRepository {
 
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun deleteTodo(todoSchedule: TodoSchedule)
+
+    suspend fun updateTag(todoTag: TodoTag)
+    suspend fun deleteTag(todoTag: TodoTag)
 }

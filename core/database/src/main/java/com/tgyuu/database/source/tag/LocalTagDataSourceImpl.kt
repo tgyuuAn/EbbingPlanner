@@ -15,8 +15,9 @@ class LocalTagDataSourceImpl @Inject constructor(
         color: Int,
     ) = todoTagsDao.insertTag(TodoTagEntity(name = name, color = color))
 
-    override suspend fun deleteTags(vararg tags: TodoTag) =
-        todoTagsDao.deleteTags(tags.map(TodoTag::toEntity))
+    override suspend fun updateTag(tag: TodoTag) = todoTagsDao.updateTag(tag.toEntity())
+
+    override suspend fun deleteTag(tag: TodoTag) = todoTagsDao.deleteTag(tag.toEntity())
 
     override suspend fun getTags(): List<TodoTagEntity> = todoTagsDao.getTags()
     override suspend fun getTag(id: Int): TodoTagEntity = todoTagsDao.getTag(id)

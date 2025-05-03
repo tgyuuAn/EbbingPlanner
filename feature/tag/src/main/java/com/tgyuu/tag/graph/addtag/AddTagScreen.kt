@@ -41,6 +41,7 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
+import com.tgyuu.tag.graph.addtag.contract.AddTagState
 import com.tgyuu.tag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
@@ -50,10 +51,7 @@ internal fun AddTagRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AddTagScreen(
-        isSaveEnabled = state.isSaveEnabled,
-        name = state.name,
-        nameInputState = state.nameInputState,
-        colorValue = state.colorValue,
+        state = state,
         onBackClick = { viewModel.onIntent(AddTagIntent.OnBackClick) },
         onSaveClick = { viewModel.onIntent(AddTagIntent.OnSaveClick) },
         onNameChange = { viewModel.onIntent(AddTagIntent.OnNameChange(it)) },
@@ -72,10 +70,7 @@ internal fun AddTagRoute(
 
 @Composable
 private fun AddTagScreen(
-    isSaveEnabled: Boolean,
-    name: String,
-    nameInputState: InputState,
-    colorValue: Int,
+    state: AddTagState,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onNameChange: (String) -> Unit,
@@ -91,13 +86,13 @@ private fun AddTagScreen(
             rightComponent = {
                 Text(
                     text = "저장",
-                    style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
                             throttleTime = 1500L,
-                            enabled = isSaveEnabled
+                            enabled = state.isSaveEnabled
                         ) {
                             onSaveClick()
                             focusManager.clearFocus()
@@ -119,13 +114,13 @@ private fun AddTagScreen(
             )
 
             NameContent(
-                name = name,
-                nameInputState = nameInputState,
+                name = state.name,
+                nameInputState = state.nameInputState,
                 onNameChange = onNameChange,
             )
 
             ColorContent(
-                colorValue = colorValue,
+                colorValue = state.colorValue,
                 onColorDropDownClick = onColorDropDownClick,
             )
         }
@@ -222,10 +217,7 @@ private fun ColorContent(
 private fun PreviewAddTag() {
     BasePreview {
         AddTagScreen(
-            isSaveEnabled = true,
-            name = "",
-            nameInputState = InputState.WARNING,
-            colorValue = 0xFFFF6961.toInt(),
+            state = AddTagState(colorValue = 0xFFFF6961.toInt()),
             onSaveClick = {},
             onBackClick = {},
             onNameChange = {},

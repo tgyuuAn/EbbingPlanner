@@ -10,7 +10,8 @@ interface LocalTagDataSource {
         color: Int,
     ): Long
 
-    suspend fun deleteTags(vararg tags: TodoTag)
+    suspend fun updateTag(tag: TodoTag)
+    suspend fun deleteTag(tag: TodoTag)
     suspend fun getTags(): List<TodoTagEntity>
     suspend fun getTag(id: Int): TodoTagEntity
 }
