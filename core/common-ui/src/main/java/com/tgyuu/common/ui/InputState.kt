@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph
+package com.tgyuu.common.ui
 
 enum class InputState {
     DEFAULT,

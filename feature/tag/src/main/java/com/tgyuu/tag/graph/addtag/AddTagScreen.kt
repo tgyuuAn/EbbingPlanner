@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.addtag
+package com.tgyuu.tag.graph.addtag
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.common.ui.EbbingVisibleAnimation
+import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -39,9 +40,8 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.home.graph.InputState
-import com.tgyuu.home.graph.addtag.contract.AddTagIntent
-import com.tgyuu.home.graph.addtag.ui.bottomsheet.ColorBottomSheet
+import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
+import com.tgyuu.tag.graph.addtag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
 internal fun AddTagRoute(

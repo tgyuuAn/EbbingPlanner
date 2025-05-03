@@ -70,5 +70,6 @@ dependencies {
     implementation(projects.feature.dashboard)
     implementation(projects.feature.setting)
     implementation(projects.feature.alarm)
+    implementation(projects.feature.tag)
     baselineProfile(projects.baselineprofile)
 }

@@ -39,6 +39,7 @@
             <option value="$PROJECT_DIR$/feature/dashboard" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/setting" />
+            <option value="$PROJECT_DIR$/feature/tag" />
           </set>
         </option>
       </GradleProjectSettings>

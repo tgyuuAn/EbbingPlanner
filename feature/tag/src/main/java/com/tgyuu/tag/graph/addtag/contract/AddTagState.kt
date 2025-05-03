@@ -1,8 +1,8 @@
-package com.tgyuu.home.graph.addtag.contract
+package com.tgyuu.tag.graph.addtag.contract
 
 import com.tgyuu.common.base.UiState
+import com.tgyuu.common.ui.InputState
 import com.tgyuu.domain.model.DefaultTodoTag
-import com.tgyuu.home.graph.InputState
 
 data class AddTagState(
     val name: String = "",

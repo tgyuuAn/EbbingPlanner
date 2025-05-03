@@ -9,14 +9,15 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.home.graph.InputState.Companion.getStringInputState
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
+import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -139,7 +140,7 @@ class EditTodoViewModel @Inject constructor(
 
     private suspend fun onAddTagClick() {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(NavigationEvent.To(HomeGraph.AddTagRoute))
+        navigationBus.navigate(NavigationEvent.To(TagGraph.AddTagRoute))
     }
 
     private suspend fun onSaveClick() {

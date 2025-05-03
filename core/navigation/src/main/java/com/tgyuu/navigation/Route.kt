@@ -16,9 +16,6 @@ sealed interface HomeGraph : Route {
 
     @Serializable
     data class EditTodoRoute(val scheduleId: Int) : HomeGraph
-
-    @Serializable
-    data object AddTagRoute : HomeGraph
 }
 
 @Serializable
@@ -33,4 +30,18 @@ sealed interface SettingGraph : Route {
 
     @Serializable
     data class WebViewRoute(val title: String, val url: String) : SettingGraph
+}
+
+@Serializable
+data object TagBaseRoute : Route
+
+sealed interface TagGraph : Route {
+    @Serializable
+    data object TagHomeRoute : TagGraph
+
+    @Serializable
+    data object AddTagRoute : TagGraph
+
+    @Serializable
+    data object EditTagRoute : TagGraph
 }

@@ -5,12 +5,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.tgyuu.common.toLocalDateOrThrow
-import com.tgyuu.home.graph.addtag.AddTagRoute
 import com.tgyuu.home.graph.addtodo.AddTodoRoute
 import com.tgyuu.home.graph.edittodo.EditTodoRoute
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
-import com.tgyuu.navigation.HomeGraph.AddTagRoute
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import java.time.LocalDate
@@ -30,10 +28,6 @@ fun NavGraphBuilder.homeGraph() {
 
         composable<HomeGraph.EditTodoRoute> {
             EditTodoRoute()
-        }
-
-        composable<AddTagRoute> {
-            AddTagRoute()
         }
     }
 }

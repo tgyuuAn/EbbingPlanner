@@ -4,7 +4,7 @@ import com.tgyuu.common.base.UiState
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.home.graph.InputState
+import com.tgyuu.common.ui.InputState
 import java.time.LocalDate
 
 data class EditTodoState(
