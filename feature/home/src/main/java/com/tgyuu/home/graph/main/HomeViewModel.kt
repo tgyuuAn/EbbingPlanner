@@ -194,7 +194,7 @@ class HomeViewModel @Inject constructor(
             when (sortType) {
                 SortType.CREATED -> list.sortedBy { it.createdAt }
                 SortType.NAME -> list.sortedBy { it.title }
-                SortType.PRIORITY -> list.sortedByDescending { it.priority }
+                SortType.PRIORITY -> list.sortedBy { it.priority }
             }
         }
     }
