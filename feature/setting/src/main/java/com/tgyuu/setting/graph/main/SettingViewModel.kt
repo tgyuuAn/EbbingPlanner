@@ -3,6 +3,7 @@ package com.tgyuu.setting.graph.main
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
@@ -49,6 +50,7 @@ class SettingViewModel @Inject constructor(
             )
 
             SettingIntent.OnNotificationToggleClick -> onNotificationToggleClick()
+            SettingIntent.OnTagManageClick -> navigationBus.navigate(To(HomeGraph.AddTagRoute))
         }
     }
 

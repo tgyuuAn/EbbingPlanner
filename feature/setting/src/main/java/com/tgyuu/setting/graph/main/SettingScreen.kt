@@ -38,8 +38,8 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.ui.clickable
-import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -64,6 +64,7 @@ internal fun SettingRoute(
     SettingScreen(
         state = state,
         onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) },
+        onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
@@ -75,6 +76,7 @@ internal fun SettingRoute(
 private fun SettingScreen(
     state: SettingState,
     onNoticeClick: () -> Unit,
+    onTagManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -101,9 +103,11 @@ private fun SettingScreen(
                 .padding(horizontal = 20.dp),
         ) {
             NotificationBody(
-                state.notificationEnabled,
-                onNotificationToggleClick,
+                notificationEnabled = state.notificationEnabled,
+                onNotificationToggleClick = onNotificationToggleClick,
             )
+
+            TagBody(onTagManageClick = onTagManageClick)
 
             InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -210,6 +214,43 @@ internal fun handlePermission(
             }
         }
     }
+}
+
+@Composable
+private fun TagBody(onTagManageClick: () -> Unit) {
+    Text(
+        text = "태그",
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onTagManageClick() },
+    ) {
+        Text(
+            text = "태그 관리",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
 }
 
 @Composable
@@ -354,6 +395,7 @@ private fun PreviewSettingScreen() {
         SettingScreen(
             state = SettingState(version = "v1.0.0"),
             onNoticeClick = {},
+            onTagManageClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},
