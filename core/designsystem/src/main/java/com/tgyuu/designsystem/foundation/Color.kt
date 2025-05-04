@@ -7,10 +7,6 @@ private val PrimaryDefault = Color(0xFF0F4C75)
 private val PrimaryMiddle = Color(0xFF3282B8)
 private val PrimaryLight = Color(0xFFBBE1FA)
 
-private val SubDefault = Color(0xFFFF7490)
-private val SubMiddle = Color(0xFFFFB9C7)
-private val SubLight = Color(0xFFFFE3E9)
-
 val LightBackground = Color(0xFFFFFFFF)
 val DarkBackground = Color(0xFF262729)
 
@@ -33,9 +29,6 @@ data class EbbingColors(
     val primaryDefault: Color = PrimaryDefault,
     val primaryMiddle: Color = PrimaryMiddle,
     val primaryLight: Color = PrimaryLight,
-    val subDefault: Color = SubDefault,
-    val subMiddle: Color = SubMiddle,
-    val subLight: Color = SubLight,
     val black: Color = Black,
     val dark1: Color = Dark1,
     val dark2: Color = Dark2,
