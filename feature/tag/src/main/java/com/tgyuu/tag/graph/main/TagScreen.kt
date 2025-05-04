@@ -37,6 +37,7 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.tag.graph.main.contract.TagIntent
 import com.tgyuu.tag.graph.main.contract.TagState
+import com.tgyuu.tag.graph.main.ui.dialog.DeleteDialog
 import java.time.LocalDate
 
 @Composable
@@ -67,6 +68,19 @@ private fun TagScreen(
 ) {
     var selectedTag by remember { mutableStateOf<TodoTag?>(null) }
     val listState = rememberLazyListState()
+    var isShowDialog by remember { mutableStateOf(false) }
+
+    if (isShowDialog && selectedTag != null) {
+        DeleteDialog(
+            tag = selectedTag!!,
+            onDismissRequest = { isShowDialog = false },
+            onDeleteClick = {
+                onDeleteClick(selectedTag!!)
+                isShowDialog = false
+                selectedTag = null
+            },
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -120,7 +134,7 @@ private fun TagScreen(
             ) {
                 EbbingOutlinedButton(
                     label = "삭제",
-                    onClick = { onDeleteClick(selectedTag!!) },
+                    onClick = { isShowDialog = true },
                     modifier = Modifier.weight(1f),
                 )
 

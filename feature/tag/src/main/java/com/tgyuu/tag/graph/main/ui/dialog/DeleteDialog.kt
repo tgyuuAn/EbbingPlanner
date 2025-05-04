@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.main.ui.dialog
+package com.tgyuu.tag.graph.main.ui.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.SpanStyle
@@ -8,11 +8,11 @@ import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.model.TodoTag
 
 @Composable
 internal fun DeleteDialog(
-    schedule: TodoSchedule,
+    tag: TodoTag,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -20,13 +20,13 @@ internal fun DeleteDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("${schedule.title} 일정을 ")
+                    append("${tag.name} 태그를 ")
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
                         append("삭제")
                     }
                     append(" 하시겠습니까?")
                 },
-                subText = "삭제한 일정은 되돌릴 수 없으니 신중히 선택해 주세요."
+                subText = "삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요."
             )
         },
         dialogBottom = {

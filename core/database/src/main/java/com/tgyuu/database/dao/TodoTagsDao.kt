@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.tgyuu.database.model.TodoTagEntity
 
@@ -15,6 +16,15 @@ interface TodoTagsDao {
 
     @Delete
     suspend fun deleteTag(tag: TodoTagEntity)
+
+    @Query("UPDATE todo_info SET tagId = 1 WHERE tagId = :tagId")
+    suspend fun resetTagId(tagId: Int)
+
+    @Transaction
+    suspend fun deleteTagWithReset(todoTag: TodoTagEntity) {
+        resetTagId(todoTag.id)
+        deleteTag(todoTag)
+    }
 
     @Update
     suspend fun updateTag(tag: TodoTagEntity)
