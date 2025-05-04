@@ -67,6 +67,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EbbingTheme {
+                val focusManager = LocalFocusManager.current
                 val scope = rememberCoroutineScope()
                 val navController = rememberNavController()
                 val snackBarHostState = remember { SnackbarHostState() }
@@ -80,6 +81,8 @@ class MainActivity : ComponentActivity() {
                     repeatOnStarted {
                         launch {
                             navigationBus.navigationFlow.collect { event ->
+                                eventBus.sendEvent(EbbingEvent.HideSnackBar)
+
                                 handleNavigationEvent(
                                     navController = navController,
                                     event = event,
@@ -92,6 +95,7 @@ class MainActivity : ComponentActivity() {
                                 when (event) {
                                     is EbbingEvent.ShowBottomSheet -> scope.launch {
                                         bottomSheetContent = event.content
+                                        focusManager.clearFocus()
                                         sheetState.show()
                                     }
 
@@ -115,8 +119,6 @@ class MainActivity : ComponentActivity() {
                     sheetState = sheetState,
                     sheetContent = bottomSheetContent,
                 ) {
-                    val focusManager = LocalFocusManager.current
-
                     Scaffold(
                         containerColor = EbbingTheme.colors.background,
                         snackbarHost = {
