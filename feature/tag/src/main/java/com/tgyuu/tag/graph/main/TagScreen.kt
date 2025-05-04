@@ -86,13 +86,15 @@ private fun TagScreen(
                     items = state.tagList,
                     key = { it.id },
                 ) { tag ->
-                    EbbingBottomSheetListItemDefault(
-                        label = tag.name,
-                        color = tag.color,
-                        checked = tag.id == newTag?.id,
-                        onChecked = { newTag = tag },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    if (tag.id != 1) {
+                        EbbingBottomSheetListItemDefault(
+                            label = tag.name,
+                            color = tag.color,
+                            checked = tag.id == newTag?.id,
+                            onChecked = { newTag = tag },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
