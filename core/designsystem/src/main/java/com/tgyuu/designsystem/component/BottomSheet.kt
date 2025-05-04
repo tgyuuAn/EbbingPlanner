@@ -143,17 +143,14 @@ fun EbbingBottomSheetListItemDefault(
             modifier = Modifier.weight(1f),
         )
 
-        if (!enabled || checked) {
+        if (enabled && checked) {
             Image(
                 painter = painterResource(R.drawable.ic_textinput_check),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(
-                    color = if (!enabled) EbbingTheme.colors.dark3
-                    else EbbingTheme.colors.primaryDefault,
-                ),
+                colorFilter = ColorFilter.tint(color = EbbingTheme.colors.primaryDefault),
                 modifier = Modifier
-                    .size(32.dp)
-                    .padding(start = 36.dp),
+                    .padding(start = 36.dp)
+                    .size(32.dp),
             )
         }
     }

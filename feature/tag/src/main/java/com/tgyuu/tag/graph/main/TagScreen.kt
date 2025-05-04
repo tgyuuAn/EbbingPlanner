@@ -1,27 +1,43 @@
 package com.tgyuu.tag.graph.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.component.EbbingBottomSheetListItemDefault
+import com.tgyuu.designsystem.component.EbbingOutlinedButton
+import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.tag.graph.main.contract.TagIntent
 import com.tgyuu.tag.graph.main.contract.TagState
+import java.time.LocalDate
 
 @Composable
 internal fun TagRoute(
@@ -45,29 +61,67 @@ private fun TagScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var newTag by remember { mutableStateOf<TodoTag?>(null) }
     val listState = rememberLazyListState()
 
-    Column(modifier = modifier.fillMaxSize()) {
-        EbbingSubTopBar(
-            title = "태그 관리",
-            onNavigationClick = onBackClick,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .padding(20.dp)
-                .imePadding(),
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .clickable { newTag = null },
         ) {
-            items(
-                items = state.tagList,
-                key = { it.id },
-            ) { tag ->
-                Text(
-                    text = tag.name,
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = Color(tag.color),
+            EbbingSubTopBar(
+                title = "태그 관리",
+                onNavigationClick = onBackClick,
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .imePadding(),
+            ) {
+                items(
+                    items = state.tagList,
+                    key = { it.id },
+                ) { tag ->
+                    EbbingBottomSheetListItemDefault(
+                        label = tag.name,
+                        color = tag.color,
+                        checked = tag.id == newTag?.id,
+                        onChecked = { newTag = tag },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = newTag != null,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+            exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(20.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = 20.dp),
+            ) {
+                EbbingOutlinedButton(
+                    label = "삭제",
+                    onClick = {},
+                    modifier = Modifier.weight(1f),
+                )
+
+                EbbingSolidButton(
+                    label = "수정",
+                    onClick = {},
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -79,7 +133,22 @@ private fun TagScreen(
 private fun PreviewTag() {
     BasePreview {
         TagScreen(
-            state = TagState(),
+            state = TagState(
+                tagList = listOf(
+                    TodoTag(
+                        id = 1,
+                        name = "국어",
+                        color = 0xFFFF6961.toInt(),
+                        createdAt = LocalDate.now()
+                    ),
+                    TodoTag(
+                        id = 2,
+                        name = "영어",
+                        color = 0xFF123298.toInt(),
+                        createdAt = LocalDate.now()
+                    ),
+                )
+            ),
             onBackClick = {},
         )
     }
