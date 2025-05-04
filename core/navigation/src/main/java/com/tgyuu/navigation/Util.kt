@@ -14,10 +14,19 @@ private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
     SettingGraph.WebViewRoute::class,
 )
 
+private val ROOT_ROUTES = setOf(
+    OnboardingRoute::class,
+    HomeGraph.AddTodoRoute::class,
+)
+
 fun NavDestination?.shouldHideBottomBar(): Boolean = this?.hierarchy?.any { destination ->
     HIDDEN_BOTTOM_BAR_ROUTES.any {
         destination.route?.startsWith(it.qualifiedName ?: "") == true
     }
+} ?: false
+
+fun NavDestination?.isRootRoute(): Boolean = this?.hierarchy?.any { destination ->
+    ROOT_ROUTES.any { destination.route?.startsWith(it.qualifiedName ?: "") == true }
 } ?: false
 
 fun NavDestination?.isRouteInHierarchy(route: KClass<*>): Boolean =

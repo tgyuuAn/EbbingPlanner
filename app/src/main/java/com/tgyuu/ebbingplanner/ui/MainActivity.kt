@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -14,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -43,6 +46,7 @@ import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.NavigationEvent.BottomBarTo
+import com.tgyuu.navigation.isRootRoute
 import com.tgyuu.navigation.shouldHideBottomBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -157,6 +161,20 @@ class MainActivity : ComponentActivity() {
                                 .addFocusCleaner(focusManager),
                         )
                     }
+                }
+
+                var backPressedTime by remember { mutableLongStateOf(0L) }
+                BackHandler(enabled = currentDestination.isRootRoute()) {
+                    if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                        finish()
+                    } else {
+                        lifecycleScope.launch {
+                            eventBus.sendEvent(
+                                EbbingEvent.ShowSnackBar(msg = "뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
+                            )
+                        }
+                    }
+                    backPressedTime = System.currentTimeMillis()
                 }
             }
         }
