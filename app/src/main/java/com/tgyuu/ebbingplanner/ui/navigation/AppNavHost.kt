@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.tgyuu.home.navigation.homeGraph
 import com.tgyuu.navigation.HomeBaseRoute
+import com.tgyuu.onboarding.navigation.onboardingNavigation
 import com.tgyuu.setting.navigation.settingGraph
 import com.tgyuu.tag.navigation.tagGraph
 
@@ -19,6 +20,7 @@ fun AppNavHost(
         startDestination = HomeBaseRoute,
         modifier = modifier,
     ) {
+        onboardingNavigation()
         homeGraph()
 //        dashboardNavigation()
         settingGraph()
