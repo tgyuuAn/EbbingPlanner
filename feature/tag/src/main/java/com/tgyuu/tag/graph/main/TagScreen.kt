@@ -52,6 +52,8 @@ internal fun TagRoute(
     TagScreen(
         state = state,
         onBackClick = { viewModel.onIntent(TagIntent.OnBackClick) },
+        onEditClick = { viewModel.onIntent(TagIntent.OnEditClick(it)) },
+        onDeleteClick = { viewModel.onIntent(TagIntent.OnDeleteClick(it)) },
     )
 }
 
@@ -59,16 +61,18 @@ internal fun TagRoute(
 private fun TagScreen(
     state: TagState,
     onBackClick: () -> Unit,
+    onEditClick: (TodoTag) -> Unit,
+    onDeleteClick: (TodoTag) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var newTag by remember { mutableStateOf<TodoTag?>(null) }
+    var selectedTag by remember { mutableStateOf<TodoTag?>(null) }
     val listState = rememberLazyListState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .clickable { newTag = null },
+                .clickable { selectedTag = null },
         ) {
             EbbingSubTopBar(
                 title = "태그 관리",
@@ -90,8 +94,8 @@ private fun TagScreen(
                         EbbingBottomSheetListItemDefault(
                             label = tag.name,
                             color = tag.color,
-                            checked = tag.id == newTag?.id,
-                            onChecked = { newTag = tag },
+                            checked = tag.id == selectedTag?.id,
+                            onChecked = { selectedTag = tag },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -100,7 +104,7 @@ private fun TagScreen(
         }
 
         AnimatedVisibility(
-            visible = newTag != null,
+            visible = selectedTag != null,
             enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
             exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
             modifier = Modifier
@@ -116,13 +120,13 @@ private fun TagScreen(
             ) {
                 EbbingOutlinedButton(
                     label = "삭제",
-                    onClick = {},
+                    onClick = { onDeleteClick(selectedTag!!) },
                     modifier = Modifier.weight(1f),
                 )
 
                 EbbingSolidButton(
                     label = "수정",
-                    onClick = {},
+                    onClick = { onEditClick(selectedTag!!) },
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -138,7 +142,7 @@ private fun PreviewTag() {
             state = TagState(
                 tagList = listOf(
                     TodoTag(
-                        id = 1,
+                        id = 3,
                         name = "국어",
                         color = 0xFFFF6961.toInt(),
                         createdAt = LocalDate.now()
@@ -152,6 +156,8 @@ private fun PreviewTag() {
                 )
             ),
             onBackClick = {},
+            onEditClick = {},
+            onDeleteClick = {},
         )
     }
 }
