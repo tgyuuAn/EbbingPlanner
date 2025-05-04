@@ -10,6 +10,8 @@ import javax.inject.Inject
 class ConfigRepositoryImpl @Inject constructor(
     private val localUserConfigDataSource: LocalUserConfigDataSource,
 ) : ConfigRepository {
+    override suspend fun isFirstAppOpen(): Boolean = localUserConfigDataSource.consumeIsFirstAppOpen()
+
     override suspend fun setSortType(sortType: SortType) =
         localUserConfigDataSource.setSortType(sortType)
 

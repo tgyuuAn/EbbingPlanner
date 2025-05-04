@@ -14,12 +14,6 @@ import javax.inject.Named
 class LocalUserConfigDataSourceImpl @Inject constructor(
     @Named("config") private val dataStore: DataStore<Preferences>,
 ) : LocalUserConfigDataSource {
-    private val isFirst: Flow<Boolean>
-        get() = dataStore.data
-            .map { prefs ->
-                prefs[IS_FIRST] ?: true
-            }
-
     override val sortType: Flow<SortType>
         get() = dataStore.data
             .map { prefs ->
@@ -33,13 +27,13 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
                 prefs[NOTIFICATION_ENABLED] ?: true
             }
 
-    override suspend fun consumeIsFirst(): Boolean {
+    override suspend fun consumeIsFirstAppOpen(): Boolean {
         var firstRun = false
         dataStore.edit { prefs ->
-            firstRun = prefs[IS_FIRST] ?: true
-            prefs[IS_FIRST] = false
+            firstRun = prefs[IS_FIRST_APP_OPEN] ?: true
+            prefs[IS_FIRST_APP_OPEN] = false
         }
-        return firstRun
+        return true
     }
 
     override suspend fun setSortType(sortType: SortType) {
@@ -53,6 +47,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
     companion object {
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
-        private val IS_FIRST = booleanPreferencesKey("IS_FIRST")
+        private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
     }
 }

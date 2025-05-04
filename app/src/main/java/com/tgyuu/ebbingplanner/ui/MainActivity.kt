@@ -50,20 +50,30 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
-
     @Inject
     lateinit var navigationBus: NavigationBus
 
     @Inject
     lateinit var eventBus: EventBus
 
+    private val viewModel: MainViewModel by viewModels()
+    private var isInitialized: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        splashScreen.setKeepOnScreenCondition { isInitialized }
+
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        viewModel.insertDefaultTag()
+
+        repeatOnStarted {
+            val insertDefaultTagJob = launch { viewModel.insertDefaultTag() }
+            val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
+            insertDefaultTagJob.join()
+            checkOnboardingJob.join()
+            isInitialized = false
+        }
 
         setContent {
             EbbingTheme {
