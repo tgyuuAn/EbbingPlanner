@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface LocalUserConfigDataSource {
     val sortType: Flow<SortType>
     val notificationEnabled: Flow<Boolean>
+    suspend fun consumeIsFirst(): Boolean
     suspend fun setSortType(sortType: SortType)
     suspend fun setNotificationEnabled(enabled: Boolean)
 }
