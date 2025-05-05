@@ -7,4 +7,16 @@
     <string name="setting_version">버전 정보 %1$s</string>
     <string name="setting_inquiry">문의</string>
     <string name="setting_contact_us">문의하기</string>
+
+    <string name="onboarding_1_title">하루 만에 60%가 사라집니다</string>
+    <string name="onboarding_1_description">Hermann Ebbinghaus의 연구에 따르면, 복습하지 않으면\n하루 만에 기억의 60% 이상이 소실됩니다.</string>
+    <string name="onboarding_2_title">망각을 막으려면 복습이 필수</string>
+    <string name="onboarding_2_description">망각 곡선에 맞춰 적절한 시점에 복습해야\n기억을 오래 유지할 수 있습니다.</string>
+    <string name="onboarding_3_title">맞춤 복습 주기 &amp; 알림</string>
+    <string name="onboarding_3_description">에빙 플래너가 최적의 복습 주기를 계산해\n자동으로 알림을 보내드립니다.</string>
+    <string name="onboarding_4_title">지금 바로 시작하세요</string>
+    <string name="onboarding_4_description">에빙 플래너와 함께 체계적인 복습 여정을\n지금 바로 시작해 보세요!</string>
+
+    <string name="next">다음</string>
+    <string name="start">시작하기</string>
 </resources>
