@@ -28,6 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +42,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.R
@@ -45,6 +51,7 @@ import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
+import com.tgyuu.setting.graph.main.ui.bottomsheet.AlarmTimeBottomSheet
 
 @Composable
 internal fun SettingRoute(
@@ -64,6 +71,17 @@ internal fun SettingRoute(
     SettingScreen(
         state = state,
         onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) },
+        onAlarmTimeClick = {
+            viewModel.onIntent(SettingIntent.OnAlarmTimeClick({
+                AlarmTimeBottomSheet(
+                    originHour = state.alarmHour,
+                    originMinute = state.alarmMinute,
+                    onUpdateClick = { hour, minute ->
+                        viewModel.onIntent(SettingIntent.OnUpdateAlarmTime(hour, minute))
+                    },
+                )
+            }))
+        },
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
@@ -76,6 +94,7 @@ internal fun SettingRoute(
 private fun SettingScreen(
     state: SettingState,
     onNoticeClick: () -> Unit,
+    onAlarmTimeClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
@@ -104,7 +123,9 @@ private fun SettingScreen(
         ) {
             NotificationBody(
                 notificationEnabled = state.notificationEnabled,
+                alarmTime = "${state.alarmHour}:${state.alarmMinute}",
                 onNotificationToggleClick = onNotificationToggleClick,
+                onAlarmTimeClick = onAlarmTimeClick,
             )
 
             TagBody(onTagManageClick = onTagManageClick)
@@ -132,7 +153,9 @@ private fun SettingScreen(
 @Composable
 private fun NotificationBody(
     notificationEnabled: Boolean,
+    alarmTime: String,
     onNotificationToggleClick: () -> Unit,
+    onAlarmTimeClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val permissionState = if (SDK_INT >= TIRAMISU) rememberPermissionState(POST_NOTIFICATIONS)
@@ -181,6 +204,37 @@ private fun NotificationBody(
                 }
             }
         )
+    }
+
+    EbbingVisibleAnimation(
+        visible = isOn,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 17.dp),
+        ) {
+            Text(
+                text = "알림 시간",
+                style = EbbingTheme.typography.headingSSB,
+                color = EbbingTheme.colors.dark1,
+                modifier = Modifier.weight(1f),
+            )
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(alarmTime)
+                    }
+                },
+                textAlign = TextAlign.End,
+                style = EbbingTheme.typography.headingSM,
+                color = EbbingTheme.colors.primaryDefault,
+                modifier = Modifier.clickable { onAlarmTimeClick() },
+            )
+        }
     }
 
     HorizontalDivider(
@@ -395,6 +449,7 @@ private fun PreviewSettingScreen() {
         SettingScreen(
             state = SettingState(version = "v1.0.0"),
             onNoticeClick = {},
+            onAlarmTimeClick = {},
             onTagManageClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},

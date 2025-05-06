@@ -10,7 +10,8 @@ import javax.inject.Inject
 class ConfigRepositoryImpl @Inject constructor(
     private val localUserConfigDataSource: LocalUserConfigDataSource,
 ) : ConfigRepository {
-    override suspend fun isFirstAppOpen(): Boolean = localUserConfigDataSource.consumeIsFirstAppOpen()
+    override suspend fun isFirstAppOpen(): Boolean =
+        localUserConfigDataSource.consumeIsFirstAppOpen()
 
     override suspend fun setSortType(sortType: SortType) =
         localUserConfigDataSource.setSortType(sortType)
@@ -21,4 +22,10 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun setNotificationEnabled(enabled: Boolean) =
         localUserConfigDataSource.setNotificationEnabled(enabled)
+
+    override suspend fun updateAlarmTime(hour: String, minute: String) =
+        localUserConfigDataSource.setAlarmTime(hour, minute)
+
+    override suspend fun getAlarmTime(): Pair<Int, Int> =
+        localUserConfigDataSource.alarmTime.first()
 }

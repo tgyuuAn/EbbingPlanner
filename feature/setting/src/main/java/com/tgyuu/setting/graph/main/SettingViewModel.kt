@@ -2,6 +2,8 @@ package com.tgyuu.setting.graph.main
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
+import com.tgyuu.common.event.EbbingEvent
+import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
@@ -18,10 +20,21 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
+    private val eventBus: EventBus,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
 
     init {
         viewModelScope.launch {
+            launch {
+                val (hour, minute) = configRepository.getAlarmTime()
+                setState {
+                    copy(
+                        alarmHour = hour.toString().padStart(2, '0'),
+                        alarmMinute = minute.toString().padStart(2, '0'),
+                    )
+                }
+            }
+
             configRepository.getNotificationEnabled()
                 .collect { setState { copy(notificationEnabled = it) } }
         }
@@ -50,7 +63,11 @@ class SettingViewModel @Inject constructor(
             )
 
             SettingIntent.OnNotificationToggleClick -> onNotificationToggleClick()
+            is SettingIntent.OnAlarmTimeClick ->
+                eventBus.sendEvent(EbbingEvent.ShowBottomSheet(intent.content))
+
             SettingIntent.OnTagManageClick -> navigationBus.navigate(To(TagGraph.TagRoute))
+            is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
         }
     }
 
@@ -64,4 +81,11 @@ class SettingViewModel @Inject constructor(
 
     private suspend fun navigateToWebView(title: String, url: String) =
         navigationBus.navigate(To(SettingGraph.WebViewRoute(title = title, url = url)))
+
+    private suspend fun updateAlarmTime(hour: String, minute: String) {
+        configRepository.updateAlarmTime(hour, minute)
+        setState { copy(alarmHour = hour, alarmMinute = minute) }
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 시간을 수정하였습니다"))
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+    }
 }

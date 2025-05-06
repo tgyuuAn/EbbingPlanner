@@ -9,4 +9,6 @@ interface ConfigRepository {
     suspend fun getSortType(): SortType
     suspend fun getNotificationEnabled(): Flow<Boolean>
     suspend fun setNotificationEnabled(enabled: Boolean)
+    suspend fun updateAlarmTime(hour: String, minute: String)
+    suspend fun getAlarmTime(): Pair<Int, Int>
 }
