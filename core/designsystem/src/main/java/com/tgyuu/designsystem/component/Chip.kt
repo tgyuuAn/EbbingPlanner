@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.FilterChip
@@ -46,7 +47,7 @@ fun EbbingChip(
             else EbbingTheme.colors.black,
         ),
         onClick = onChipClicked,
-        modifier = modifier,
+        modifier = modifier.height(52.dp),
     )
 }
 

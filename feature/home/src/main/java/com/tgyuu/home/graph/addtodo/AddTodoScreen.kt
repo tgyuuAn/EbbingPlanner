@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,9 +42,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.common.ui.EbbingVisibleAnimation
+import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -58,7 +60,6 @@ import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
@@ -163,80 +164,165 @@ private fun AddTodoScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        EbbingSubTopBar(
-            title = "일정 추가",
-            onNavigationClick = onBackClick,
-            rightComponent = {
-                Text(
-                    text = "저장",
-                    style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
-                )
-            },
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(20.dp)
-                .imePadding(),
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
-                    }
-                    append(" 부터\n시작하는 일정을 만들어요")
+    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+        Column(modifier = modifier.fillMaxSize()) {
+            EbbingSubTopBar(
+                title = "일정 추가",
+                onNavigationClick = onBackClick,
+                rightComponent = {
+                    Text(
+                        text = "저장",
+                        style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(
+                                throttleTime = 1500L,
+                                enabled = isSaveEnabled
+                            ) {
+                                onSaveClick()
+                                focusManager.clearFocus()
+                            },
+                    )
                 },
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            TitleContent(
-                scrollState = scrollState,
-                title = title,
-                titleInputState = titleInputState,
-                onTitleChange = onTitleChange,
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(20.dp)
+                    .imePadding(),
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                            append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
+                        }
+                        append(" 부터\n시작하는 일정을 만들어요")
+                    },
+                    style = EbbingTheme.typography.headingLSB,
+                    color = EbbingTheme.colors.black,
+                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                )
+
+                TitleContent(
+                    scrollState = scrollState,
+                    title = title,
+                    titleInputState = titleInputState,
+                    onTitleChange = onTitleChange,
+                )
+
+                TagContent(
+                    tag = tag,
+                    onTagDropDownClick = onTagDropDownClick,
+                )
+
+                PriorityContent(
+                    priority = priority,
+                    onPriorityChange = onPriorityChange,
+                )
+
+                RepeatCycleContent(
+                    repeatCycle = repeatCycle,
+                    onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+                )
+
+                RestDayContent(
+                    restDays = restDays,
+                    onRestDayChange = onRestDayChange,
+                )
+
+                ScheduleContent(schedules = schedules)
+
+                Spacer(modifier = Modifier.height(60.dp))
+            }
+        }
+    } else {
+        Column(modifier = Modifier.fillMaxSize()) {
+            EbbingSubTopBar(
+                title = "일정 추가",
+                onNavigationClick = onBackClick,
+                rightComponent = {
+                    Text(
+                        text = "저장",
+                        style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(
+                                throttleTime = 1500L,
+                                enabled = isSaveEnabled
+                            ) {
+                                onSaveClick()
+                                focusManager.clearFocus()
+                            },
+                    )
+                },
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            TagContent(
-                tag = tag,
-                onTagDropDownClick = onTagDropDownClick,
-            )
+            Row(modifier = modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                        .padding(20.dp)
+                        .imePadding(),
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                                append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
+                            }
+                            append(" 부터\n시작하는 일정을 만들어요")
+                        },
+                        style = EbbingTheme.typography.headingLSB,
+                        color = EbbingTheme.colors.black,
+                        modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                    )
 
-            PriorityContent(
-                priority = priority,
-                onPriorityChange = onPriorityChange,
-            )
+                    TitleContent(
+                        scrollState = scrollState,
+                        title = title,
+                        titleInputState = titleInputState,
+                        onTitleChange = onTitleChange,
+                    )
 
-            RepeatCycleContent(
-                repeatCycle = repeatCycle,
-                onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
-            )
+                    TagContent(
+                        tag = tag,
+                        onTagDropDownClick = onTagDropDownClick,
+                    )
 
-            RestDayContent(
-                restDays = restDays,
-                onRestDayChange = onRestDayChange,
-            )
+                    PriorityContent(
+                        priority = priority,
+                        onPriorityChange = onPriorityChange,
+                    )
 
-            ScheduleContent(schedules = schedules)
+                    RepeatCycleContent(
+                        repeatCycle = repeatCycle,
+                        onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+                    )
 
-            Spacer(modifier = Modifier.height(60.dp))
+                    RestDayContent(
+                        restDays = restDays,
+                        onRestDayChange = onRestDayChange,
+                    )
+
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp)
+                        .imePadding(),
+                ) {
+                    ScheduleContent(schedules = schedules)
+                }
+            }
         }
     }
 }
@@ -396,9 +482,7 @@ private fun RestDayContent(
                 label = it.toKorean(),
                 selected = it in restDays,
                 onChipClicked = { onRestDayChange(it) },
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f),
+                modifier = Modifier.weight(1f),
             )
         }
     }
