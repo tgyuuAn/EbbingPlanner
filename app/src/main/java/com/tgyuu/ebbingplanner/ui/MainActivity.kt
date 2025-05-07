@@ -216,9 +216,9 @@ class MainActivity : ComponentActivity() {
                         ) { innerPadding ->
                             val navigationSuiteItemColor = NavigationSuiteDefaults.itemColors(
                                 navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-                                    selectedIconColor = EbbingTheme.colors.black,
+                                    selectedIconColor = EbbingTheme.colors.white,
                                     unselectedIconColor = EbbingTheme.colors.dark3,
-                                    selectedTextColor = EbbingTheme.colors.black,
+                                    selectedTextColor = EbbingTheme.colors.white,
                                     unselectedTextColor = EbbingTheme.colors.dark3,
                                     selectedContainerColor = EbbingTheme.colors.primaryDefault,
                                 )
@@ -254,7 +254,7 @@ class MainActivity : ComponentActivity() {
                                         layoutType = NavigationSuiteType.NavigationDrawer,
                                         navigationSuiteColors = NavigationSuiteDefaults.colors(
                                             navigationDrawerContainerColor = EbbingTheme.colors.background,
-                                            navigationDrawerContentColor = EbbingTheme.colors.black,
+                                            navigationDrawerContentColor = EbbingTheme.colors.white,
                                         ),
                                         navigationSuiteItems = {
                                             TopLevelDestination.topLevelDestinations.forEach { dest ->
