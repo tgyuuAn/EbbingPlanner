@@ -3,7 +3,9 @@ package com.tgyuu.home.graph.edittodo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +38,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.ui.EbbingVisibleAnimation
+import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -46,7 +51,6 @@ import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingTextInputDropDown
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
@@ -126,6 +130,7 @@ private fun EditTodoScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -177,17 +182,36 @@ private fun EditTodoScreen(
                 onTitleChange = onTitleChange,
             )
 
-            TagContent(
-                tag = tag,
-                onTagDropDownClick = onTagDropDownClick,
-            )
+            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+                TagContent(
+                    tag = tag,
+                    onTagDropDownClick = onTagDropDownClick,
+                )
 
-            PriorityContent(
-                priority = priority,
-                onPriorityChange = onPriorityChange,
-            )
+                PriorityContent(
+                    priority = priority,
+                    onPriorityChange = onPriorityChange,
+                )
 
-            Spacer(modifier = Modifier.height(60.dp))
+                Spacer(modifier = Modifier.height(60.dp))
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(40.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TagContent(
+                        tag = tag,
+                        onTagDropDownClick = onTagDropDownClick,
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    PriorityContent(
+                        priority = priority,
+                        onPriorityChange = onPriorityChange,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
         }
     }
 }
@@ -259,21 +283,23 @@ private fun TagContent(
     onTagDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = "태그",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
+    Column(modifier) {
+        Text(
+            text = "태그",
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
+            modifier = Modifier.padding(top = 32.dp),
+        )
 
-    EbbingTextInputDropDown(
-        value = tag?.name ?: "",
-        color = tag?.color,
-        onDropDownClick = onTagDropDownClick,
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-    )
+        EbbingTextInputDropDown(
+            value = tag?.name ?: "",
+            color = tag?.color,
+            onDropDownClick = onTagDropDownClick,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
+        )
+    }
 }
 
 @Composable
@@ -282,22 +308,24 @@ private fun PriorityContent(
     onPriorityChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = "우선순위",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
+    Column(modifier) {
+        Text(
+            text = "우선순위",
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
+            modifier = Modifier.padding(top = 32.dp),
+        )
 
-    EbbingTextInputDefault(
-        value = priority ?: "",
-        onValueChange = onPriorityChange,
-        hint = "얼마나 중요한 일정인가요?",
-        keyboardType = KeyboardType.Number,
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-    )
+        EbbingTextInputDefault(
+            value = priority ?: "",
+            onValueChange = onPriorityChange,
+            hint = "얼마나 중요한 일정인가요?",
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
+        )
+    }
 }
 
 @EbbingPreview

@@ -25,7 +25,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -271,11 +270,7 @@ private fun HomeScreen(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(0.8f)
-            )
-
-            VerticalDivider(
-                thickness = 8.dp,
-                color = EbbingTheme.colors.light3,
+                    .padding(horizontal = 20.dp)
             )
 
             if (state.isLoading) {
@@ -301,7 +296,9 @@ private fun HomeScreen(
                     onCheckedChange = onCheckedChange,
                     onSortTypeClick = onSortTypeClick,
                     onEditScheduleClick = onEditScheduleClick,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 20.dp),
                 )
             }
         }

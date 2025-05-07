@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
@@ -264,7 +265,8 @@ class MainActivity : ComponentActivity() {
                                                     icon = {
                                                         Icon(
                                                             painterResource(dest.iconDrawableId),
-                                                            contentDescription = null
+                                                            contentDescription = null,
+                                                            modifier = Modifier.size(28.dp),
                                                         )
                                                     },
                                                     label = {
