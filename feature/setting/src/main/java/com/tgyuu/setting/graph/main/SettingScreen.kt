@@ -190,6 +190,13 @@ private fun NotificationBody(
             modifier = Modifier.weight(1f),
         )
 
+        Text(
+            text = if (isOn) "ON" else "OFF",
+            style = EbbingTheme.typography.headingSM,
+            color = if (isOn) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark2,
+            modifier = Modifier.padding(end = 12.dp),
+        )
+
         EbbingToggle(
             checked = isOn,
             onCheckedChange = { desiredOn ->

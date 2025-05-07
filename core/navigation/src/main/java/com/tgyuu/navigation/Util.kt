@@ -16,7 +16,7 @@ private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
 
 private val ROOT_ROUTES = setOf(
     OnboardingRoute::class,
-    HomeGraph.AddTodoRoute::class,
+    HomeGraph.HomeRoute::class,
 )
 
 fun NavDestination?.shouldHideBottomBar(): Boolean = this?.hierarchy?.any { destination ->

@@ -13,6 +13,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -126,6 +127,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
                 val currentDestination = navController.currentBackStackEntryAsState()
                     .value?.destination
 
@@ -160,6 +162,10 @@ class MainActivity : ComponentActivity() {
                                 .padding(innerPadding)
                                 .addFocusCleaner(focusManager),
                         )
+
+                        BackHandler(enabled = sheetState.isVisible) {
+                            scope.launch { sheetState.hide() }
+                        }
                     }
                 }
 
