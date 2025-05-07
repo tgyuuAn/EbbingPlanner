@@ -14,6 +14,7 @@ import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
@@ -32,6 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val savedStateHandle: SavedStateHandle,
@@ -160,10 +162,12 @@ class AddTodoViewModel @Inject constructor(
             priority = currentState.priority?.toIntOrNull(),
         )
 
+        val (hour, minute) = configRepository.getAlarmTime()
+
         newState.schedules.forEach { schedule ->
             try {
                 val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(18, 30))
+                    .atTime(LocalTime.of(hour, minute))
                     .atZone(ZoneId.systemDefault())
                     .toInstant()
                     .toEpochMilli()

@@ -126,10 +126,11 @@ class HomeViewModel @Inject constructor(
 
         val delayed = schedule.copy(date = nextDate)
         todoRepository.updateTodo(delayed)
+        val (hour, minute) = configRepository.getAlarmTime()
 
         if (nextDate.isAfter(LocalDate.now())) {
             val triggerAtMillis = nextDate
-                .atTime(LocalTime.of(18, 30))
+                .atTime(LocalTime.of(hour, minute))
                 .atZone(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli()

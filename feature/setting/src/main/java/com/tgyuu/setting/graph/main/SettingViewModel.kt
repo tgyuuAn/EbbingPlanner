@@ -1,10 +1,12 @@
 package com.tgyuu.setting.graph.main
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
@@ -14,11 +16,16 @@ import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
+    private val todoRepository: TodoRepository,
+    private val alarmScheduler: AlarmScheduler,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
@@ -84,8 +91,29 @@ class SettingViewModel @Inject constructor(
 
     private suspend fun updateAlarmTime(hour: String, minute: String) {
         configRepository.updateAlarmTime(hour, minute)
+
+        val upcoming = todoRepository.loadUpcomingSchedules(LocalDate.now())
+        val h = hour.toInt()
+        val m = minute.toInt()
+        val now = LocalDateTime.now()
+
+        upcoming.forEach { sch ->
+            val localDateTime = sch.date.atTime(h, m)
+            if (localDateTime.isBefore(now)) return@forEach
+
+            val trigger = localDateTime
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+
+            alarmScheduler.rescheduleDailyExact(
+                date = sch.date,
+                newTriggerMs = trigger
+            )
+        }
+
         setState { copy(alarmHour = hour, alarmMinute = minute) }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 시간을 수정하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 시간을 $hour:$minute 로 변경했어요"))
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 }

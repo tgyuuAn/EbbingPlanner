@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(projects.core.common)
+    implementation(projects.feature.alarm)
 
     implementation(libs.accompanist.permission)
 }

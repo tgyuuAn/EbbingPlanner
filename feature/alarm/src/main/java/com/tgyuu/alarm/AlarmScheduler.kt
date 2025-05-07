@@ -23,33 +23,49 @@ class AlarmScheduler @Inject constructor(
         date: LocalDate,
         triggerAtMillis: Long,
     ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            && !alarmManager.canScheduleExactAlarms()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            !alarmManager.canScheduleExactAlarms()
         ) {
-            context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                data = "package:${context.packageName}".toUri()
-            })
+            context.startActivity(
+                Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    data = "package:${context.packageName}".toUri()
+                }
+            )
             return
         }
-
-        val requestCode = date.hashCode()
-
-        val intent = Intent(context, TodoAlarmReceiver::class.java).apply {
-            putExtra("date", date.toString())
-        }
-
-        val pending = PendingIntent.getBroadcast(
-            context,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             triggerAtMillis,
-            pending
+            buildPendingIntent(date)
         )
     }
+
+    @SuppressLint("ScheduleExactAlarm")
+    fun rescheduleDailyExact(
+        date: LocalDate,
+        newTriggerMs: Long,
+    ) {
+        cancelDailyExact(date)                 // 기존 알람 해제
+        scheduleDailyExact(date, newTriggerMs) // 새 알람 등록
+    }
+
+    private fun cancelDailyExact(date: LocalDate) {
+        alarmManager.cancel(buildPendingIntent(date))
+    }
+
+    private fun requestCodeFor(date: LocalDate): Int = date.hashCode()
+
+    private fun buildPendingIntent(date: LocalDate): PendingIntent =
+        Intent(context, TodoAlarmReceiver::class.java).apply {
+            putExtra("date", date.toString())
+        }.let { intent ->
+            PendingIntent.getBroadcast(
+                context,
+                requestCodeFor(date),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
 }

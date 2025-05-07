@@ -11,6 +11,7 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
@@ -29,6 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
@@ -164,13 +166,14 @@ class EditTodoViewModel @Inject constructor(
         )
 
         todoRepository.updateTodo(newSchedule)
+        val (hour, minute) = configRepository.getAlarmTime()
 
         currentState.originSchedule?.date?.let { originDate ->
             if (newSchedule.date != originDate) {
                 // 새 날짜가 오늘 이후면 알람 재등록
                 if (newSchedule.date.isAfter(LocalDate.now())) {
                     val triggerAtMillis = newSchedule.date
-                        .atTime(LocalTime.of(18, 30))
+                        .atTime(LocalTime.of(hour, minute))
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
                         .toEpochMilli()
