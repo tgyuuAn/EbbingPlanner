@@ -13,6 +13,7 @@ import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
@@ -101,51 +104,102 @@ private fun SettingScreen(
     onInquiryClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        EbbingMainTopBar(
-            title = "설정",
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-        HorizontalDivider(
-            color = EbbingTheme.colors.light2,
-            thickness = 1.dp,
-            modifier = Modifier.padding(bottom = 16.dp),
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp),
-        ) {
-            NotificationBody(
-                notificationEnabled = state.notificationEnabled,
-                alarmTime = "${state.alarmHour}:${state.alarmMinute}",
-                onNotificationToggleClick = onNotificationToggleClick,
-                onAlarmTimeClick = onAlarmTimeClick,
+    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            EbbingMainTopBar(
+                title = "설정",
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            TagBody(onTagManageClick = onTagManageClick)
-
-            InquiryBody(onContactUsClick = onInquiryClick)
-
-            AnnouncementBody(
-                onNoticeClick = onNoticeClick,
-                onPrivacyPolicy = onPrivacyAndPolicyClick,
-                onTermsClick = onTermsOfUseClick,
+            HorizontalDivider(
+                color = EbbingTheme.colors.light2,
+                thickness = 1.dp,
+                modifier = Modifier.padding(bottom = 16.dp),
             )
 
-            Text(
-                text = stringResource(R.string.setting_version, state.version),
-                style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.dark3,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 17.dp),
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+            ) {
+                NotificationBody(
+                    notificationEnabled = state.notificationEnabled,
+                    alarmTime = "${state.alarmHour}:${state.alarmMinute}",
+                    onNotificationToggleClick = onNotificationToggleClick,
+                    onAlarmTimeClick = onAlarmTimeClick,
+                )
+
+                TagBody(onTagManageClick = onTagManageClick)
+
+                InquiryBody(onContactUsClick = onInquiryClick)
+
+                AnnouncementBody(
+                    onNoticeClick = onNoticeClick,
+                    onPrivacyPolicy = onPrivacyAndPolicyClick,
+                    onTermsClick = onTermsOfUseClick,
+                )
+
+                Text(
+                    text = stringResource(R.string.setting_version, state.version),
+                    style = EbbingTheme.typography.headingSSB,
+                    color = EbbingTheme.colors.dark3,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 17.dp),
+                )
+            }
+        }
+    } else {
+        Column(modifier = Modifier.fillMaxSize()) {
+            EbbingMainTopBar(
+                title = "설정",
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    NotificationBody(
+                        notificationEnabled = state.notificationEnabled,
+                        alarmTime = "${state.alarmHour}:${state.alarmMinute}",
+                        onNotificationToggleClick = onNotificationToggleClick,
+                        onAlarmTimeClick = onAlarmTimeClick,
+                    )
+
+                    TagBody(onTagManageClick = onTagManageClick)
+
+                    InquiryBody(onContactUsClick = onInquiryClick)
+
+                    AnnouncementBody(
+                        onNoticeClick = onNoticeClick,
+                        onPrivacyPolicy = onPrivacyAndPolicyClick,
+                        onTermsClick = onTermsOfUseClick,
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.setting_version, state.version),
+                        style = EbbingTheme.typography.headingSSB,
+                        color = EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 17.dp),
+                    )
+                }
+            }
         }
     }
 }

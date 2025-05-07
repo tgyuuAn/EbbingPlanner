@@ -264,13 +264,17 @@ private fun AddTodoScreen(
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            Row(modifier = modifier.fillMaxSize()) {
+            Row(
+                modifier = modifier
+                    .fillMaxSize()
+                    .imePadding(),
+            ) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .verticalScroll(scrollState)
                         .padding(20.dp)
-                        .imePadding(),
+                        .padding(horizontal = 20.dp),
                 ) {
                     Text(
                         text = buildAnnotatedString {
@@ -318,7 +322,7 @@ private fun AddTodoScreen(
                     modifier = Modifier
                         .weight(1f)
                         .padding(20.dp)
-                        .imePadding(),
+                        .padding(horizontal = 20.dp),
                 ) {
                     ScheduleContent(schedules = schedules)
                 }

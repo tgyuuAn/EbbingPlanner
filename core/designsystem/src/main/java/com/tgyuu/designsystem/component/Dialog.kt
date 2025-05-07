@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults.cardColors
@@ -42,7 +43,9 @@ fun EbbingDialog(
         Card(
             colors = cardColors().copy(containerColor = EbbingTheme.colors.background),
             shape = RoundedCornerShape(12.dp),
-            modifier = modifier.padding(horizontal = 32.dp),
+            modifier = modifier
+                .padding(horizontal = 32.dp)
+                .widthIn(max = 400.dp),
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

@@ -270,7 +270,7 @@ private fun HomeScreen(
                 },
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(1f)
+                    .weight(0.8f)
             )
 
             VerticalDivider(
