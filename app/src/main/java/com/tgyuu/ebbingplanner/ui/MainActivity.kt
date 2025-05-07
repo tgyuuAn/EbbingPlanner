@@ -10,10 +10,14 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -23,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
@@ -30,6 +35,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -42,12 +48,15 @@ import com.tgyuu.designsystem.component.EbbingSnackBarHost
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
+import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.NavigationEvent.BottomBarTo
+import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.navigation.isRootRoute
+import com.tgyuu.navigation.isRouteInHierarchy
 import com.tgyuu.navigation.shouldHideBottomBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -127,7 +136,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+                val windowSize = currentWindowAdaptiveInfo().windowSizeClass
                 val currentDestination = navController.currentBackStackEntryAsState()
                     .value?.destination
 
@@ -135,36 +144,82 @@ class MainActivity : ComponentActivity() {
                     sheetState = sheetState,
                     sheetContent = bottomSheetContent,
                 ) {
-                    Scaffold(
-                        containerColor = EbbingTheme.colors.background,
-                        snackbarHost = {
-                            EbbingSnackBarHost(
-                                hostState = snackBarHostState,
-                                snackbar = { snackBarData -> EbbingSnackBar(snackBarData) },
-                            )
-                        },
-                        bottomBar = {
-                            EbbingBottomBarAnimation(
-                                visible = currentDestination?.shouldHideBottomBar() == false,
-                                modifier = Modifier.navigationBarsPadding(),
-                            ) {
-                                AppBottomBar(
-                                    currentDestination = currentDestination,
-                                    navigateToBottomBarDestination = { navController.navigate(it) },
+                    if (windowSize.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+                        Scaffold(
+                            containerColor = EbbingTheme.colors.background,
+                            snackbarHost = {
+                                EbbingSnackBarHost(
+                                    hostState = snackBarHostState,
+                                    snackbar = { snackBarData -> EbbingSnackBar(snackBarData) },
                                 )
+                            },
+                            bottomBar = {
+                                EbbingBottomBarAnimation(
+                                    visible = currentDestination?.shouldHideBottomBar() == false,
+                                    modifier = Modifier.navigationBarsPadding(),
+                                ) {
+                                    AppBottomBar(
+                                        currentDestination = currentDestination,
+                                        navigateToBottomBarDestination = { navController.navigate(it) },
+                                    )
+                                }
+                            },
+                        ) { innerPadding ->
+                            AppNavHost(
+                                navController = navController,
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .addFocusCleaner(focusManager),
+                            )
+
+                            BackHandler(enabled = sheetState.isVisible) {
+                                scope.launch { sheetState.hide() }
                             }
-                        },
-                        floatingActionButtonPosition = FabPosition.Center,
-                    ) { innerPadding ->
-                        AppNavHost(
-                            navController = navController,
-                            modifier = Modifier
-                                .padding(innerPadding)
-                                .addFocusCleaner(focusManager),
+                        }
+                    } else {
+                        val navigationSuiteItemColor = NavigationSuiteDefaults.itemColors(
+                            navigationRailItemColors = NavigationRailItemDefaults.colors(
+                                indicatorColor = EbbingTheme.colors.primaryDefault,
+                                selectedIconColor = EbbingTheme.colors.white,
+                            )
                         )
 
-                        BackHandler(enabled = sheetState.isVisible) {
-                            scope.launch { sheetState.hide() }
+                        NavigationSuiteScaffold(
+                            layoutType = if (currentDestination?.shouldHideBottomBar() == false) NavigationSuiteType.NavigationRail
+                            else NavigationSuiteType.None,
+                            containerColor = EbbingTheme.colors.background,
+                            navigationSuiteColors = NavigationSuiteDefaults.colors(
+                                navigationRailContainerColor = EbbingTheme.colors.background,
+                                navigationRailContentColor = EbbingTheme.colors.black,
+                            ),
+                            navigationSuiteItems = {
+                                TopLevelDestination.topLevelDestinations.forEach { dest ->
+                                    item(
+                                        selected = currentDestination.isRouteInHierarchy(dest.route),
+                                        icon = {
+                                            Icon(
+                                                painter = painterResource(dest.iconDrawableId),
+                                                contentDescription = null,
+                                            )
+                                        },
+                                        colors = navigationSuiteItemColor,
+                                        onClick = {
+                                            when (dest) {
+                                                TopLevelDestination.HOME ->
+                                                    navController.navigate(HomeGraph.HomeRoute())
+
+                                                TopLevelDestination.SETTING ->
+                                                    navController.navigate(SettingGraph.SettingRoute)
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        ) {
+                            AppNavHost(
+                                navController = navController,
+                                modifier = Modifier.addFocusCleaner(focusManager)
+                            )
                         }
                     }
                 }

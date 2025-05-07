@@ -58,7 +58,8 @@ baselineProfile {
 dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
-    implementation(libs.androidx.adaptive.android)
+    implementation(libs.androidx.adaptive)
+    implementation(libs.androidx.adaptive.navigation.suite)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.navigation)
