@@ -6,8 +6,19 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Icon
@@ -26,8 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
@@ -184,42 +197,73 @@ class MainActivity : ComponentActivity() {
                             )
                         )
 
-                        NavigationSuiteScaffold(
-                            layoutType = if (currentDestination?.shouldHideBottomBar() == false) NavigationSuiteType.NavigationRail
-                            else NavigationSuiteType.None,
-                            containerColor = EbbingTheme.colors.background,
-                            navigationSuiteColors = NavigationSuiteDefaults.colors(
-                                navigationRailContainerColor = EbbingTheme.colors.background,
-                                navigationRailContentColor = EbbingTheme.colors.black,
-                            ),
-                            navigationSuiteItems = {
-                                TopLevelDestination.topLevelDestinations.forEach { dest ->
-                                    item(
-                                        selected = currentDestination.isRouteInHierarchy(dest.route),
-                                        icon = {
-                                            Icon(
-                                                painter = painterResource(dest.iconDrawableId),
-                                                contentDescription = null,
-                                            )
-                                        },
-                                        colors = navigationSuiteItemColor,
-                                        onClick = {
-                                            when (dest) {
-                                                TopLevelDestination.HOME ->
-                                                    navController.navigate(HomeGraph.HomeRoute())
+                        val showRail = currentDestination?.shouldHideBottomBar() == false
+                        val transition =
+                            updateTransition(targetState = showRail, label = "railAnim")
 
-                                                TopLevelDestination.SETTING ->
-                                                    navController.navigate(SettingGraph.SettingRoute)
-                                            }
-                                        }
-                                    )
-                                }
-                            }
+                        val railWidth by transition.animateDp(
+                            label = "width",
+                            transitionSpec = { tween(durationMillis = 250) }
+                        ) { shown -> if (shown) 72.dp else 0.dp }
+
+                        val railAlpha by transition.animateFloat(
+                            label = "alpha",
+                            transitionSpec = { tween(250) }
+                        ) { shown -> if (shown) 1f else 0f }
+
+                        Row(
+                            Modifier
+                                .fillMaxSize()
+                                .background(EbbingTheme.colors.background)
+                                .animateContentSize()
+                                .statusBarsPadding()
+                                .navigationBarsPadding()
                         ) {
-                            AppNavHost(
-                                navController = navController,
-                                modifier = Modifier.addFocusCleaner(focusManager)
-                            )
+                            Box(
+                                Modifier
+                                    .width(railWidth)
+                                    .graphicsLayer { alpha = railAlpha }
+                            ) {
+                                NavigationSuiteScaffold(
+                                    layoutType = NavigationSuiteType.NavigationRail,
+                                    navigationSuiteColors = NavigationSuiteDefaults.colors(
+                                        navigationRailContainerColor = EbbingTheme.colors.background,
+                                        navigationRailContentColor = EbbingTheme.colors.black,
+                                    ),
+                                    navigationSuiteItems = {
+                                        TopLevelDestination.topLevelDestinations.forEach { dest ->
+                                            item(
+                                                selected = currentDestination.isRouteInHierarchy(
+                                                    dest.route
+                                                ),
+                                                icon = {
+                                                    Icon(
+                                                        painterResource(dest.iconDrawableId),
+                                                        contentDescription = null
+                                                    )
+                                                },
+                                                colors = navigationSuiteItemColor,
+                                                onClick = {
+                                                    when (dest) {
+                                                        TopLevelDestination.HOME ->
+                                                            navController.navigate(HomeGraph.HomeRoute())
+
+                                                        TopLevelDestination.SETTING ->
+                                                            navController.navigate(SettingGraph.SettingRoute)
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+
+                            Box(Modifier.weight(1f)) {
+                                AppNavHost(
+                                    navController,
+                                    modifier = Modifier.addFocusCleaner(focusManager)
+                                )
+                            }
                         }
                     }
                 }
