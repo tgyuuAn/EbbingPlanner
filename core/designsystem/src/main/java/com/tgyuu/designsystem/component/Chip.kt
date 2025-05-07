@@ -2,7 +2,6 @@ package com.tgyuu.designsystem.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +10,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults.filterChipColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,19 +26,15 @@ fun EbbingChip(
 ) {
     FilterChip(
         label = {
-            Box(
-                contentAlignment = Alignment.Center,
+            Text(
+                text = label,
+                style = if (selected) EbbingTheme.typography.bodySSB
+                else EbbingTheme.typography.bodyMM,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 12.dp),
-            ) {
-                Text(
-                    text = label,
-                    style = if (selected) EbbingTheme.typography.bodyMSB
-                    else EbbingTheme.typography.bodyMM,
-                    textAlign = TextAlign.Center,
-                )
-            }
+            )
         },
         selected = selected,
         border = null,
