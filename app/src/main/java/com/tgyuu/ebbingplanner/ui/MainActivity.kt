@@ -261,7 +261,9 @@ class MainActivity : ComponentActivity() {
                             Box(Modifier.weight(1f)) {
                                 AppNavHost(
                                     navController,
-                                    modifier = Modifier.addFocusCleaner(focusManager)
+                                    modifier = Modifier
+                                        .addFocusCleaner(focusManager)
+                                        .padding(vertical = 20.dp),
                                 )
                             }
                         }

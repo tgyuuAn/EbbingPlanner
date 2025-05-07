@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.common.ui.throttledClickable
@@ -167,22 +171,92 @@ private fun HomeScreen(
     var isExpanded by remember { mutableStateOf(false) }
     var calendarHeight by remember { mutableStateOf(0.dp) }
     val animatedTopPadding by animateDpAsState(targetValue = if (isExpanded) 0.dp else calendarHeight)
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     LaunchedEffect(workedDate) {
         calendarState.onDateSelect(workedDate)
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    val height = with(localDensity) {
-                        coordinates.size.height.toDp()
+    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+        Box(modifier = modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        val height = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                        calendarHeight = height
                     }
-                    calendarHeight = height
+            ) {
+                EbbingCalendar(
+                    calendarState = calendarState,
+                    schedulesByDateMap = state.schedulesByDateMap,
+                    onDateSelect = {
+                        if (selectedDate != it) {
+                            scope.launch {
+                                selectedDate = it
+                                listState.animateScrollToItem(0)
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                HorizontalDivider(
+                    thickness = 8.dp,
+                    color = EbbingTheme.colors.light3,
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = animatedTopPadding)
+                    .background(EbbingTheme.colors.background)
+            ) {
+                Image(
+                    painter = painterResource(
+                        if (!isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                    ),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .throttledClickable(500L) { isExpanded = !isExpanded },
+                )
+
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator(
+                            color = EbbingTheme.colors.primaryDefault,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                } else {
+                    EbbingTodoList(
+                        listState = listState,
+                        sortType = state.sortType,
+                        selectedDate = selectedDate,
+                        todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
+                        schedulesByTodoInfo = state.schedulesByTodoInfo,
+                        onAddTodoClick = { onAddTodoClick(selectedDate) },
+                        onCheckedChange = onCheckedChange,
+                        onSortTypeClick = onSortTypeClick,
+                        onEditScheduleClick = onEditScheduleClick,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
-        ) {
+            }
+        }
+    } else {
+        Row(modifier = Modifier.fillMaxSize()) {
             EbbingCalendar(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
@@ -194,38 +268,21 @@ private fun HomeScreen(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
             )
 
-            HorizontalDivider(
+            VerticalDivider(
                 thickness = 8.dp,
                 color = EbbingTheme.colors.light3,
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = animatedTopPadding)
-                .background(EbbingTheme.colors.background)
-        ) {
-            Image(
-                painter = painterResource(
-                    if (!isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
-                ),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
-                modifier = Modifier
-                    .padding(8.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .throttledClickable(500L) { isExpanded = !isExpanded },
             )
 
             if (state.isLoading) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
+                        .fillMaxHeight()
+                        .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
@@ -244,6 +301,7 @@ private fun HomeScreen(
                     onCheckedChange = onCheckedChange,
                     onSortTypeClick = onSortTypeClick,
                     onEditScheduleClick = onEditScheduleClick,
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -265,7 +323,7 @@ private fun EbbingTodoList(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
