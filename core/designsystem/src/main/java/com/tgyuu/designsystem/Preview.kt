@@ -9,6 +9,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewScreenSizes
 annotation class EbbingPreview
 
 @Composable
