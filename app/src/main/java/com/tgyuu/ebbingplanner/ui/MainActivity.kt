@@ -188,6 +188,20 @@ class MainActivity : ComponentActivity() {
                             BackHandler(enabled = sheetState.isVisible) {
                                 scope.launch { sheetState.hide() }
                             }
+
+                            var backPressedTime by remember { mutableLongStateOf(0L) }
+                            BackHandler(enabled = currentDestination.isRootRoute()) {
+                                if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                                    finish()
+                                } else {
+                                    lifecycleScope.launch {
+                                        eventBus.sendEvent(
+                                            EbbingEvent.ShowSnackBar(msg = "뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
+                                        )
+                                    }
+                                }
+                                backPressedTime = System.currentTimeMillis()
+                            }
                         }
                     } else {
                         Scaffold(
@@ -199,7 +213,6 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                         ) { innerPadding ->
-
                             val navigationSuiteItemColor = NavigationSuiteDefaults.itemColors(
                                 navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
                                     selectedIconColor = EbbingTheme.colors.black,
@@ -284,24 +297,24 @@ class MainActivity : ComponentActivity() {
                                             .addFocusCleaner(focusManager)
                                             .padding(vertical = 20.dp),
                                     )
+
+                                    var backPressedTime by remember { mutableLongStateOf(0L) }
+                                    BackHandler(enabled = currentDestination.isRootRoute()) {
+                                        if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                                            finish()
+                                        } else {
+                                            lifecycleScope.launch {
+                                                eventBus.sendEvent(
+                                                    EbbingEvent.ShowSnackBar(msg = "뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
+                                                )
+                                            }
+                                        }
+                                        backPressedTime = System.currentTimeMillis()
+                                    }
                                 }
                             }
                         }
                     }
-                }
-
-                var backPressedTime by remember { mutableLongStateOf(0L) }
-                BackHandler(enabled = currentDestination.isRootRoute()) {
-                    if (System.currentTimeMillis() - backPressedTime <= 2000L) {
-                        finish()
-                    } else {
-                        lifecycleScope.launch {
-                            eventBus.sendEvent(
-                                EbbingEvent.ShowSnackBar(msg = "뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
-                            )
-                        }
-                    }
-                    backPressedTime = System.currentTimeMillis()
                 }
             }
         }
