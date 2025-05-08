@@ -25,10 +25,7 @@ androidxComposeNavigation = "2.8.8"
 androidxComposeFoundation = "1.7.8"
 # https://developer.android.com/training/data-storage/room
 androidxRoom = "2.6.1"
-# https://developer.android.com/jetpack/androidx/releases/compose-material3-adaptive
-androidxAdaptive = "1.1.0"
-androidxAdaptiveNavigationSuite = "1.3.2"
-androidxAdaptiveNavigation = "1.0.0"
+glanceAppwidget = "1.1.1"
 
 ## Material
 material = "1.12.0"
@@ -113,7 +110,6 @@ androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-r
 androidx-lifecycle-viewModel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
 androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidxNavigation" }
 androidx-navigation-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidxNavigation" }
-androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
@@ -128,10 +124,13 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxComposeFoundation" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 androidx-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive-android" }
 androidx-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite-android" }
+androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
+androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
 
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutine" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutine" }

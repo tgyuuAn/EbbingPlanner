@@ -19,6 +19,8 @@ android {
 
 dependencies {
     implementation(projects.core.common)
-
     implementation(projects.feature.alarm)
+
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
 }
