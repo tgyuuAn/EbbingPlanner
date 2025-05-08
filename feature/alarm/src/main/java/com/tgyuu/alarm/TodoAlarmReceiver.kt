@@ -10,9 +10,8 @@ import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,10 +27,10 @@ class TodoAlarmReceiver : BroadcastReceiver() {
     @Inject
     lateinit var configRepository: ConfigRepository
 
+    private val scope = MainScope()
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
-        val job = SupervisorJob()
-        val scope = CoroutineScope(Dispatchers.IO + job)
 
         val pendingResult = goAsync()
         scope.launch {
@@ -52,7 +51,7 @@ class TodoAlarmReceiver : BroadcastReceiver() {
                 Log.e("TodoAlarmReceiver", "알람 처리 중 오류", e)
             } finally {
                 pendingResult.finish()
-                job.cancel()
+                scope.cancel()
             }
         }
     }

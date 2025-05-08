@@ -4,6 +4,7 @@ import com.tgyuu.database.dao.SchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoSchedule
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -25,6 +26,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getUpcomingSchedules(date: LocalDate): List<TodoSchedule> =
         schedulesDao.loadUpcomingSchedules(date)
+
+    override fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
+        schedulesDao.subscribeScheduleWithInfoAndTagByDate(date)
 
     override suspend fun addTodo(
         title: String,

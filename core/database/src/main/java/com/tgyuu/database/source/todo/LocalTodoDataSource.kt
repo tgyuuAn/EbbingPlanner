@@ -1,6 +1,7 @@
 package com.tgyuu.database.source.todo
 
 import com.tgyuu.domain.model.TodoSchedule
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 interface LocalTodoDataSource {
@@ -9,6 +10,7 @@ interface LocalTodoDataSource {
     suspend fun getScheduleByTodoInfo(id: Int): List<TodoSchedule>
     suspend fun getSchedulesByDate(date: LocalDate): List<TodoSchedule>
     suspend fun getUpcomingSchedules(date: LocalDate): List<TodoSchedule>
+    fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>>
 
     suspend fun addTodo(
         title: String,

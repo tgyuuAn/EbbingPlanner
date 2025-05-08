@@ -185,8 +185,8 @@ class EditTodoViewModel @Inject constructor(
                 }
             }
         }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정을 업데이트 하였습니다"))
 
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정을 업데이트 하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),

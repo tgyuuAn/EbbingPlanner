@@ -7,6 +7,7 @@ import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -30,6 +31,9 @@ class TodoRepositoryImpl @Inject constructor(
 
     override suspend fun loadTagList(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
+
+    override fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
+        localTodoDataSource.subscribeSchedulesByDate(date)
 
     override suspend fun addDefaultTag(): Long = localTagDataSource.insertTag(DefaultTodoTag)
 

@@ -3,9 +3,9 @@ package com.tgyuu.designsystem.foundation
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-private val PrimaryDefault = Color(0xFF0F4C75)
+val PrimaryDefault = Color(0xFF0F4C75)
 private val PrimaryMiddle = Color(0xFF3282B8)
-private val PrimaryLight = Color(0xFFBBE1FA)
+val PrimaryLight = Color(0xFFBBE1FA)
 
 val LightBackground = Color(0xFFFFFFFF)
 val DarkBackground = Color(0xFF262729)
