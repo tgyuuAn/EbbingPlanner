@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -372,29 +373,39 @@ private fun EbbingTodoList(
             )
         }
 
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            items(
-                items = todoLists,
-                key = { item -> item.id },
-            ) { item ->
-                TodoListCard(
-                    todo = item,
-                    todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
-                    onCheckedChange = onCheckedChange,
-                    onEditScheduleClick = onEditScheduleClick,
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 20.dp,
-                            vertical = 6.dp,
-                        )
-                        .animateItem()
-                )
-            }
+        if (todoLists.isNotEmpty()) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                items(
+                    items = todoLists,
+                    key = { item -> item.id },
+                ) { item ->
+                    TodoListCard(
+                        todo = item,
+                        todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
+                        onCheckedChange = onCheckedChange,
+                        onEditScheduleClick = onEditScheduleClick,
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 20.dp,
+                                vertical = 6.dp,
+                            )
+                            .animateItem()
+                    )
+                }
 
-            item { Spacer(modifier = Modifier.height(60.dp)) }
+                item { Spacer(modifier = Modifier.height(60.dp)) }
+            }
+        } else {
+            Text(
+                text = "금일 스케줄이 없어요.\n우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
+                style = EbbingTheme.typography.bodySM,
+                textAlign = TextAlign.Center,
+                color = EbbingTheme.colors.dark3,
+                modifier = Modifier.padding(top = 30.dp),
+            )
         }
     }
 }
