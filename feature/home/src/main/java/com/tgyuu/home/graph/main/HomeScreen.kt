@@ -404,7 +404,9 @@ private fun EbbingTodoList(
                 style = EbbingTheme.typography.bodySM,
                 textAlign = TextAlign.Center,
                 color = EbbingTheme.colors.dark3,
-                modifier = Modifier.padding(top = 30.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 30.dp),
             )
         }
     }
