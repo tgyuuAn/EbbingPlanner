@@ -8,7 +8,6 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.tgyuu.alarm.NotificationHelper
-import com.tgyuu.alarm.R
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.ui.MainActivity
 import java.time.LocalDate
@@ -37,7 +36,7 @@ class NotificationHelperImpl @Inject constructor() : NotificationHelper() {
         val contentText = "${schedules.first().title} 을 확인하고, 잊지 말고 복습하세요!"
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(com.tgyuu.ebbingplanner.R.drawable.ic_notification)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
             .setAutoCancel(true)
