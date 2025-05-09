@@ -38,8 +38,6 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
-import com.tgyuu.designsystem.BaseWidgetPreview
-import com.tgyuu.designsystem.EbbingWidgetPreview
 import com.tgyuu.designsystem.foundation.DarkBackground
 import com.tgyuu.designsystem.foundation.LightBackground
 import com.tgyuu.designsystem.foundation.PrimaryDefault
@@ -47,6 +45,8 @@ import com.tgyuu.designsystem.foundation.PrimaryLight
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.ui.MainActivity
 import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.ui.widget.util.BaseWidgetPreview
+import com.tgyuu.ebbingplanner.ui.widget.util.EbbingWidgetPreview
 import java.time.LocalDate
 
 class HomeAppWidget : GlanceAppWidget() {

@@ -13,9 +13,4 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
-
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.material3)
-    implementation(libs.androidx.glance.preview)
-    implementation(libs.androidx.glance.appwidget.preview)
 }
