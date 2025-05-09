@@ -43,6 +43,7 @@ import com.tgyuu.designsystem.foundation.LightBackground
 import com.tgyuu.designsystem.foundation.PrimaryDefault
 import com.tgyuu.designsystem.foundation.PrimaryLight
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.ui.MainActivity
 import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver.Companion.TODO_LISTS
 import com.tgyuu.ebbingplanner.ui.widget.util.BaseWidgetPreview
@@ -69,12 +70,15 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable { actionStartActivity<MainActivity>() }
-            .background(ColorProvider(LightBackground, DarkBackground))
-            .cornerRadius(12.dp)
+            .clickable(actionStartActivity<MainActivity>())
+            .background(imageProvider = ImageProvider(R.drawable.shape_widget_background))
             .padding(16.dp)
     ) {
-        Row(modifier = GlanceModifier.fillMaxWidth()) {
+        Row(
+            modifier = GlanceModifier.fillMaxWidth()
+                .background(imageProvider = ImageProvider(R.drawable.shape_widget_header))
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+        ) {
             Text(
                 text = "오늘 할 일 ${todoLists.size}",
                 style = TextStyle(
@@ -107,12 +111,12 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
                     color = ColorProvider(DarkBackground, LightBackground),
                 ),
                 modifier = GlanceModifier.fillMaxWidth()
-                    .padding(top = 30.dp),
+                    .padding(horizontal = 12.dp, vertical = 30.dp),
             )
         } else {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
-                    .padding(top = 20.dp),
+                    .padding(horizontal = 12.dp, vertical = 20.dp)
             ) {
                 items(items = todoLists) { item ->
                     Row(

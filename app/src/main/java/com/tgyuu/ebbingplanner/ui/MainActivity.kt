@@ -1,5 +1,6 @@
 package com.tgyuu.ebbingplanner.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -44,7 +45,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -64,7 +64,8 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
-import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidget
+import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver
+import com.tgyuu.ebbingplanner.ui.widget.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
@@ -326,14 +327,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-
-        lifecycleScope.launch {
-            GlanceAppWidgetManager(this@MainActivity)
-                .getGlanceIds(HomeAppWidget::class.java)
-                .forEach { id ->
-                    HomeAppWidget().update(this@MainActivity, id)
-                }
+        val intent = Intent(this, HomeAppWidgetReceiver::class.java).apply {
+            action = RefreshAction.UPDATE_ACTION
         }
+        sendBroadcast(intent)
     }
 
     private fun handleNavigationEvent(
