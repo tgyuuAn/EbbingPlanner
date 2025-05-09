@@ -13,3 +13,5 @@ plugins {
     alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.ktlint)
 }
+
+apply(from = "gradle/dependencyGraph.gradle")

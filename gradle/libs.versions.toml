@@ -40,14 +40,6 @@ hilt = "2.55"
 # https://developer.android.com/jetpack/androidx/releases/hilt
 hiltNavigationCompose = "1.2.0"
 
-## Network
-# https://square.github.io/okhttp/
-okhttp = "4.12.0"
-# https://github.com/square/retrofit
-okhttpEventsource = "4.1.1"
-# https://github.com/square/retrofit
-retrofit = "2.11.0"
-
 ## Kotlin
 # https://github.com/JetBrains/kotlin
 kotlin = "2.1.0"
@@ -84,16 +76,10 @@ crashlytics = "3.0.3"
 
 # https://coil-kt.github.io/coil/#jetpack-compose
 coil = "3.1.0"
-# https://airbnb.io/lottie/#/android-compose
-lottie-compose = "6.5.2"
 
 ## Accompanist
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
-
-## Amplitude
-# https://amplitude.com/docs/sdks/analytics/android
-amplitude = "1.16.8"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -146,12 +132,6 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
-okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
-okhttp-eventsource = { module = "com.launchdarkly:okhttp-eventsource", version.ref = "okhttpEventsource" }
-
-retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-kotlin-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
-
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
@@ -165,16 +145,7 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "a
 
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 
-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
-mockk-agent = { group = "io.mockk", name = "mockk-agent", version.ref = "mockk" }
-
-coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
-coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
-lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie-compose" }
-
 accompanist-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
-amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }

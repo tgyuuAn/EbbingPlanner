@@ -19,8 +19,6 @@ internal fun Project.configureJUnitAndroid() {
             "androidTestImplementation"(libs.findLibrary("androidx.test.ext").get())
             "androidTestImplementation"(libs.findLibrary("androidx.runner").get())
             "androidTestImplementation"(libs.findLibrary("androidx.junit").get())
-            "androidTestImplementation"(libs.findLibrary("mockk-android").get())
-            "androidTestImplementation"(libs.findLibrary("mockk-agent").get())
             "androidTestImplementation"(libs.findLibrary("coroutines-test").get())
         }
     }

@@ -12,7 +12,6 @@ internal fun Project.configureTest() {
         "testImplementation"(libs.findLibrary("junit4").get())
         "testImplementation"(libs.findLibrary("junit-jupiter").get())
         "testImplementation"(libs.findLibrary("coroutines-test").get())
-        "testImplementation"(libs.findLibrary("mockk").get())
     }
 }
 
