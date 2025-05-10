@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -45,8 +47,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
@@ -162,163 +165,18 @@ class MainActivity : ComponentActivity() {
                     sheetContent = bottomSheetContent,
                 ) {
                     if (windowSize.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-                        Scaffold(
-                            containerColor = EbbingTheme.colors.background,
-                            snackbarHost = {
-                                EbbingSnackBarHost(
-                                    hostState = snackBarHostState,
-                                    snackbar = { snackBarData -> EbbingSnackBar(snackBarData) },
-                                )
-                            },
-                            bottomBar = {
-                                EbbingBottomBarAnimation(
-                                    visible = currentDestination?.shouldHideBottomBar() == false,
-                                    modifier = Modifier.navigationBarsPadding(),
-                                ) {
-                                    AppBottomBar(
-                                        currentDestination = currentDestination,
-                                        navigateToBottomBarDestination = { navController.navigate(it) },
-                                    )
-                                }
-                            },
-                        ) { innerPadding ->
-                            AppNavHost(
-                                navController = navController,
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .addFocusCleaner(focusManager),
-                            )
-
-                            BackHandler(enabled = sheetState.isVisible) {
-                                scope.launch { sheetState.hide() }
-                            }
-
-                            var backPressedTime by remember { mutableLongStateOf(0L) }
-                            BackHandler(enabled = currentDestination.isRootRoute()) {
-                                if (System.currentTimeMillis() - backPressedTime <= 2000L) {
-                                    finish()
-                                } else {
-                                    lifecycleScope.launch {
-                                        eventBus.sendEvent(
-                                            EbbingEvent.ShowSnackBar(msg = "뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
-                                        )
-                                    }
-                                }
-                                backPressedTime = System.currentTimeMillis()
-                            }
-                        }
+                        PhoneContent(
+                            navController = navController,
+                            snackBarHostState = snackBarHostState,
+                            sheetState = sheetState,
+                            currentDestination = currentDestination,
+                        )
                     } else {
-                        Scaffold(
-                            containerColor = EbbingTheme.colors.background,
-                            snackbarHost = {
-                                EbbingSnackBarHost(
-                                    hostState = snackBarHostState,
-                                    snackbar = { snackBarData -> EbbingSnackBar(snackBarData) },
-                                )
-                            },
-                        ) { innerPadding ->
-                            val navigationSuiteItemColor = NavigationSuiteDefaults.itemColors(
-                                navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-                                    selectedIconColor = EbbingTheme.colors.white,
-                                    unselectedIconColor = EbbingTheme.colors.dark3,
-                                    selectedTextColor = EbbingTheme.colors.white,
-                                    unselectedTextColor = EbbingTheme.colors.dark3,
-                                    selectedContainerColor = EbbingTheme.colors.primaryDefault,
-                                )
-                            )
-
-                            val showDrawer = currentDestination?.shouldHideBottomBar() == false
-                            val transition =
-                                updateTransition(targetState = showDrawer, label = "drawerAnim")
-
-                            val drawerWidth by transition.animateDp(
-                                label = "width",
-                                transitionSpec = { tween(durationMillis = 250) }
-                            ) { shown -> if (shown) 200.dp else 0.dp }
-
-                            val drawerAlpha by transition.animateFloat(
-                                label = "alpha",
-                                transitionSpec = { tween(250) }
-                            ) { shown -> if (shown) 1f else 0f }
-
-                            Row(
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(innerPadding)
-                                    .animateContentSize()
-                            ) {
-                                Box(
-                                    Modifier
-                                        .width(drawerWidth)
-                                        .padding(top = 20.dp)
-                                        .graphicsLayer { alpha = drawerAlpha }
-                                ) {
-                                    NavigationSuiteScaffold(
-                                        layoutType = NavigationSuiteType.NavigationDrawer,
-                                        navigationSuiteColors = NavigationSuiteDefaults.colors(
-                                            navigationDrawerContainerColor = EbbingTheme.colors.background,
-                                            navigationDrawerContentColor = EbbingTheme.colors.white,
-                                        ),
-                                        navigationSuiteItems = {
-                                            TopLevelDestination.topLevelDestinations.forEach { dest ->
-                                                item(
-                                                    selected = currentDestination.isRouteInHierarchy(
-                                                        dest.route
-                                                    ),
-                                                    icon = {
-                                                        Icon(
-                                                            painterResource(dest.iconDrawableId),
-                                                            contentDescription = null,
-                                                            modifier = Modifier.size(28.dp),
-                                                        )
-                                                    },
-                                                    label = {
-                                                        Text(
-                                                            text = dest.title,
-                                                            style = EbbingTheme.typography.headingSM,
-                                                            textAlign = TextAlign.Center,
-                                                        )
-                                                    },
-                                                    colors = navigationSuiteItemColor,
-                                                    onClick = {
-                                                        when (dest) {
-                                                            TopLevelDestination.HOME ->
-                                                                navController.navigate(HomeGraph.HomeRoute())
-
-                                                            TopLevelDestination.SETTING ->
-                                                                navController.navigate(SettingGraph.SettingRoute)
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    )
-                                }
-
-                                Box(Modifier.weight(1f)) {
-                                    AppNavHost(
-                                        navController,
-                                        modifier = Modifier
-                                            .addFocusCleaner(focusManager)
-                                            .padding(vertical = 20.dp),
-                                    )
-
-                                    var backPressedTime by remember { mutableLongStateOf(0L) }
-                                    BackHandler(enabled = currentDestination.isRootRoute()) {
-                                        if (System.currentTimeMillis() - backPressedTime <= 2000L) {
-                                            finish()
-                                        } else {
-                                            lifecycleScope.launch {
-                                                eventBus.sendEvent(
-                                                    EbbingEvent.ShowSnackBar(msg = "뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
-                                                )
-                                            }
-                                        }
-                                        backPressedTime = System.currentTimeMillis()
-                                    }
-                                }
-                            }
-                        }
+                        TabletContent(
+                            navController = navController,
+                            snackBarHostState = snackBarHostState,
+                            currentDestination = currentDestination,
+                        )
                     }
                 }
             }
@@ -382,6 +240,173 @@ class MainActivity : ComponentActivity() {
                     navOptions = topLevelNavOptions
                 )
             }
+        }
+    }
+
+    @Composable
+    fun PhoneContent(
+        navController: NavHostController,
+        snackBarHostState: SnackbarHostState,
+        sheetState: ModalBottomSheetState,
+        currentDestination: NavDestination?,
+    ) {
+        val focusManager = LocalFocusManager.current
+        val scope = rememberCoroutineScope()
+
+        Scaffold(
+            containerColor = EbbingTheme.colors.background,
+            snackbarHost = {
+                EbbingSnackBarHost(
+                    hostState = snackBarHostState,
+                    snackbar = { EbbingSnackBar(it) },
+                )
+            },
+            bottomBar = {
+                EbbingBottomBarAnimation(
+                    visible = currentDestination?.shouldHideBottomBar() == false,
+                    modifier = Modifier.navigationBarsPadding(),
+                ) {
+                    AppBottomBar(
+                        currentDestination = currentDestination,
+                        navigateToBottomBarDestination = { navController.navigate(it) },
+                    )
+                }
+            }
+        ) { innerPadding ->
+            AppNavHost(
+                navController = navController,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .addFocusCleaner(focusManager),
+            )
+
+            BackHandler(enabled = sheetState.isVisible) {
+                scope.launch { sheetState.hide() }
+            }
+
+            HandleDoubleBackToExit(currentDestination)
+        }
+    }
+
+    @Composable
+    fun TabletContent(
+        navController: NavHostController,
+        snackBarHostState: SnackbarHostState,
+        currentDestination: NavDestination?,
+    ) {
+        val focusManager = LocalFocusManager.current
+        val showDrawer = currentDestination?.shouldHideBottomBar() == false
+        val transition = updateTransition(targetState = showDrawer, label = "drawerAnim")
+
+        val drawerWidth by transition.animateDp(
+            label = "width", transitionSpec = { tween(250) }
+        ) { shown -> if (shown) 200.dp else 0.dp }
+
+        val drawerAlpha by transition.animateFloat(
+            label = "alpha", transitionSpec = { tween(250) }
+        ) { shown -> if (shown) 1f else 0f }
+
+        Scaffold(
+            containerColor = EbbingTheme.colors.background,
+            snackbarHost = {
+                EbbingSnackBarHost(
+                    hostState = snackBarHostState,
+                    snackbar = { EbbingSnackBar(it) },
+                )
+            }
+        ) { innerPadding ->
+            Row(
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .animateContentSize()
+            ) {
+                Box(
+                    Modifier
+                        .width(drawerWidth)
+                        .padding(top = 20.dp)
+                        .graphicsLayer { alpha = drawerAlpha }
+                ) {
+                    val navigationItemColor = NavigationSuiteDefaults.itemColors(
+                        navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
+                            selectedIconColor = EbbingTheme.colors.white,
+                            unselectedIconColor = EbbingTheme.colors.dark3,
+                            selectedTextColor = EbbingTheme.colors.white,
+                            unselectedTextColor = EbbingTheme.colors.dark3,
+                            selectedContainerColor = EbbingTheme.colors.primaryDefault,
+                        )
+                    )
+
+                    NavigationSuiteScaffold(
+                        layoutType = NavigationSuiteType.NavigationDrawer,
+                        navigationSuiteColors = NavigationSuiteDefaults.colors(
+                            navigationDrawerContainerColor = EbbingTheme.colors.background,
+                            navigationDrawerContentColor = EbbingTheme.colors.white,
+                        ),
+                        navigationSuiteItems = {
+                            TopLevelDestination.topLevelDestinations.forEach { dest ->
+                                item(
+                                    selected = currentDestination.isRouteInHierarchy(dest.route),
+                                    icon = {
+                                        Icon(
+                                            painterResource(dest.iconDrawableId),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(28.dp),
+                                        )
+                                    },
+                                    label = {
+                                        Text(
+                                            text = dest.title,
+                                            style = EbbingTheme.typography.headingSM,
+                                            textAlign = TextAlign.Center,
+                                        )
+                                    },
+                                    colors = navigationItemColor,
+                                    onClick = {
+                                        when (dest) {
+                                            TopLevelDestination.HOME ->
+                                                navController.navigate(HomeGraph.HomeRoute())
+
+                                            TopLevelDestination.SETTING ->
+                                                navController.navigate(SettingGraph.SettingRoute)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
+
+                Box(Modifier.weight(1f)) {
+                    AppNavHost(
+                        navController = navController,
+                        modifier = Modifier
+                            .addFocusCleaner(focusManager)
+                            .padding(vertical = 20.dp),
+                    )
+
+                    HandleDoubleBackToExit(currentDestination)
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun HandleDoubleBackToExit(currentDestination: NavDestination?) {
+        val scope = rememberCoroutineScope()
+        var backPressedTime by remember { mutableLongStateOf(0L) }
+
+        BackHandler(enabled = currentDestination.isRootRoute()) {
+            if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                finish()
+            } else {
+                scope.launch {
+                    eventBus.sendEvent(
+                        EbbingEvent.ShowSnackBar("뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
+                    )
+                }
+            }
+            backPressedTime = System.currentTimeMillis()
         }
     }
 }
