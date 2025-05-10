@@ -103,7 +103,6 @@
 ### UI
 
 - Compose
-- Coil
 - Glance
 - Adaptive
 
