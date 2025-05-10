@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.navigation.NavController
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        repeatOnStarted {
+        lifecycleScope.launch {
             val insertDefaultTagJob = launch { viewModel.insertDefaultTag() }
             val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
             insertDefaultTagJob.join()
@@ -111,8 +111,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EbbingTheme {
-                val focusManager = LocalFocusManager.current
-                val scope = rememberCoroutineScope()
                 val navController = rememberNavController()
                 val snackBarHostState = remember { SnackbarHostState() }
                 var bottomSheetContent by remember { mutableStateOf<BottomSheetContent?>(null) }
@@ -121,40 +119,12 @@ class MainActivity : ComponentActivity() {
                     skipHalfExpanded = true,
                 )
 
-                LaunchedEffect(Unit) {
-                    repeatOnStarted {
-                        launch {
-                            navigationBus.navigationFlow.collect { event ->
-                                eventBus.sendEvent(EbbingEvent.HideSnackBar)
-
-                                handleNavigationEvent(
-                                    navController = navController,
-                                    event = event,
-                                )
-                            }
-                        }
-
-                        launch {
-                            eventBus.eventFlow.collect { event ->
-                                when (event) {
-                                    is EbbingEvent.ShowBottomSheet -> scope.launch {
-                                        bottomSheetContent = event.content
-                                        focusManager.clearFocus()
-                                        sheetState.show()
-                                    }
-
-                                    EbbingEvent.HideBottomSheet -> scope.launch { sheetState.hide() }
-                                    is EbbingEvent.ShowSnackBar -> scope.launch {
-                                        snackBarHostState.currentSnackbarData?.dismiss()
-                                        snackBarHostState.showSnackbar(event.msg)
-                                    }
-
-                                    EbbingEvent.HideSnackBar -> snackBarHostState.currentSnackbarData?.dismiss()
-                                }
-                            }
-                        }
-                    }
-                }
+                CollectEventFlows(
+                    navController = navController,
+                    sheetState = sheetState,
+                    snackBarHostState = snackBarHostState,
+                    setBottomSheetContent = { bottomSheetContent = it },
+                )
 
                 val windowSize = currentWindowAdaptiveInfo().windowSizeClass
                 val currentDestination = navController.currentBackStackEntryAsState()
@@ -189,58 +159,6 @@ class MainActivity : ComponentActivity() {
             action = RefreshAction.UPDATE_ACTION
         }
         sendBroadcast(intent)
-    }
-
-    private fun handleNavigationEvent(
-        navController: NavController,
-        event: NavigationEvent
-    ) {
-        when (event) {
-            is NavigationEvent.To -> {
-                val navOptions = navOptions {
-                    if (event.popUpTo) {
-                        popUpTo(
-                            navController.currentBackStackEntry?.destination?.route
-                                ?: navController.graph.startDestinationRoute
-                                ?: HomeBaseRoute.toString()
-                        ) { inclusive = true }
-                    }
-                    launchSingleTop = true
-                }
-
-                navController.navigate(
-                    route = event.route,
-                    navOptions = navOptions
-                )
-            }
-
-            is NavigationEvent.Up -> navController.navigateUp()
-
-            is NavigationEvent.TopLevelTo -> {
-                val topLevelNavOptions = navOptions {
-                    popUpTo(0) { inclusive = true }
-                    launchSingleTop = true
-                }
-
-                navController.navigate(
-                    route = event.route,
-                    navOptions = topLevelNavOptions
-                )
-            }
-
-            is BottomBarTo -> {
-                val topLevelNavOptions = navOptions {
-                    popUpTo(HomeGraph.HomeRoute) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-
-                navController.navigate(
-                    route = event.route,
-                    navOptions = topLevelNavOptions
-                )
-            }
-        }
     }
 
     @Composable
@@ -386,6 +304,94 @@ class MainActivity : ComponentActivity() {
                     )
 
                     HandleDoubleBackToExit(currentDestination)
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun CollectEventFlows(
+        navController: NavHostController,
+        sheetState: ModalBottomSheetState,
+        snackBarHostState: SnackbarHostState,
+        setBottomSheetContent: (BottomSheetContent) -> Unit,
+    ) {
+        val focusManager = LocalFocusManager.current
+        val scope = rememberCoroutineScope()
+
+        LaunchedEffect(Unit) {
+            repeatOnStarted {
+                launch {
+                    navigationBus.navigationFlow.collect { event ->
+                        eventBus.sendEvent(EbbingEvent.HideSnackBar)
+
+                        when (event) {
+                            is NavigationEvent.To -> {
+                                val navOptions = navOptions {
+                                    if (event.popUpTo) {
+                                        popUpTo(
+                                            navController.currentBackStackEntry?.destination?.route
+                                                ?: navController.graph.startDestinationRoute
+                                                ?: HomeBaseRoute.toString()
+                                        ) { inclusive = true }
+                                    }
+                                    launchSingleTop = true
+                                }
+
+                                navController.navigate(
+                                    route = event.route,
+                                    navOptions = navOptions
+                                )
+                            }
+
+                            is NavigationEvent.Up -> navController.navigateUp()
+
+                            is NavigationEvent.TopLevelTo -> {
+                                val topLevelNavOptions = navOptions {
+                                    popUpTo(0) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+
+                                navController.navigate(
+                                    route = event.route,
+                                    navOptions = topLevelNavOptions
+                                )
+                            }
+
+                            is BottomBarTo -> {
+                                val topLevelNavOptions = navOptions {
+                                    popUpTo(HomeGraph.HomeRoute) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+
+                                navController.navigate(
+                                    route = event.route,
+                                    navOptions = topLevelNavOptions
+                                )
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    eventBus.eventFlow.collect { event ->
+                        when (event) {
+                            is EbbingEvent.ShowBottomSheet -> scope.launch {
+                                setBottomSheetContent(event.content)
+                                focusManager.clearFocus()
+                                sheetState.show()
+                            }
+
+                            EbbingEvent.HideBottomSheet -> scope.launch { sheetState.hide() }
+                            is EbbingEvent.ShowSnackBar -> scope.launch {
+                                snackBarHostState.currentSnackbarData?.dismiss()
+                                snackBarHostState.showSnackbar(event.msg)
+                            }
+
+                            EbbingEvent.HideSnackBar -> snackBarHostState.currentSnackbarData?.dismiss()
+                        }
+                    }
                 }
             }
         }
