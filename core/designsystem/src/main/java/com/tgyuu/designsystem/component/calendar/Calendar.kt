@@ -7,13 +7,23 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.metrics.performance.PerformanceMetricsState
 import com.tgyuu.domain.model.TodoSchedule
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+
+@Composable
+fun rememberMetricsStateHolder(): PerformanceMetricsState.Holder {
+    val view = LocalView.current
+    return remember(view) { PerformanceMetricsState.getHolderForHierarchy(view) }
+}
 
 @Composable
 fun EbbingCalendar(
@@ -32,6 +42,18 @@ fun EbbingCalendar(
     LaunchedEffect(pagerState.currentPage) {
         val newDate = calendarState.originSelectedDate.plusMonths(currentOffset.toLong())
         calendarState.currentDisplayDate = newDate
+    }
+
+    val metricsHolder = rememberMetricsStateHolder()
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.isScrollInProgress }
+            .collect { scrolling ->
+                metricsHolder.state?.run {
+                    if (scrolling) putState("Pager", "Scrolling")
+                    else removeState("Pager")
+                }
+            }
     }
 
     Column(

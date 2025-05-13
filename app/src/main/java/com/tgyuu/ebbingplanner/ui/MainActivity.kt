@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -48,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.metrics.performance.JankStats
+import androidx.metrics.performance.PerformanceMetricsState
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -92,6 +95,15 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
     private var isInitialized: Boolean = true
+
+    private lateinit var jankStats: JankStats
+
+    private val jankFrameListener = JankStats.OnFrameListener { frame ->
+        if (frame.isJank) {
+            Log.w("JankStats", frame.toString())
+            // → 파일·DB에 저장 후 나중에 업로드 등
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -151,6 +163,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        jankStats = JankStats.createAndTrack(window, jankFrameListener)
+    }
+
+    override fun onResume() {
+        super.onResume();
+        jankStats.isTrackingEnabled = true
+    }
+
+    override fun onPause() {
+        jankStats.isTrackingEnabled = false;
+        super.onPause()
     }
 
     override fun onStop() {

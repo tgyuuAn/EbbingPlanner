@@ -10,4 +10,6 @@ android {
 dependencies {
     implementation(projects.core.commonUi)
     implementation(projects.core.domain)
+
+    implementation(libs.androidx.metrics.performance)
 }

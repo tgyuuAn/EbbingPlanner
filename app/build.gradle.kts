@@ -79,4 +79,6 @@ dependencies {
     implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.glance.appwidget.preview)
     implementation(libs.gson)
+
+    implementation(libs.androidx.metrics.performance)
 }
