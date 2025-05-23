@@ -4,6 +4,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 private val LocalColors = staticCompositionLocalOf {
     lightModeColorScheme
@@ -18,7 +20,8 @@ fun EbbingTheme(
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalColors provides if (darkTheme) darkModeColorScheme else lightModeColorScheme
+        LocalColors provides if (darkTheme) darkModeColorScheme else lightModeColorScheme,
+        LocalDensity provides Density(LocalDensity.current.density, 1f)
     ) {
         CompositionLocalProvider(content = content)
     }
