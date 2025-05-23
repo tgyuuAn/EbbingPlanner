@@ -11,6 +11,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.provider.Settings
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -35,8 +36,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -48,10 +49,12 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
 import com.tgyuu.setting.graph.main.ui.bottomsheet.AlarmTimeBottomSheet
@@ -61,15 +64,6 @@ internal fun SettingRoute(
     viewModel: SettingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-
-    LaunchedEffect(viewModel) {
-        val version = getVersionInfo(
-            context = context,
-            onError = { },
-        )
-        viewModel.setAppVersion(version?.let { "v$it" } ?: "")
-    }
 
     SettingScreen(
         state = state,
@@ -142,10 +136,8 @@ private fun SettingScreen(
                     onTermsClick = onTermsOfUseClick,
                 )
 
-                Text(
-                    text = stringResource(R.string.setting_version, state.version),
-                    style = EbbingTheme.typography.headingSSB,
-                    color = EbbingTheme.colors.dark3,
+                UpdateBody(
+                    updateInfo = state.updateInfo,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 17.dp),
@@ -190,10 +182,8 @@ private fun SettingScreen(
                         .weight(1f)
                         .padding(horizontal = 20.dp),
                 ) {
-                    Text(
-                        text = stringResource(R.string.setting_version, state.version),
-                        style = EbbingTheme.typography.headingSSB,
-                        color = EbbingTheme.colors.dark3,
+                    UpdateBody(
+                        updateInfo = state.updateInfo,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 17.dp),
@@ -488,6 +478,45 @@ private fun AnnouncementBody(
     )
 }
 
+@Composable
+private fun UpdateBody(
+    updateInfo: UpdateInfo?,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val version = getVersionInfo(context, {})?.let { "v$it" } ?: ""
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Text(
+            text = stringResource(R.string.setting_version, version),
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark3,
+        )
+
+        if (isShowUpdateButton(context, updateInfo)) {
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = "상세 내용",
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .clickable {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            "https://play.google.com/store/apps/details?id=com.tgyuu.ebbingplanner".toUri(),
+                        )
+
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        context.startActivity(intent)
+                    },
+            )
+        }
+    }
+}
+
 private fun getVersionInfo(
     context: Context,
     onError: (Exception) -> Unit,
@@ -502,12 +531,33 @@ private fun getVersionInfo(
     return version
 }
 
-@Preview
+private fun isShowUpdateButton(
+    context: Context,
+    info: UpdateInfo?,
+): Boolean {
+    if (info == null) return false
+
+    val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName
+    return checkShouldUpdate(currentVersion!!, info.minVersion)
+}
+
+private fun checkShouldUpdate(currentVersion: String, minVersion: String): Boolean {
+    val current = normalizeVersion(currentVersion)
+    val min = normalizeVersion(minVersion)
+    return (0..2).any { current[it] < min[it] }
+}
+
+private fun normalizeVersion(version: String): List<Int> = version.split('.')
+    .map { it.toIntOrNull() ?: 0 }
+    .let { if (it.size == 2) it + 0 else it }
+
+
+@EbbingPreview
 @Composable
 private fun PreviewSettingScreen() {
     BasePreview {
         SettingScreen(
-            state = SettingState(version = "v1.0.0"),
+            state = SettingState(),
             onNoticeClick = {},
             onAlarmTimeClick = {},
             onTagManageClick = {},

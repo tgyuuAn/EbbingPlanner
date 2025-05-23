@@ -42,6 +42,11 @@ class SettingViewModel @Inject constructor(
                 }
             }
 
+            launch {
+                configRepository.getUpdateInfo()
+                    .onSuccess { setState { copy(updateInfo = it) } }
+            }
+
             configRepository.getNotificationEnabled()
                 .collect { setState { copy(notificationEnabled = it) } }
         }
@@ -76,10 +81,6 @@ class SettingViewModel @Inject constructor(
             SettingIntent.OnTagManageClick -> navigationBus.navigate(To(TagGraph.TagRoute))
             is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
         }
-    }
-
-    internal fun setAppVersion(version: String) = setState {
-        copy(version = version)
     }
 
     private suspend fun onNotificationToggleClick() {
