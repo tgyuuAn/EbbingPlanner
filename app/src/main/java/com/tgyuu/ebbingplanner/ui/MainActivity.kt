@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.metrics.performance.JankStats
 import androidx.navigation.NavDestination
@@ -69,6 +70,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
+import com.tgyuu.ebbingplanner.ui.update.UpdateDialog
 import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver
 import com.tgyuu.ebbingplanner.ui.widget.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
@@ -115,8 +117,10 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             val insertDefaultTagJob = launch { viewModel.insertDefaultTag() }
             val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
+            val getUpdateInfoJob = launch { viewModel.getUpdateInfo() }
             insertDefaultTagJob.join()
             checkOnboardingJob.join()
+            getUpdateInfoJob.join()
             isInitialized = false
         }
 
@@ -129,6 +133,9 @@ class MainActivity : ComponentActivity() {
                     initialValue = ModalBottomSheetValue.Hidden,
                     skipHalfExpanded = true,
                 )
+
+                val updateInfo by viewModel.updateInfo.collectAsStateWithLifecycle()
+                UpdateDialog(updateInfo)
 
                 CollectEventFlows(
                     navController = navController,

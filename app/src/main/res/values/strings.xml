@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">에빙 플래너</string>
     <string name="app_name_dev">에빙 플래너_개발</string>
+    <string name="update_title">새로운 버전이 출시 되었어요!</string>
 </resources>
