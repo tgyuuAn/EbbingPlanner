@@ -405,7 +405,6 @@ private fun InquiryBody(onContactUsClick: () -> Unit) {
     )
 }
 
-
 @Composable
 private fun AnnouncementBody(
     onNoticeClick: () -> Unit,
