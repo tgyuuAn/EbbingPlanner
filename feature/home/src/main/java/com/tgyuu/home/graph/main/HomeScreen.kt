@@ -141,13 +141,16 @@ internal fun HomeRoute(
                         onDeleteClick = { deletedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                dialogType = DialogType.Delete(deletedSchedule)
+                                dialogType = Delete(deletedSchedule)
                                 isShowDialog = true
                             }
                         },
                         onUpdateClick = { updatedSchedule ->
                             viewModel.onIntent(HomeIntent.OnUpdateScheduleClick(updatedSchedule))
-                        }
+                        },
+                        onAddMemoClick = { updatedSchedule ->
+                            viewModel.onIntent(HomeIntent.OnAddMemoClick(updatedSchedule))
+                        },
                     )
                 }
             )

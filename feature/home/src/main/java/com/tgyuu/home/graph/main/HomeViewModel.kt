@@ -70,6 +70,7 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
             is HomeIntent.OnDeleteScheduleClick -> onDeleteSchedule(intent.schedule)
             is HomeIntent.OnUpdateScheduleClick -> onUpdateScheduleClick(intent.schedule.id)
+            is HomeIntent.OnAddMemoClick -> onAddMemoClick(intent.schedule.id)
             is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
         }
@@ -156,6 +157,11 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onUpdateScheduleClick(scheduleId: Int) {
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(EditTodoRoute(scheduleId)))
+    }
+
+    private suspend fun onAddMemoClick(scheduleId: Int) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         navigationBus.navigate(To(EditTodoRoute(scheduleId)))
     }

@@ -16,10 +16,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,6 +87,7 @@ private fun CalendarDayItem(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.padding(vertical = 4.dp),
         ) {
+            var isOverflow by remember { mutableStateOf(false) }
             val textColor by animateColorAsState(
                 when {
                     !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
@@ -89,14 +96,24 @@ private fun CalendarDayItem(
                 }
             )
 
-            Text(
-                text = if (calendarDate.date == LocalDate.now()) "Today" else "",
-                style = EbbingTheme.typography.captionM,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = textColor,
-            )
+            if (isOverflow) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "Today",
+                    tint = textColor,
+                    modifier = Modifier.size(16.dp)
+                )
+            } else {
+                Text(
+                    text = if (calendarDate.date == LocalDate.now()) "Today" else "",
+                    style = EbbingTheme.typography.captionM,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = textColor,
+                    onTextLayout = { result -> isOverflow = result.hasVisualOverflow },
+                )
+            }
 
             Text(
                 text = calendarDate.dayOfMonth.toString(),
