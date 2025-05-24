@@ -13,6 +13,8 @@ private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
     TagGraph.AddTagRoute::class,
     TagGraph.EditTagRoute::class,
     SettingGraph.WebViewRoute::class,
+    MemoGraph.AddMemoRoute::class,
+    MemoGraph.EditMemoRoute::class,
 )
 
 private val ROOT_ROUTES = setOf(
