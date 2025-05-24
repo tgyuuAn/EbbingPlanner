@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.tgyuu.home.navigation.homeGraph
+import com.tgyuu.memo.navigation.memoNavigation
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.onboarding.navigation.onboardingNavigation
 import com.tgyuu.setting.navigation.settingGraph
@@ -22,6 +23,7 @@ fun AppNavHost(
     ) {
         onboardingNavigation()
         homeGraph()
+        memoNavigation()
 //        dashboardNavigation()
         settingGraph()
         tagGraph()

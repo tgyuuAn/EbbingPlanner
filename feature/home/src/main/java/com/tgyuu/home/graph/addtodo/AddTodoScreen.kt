@@ -61,6 +61,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
+import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
@@ -79,15 +80,7 @@ internal fun AddTodoRoute(
     }
 
     AddTodoScreen(
-        selectedDate = state.selectedDate,
-        title = state.title,
-        titleInputState = state.titleInputState,
-        priority = state.priority,
-        repeatCycle = state.repeatCycle,
-        restDays = state.restDays,
-        tag = state.tag,
-        isSaveEnabled = state.isSaveEnabled,
-        schedules = state.schedules,
+        state = state,
         onBackClick = { viewModel.onIntent(AddTodoIntent.OnBackClick) },
         onSelectedDateChangeClick = {
             viewModel.onIntent(
@@ -143,15 +136,7 @@ internal fun AddTodoRoute(
 
 @Composable
 private fun AddTodoScreen(
-    selectedDate: LocalDate,
-    title: String,
-    titleInputState: InputState,
-    priority: String?,
-    repeatCycle: RepeatCycle,
-    restDays: Set<DayOfWeek>,
-    tag: TodoTag?,
-    isSaveEnabled: Boolean,
-    schedules: List<LocalDate>,
+    state: AddTodoState,
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
@@ -174,13 +159,13 @@ private fun AddTodoScreen(
                 rightComponent = {
                     Text(
                         text = "저장",
-                        style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .throttledClickable(
                                 throttleTime = 1500L,
-                                enabled = isSaveEnabled
+                                enabled = state.isSaveEnabled
                             ) {
                                 onSaveClick()
                                 focusManager.clearFocus()
@@ -199,7 +184,7 @@ private fun AddTodoScreen(
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                            append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
+                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
                         }
                         append(" 부터\n시작하는 일정을 만들어요")
                     },
@@ -210,32 +195,32 @@ private fun AddTodoScreen(
 
                 TitleContent(
                     scrollState = scrollState,
-                    title = title,
-                    titleInputState = titleInputState,
+                    title = state.title,
+                    titleInputState = state.titleInputState,
                     onTitleChange = onTitleChange,
                 )
 
                 TagContent(
-                    tag = tag,
+                    tag = state.tag,
                     onTagDropDownClick = onTagDropDownClick,
                 )
 
                 PriorityContent(
-                    priority = priority,
+                    priority = state.priority,
                     onPriorityChange = onPriorityChange,
                 )
 
                 RepeatCycleContent(
-                    repeatCycle = repeatCycle,
+                    repeatCycle = state.repeatCycle,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                 )
 
                 RestDayContent(
-                    restDays = restDays,
+                    restDays = state.restDays,
                     onRestDayChange = onRestDayChange,
                 )
 
-                ScheduleContent(schedules = schedules)
+                ScheduleContent(schedules = state.schedules)
 
                 Spacer(modifier = Modifier.height(60.dp))
             }
@@ -248,13 +233,13 @@ private fun AddTodoScreen(
                 rightComponent = {
                     Text(
                         text = "저장",
-                        style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .throttledClickable(
                                 throttleTime = 1500L,
-                                enabled = isSaveEnabled
+                                enabled = state.isSaveEnabled
                             ) {
                                 onSaveClick()
                                 focusManager.clearFocus()
@@ -279,7 +264,7 @@ private fun AddTodoScreen(
                     Text(
                         text = buildAnnotatedString {
                             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                                append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
+                                append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
                             }
                             append(" 부터\n시작하는 일정을 만들어요")
                         },
@@ -290,28 +275,28 @@ private fun AddTodoScreen(
 
                     TitleContent(
                         scrollState = scrollState,
-                        title = title,
-                        titleInputState = titleInputState,
+                        title = state.title,
+                        titleInputState = state.titleInputState,
                         onTitleChange = onTitleChange,
                     )
 
                     TagContent(
-                        tag = tag,
+                        tag = state.tag,
                         onTagDropDownClick = onTagDropDownClick,
                     )
 
                     PriorityContent(
-                        priority = priority,
+                        priority = state.priority,
                         onPriorityChange = onPriorityChange,
                     )
 
                     RepeatCycleContent(
-                        repeatCycle = repeatCycle,
+                        repeatCycle = state.repeatCycle,
                         onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     )
 
                     RestDayContent(
-                        restDays = restDays,
+                        restDays = state.restDays,
                         onRestDayChange = onRestDayChange,
                     )
 
@@ -324,7 +309,7 @@ private fun AddTodoScreen(
                         .padding(20.dp)
                         .padding(horizontal = 20.dp),
                 ) {
-                    ScheduleContent(schedules = schedules)
+                    ScheduleContent(schedules = state.schedules)
                 }
             }
         }
@@ -570,17 +555,14 @@ private fun ScheduleCard(
 private fun PreviewAddTodo() {
     BasePreview {
         AddTodoScreen(
-            selectedDate = LocalDate.now(),
-            title = "토익",
-            titleInputState = InputState.DEFAULT,
-            priority = "3",
-            repeatCycle = RepeatCycle.D1_7_15_30_60,
-            restDays = setOf(DayOfWeek.MONDAY),
-            tag = null,
-            schedules = RepeatCycle.D1_7_15_30_60.intervals.map {
-                LocalDate.now().plusDays(it.toLong())
-            },
-            isSaveEnabled = true,
+            state = AddTodoState(
+                selectedDate = LocalDate.now(),
+                title = "토익",
+                titleInputState = InputState.DEFAULT,
+                priority = "3",
+                repeatCycle = RepeatCycle.D1_7_15_30_60,
+                restDays = setOf(DayOfWeek.MONDAY),
+            ),
             onSelectedDateChangeClick = {},
             onSaveClick = {},
             onBackClick = {},

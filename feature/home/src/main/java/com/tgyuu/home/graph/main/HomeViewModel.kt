@@ -15,6 +15,7 @@ import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.EditTodoRoute
+import com.tgyuu.navigation.MemoRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -163,7 +164,7 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun onAddMemoClick(scheduleId: Int) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(To(EditTodoRoute(scheduleId)))
+        navigationBus.navigate(To(MemoRoute(scheduleId)))
     }
 
     private suspend fun onUpdateSortType(sortType: SortType) {
