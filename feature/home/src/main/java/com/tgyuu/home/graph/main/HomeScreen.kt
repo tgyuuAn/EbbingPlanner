@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,6 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -328,7 +330,7 @@ private fun EbbingTodoList(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 24.dp),
+                .padding(bottom = 16.dp),
         ) {
             val displayDate = if (selectedDate == LocalDate.now()) "오늘"
             else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일"
@@ -387,12 +389,7 @@ private fun EbbingTodoList(
                         todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
                         onCheckedChange = onCheckedChange,
                         onEditScheduleClick = onEditScheduleClick,
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 20.dp,
-                                vertical = 6.dp,
-                            )
-                            .animateItem()
+                        modifier = Modifier.animateItem()
                     )
                 }
 
@@ -422,87 +419,101 @@ private fun TodoListCard(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier,
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .padding(horizontal = 12.dp, vertical = 4.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+        VerticalDivider(
+            thickness = 8.dp,
+            color = Color(todo.color),
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(end = 8.dp),
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(EbbingTheme.colors.light3)
+                    .padding(vertical = 12.dp, horizontal = 16.dp)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(
+                        text = todo.title,
+                        style = EbbingTheme.typography.bodyMSB,
+                        color = EbbingTheme.colors.black,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    Text(
+                        text = todo.name,
+                        style = EbbingTheme.typography.bodyMM,
+                        color = EbbingTheme.colors.dark1,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    if (todo.memo.isNotEmpty()) {
+                        Text(
+                            text = todo.memo,
+                            style = EbbingTheme.typography.bodyMM,
+                            color = EbbingTheme.colors.error,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        todosWithSameInfo.forEach {
+                            EbbingCheck(
+                                checked = it.isDone,
+                                colorValue = it.color,
+                                onCheckedChange = {},
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
+
+                        Text(
+                            text = "우선도 : ${todo.priority}",
+                            style = EbbingTheme.typography.bodySSB,
+                            color = EbbingTheme.colors.dark1,
+                            maxLines = 1,
+                            textAlign = TextAlign.End,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+
+                Image(
+                    painter = painterResource(R.drawable.ic_3dots),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onEditScheduleClick(todo) }
+                )
+            }
+
             EbbingCheck(
                 checked = todo.isDone,
                 colorValue = todo.color,
                 onCheckedChange = { onCheckedChange(todo) },
                 modifier = Modifier.size(24.dp),
-            )
-
-            Text(
-                text = todo.priority.toString(),
-                style = EbbingTheme.typography.bodySSB,
-                color = Color(todo.color),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .weight(1f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(EbbingTheme.colors.light3)
-                .padding(vertical = 12.dp, horizontal = 16.dp)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = todo.title,
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                Text(
-                    text = todo.name,
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark1,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                if (todo.memo.isNotEmpty()) {
-                    Text(
-                        text = todo.memo,
-                        style = EbbingTheme.typography.bodyMM,
-                        color = EbbingTheme.colors.error,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                    todosWithSameInfo.forEach {
-                        EbbingCheck(
-                            checked = it.isDone,
-                            colorValue = it.color,
-                            onCheckedChange = {},
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
-                }
-            }
-
-            Image(
-                painter = painterResource(R.drawable.ic_3dots),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
-                modifier = Modifier
-                    .size(20.dp)
-                    .clickable { onEditScheduleClick(todo) }
             )
         }
     }
