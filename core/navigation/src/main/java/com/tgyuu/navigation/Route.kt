@@ -22,7 +22,15 @@ sealed interface HomeGraph : Route {
 }
 
 @Serializable
-data class MemoRoute(val scheduleId: Int) : Route
+data object MemoBaseRoute : Route
+
+sealed interface MemoGraph : Route {
+    @Serializable
+    data class AddMemoRoute(val scheduleId: Int? = null) : Route
+
+    @Serializable
+    data class EditMemoRoute(val scheduleId: Int? = null) : Route
+}
 
 @Serializable
 data object DashboardRoute : Route

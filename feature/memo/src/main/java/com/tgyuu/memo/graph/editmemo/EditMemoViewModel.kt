@@ -1,4 +1,4 @@
-package com.tgyuu.memo
+package com.tgyuu.memo.graph.editmemo
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -8,8 +8,8 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.memo.contract.MemoIntent
-import com.tgyuu.memo.contract.MemoState
+import com.tgyuu.memo.graph.editmemo.contract.EditMemoIntent
+import com.tgyuu.memo.graph.editmemo.contract.EditMemoState
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -18,12 +18,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MemoViewModel @Inject constructor(
+class EditMemoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<MemoState, MemoIntent>(MemoState()) {
+) : BaseViewModel<EditMemoState, EditMemoIntent>(EditMemoState()) {
 
     init {
         val scheduleId = savedStateHandle.get<Int>("scheduleId")
@@ -31,16 +31,20 @@ class MemoViewModel @Inject constructor(
 
         viewModelScope.launch {
             val originSchedule = todoRepository.loadSchedule(scheduleId)
-
-            setState { copy(originSchedule = originSchedule) }
+            setState {
+                copy(
+                    originSchedule = originSchedule,
+                    memo = originSchedule.memo,
+                )
+            }
         }
     }
 
-    override suspend fun processIntent(intent: MemoIntent) {
+    override suspend fun processIntent(intent: EditMemoIntent) {
         when (intent) {
-            is MemoIntent.OnMemoChange -> onMemoChange(intent.memo)
-            MemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            MemoIntent.OnSaveClick -> saveMemo()
+            is EditMemoIntent.OnAddMemoChange -> onMemoChange(intent.memo)
+            EditMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            EditMemoIntent.OnSaveClick -> saveMemo()
         }
     }
 
