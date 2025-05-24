@@ -139,6 +139,75 @@ private fun MemoScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
         }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+        ) {
+            EbbingSubTopBar(
+                title = "메모 추가",
+                onNavigationClick = onBackClick,
+                rightComponent = {
+                    Text(
+                        text = "저장",
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(
+                                throttleTime = 1500L,
+                                enabled = state.isSaveEnabled
+                            ) {
+                                onSaveClick()
+                                focusManager.clearFocus()
+                            },
+                    )
+                },
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .imePadding()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                                append("${state.originSchedule?.title}")
+                            }
+                            append(" 일정에\n메모를 추가해요")
+                        },
+                        style = EbbingTheme.typography.headingLSB,
+                        color = EbbingTheme.colors.black,
+                    )
+
+                    MemoContent(
+                        memo = state.memo,
+                        memoInputState = state.memoInputState,
+                        onMemoChange = onMemoChange,
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    PreviewContent(
+                        schedule = state.originSchedule,
+                        memo = state.memo,
+                    )
+                }
+            }
+        }
     }
 }
 
