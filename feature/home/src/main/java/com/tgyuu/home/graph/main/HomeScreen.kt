@@ -71,6 +71,7 @@ import com.tgyuu.home.graph.main.ui.bottomsheet.EditScheduleBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
 import com.tgyuu.home.graph.main.ui.dialog.DelayDialog
 import com.tgyuu.home.graph.main.ui.dialog.DeleteDialog
+import com.tgyuu.home.graph.main.ui.dialog.DeleteMemoDialog
 import com.tgyuu.home.graph.main.ui.dialog.DialogType
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.Delete
 import kotlinx.coroutines.launch
@@ -107,6 +108,15 @@ internal fun HomeRoute(
                 onDelayClick = {
                     isShowDialog = false
                     viewModel.onIntent(HomeIntent.OnDelayScheduleClick(dt.schedule))
+                },
+            )
+
+            is DialogType.DeleteMemo -> DeleteMemoDialog(
+                schedule = dt.schedule,
+                onDismissRequest = { isShowDialog = false },
+                onDeleteClick = {
+                    isShowDialog = false
+                    viewModel.onIntent(HomeIntent.OnDeleteMemoClick(dt.schedule))
                 },
             )
 
@@ -153,7 +163,11 @@ internal fun HomeRoute(
                             viewModel.onIntent(HomeIntent.OnMemoClick(selectedSchedule))
                         },
                         onDeleteMemoClick = { selectedSchedule ->
-                            viewModel.onIntent(HomeIntent.OnDeleteMemoClick(selectedSchedule))
+                            scope.launch {
+                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                dialogType = DialogType.DeleteMemo(selectedSchedule)
+                                isShowDialog = true
+                            }
                         }
                     )
                 }
