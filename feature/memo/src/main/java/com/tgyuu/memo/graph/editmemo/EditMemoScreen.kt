@@ -42,8 +42,8 @@ internal fun EditMemoRoute(viewModel: EditMemoViewModel = hiltViewModel()) {
     EditMemoScreen(
         state = state,
         onBackClick = { viewModel.onIntent(EditMemoIntent.OnBackClick) },
-        onSaveClick = { viewModel.onIntent(EditMemoIntent.OnSaveClick) },
-        onMemoChange = { viewModel.onIntent(EditMemoIntent.OnAddMemoChange(it)) },
+        onSaveClick = { viewModel.onIntent(EditMemoIntent.OnUpdateClick) },
+        onMemoChange = { viewModel.onIntent(EditMemoIntent.OnMemoChange(it)) },
     )
 }
 

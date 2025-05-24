@@ -149,9 +149,12 @@ internal fun HomeRoute(
                         onUpdateClick = { updatedSchedule ->
                             viewModel.onIntent(HomeIntent.OnUpdateScheduleClick(updatedSchedule))
                         },
-                        onAddMemoClick = { updatedSchedule ->
-                            viewModel.onIntent(HomeIntent.OnAddMemoClick(updatedSchedule))
+                        onMemoClick = { selectedSchedule ->
+                            viewModel.onIntent(HomeIntent.OnMemoClick(selectedSchedule))
                         },
+                        onDeleteMemoClick = { selectedSchedule ->
+                            viewModel.onIntent(HomeIntent.OnDeleteMemoClick(selectedSchedule))
+                        }
                     )
                 }
             )

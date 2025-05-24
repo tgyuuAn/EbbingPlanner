@@ -38,7 +38,7 @@ class AddMemoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: AddMemoIntent) {
         when (intent) {
-            is AddMemoIntent.OnAddMemoChange -> onMemoChange(intent.memo)
+            is AddMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
             AddMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             AddMemoIntent.OnSaveClick -> saveMemo()
         }

@@ -42,9 +42,9 @@ class EditMemoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditMemoIntent) {
         when (intent) {
-            is EditMemoIntent.OnAddMemoChange -> onMemoChange(intent.memo)
+            is EditMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
             EditMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            EditMemoIntent.OnSaveClick -> saveMemo()
+            EditMemoIntent.OnUpdateClick -> updateMemo()
         }
     }
 
@@ -52,7 +52,7 @@ class EditMemoViewModel @Inject constructor(
         setState { copy(memo = memo) }
     }
 
-    private suspend fun saveMemo() {
+    private suspend fun updateMemo() {
         val newState = currentState.copy(
             memoInputState = getStringInputState(currentState.memo.trim())
         )

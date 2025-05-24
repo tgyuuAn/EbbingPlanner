@@ -43,7 +43,7 @@ internal fun AddMemoRoute(viewModel: AddMemoViewModel = hiltViewModel()) {
         state = state,
         onBackClick = { viewModel.onIntent(AddMemoIntent.OnBackClick) },
         onSaveClick = { viewModel.onIntent(AddMemoIntent.OnSaveClick) },
-        onMemoChange = { viewModel.onIntent(AddMemoIntent.OnAddMemoChange(it)) },
+        onMemoChange = { viewModel.onIntent(AddMemoIntent.OnMemoChange(it)) },
     )
 }
 
