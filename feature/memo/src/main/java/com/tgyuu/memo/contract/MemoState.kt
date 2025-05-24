@@ -7,7 +7,7 @@ import com.tgyuu.domain.model.TodoSchedule
 data class MemoState(
     val originSchedule: TodoSchedule? = null,
     val memo: String = "",
-    val memoInputState: InputState,
+    val memoInputState: InputState = InputState.DEFAULT,
 ) : UiState {
     val isSaveEnabled = memo.isNotEmpty()
     val isInputFieldIncomplete: Boolean = memoInputState == InputState.WARNING

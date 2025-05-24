@@ -1,9 +1,13 @@
 package com.tgyuu.memo
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,18 +15,26 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -32,11 +44,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.InputState
+import com.tgyuu.common.ui.clickable
 import com.tgyuu.common.ui.throttledClickable
+import com.tgyuu.designsystem.BasePreview
+import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.memo.contract.MemoIntent
 import com.tgyuu.memo.contract.MemoState
 
 @Composable
@@ -45,9 +63,9 @@ internal fun MemoRoute(viewModel: MemoViewModel = hiltViewModel()) {
 
     MemoScreen(
         state = state,
-        onBackClick = {},
-        onSaveClick = {},
-        onMemoChange = {},
+        onBackClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
+        onSaveClick = { viewModel.onIntent(MemoIntent.OnSaveClick) },
+        onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
     )
 }
 
@@ -110,6 +128,11 @@ private fun MemoScreen(
                     onMemoChange = onMemoChange,
                 )
 
+                PreviewContent(
+                    schedule = state.originSchedule,
+                    memo = state.memo,
+                )
+
                 Spacer(modifier = Modifier.height(60.dp))
             }
         }
@@ -134,10 +157,10 @@ private fun MemoContent(
 
     EbbingTextInputDefault(
         value = memo,
-        hint = "무엇을 학습하실건가요?",
+        hint = "어떤 메모를 남겨둘까요?",
         keyboardType = KeyboardType.Text,
         onValueChange = onMemoChange,
-        limit = 20,
+        limit = 30,
         rightComponent = {
             if (memo.isNotEmpty()) {
                 Image(
@@ -165,6 +188,150 @@ private fun MemoContent(
             modifier = Modifier
                 .padding(top = 8.dp)
                 .fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+private fun PreviewContent(
+    schedule: TodoSchedule?,
+    memo: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = "미리보기",
+        style = EbbingTheme.typography.bodyMSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(top = 32.dp),
+    )
+
+    if (schedule != null) {
+        TodoListCard(
+            todo = schedule,
+            memo = memo,
+            modifier = modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+private fun TodoListCard(
+    todo: TodoSchedule,
+    memo: String,
+    modifier: Modifier = Modifier,
+) {
+    val isExpandCard by remember { mutableStateOf(true) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .padding(horizontal = 12.dp)
+    ) {
+        VerticalDivider(
+            thickness = 8.dp,
+            color = Color(todo.color),
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(end = 8.dp),
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(EbbingTheme.colors.light3)
+                    .padding(vertical = 12.dp, horizontal = 16.dp)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(
+                        text = todo.title,
+                        style = EbbingTheme.typography.bodyMSB,
+                        color = EbbingTheme.colors.black,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    Text(
+                        text = todo.name,
+                        style = EbbingTheme.typography.bodyMM,
+                        color = EbbingTheme.colors.dark1,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    if (todo.memo.isNotEmpty()) {
+                        Text(
+                            text = todo.memo,
+                            style = EbbingTheme.typography.bodyMM,
+                            color = EbbingTheme.colors.error,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        EbbingCheck(
+                            checked = todo.isDone,
+                            colorValue = todo.color,
+                            onCheckedChange = {},
+                            modifier = Modifier.size(16.dp),
+                        )
+
+                        Text(
+                            text = "우선도 : ${todo.priority}",
+                            style = EbbingTheme.typography.bodySSB,
+                            color = EbbingTheme.colors.dark1,
+                            maxLines = 1,
+                            textAlign = TextAlign.End,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+
+                Image(
+                    painter = painterResource(R.drawable.ic_3dots),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                    modifier = Modifier
+                        .size(20.dp)
+                )
+            }
+
+            EbbingCheck(
+                checked = todo.isDone,
+                colorValue = todo.color,
+                onCheckedChange = { },
+                modifier = Modifier.size(24.dp),
+            )
+        }
+    }
+}
+
+@EbbingPreview
+@Composable
+private fun PreviewMemo() {
+    BasePreview {
+        MemoScreen(
+            state = MemoState(),
+            onBackClick = {},
+            onSaveClick = {},
+            onMemoChange = {},
         )
     }
 }

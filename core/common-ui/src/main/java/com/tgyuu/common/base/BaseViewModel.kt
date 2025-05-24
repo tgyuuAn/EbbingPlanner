@@ -32,7 +32,7 @@ abstract class BaseViewModel<S : UiState, E : UiIntent>(
             .launchIn(viewModelScope)
     }
 
-    fun onIntent(event: E) = viewModelScope.launch { _events.send(event) }
+    fun onIntent(intent: E) = viewModelScope.launch { _events.send(intent) }
 
     protected abstract suspend fun processIntent(intent: E)
 
