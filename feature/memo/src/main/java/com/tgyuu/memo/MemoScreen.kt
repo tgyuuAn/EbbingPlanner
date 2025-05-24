@@ -1,7 +1,11 @@
 package com.tgyuu.memo
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -14,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,8 +27,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -160,7 +163,7 @@ private fun MemoContent(
         hint = "어떤 메모를 남겨둘까요?",
         keyboardType = KeyboardType.Text,
         onValueChange = onMemoChange,
-        limit = 30,
+        limit = 100,
         rightComponent = {
             if (memo.isNotEmpty()) {
                 Image(
@@ -210,7 +213,7 @@ private fun PreviewContent(
             todo = schedule,
             memo = memo,
             modifier = modifier
-                .padding(top = 8.dp)
+                .padding(top = 20.dp)
                 .fillMaxWidth(),
         )
     }
@@ -222,103 +225,127 @@ private fun TodoListCard(
     memo: String,
     modifier: Modifier = Modifier,
 ) {
-    val isExpandCard by remember { mutableStateOf(true) }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
         modifier = modifier
-            .height(IntrinsicSize.Min)
-            .padding(horizontal = 12.dp)
+            .border(
+                color = EbbingTheme.colors.black,
+                width = 0.5.dp,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .wrapContentHeight()
+            .animateContentSize(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = FastOutSlowInEasing
+                )
+            )
+            .padding(20.dp)
     ) {
-        VerticalDivider(
-            thickness = 8.dp,
-            color = Color(todo.color),
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(end = 8.dp),
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+            VerticalDivider(
+                thickness = 8.dp,
+                color = Color(todo.color),
                 modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(EbbingTheme.colors.light3)
-                    .padding(vertical = 12.dp, horizontal = 16.dp)
+                    .fillMaxHeight()
+                    .animateContentSize(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = FastOutSlowInEasing
+                        )
+                    )
+                    .padding(end = 8.dp),
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.weight(1f),
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(EbbingTheme.colors.light3)
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
-                    Text(
-                        text = todo.title,
-                        style = EbbingTheme.typography.bodyMSB,
-                        color = EbbingTheme.colors.black,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = todo.name,
-                        style = EbbingTheme.typography.bodyMM,
-                        color = EbbingTheme.colors.dark1,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    if (todo.memo.isNotEmpty()) {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = todo.memo,
-                            style = EbbingTheme.typography.bodyMM,
-                            color = EbbingTheme.colors.error,
+                            text = todo.title,
+                            style = EbbingTheme.typography.bodyMSB,
+                            color = EbbingTheme.colors.black,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        EbbingCheck(
-                            checked = todo.isDone,
-                            colorValue = todo.color,
-                            onCheckedChange = {},
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.padding(bottom = 4.dp),
                         )
 
                         Text(
-                            text = "우선도 : ${todo.priority}",
-                            style = EbbingTheme.typography.bodySSB,
+                            text = todo.name,
+                            style = EbbingTheme.typography.bodyMM,
                             color = EbbingTheme.colors.dark1,
                             maxLines = 1,
-                            textAlign = TextAlign.End,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.padding(bottom = 4.dp),
                         )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        ) {
+                            EbbingCheck(
+                                checked = todo.isDone,
+                                colorValue = todo.color,
+                                onCheckedChange = {},
+                                modifier = Modifier.size(16.dp),
+                            )
+
+                            Text(
+                                text = "우선도 : ${todo.priority}",
+                                style = EbbingTheme.typography.bodySSB,
+                                color = EbbingTheme.colors.dark1,
+                                maxLines = 1,
+                                textAlign = TextAlign.End,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
                     }
+
+                    Image(
+                        painter = painterResource(R.drawable.ic_3dots),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
 
-                Image(
-                    painter = painterResource(R.drawable.ic_3dots),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
-                    modifier = Modifier
-                        .size(20.dp)
+                EbbingCheck(
+                    checked = todo.isDone,
+                    colorValue = todo.color,
+                    onCheckedChange = { },
+                    modifier = Modifier.size(24.dp),
                 )
             }
+        }
 
-            EbbingCheck(
-                checked = todo.isDone,
-                colorValue = todo.color,
-                onCheckedChange = { },
-                modifier = Modifier.size(24.dp),
-            )
+        EbbingVisibleAnimation(visible = memo.isNotEmpty()) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(end = 32.dp, top = 4.dp, bottom = 4.dp),
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_memo),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                )
+
+                Text(
+                    text = memo,
+                    style = EbbingTheme.typography.bodySSB,
+                    color = EbbingTheme.colors.dark1,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
     }
 }
