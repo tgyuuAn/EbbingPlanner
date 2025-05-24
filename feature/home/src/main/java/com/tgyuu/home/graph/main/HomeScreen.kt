@@ -393,7 +393,7 @@ private fun EbbingTodoList(
                     )
                 }
 
-                item { Spacer(modifier = Modifier.height(60.dp)) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
             }
         } else {
             Text(
