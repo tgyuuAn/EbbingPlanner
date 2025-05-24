@@ -20,6 +20,8 @@ internal fun EditScheduleBottomSheet(
     onUpdateClick: (TodoSchedule) -> Unit,
     onDeleteClick: (TodoSchedule) -> Unit,
     onDelayClick: (TodoSchedule) -> Unit,
+    onMemoClick: (TodoSchedule) -> Unit,
+    onDeleteMemoClick: (TodoSchedule) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -71,6 +73,32 @@ internal fun EditScheduleBottomSheet(
                     .clickable { onDelayClick(selectedSchedule) }
                     .height(62.dp),
             )
+
+            Text(
+                text = if (selectedSchedule.memo.isEmpty()) "메모 추가하기" else "메모 수정하기",
+                style = EbbingTheme.typography.bodyMM,
+                color = EbbingTheme.colors.black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onMemoClick(selectedSchedule) }
+                    .height(62.dp),
+            )
+
+            if (selectedSchedule.memo.isNotEmpty()) {
+                Text(
+                    text = "메모 지우기",
+                    style = EbbingTheme.typography.bodyMM,
+                    color = EbbingTheme.colors.black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onDeleteMemoClick(selectedSchedule) }
+                        .height(62.dp),
+                )
+            }
         }
     }
 }

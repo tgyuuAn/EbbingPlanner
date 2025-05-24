@@ -115,12 +115,11 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         lifecycleScope.launch {
+            launch { viewModel.getUpdateInfo() }
             val insertDefaultTagJob = launch { viewModel.insertDefaultTag() }
             val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
-            val getUpdateInfoJob = launch { viewModel.getUpdateInfo() }
             insertDefaultTagJob.join()
             checkOnboardingJob.join()
-            getUpdateInfoJob.join()
             isInitialized = false
         }
 

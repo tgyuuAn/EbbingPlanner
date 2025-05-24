@@ -15,6 +15,7 @@ import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.EditTodoRoute
+import com.tgyuu.navigation.MemoGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,8 +71,10 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
             is HomeIntent.OnDeleteScheduleClick -> onDeleteSchedule(intent.schedule)
             is HomeIntent.OnUpdateScheduleClick -> onUpdateScheduleClick(intent.schedule.id)
+            is HomeIntent.OnMemoClick -> onMemoClick(intent.schedule)
             is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
+            is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule)
         }
     }
 
@@ -158,6 +161,33 @@ class HomeViewModel @Inject constructor(
     private suspend fun onUpdateScheduleClick(scheduleId: Int) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         navigationBus.navigate(To(EditTodoRoute(scheduleId)))
+    }
+
+    private suspend fun onMemoClick(schedule: TodoSchedule) {
+        val destination = if (schedule.memo.isEmpty()) MemoGraph.AddMemoRoute(schedule.id)
+        else MemoGraph.EditMemoRoute(schedule.id)
+
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(destination))
+    }
+
+    private suspend fun deleteMemo(schedule: TodoSchedule) {
+        val updated = schedule.copy(memo = "")
+        todoRepository.updateTodo(updated)
+
+        allSchedules = allSchedules.map { if (it.id == schedule.id) updated else it }
+        val updatedByDate = buildByDateMap(allSchedules, currentState.sortType)
+        val updatedByInfo = allSchedules.groupBy { it.infoId }
+
+        setState {
+            copy(
+                schedulesByDateMap = updatedByDate,
+                schedulesByTodoInfo = updatedByInfo
+            )
+        }
+
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 제거하였습니다"))
     }
 
     private suspend fun onUpdateSortType(sortType: SortType) {

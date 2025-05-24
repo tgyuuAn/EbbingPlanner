@@ -1,9 +1,9 @@
-## <a href="https://hits.seeyoufarm.com"><img align="left" src="https://github.com/user-attachments/assets/c2d2772c-2732-4979-ac17-d0143e019ce2" width="60"/></a> <br>에빙 플래너 - 공부, 스터디 플래너, 망각곡선 플래너 📈 
+## <a href="https://hits.seeyoufarm.com"><img align="left" src="https://github.com/user-attachments/assets/c2d2772c-2732-4979-ac17-d0143e019ce2" width="60"/></a> <br>에빙 플래너 - 공부, 스터디 플래너, 망각곡선 플래너 📈
 
 <br>
 
-<img width="400" alt="poster" src="https://github.com/user-attachments/assets/ec293756-30eb-4ed3-89f3-99415b43f2ff" />  
-<img width="400" alt="poster" src="https://github.com/user-attachments/assets/61753f15-e48f-4883-8c2b-eb6fe25541bc" />
+<img width="400" alt="poster" src="https://github.com/user-attachments/assets/9b842f07-3f63-48e7-a565-1101a1ecce61" />  
+<img width="400" alt="poster" src="https://github.com/user-attachments/assets/0b816ddd-a798-4bdf-afcf-ca321ed7fd67" />
 
 <br><br>
 
@@ -11,7 +11,7 @@
 
 <table>
   <tr>
-    <td align="center"><img width="266" alt="1" src="https://github.com/user-attachments/assets/5844ad6d-d605-4270-a56b-c4fe6ea0a414"></td>
+    <td align="center"><img width="266" alt="1" src="https://github.com/user-attachments/assets/7579b8bf-9bd0-486c-be06-6d1f0249cd67"></td>
     <td align="center"><img width="266" alt="2" src="https://github.com/user-attachments/assets/9a88540a-649e-4861-a5f1-0da784dcea01"></td>
     <td align="center"><img width="266" alt="3" src="https://github.com/user-attachments/assets/4f16e812-7d6c-4533-a365-eff7568a0185"></td>
   </tr>
@@ -19,8 +19,9 @@
 
 <table>
   <tr>
-    <td align="center"><img width="266" alt="4" src="https://github.com/user-attachments/assets/d0056982-ce50-4d55-92ab-bf4ba5994c72"></td>
+    <td align="center"><img width="266" alt="4" src="https://github.com/user-attachments/assets/0928722d-5744-4920-aaad-773cd1255928"></td>
     <td align="center"><img width="266" alt="5" src="https://github.com/user-attachments/assets/7e0dec94-dada-4a95-9678-87db45e7a351"></td>
+    <td align="center"><img width="266" alt="5" src="https://github.com/user-attachments/assets/a8d4aa5e-f988-4fe1-b2fd-9947c1cb6e9a"></td>
   </tr>
 </table>
 
@@ -31,14 +32,14 @@
 <table>
   <tr>
     <td align="center"><img width="400" alt="1" src="https://github.com/user-attachments/assets/8aca28c2-0dd3-478e-8869-8ffe0ea7a2d0"></td>
-    <td align="center"><img width="400" alt="2" src="https://github.com/user-attachments/assets/1da5314d-58bc-446c-893e-a411896c8b88"></td>
+    <td align="center"><img width="400" alt="2" src="https://github.com/user-attachments/assets/06f4a186-4303-4a62-9ddc-2913f9c9ff5f"></td>
   </tr>
 </table>
 
 <table>
   <tr>
     <td align="center"><img width="400" alt="1" src="https://github.com/user-attachments/assets/070b2e24-d52d-47cc-9462-56f82ab29364"></td>
-    <td align="center"><img width="400" alt="2" src="https://github.com/user-attachments/assets/c04195de-440a-4378-b187-5d4b53bd4134"></td>
+    <td align="center"><img width="400" alt="2" src="https://github.com/user-attachments/assets/8e0560ae-e9c7-4f81-a3c2-6db0cfae5012"></td>
   </tr>
 </table>
 <br><br>

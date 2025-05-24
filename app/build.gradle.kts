@@ -65,6 +65,7 @@ dependencies {
 
     implementation(projects.feature.onboarding)
     implementation(projects.feature.home)
+    implementation(projects.feature.memo)
     implementation(projects.feature.dashboard)
     implementation(projects.feature.setting)
     implementation(projects.feature.alarm)
