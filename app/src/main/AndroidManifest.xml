@@ -44,7 +44,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/home_widget_info" />
+                android:resource="@xml/today_todo_widget_info" />
         </receiver>
 
         <receiver
@@ -56,7 +56,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/home_widget_info" />
+                android:resource="@xml/calendar_widget_info" />
         </receiver>
     </application>
 </manifest>

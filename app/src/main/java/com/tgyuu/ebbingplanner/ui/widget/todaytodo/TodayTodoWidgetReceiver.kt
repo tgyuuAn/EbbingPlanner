@@ -41,7 +41,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onReceive(context, intent)
 
         when (intent.action) {
-            RefreshAction.UPDATE_ACTION -> updateData(context)
+            RefreshAction.TODAY_TODO_UPDATE_ACTION -> updateData(context)
             CheckTodoAction.CHECK_TODO -> {
                 val todoId = intent.extras?.getInt(TODO_ID)
                 todoId ?: return

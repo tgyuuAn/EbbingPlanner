@@ -70,6 +70,7 @@ import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
 import com.tgyuu.ebbingplanner.ui.update.UpdateDialog
+import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.ui.widget.util.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
@@ -162,6 +163,21 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        sendBroadcast(
+            Intent(this, TodayTodoWidgetReceiver::class.java).apply {
+                action = RefreshAction.TODAY_TODO_UPDATE_ACTION
+            }
+        )
+
+        sendBroadcast(
+            Intent(this, CalendarWidgetReceiver::class.java).apply {
+                action = RefreshAction.CALENDAR_UPDATE_ACTION
+            }
+        )
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleDestinationIntent(intent)
@@ -179,14 +195,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        val intent = Intent(this, TodayTodoWidgetReceiver::class.java).apply {
-            action = RefreshAction.UPDATE_ACTION
-        }
-        sendBroadcast(intent)
     }
 
     @Composable
