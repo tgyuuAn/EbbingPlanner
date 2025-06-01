@@ -16,6 +16,7 @@ import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.itemsIndexed
@@ -48,9 +49,11 @@ import com.tgyuu.ebbingplanner.ui.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
 import com.tgyuu.ebbingplanner.ui.widget.ui.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.ui.widget.util.BaseWidgetPreview
+import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.ui.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.ui.widget.util.destinationKey
+import com.tgyuu.ebbingplanner.ui.widget.util.todoIdKey
 import java.time.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
@@ -173,7 +176,9 @@ private fun TodoItemRow(
         EbbingWidgetCheck(
             checked = todo.isDone,
             colorValue = todo.color,
-            onCheckedChange = {},
+            onCheckedChange = {
+                actionRunCallback<CheckTodoAction>(actionParametersOf(todoIdKey to todo.id))
+            },
         )
     }
 }

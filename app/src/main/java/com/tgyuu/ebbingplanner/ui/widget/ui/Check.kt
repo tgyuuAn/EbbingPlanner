@@ -19,14 +19,14 @@ import com.tgyuu.ebbingplanner.R
 fun EbbingWidgetCheck(
     checked: Boolean,
     colorValue: Int,
-    onCheckedChange: (Boolean) -> Unit,
+    onCheckedChange: () -> Unit,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(20.dp)
-            .clickable { onCheckedChange(!checked) },
+            .clickable { onCheckedChange() },
     ) {
         if (checked) {
             Image(
