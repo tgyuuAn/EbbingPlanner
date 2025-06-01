@@ -90,7 +90,8 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                     fontStyle = FontStyle.Normal,
                     textAlign = TextAlign.Start,
                     color = ColorProvider(DarkBackground, LightBackground),
-                ),
+
+                    ),
                 modifier = GlanceModifier.defaultWeight(),
             )
 
@@ -125,7 +126,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
         } else {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
-                    .padding(horizontal = 12.dp, vertical = 20.dp)
+                    .padding(12.dp)
             ) {
                 itemsIndexed(items = todoLists) { idx, item ->
                     TodoItemRow(
@@ -145,7 +146,7 @@ private fun TodoItemRow(
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Row(
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier,
     ) {
         Spacer(
@@ -163,6 +164,7 @@ private fun TodoItemRow(
                 color = ColorProvider(DarkBackground, LightBackground),
                 textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
             ),
+            maxLines = 1,
             modifier = GlanceModifier.padding(start = 12.dp)
         )
 
