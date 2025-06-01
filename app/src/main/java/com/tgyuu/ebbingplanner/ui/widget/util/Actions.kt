@@ -40,11 +40,12 @@ class CheckTodoAction : ActionCallback {
         glanceId: GlanceId,
         parameters: ActionParameters
     ) {
-        Log.d("test", "checkAction 호출!")
-
+        val todoId: Int = parameters[todoIdKey] ?: return
         val intent = Intent(context, TodayTodoWidgetReceiver::class.java).apply {
             action = CHECK_TODO
+            putExtra(TodayTodoWidgetReceiver.TODO_ID, todoId)
         }
+        
         context.sendBroadcast(intent)
     }
 

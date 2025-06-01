@@ -3,7 +3,6 @@ package com.tgyuu.ebbingplanner.ui.widget.todaytodo
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -44,16 +43,14 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> updateData(context)
             CheckTodoAction.CHECK_TODO -> {
-                Log.d("test", "checkActionRecevier 내부")
-                val todoId = intent.extras?.getInt(TODO_ID) ?: return
+                val todoId = intent.extras?.getInt(TODO_ID)
+                todoId ?: return
                 checkTodo(todoId, context)
-                Log.d("test", "checkAction 완료")
             }
         }
     }
 
     private fun checkTodo(todoId: Int, context: Context) = scope.launch {
-        Log.d("test", "checkTodo")
         val selectedTodo = todoRepository.loadSchedule(todoId)
         val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
         todoRepository.updateTodo(updatedTodo)

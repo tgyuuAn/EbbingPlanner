@@ -7,6 +7,7 @@ import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.action.Action
 import androidx.glance.action.clickable
 import androidx.glance.color.ColorProvider
 import androidx.glance.layout.Alignment
@@ -19,14 +20,14 @@ import com.tgyuu.ebbingplanner.R
 fun EbbingWidgetCheck(
     checked: Boolean,
     colorValue: Int,
-    onCheckedChange: () -> Unit,
+    onCheckedChange: Action,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(20.dp)
-            .clickable { onCheckedChange() },
+            .clickable(onCheckedChange),
     ) {
         if (checked) {
             Image(

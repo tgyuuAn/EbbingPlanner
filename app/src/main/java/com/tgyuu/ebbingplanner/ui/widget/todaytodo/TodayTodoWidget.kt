@@ -19,7 +19,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
-import androidx.glance.appwidget.lazy.itemsIndexed
+import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.color.ColorProvider
@@ -131,7 +131,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                 modifier = GlanceModifier.fillMaxSize()
                     .padding(12.dp)
             ) {
-                itemsIndexed(items = todoLists) { idx, item ->
+                items(items = todoLists) { item ->
                     TodoItemRow(
                         todo = item,
                         modifier = GlanceModifier.fillMaxWidth()
@@ -176,9 +176,9 @@ private fun TodoItemRow(
         EbbingWidgetCheck(
             checked = todo.isDone,
             colorValue = todo.color,
-            onCheckedChange = {
-                actionRunCallback<CheckTodoAction>(actionParametersOf(todoIdKey to todo.id))
-            },
+            onCheckedChange = actionRunCallback<CheckTodoAction>(
+                actionParametersOf(todoIdKey to todo.id)
+            )
         )
     }
 }
