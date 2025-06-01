@@ -129,18 +129,38 @@ private fun CalendarWidgetContent(
 private fun CalendarWidgetHeader() {
     val today = LocalDate.now()
     Column(modifier = GlanceModifier.fillMaxWidth()) {
-        Text(
-            text = "${today.year}년 ${today.monthValue}월",
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = ColorProvider(Color.Black, Color.White),
-            ),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.fillMaxWidth()
-                .padding(horizontal = 10.dp)
-                .height(30.dp)
-        )
+                .padding(horizontal = 20.dp)
+                .height(30.dp),
+        ) {
+            Spacer(modifier = GlanceModifier.size(20.dp))
+
+            Text(
+                text = "${today.year}년 ${today.monthValue}월",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = ColorProvider(Color.Black, Color.White),
+                ),
+                modifier = GlanceModifier.defaultWeight()
+            )
+
+            Image(
+                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_return),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(ColorProvider(DarkBackground, LightBackground)),
+                modifier = GlanceModifier
+                    .size(14.dp)
+                    .clickable(
+                        actionRunCallback<SelectDateAction>(
+                            actionParametersOf(selectedDateKey to today.toString())
+                        )
+                    ),
+            )
+        }
 
         Row(modifier = GlanceModifier.fillMaxWidth()) {
             EbbingDayOfWeek.forEach {
@@ -265,7 +285,8 @@ private fun ColumnScope.SelectedDateTodoList(
             modifier = GlanceModifier.defaultWeight()
         ) {
             Text(
-                text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
+                text = if (selectedDate == LocalDate.now()) "오늘 할 일   "
+                else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
