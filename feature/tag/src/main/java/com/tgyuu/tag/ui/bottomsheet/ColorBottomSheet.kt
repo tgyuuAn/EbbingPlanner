@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,32 +39,55 @@ internal fun ColorBottomSheet(
     originColor: Int,
     updateColor: (Int) -> Unit,
 ) {
-    var newColor by remember(originColor) { mutableStateOf(originColor) }
+    var newColor by remember(originColor) { mutableIntStateOf(originColor) }
     val colorOptions: List<Int> = listOf(
-        0xFFFF6961.toInt(), // Pastel Red
-        0xFFF88379.toInt(), // Pastel Coral
-        0xFFFFB347.toInt(), // Pastel Orange
-        0xFFFFDAB9.toInt(), // Pastel Peach
-        0xFFFFD1DC.toInt(), // Pastel Pink
-        0xFFFFCCE5.toInt(), // Pastel Rose
-        0xFFF4C2C2.toInt(), // Pastel Blush
-        0xFFFFB6C1.toInt(), // Pastel Baby Pink
-        0xFFFDFD96.toInt(), // Pastel Yellow
-        0xFFFFFACD.toInt(), // Pastel Lemon
-        0xFFFAF0E6.toInt(), // Pastel Sand (Linen)
-        0xFF77DD77.toInt(), // Pastel Green
-        0xFFAAF0D1.toInt(), // Pastel Mint
-        0xFF9FE2BF.toInt(), // Pastel Seafoam
-        0xFFC2DDB2.toInt(), // Pastel Moss
-        0xFF99E1D9.toInt(), // Pastel Teal
-        0xFFB2FFFF.toInt(), // Pastel Aqua
-        0xFFB0E0E6.toInt(), // Pastel Sky Blue
-        0xFFAEC6CF.toInt(), // Pastel Blue
-        0xFFCCCCFF.toInt(), // Pastel Periwinkle
-        0xFFE3E4FA.toInt(), // Pastel Lavender
-        0xFFC8A2C8.toInt(), // Pastel Lilac
-        0xFFE0B0FF.toInt(), // Pastel Mauve
-        0xFFC39BD3.toInt()  // Pastel Purple
+        // 빨강 계열 (Red → Light Red)
+        0xFFFF0000.toInt(), // Red
+        0xFFFF4C4C.toInt(), // Soft Red
+        0xFFFF8080.toInt(), // Light Red
+        0xFFFF9999.toInt(), // Lighter Red
+        0xFFFFB3B3.toInt(), // Very Light Red
+        0xFFFFC7C7.toInt(), // Pale Red (조금 더 진하게)
+
+        // 주황 계열 (Orange → Light Orange)
+        0xFFFF7F00.toInt(), // Orange
+        0xFFFF9933.toInt(), // Soft Orange
+        0xFFFFB266.toInt(), // Light Orange
+        0xFFFFCC99.toInt(), // Lighter Orange
+        0xFFFFD9B3.toInt(), // Very Light Orange
+        0xFFFFE5CC.toInt(), // Pale Orange (조금 더 진하게)
+
+        // 노랑 계열 (Yellow → Light Yellow)
+        0xFFFFFF00.toInt(), // Yellow
+        0xFFFFF000.toInt(), // Vivid Yellow
+        0xFFFFF380.toInt(), // Soft Yellow
+        0xFFFFF5A3.toInt(), // Light Yellow
+        0xFFFFF7C2.toInt(), // Lighter Yellow
+        0xFFFFFAE0.toInt(), // Pale Yellow (조금 더 진하게)
+
+        // 초록 계열 (Green → Light Green)
+        0xFF008000.toInt(), // Green
+        0xFF33A766.toInt(), // Soft Green
+        0xFF66C28C.toInt(), // Light Green
+        0xFF99DAB3.toInt(), // Lighter Green
+        0xFFBFEBD2.toInt(), // Very Light Green
+        0xFFE0F8E9.toInt(), // Pale Green (조금 더 진하게)
+
+        // 파랑 계열 (Blue → Light Blue)
+        0xFF0000FF.toInt(), // Blue
+        0xFF4285F4.toInt(), // Soft Blue
+        0xFF6FA8FF.toInt(), // Light Blue
+        0xFF99C2FF.toInt(), // Lighter Blue
+        0xFFCCE0FF.toInt(), // Very Light Blue
+        0xFFE3F0FF.toInt(), // Pale Blue (조금 더 진하게)
+
+        // 보라 계열 (Purple → Light Violet)
+        0xFF8A2BE2.toInt(), // Blue Violet
+        0xFF9B4DCC.toInt(), // Medium Purple
+        0xFFB36EFF.toInt(), // Light Purple
+        0xFFD1A3FF.toInt(), // Lighter Purple
+        0xFFE5CCFF.toInt(), // Very Light Purple
+        0xFFF0E5FF.toInt(), // Pale Violet (조금 더 진하게)
     )
 
     Column(
@@ -80,8 +103,8 @@ internal fun ColorBottomSheet(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 400.dp)
-                .padding(vertical = 20.dp),
+                .padding(vertical = 20.dp)
+                .heightIn(max = 228.dp),
         ) {
             items(colorOptions) { colorValue ->
                 val baseColor = Color(colorValue)
