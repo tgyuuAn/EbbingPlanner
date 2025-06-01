@@ -42,6 +42,8 @@ import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.designsystem.foundation.DarkBackground
 import com.tgyuu.designsystem.foundation.LightBackground
+import com.tgyuu.designsystem.foundation.PrimaryDefault
+import com.tgyuu.designsystem.foundation.PrimaryLight
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.ui.MainActivity
@@ -85,18 +87,43 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                 .background(imageProvider = ImageProvider(R.drawable.shape_widget_header))
                 .padding(horizontal = 12.dp, vertical = 4.dp),
         ) {
-            Text(
-                text = "오늘 할 일 ${todoLists.size}",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Normal,
-                    textAlign = TextAlign.Start,
-                    color = ColorProvider(DarkBackground, LightBackground),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = GlanceModifier.defaultWeight()
+            ) {
+                val todoListsDoneSize = todoLists.filter { it.isDone }.size
 
+                Text(
+                    text = "오늘 할 일   ",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        textAlign = TextAlign.Start,
+                        color = ColorProvider(DarkBackground, LightBackground),
                     ),
-                modifier = GlanceModifier.defaultWeight(),
-            )
+                )
+                Text(
+                    text = todoListsDoneSize.toString(),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        textAlign = TextAlign.Start,
+                        color = ColorProvider(PrimaryDefault, PrimaryLight),
+                    ),
+                )
+                Text(
+                    text = " /${todoLists.size}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        textAlign = TextAlign.Start,
+                        color = ColorProvider(DarkBackground, LightBackground),
+                    ),
+                )
+            }
 
             Image(
                 provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
