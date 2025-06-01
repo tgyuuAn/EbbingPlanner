@@ -79,7 +79,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
         modifier = GlanceModifier
             .fillMaxSize()
             .background(imageProvider = ImageProvider(R.drawable.shape_widget_background))
-            .padding(16.dp)
+            .padding(12.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

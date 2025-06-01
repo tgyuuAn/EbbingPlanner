@@ -29,6 +29,7 @@ import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.ColumnScope
 import androidx.glance.layout.Row
 import androidx.glance.layout.RowScope
 import androidx.glance.layout.Spacer
@@ -116,95 +117,11 @@ private fun CalendarWidgetContent(
             modifier = GlanceModifier.height(230.dp),
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.fillMaxWidth()
-                .background(imageProvider = ImageProvider(R.drawable.shape_widget_header))
-                .padding(horizontal = 12.dp, vertical = 4.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = GlanceModifier.defaultWeight()
-            ) {
-                Text(
-                    text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
-                        textAlign = TextAlign.Start,
-                        color = ColorProvider(DarkBackground, LightBackground),
-                    ),
-                )
-                Text(
-                    text = todoListsDoneSize.toString(),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
-                        textAlign = TextAlign.Start,
-                        color = ColorProvider(PrimaryDefault, PrimaryLight),
-                    ),
-                )
-                Text(
-                    text = " /${selectedDateTodoLists.size}",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
-                        textAlign = TextAlign.Start,
-                        color = ColorProvider(DarkBackground, LightBackground),
-                    ),
-                )
-            }
-
-            Image(
-                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(ColorProvider(DarkBackground, LightBackground)),
-                modifier = GlanceModifier
-                    .size(20.dp)
-                    .clickable(
-                        actionStartActivity<MainActivity>(
-                            actionParametersOf(destinationKey to ADD_TODO)
-                        )
-                    ),
-            )
-        }
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = GlanceModifier.fillMaxWidth()
-                .defaultWeight()
-        ) {
-            if (selectedDateTodoLists.isEmpty()) {
-                Text(
-                    text = "금일 스케줄이 없어요.",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontStyle = FontStyle.Normal,
-                        textAlign = TextAlign.Center,
-                        fontFamily = FontFamily.Cursive,
-                        color = ColorProvider(DarkBackground, LightBackground),
-                    ),
-                )
-            } else {
-                LazyColumn(
-                    modifier = GlanceModifier
-                        .fillMaxSize()
-                        .padding(12.dp),
-                ) {
-                    items(items = selectedDateTodoLists) { item ->
-                        TodoItemRow(
-                            todo = item,
-                            modifier = GlanceModifier.fillMaxWidth()
-                                .padding(vertical = 6.dp),
-                        )
-                    }
-                }
-            }
-        }
+        SelectedDateTodoList(
+            selectedDate = selectedDate,
+            todoLists = selectedDateTodoLists,
+            doneSize = todoListsDoneSize
+        )
     }
 }
 
@@ -327,6 +244,99 @@ private fun RowScope.CalendarDayCell(
                             .background(ColorProvider(Color(color), Color(color)))
                     )
                 }
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.SelectedDateTodoList(
+    selectedDate: LocalDate,
+    todoLists: List<TodoSchedule>,
+    doneSize: Int,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = GlanceModifier.fillMaxWidth()
+            .background(imageProvider = ImageProvider(R.drawable.shape_widget_header))
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = GlanceModifier.defaultWeight()
+        ) {
+            Text(
+                text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = ColorProvider(DarkBackground, LightBackground),
+                ),
+            )
+            Text(
+                text = doneSize.toString(),
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = ColorProvider(PrimaryDefault, PrimaryLight),
+                ),
+            )
+            Text(
+                text = " /${todoLists.size}",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = ColorProvider(DarkBackground, LightBackground),
+                ),
+            )
+        }
+
+        Image(
+            provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(ColorProvider(DarkBackground, LightBackground)),
+            modifier = GlanceModifier
+                .size(20.dp)
+                .clickable(
+                    actionStartActivity<MainActivity>(
+                        actionParametersOf(
+                            destinationKey to ADD_TODO,
+                            selectedDateKey to selectedDate.toString()
+                        )
+                    )
+                ),
+        )
+    }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = GlanceModifier.fillMaxWidth().defaultWeight()
+    ) {
+        if (todoLists.isEmpty()) {
+            Text(
+                text = "금일 스케줄이 없어요.",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily.Cursive,
+                    color = ColorProvider(DarkBackground, LightBackground),
+                ),
+            )
+        } else {
+            LazyColumn(
+                modifier = GlanceModifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+            ) {
+                items(items = todoLists) { item ->
+                    TodoItemRow(
+                        todo = item,
+                        modifier = GlanceModifier.fillMaxWidth()
+                            .padding(vertical = 6.dp),
+                    )
+                }
+            }
         }
     }
 }

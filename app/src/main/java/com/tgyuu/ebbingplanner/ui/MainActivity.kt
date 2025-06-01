@@ -187,11 +187,16 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             intent.extras?.getString(KEY_DESTINATION)?.let { destination ->
                 when (destination) {
-                    ADD_TODO -> navigationBus.navigate(
-                        NavigationEvent.To(
-                            HomeGraph.AddTodoRoute(LocalDate.now().toFormattedString())
+                    ADD_TODO -> {
+                        val selectedDate = intent.extras?.getString(KEY_SELECTED_DATE)
+                            ?.let { LocalDate.parse(it) } ?: LocalDate.now()
+
+                        navigationBus.navigate(
+                            NavigationEvent.To(
+                                HomeGraph.AddTodoRoute(selectedDate.toFormattedString())
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -454,6 +459,7 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val KEY_DESTINATION = "destination"
+        const val KEY_SELECTED_DATE = "selectedDate"
         const val ADD_TODO = "addTodo"
     }
 }
