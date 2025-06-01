@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
@@ -189,7 +190,11 @@ private fun CalendarWidgetContent(
                     ),
                 )
             } else {
-                LazyColumn(modifier = GlanceModifier.padding(12.dp)) {
+                LazyColumn(
+                    modifier = GlanceModifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                ) {
                     items(items = selectedDateTodoLists) { item ->
                         TodoItemRow(
                             todo = item,
@@ -213,6 +218,7 @@ private fun CalendarWidgetHeader() {
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
+                color = ColorProvider(Color.Black, Color.White),
             ),
             modifier = GlanceModifier.fillMaxWidth()
                 .padding(horizontal = 10.dp)
@@ -227,6 +233,7 @@ private fun CalendarWidgetHeader() {
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
+                        color = ColorProvider(Color.Black, Color.White),
                     ),
                     modifier = GlanceModifier.defaultWeight(),
                 )
@@ -278,14 +285,16 @@ private fun RowScope.CalendarDayCell(
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val isSelected = date.date == selectedDate
-    val dayItemColor = if (isSelected) Color.Black else Color.Transparent
-    val textColor = if (isSelected) Color.White else Color.Black
+    val dayItemColor = if (isSelected) ColorProvider(Color.Black, Color.White)
+    else ColorProvider(Color.Transparent, Color.Transparent)
+    val textColor = if (isSelected) ColorProvider(Color.White, Color.Black)
+    else ColorProvider(Color.Black, Color.White)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.defaultWeight()
             .cornerRadius(8.dp)
-            .background(androidx.glance.unit.ColorProvider(dayItemColor))
+            .background(dayItemColor)
             .clickable(
                 actionRunCallback<SelectDateAction>(
                     actionParametersOf(selectedDateKey to date.date.toString())
@@ -297,8 +306,8 @@ private fun RowScope.CalendarDayCell(
             style = TextStyle(
                 fontSize = 12.sp,
                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                color = if (date.isCurrentMonth) androidx.glance.unit.ColorProvider(textColor)
-                else androidx.glance.unit.ColorProvider(Gray),
+                color = if (date.isCurrentMonth) textColor
+                else ColorProvider(Gray, LightGray),
                 textAlign = TextAlign.Center
             )
         )
