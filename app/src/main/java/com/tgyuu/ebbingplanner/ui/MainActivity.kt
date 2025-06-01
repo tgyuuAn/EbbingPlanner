@@ -167,13 +167,13 @@ class MainActivity : ComponentActivity() {
         super.onStop()
         sendBroadcast(
             Intent(this, TodayTodoWidgetReceiver::class.java).apply {
-                action = RefreshAction.TODAY_TODO_UPDATE_ACTION
+                action = RefreshAction.UPDATE_ACTION
             }
         )
 
         sendBroadcast(
             Intent(this, CalendarWidgetReceiver::class.java).apply {
-                action = RefreshAction.CALENDAR_UPDATE_ACTION
+                action = RefreshAction.UPDATE_ACTION
             }
         )
     }

@@ -171,7 +171,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
 }
 
 @Composable
-private fun TodoItemRow(
+internal fun TodoItemRow(
     todo: TodoSchedule,
     modifier: GlanceModifier = GlanceModifier,
 ) {

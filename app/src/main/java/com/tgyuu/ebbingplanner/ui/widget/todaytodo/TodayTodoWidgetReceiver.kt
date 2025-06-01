@@ -11,6 +11,7 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction
+import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.ui.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,8 +42,8 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onReceive(context, intent)
 
         when (intent.action) {
-            RefreshAction.TODAY_TODO_UPDATE_ACTION -> updateData(context)
-            CheckTodoAction.CHECK_TODO -> {
+            RefreshAction.UPDATE_ACTION -> updateData(context)
+            CheckTodoAction.CHECK_TODO_ACTION -> {
                 val todoId = intent.extras?.getInt(TODO_ID)
                 todoId ?: return
                 checkTodo(todoId, context)
@@ -82,6 +83,5 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     companion object {
         val TODO_LISTS = stringPreferencesKey("todoLists")
-        const val TODO_ID = "todoId"
     }
 }
