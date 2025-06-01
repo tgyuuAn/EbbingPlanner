@@ -70,8 +70,8 @@ import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
 import com.tgyuu.ebbingplanner.ui.update.UpdateDialog
-import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver
-import com.tgyuu.ebbingplanner.ui.widget.WidgetAction
+import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver
+import com.tgyuu.ebbingplanner.ui.widget.util.WidgetAction
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
@@ -183,7 +183,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-        val intent = Intent(this, HomeAppWidgetReceiver::class.java).apply {
+        val intent = Intent(this, TodayTodoWidgetReceiver::class.java).apply {
             action = WidgetAction.UPDATE_ACTION
         }
         sendBroadcast(intent)

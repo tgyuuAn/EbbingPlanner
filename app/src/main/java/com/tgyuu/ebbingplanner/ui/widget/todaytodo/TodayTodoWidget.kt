@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget
+package com.tgyuu.ebbingplanner.ui.widget.todaytodo
 
 import android.content.Context
 import androidx.compose.runtime.Composable
@@ -36,22 +36,24 @@ import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
+import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.designsystem.foundation.DarkBackground
 import com.tgyuu.designsystem.foundation.LightBackground
-import com.tgyuu.designsystem.foundation.PrimaryDefault
-import com.tgyuu.designsystem.foundation.PrimaryLight
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.ui.MainActivity
 import com.tgyuu.ebbingplanner.ui.MainActivity.Companion.ADD_TODO
-import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.ui.widget.ui.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.ui.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.ui.widget.util.EbbingWidgetPreview
+import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.ui.widget.util.destinationKey
 import java.time.LocalDate
 
-class HomeAppWidget : GlanceAppWidget() {
+class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
@@ -60,18 +62,17 @@ class HomeAppWidget : GlanceAppWidget() {
             val type = object : TypeToken<List<TodoSchedule>>() {}.type
             val todoLists: List<TodoSchedule> = GsonProvider.gson.fromJson(rawJson, type)
 
-            GlanceTheme { HomeWidgetContent(todoLists) }
+            GlanceTheme { TodayTodoWidgetContent(todoLists) }
         }
     }
 }
 
 @Composable
-private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
+private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable(actionStartActivity<MainActivity>())
             .background(imageProvider = ImageProvider(R.drawable.shape_widget_background))
             .padding(16.dp)
     ) {
@@ -85,7 +86,7 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
                 text = "오늘 할 일 ${todoLists.size}",
                 style = TextStyle(
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Normal,
                     textAlign = TextAlign.Start,
                     color = ColorProvider(DarkBackground, LightBackground),
@@ -127,14 +128,11 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
                     .padding(horizontal = 12.dp, vertical = 20.dp)
             ) {
                 itemsIndexed(items = todoLists) { idx, item ->
-                    WidgetItemRow(
+                    TodoItemRow(
                         todo = item,
                         modifier = GlanceModifier.fillMaxWidth()
                             .padding(vertical = 6.dp),
                     )
-
-                    if (idx != todoLists.lastIndex) {
-                    }
                 }
             }
         }
@@ -142,17 +140,17 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
 }
 
 @Composable
-private fun WidgetItemRow(
+private fun TodoItemRow(
     todo: TodoSchedule,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = modifier,
     ) {
         Spacer(
             modifier = GlanceModifier
-                .size(12.dp)
+                .size(16.dp)
                 .cornerRadius(999.dp)
                 .background(ColorProvider(Color(todo.color), Color(todo.color)))
         )
@@ -162,23 +160,19 @@ private fun WidgetItemRow(
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = if (todo.isDone) FontWeight.Bold else FontWeight.Normal,
-                color = if (todo.isDone) ColorProvider(PrimaryDefault, PrimaryLight)
-                else ColorProvider(DarkBackground, LightBackground),
+                color = ColorProvider(DarkBackground, LightBackground),
+                textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
             ),
             modifier = GlanceModifier.padding(start = 12.dp)
         )
 
         Spacer(modifier = GlanceModifier.defaultWeight())
 
-        if (todo.isDone) {
-            Image(
-                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_check),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(
-                    ColorProvider(PrimaryDefault, PrimaryLight)
-                )
-            )
-        }
+        EbbingWidgetCheck(
+            checked = todo.isDone,
+            colorValue = todo.color,
+            onCheckedChange = {},
+        )
     }
 }
 
@@ -186,7 +180,7 @@ private fun WidgetItemRow(
 @Composable
 private fun HomeWidgetPreview() {
     BaseWidgetPreview {
-        HomeWidgetContent(
+        TodayTodoWidgetContent(
             todoLists = emptyList()
         )
     }
@@ -196,7 +190,7 @@ private fun HomeWidgetPreview() {
 @Composable
 private fun HomeWidgetPreview2() {
     BaseWidgetPreview {
-        HomeWidgetContent(
+        TodayTodoWidgetContent(
             todoLists = listOf(
                 TodoSchedule(
                     id = 1,

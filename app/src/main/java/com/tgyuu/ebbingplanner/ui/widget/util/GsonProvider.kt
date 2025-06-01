@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget
+package com.tgyuu.ebbingplanner.ui.widget.util
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

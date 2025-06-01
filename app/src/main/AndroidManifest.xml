@@ -36,7 +36,7 @@
         </activity>
 
         <receiver
-            android:name=".ui.widget.HomeAppWidgetReceiver"
+            android:name=".ui.widget.todaytodo.TodayTodoWidgetReceiver"
             android:label="오늘 남은 일정"
             android:exported="true">
             <intent-filter>

@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget
+package com.tgyuu.ebbingplanner.ui.widget.util
 
 import android.content.Context
 import android.content.Intent
@@ -6,6 +6,7 @@ import androidx.glance.GlanceId
 import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import com.tgyuu.ebbingplanner.ui.MainActivity
+import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver
 
 class WidgetAction : ActionCallback {
     override suspend fun onAction(
@@ -13,7 +14,7 @@ class WidgetAction : ActionCallback {
         glanceId: GlanceId,
         parameters: ActionParameters
     ) {
-        val intent = Intent(context, HomeAppWidgetReceiver::class.java).apply {
+        val intent = Intent(context, TodayTodoWidgetReceiver::class.java).apply {
             action = UPDATE_ACTION
         }
         context.sendBroadcast(intent)

@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget
+package com.tgyuu.ebbingplanner.ui.widget.todaytodo
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -10,6 +10,8 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.ui.widget.util.WidgetAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -17,11 +19,11 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeAppWidgetReceiver : GlanceAppWidgetReceiver() {
+class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
     @Inject
     lateinit var todoRepository: TodoRepository
 
-    override val glanceAppWidget: GlanceAppWidget = HomeAppWidget()
+    override val glanceAppWidget: GlanceAppWidget = TodayTodoWidget()
 
     private val scope = MainScope()
 
@@ -49,7 +51,7 @@ class HomeAppWidgetReceiver : GlanceAppWidgetReceiver() {
                 .sortedWith(compareBy({ it.isDone }, { it.title }))
 
             val glanceId = GlanceAppWidgetManager(context)
-                .getGlanceIds(HomeAppWidget::class.java)
+                .getGlanceIds(TodayTodoWidget::class.java)
                 .firstOrNull()
 
             val json = gson.toJson(todoLists)
