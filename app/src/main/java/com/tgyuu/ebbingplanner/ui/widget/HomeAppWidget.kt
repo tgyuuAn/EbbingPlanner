@@ -12,13 +12,13 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
-import androidx.glance.appwidget.lazy.items
+import androidx.glance.appwidget.lazy.itemsIndexed
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
 import androidx.glance.color.ColorProvider
@@ -45,6 +45,7 @@ import com.tgyuu.designsystem.foundation.PrimaryLight
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.ui.MainActivity
+import com.tgyuu.ebbingplanner.ui.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver.Companion.TODO_LISTS
 import com.tgyuu.ebbingplanner.ui.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.ui.widget.util.EbbingWidgetPreview
@@ -75,6 +76,7 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
             .padding(16.dp)
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.fillMaxWidth()
                 .background(imageProvider = ImageProvider(R.drawable.shape_widget_header))
                 .padding(horizontal = 12.dp, vertical = 4.dp),
@@ -82,7 +84,7 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
             Text(
                 text = "오늘 할 일 ${todoLists.size}",
                 style = TextStyle(
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     fontStyle = FontStyle.Normal,
                     textAlign = TextAlign.Start,
@@ -92,10 +94,16 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
             )
 
             Image(
-                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_refresh),
+                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(ColorProvider(DarkBackground, LightBackground)),
-                modifier = GlanceModifier.clickable(actionRunCallback<RefreshAction>()),
+                modifier = GlanceModifier
+                    .size(20.dp)
+                    .clickable(
+                        actionStartActivity<MainActivity>(
+                            actionParametersOf(destinationKey to ADD_TODO)
+                        )
+                    ),
             )
         }
 
@@ -118,44 +126,58 @@ private fun HomeWidgetContent(todoLists: List<TodoSchedule>) {
                 modifier = GlanceModifier.fillMaxSize()
                     .padding(horizontal = 12.dp, vertical = 20.dp)
             ) {
-                items(items = todoLists) { item ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                itemsIndexed(items = todoLists) { idx, item ->
+                    WidgetItemRow(
+                        todo = item,
                         modifier = GlanceModifier.fillMaxWidth()
                             .padding(vertical = 6.dp),
-                    ) {
-                        Spacer(
-                            modifier = GlanceModifier
-                                .size(12.dp)
-                                .cornerRadius(999.dp)
-                                .background(ColorProvider(Color(item.color), Color(item.color)))
-                        )
+                    )
 
-                        Text(
-                            text = item.title,
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                fontWeight = if (item.isDone) FontWeight.Bold else FontWeight.Normal,
-                                color = if (item.isDone) ColorProvider(PrimaryDefault, PrimaryLight)
-                                else ColorProvider(DarkBackground, LightBackground),
-                            ),
-                            modifier = GlanceModifier.padding(start = 12.dp)
-                        )
-
-                        Spacer(modifier = GlanceModifier.defaultWeight())
-
-                        if (item.isDone) {
-                            Image(
-                                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_check),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(
-                                    ColorProvider(PrimaryDefault, PrimaryLight)
-                                )
-                            )
-                        }
+                    if (idx != todoLists.lastIndex) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun WidgetItemRow(
+    todo: TodoSchedule,
+    modifier: GlanceModifier = GlanceModifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Spacer(
+            modifier = GlanceModifier
+                .size(12.dp)
+                .cornerRadius(999.dp)
+                .background(ColorProvider(Color(todo.color), Color(todo.color)))
+        )
+
+        Text(
+            text = todo.title,
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontWeight = if (todo.isDone) FontWeight.Bold else FontWeight.Normal,
+                color = if (todo.isDone) ColorProvider(PrimaryDefault, PrimaryLight)
+                else ColorProvider(DarkBackground, LightBackground),
+            ),
+            modifier = GlanceModifier.padding(start = 12.dp)
+        )
+
+        Spacer(modifier = GlanceModifier.defaultWeight())
+
+        if (todo.isDone) {
+            Image(
+                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_check),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(
+                    ColorProvider(PrimaryDefault, PrimaryLight)
+                )
+            )
         }
     }
 }

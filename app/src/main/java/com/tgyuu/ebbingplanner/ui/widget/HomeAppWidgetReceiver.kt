@@ -36,7 +36,7 @@ class HomeAppWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action == RefreshAction.UPDATE_ACTION) {
+        if (intent.action == WidgetAction.UPDATE_ACTION) {
             updateData(context)
         }
     }

@@ -5,8 +5,9 @@ import android.content.Intent
 import androidx.glance.GlanceId
 import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
+import com.tgyuu.ebbingplanner.ui.MainActivity
 
-class RefreshAction : ActionCallback {
+class WidgetAction : ActionCallback {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
@@ -22,3 +23,7 @@ class RefreshAction : ActionCallback {
         const val UPDATE_ACTION = "updateAction"
     }
 }
+
+internal val destinationKey = ActionParameters.Key<String>(
+    MainActivity.KEY_DESTINATION
+)
