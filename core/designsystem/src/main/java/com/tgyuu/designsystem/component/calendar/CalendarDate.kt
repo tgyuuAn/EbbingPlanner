@@ -10,7 +10,7 @@ import java.time.DayOfWeek.TUESDAY
 import java.time.DayOfWeek.WEDNESDAY
 import java.time.LocalDate
 
-internal val EbbingDayOfWeek = listOf(
+val EbbingDayOfWeek = listOf(
     SUNDAY,
     MONDAY,
     TUESDAY,

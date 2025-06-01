@@ -36,15 +36,27 @@
         </activity>
 
         <receiver
-            android:name=".ui.widget.HomeAppWidgetReceiver"
-            android:label="오늘 남은 일정"
+            android:name=".ui.widget.todaytodo.TodayTodoWidgetReceiver"
+            android:label="오늘 일정 위젯"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/home_widget_info" />
+                android:resource="@xml/today_todo_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".ui.widget.calendar.CalendarWidgetReceiver"
+            android:label="이번 달 달력 위젯"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/calendar_widget_info" />
         </receiver>
     </application>
 </manifest>

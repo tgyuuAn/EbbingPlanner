@@ -2,7 +2,6 @@ package com.tgyuu.ebbingplanner.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -50,7 +49,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.metrics.performance.JankStats
 import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -60,6 +58,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.ui.EbbingBottomBarAnimation
 import com.tgyuu.common.ui.addFocusCleaner
 import com.tgyuu.common.ui.repeatOnStarted
@@ -71,8 +70,9 @@ import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
 import com.tgyuu.ebbingplanner.ui.update.UpdateDialog
-import com.tgyuu.ebbingplanner.ui.widget.HomeAppWidgetReceiver
-import com.tgyuu.ebbingplanner.ui.widget.RefreshAction
+import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidgetReceiver
+import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver
+import com.tgyuu.ebbingplanner.ui.widget.util.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
@@ -84,6 +84,7 @@ import com.tgyuu.navigation.isRouteInHierarchy
 import com.tgyuu.navigation.shouldHideBottomBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -96,15 +97,6 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
     private var isInitialized: Boolean = true
-
-    private lateinit var jankStats: JankStats
-
-    private val jankFrameListener = JankStats.OnFrameListener { frame ->
-        if (frame.isJank) {
-            Log.w("JankStats", frame.toString())
-            // → 파일·DB에 저장 후 나중에 업로드 등
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -120,6 +112,7 @@ class MainActivity : ComponentActivity() {
             val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
             insertDefaultTagJob.join()
             checkOnboardingJob.join()
+            handleDestinationIntent(intent)
             isInitialized = false
         }
 
@@ -168,26 +161,45 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        jankStats = JankStats.createAndTrack(window, jankFrameListener)
-    }
-
-    override fun onResume() {
-        super.onResume();
-        jankStats.isTrackingEnabled = true
-    }
-
-    override fun onPause() {
-        jankStats.isTrackingEnabled = false;
-        super.onPause()
     }
 
     override fun onStop() {
         super.onStop()
-        val intent = Intent(this, HomeAppWidgetReceiver::class.java).apply {
-            action = RefreshAction.UPDATE_ACTION
+        sendBroadcast(
+            Intent(this, TodayTodoWidgetReceiver::class.java).apply {
+                action = RefreshAction.UPDATE_ACTION
+            }
+        )
+
+        sendBroadcast(
+            Intent(this, CalendarWidgetReceiver::class.java).apply {
+                action = RefreshAction.UPDATE_ACTION
+            }
+        )
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleDestinationIntent(intent)
+    }
+
+    private fun handleDestinationIntent(intent: Intent) {
+        lifecycleScope.launch {
+            intent.extras?.getString(KEY_DESTINATION)?.let { destination ->
+                when (destination) {
+                    ADD_TODO -> {
+                        val selectedDate = intent.extras?.getString(KEY_SELECTED_DATE)
+                            ?.let { LocalDate.parse(it) } ?: LocalDate.now()
+
+                        navigationBus.navigate(
+                            NavigationEvent.To(
+                                HomeGraph.AddTodoRoute(selectedDate.toFormattedString())
+                            )
+                        )
+                    }
+                }
+            }
         }
-        sendBroadcast(intent)
     }
 
     @Composable
@@ -443,5 +455,11 @@ class MainActivity : ComponentActivity() {
             }
             backPressedTime = System.currentTimeMillis()
         }
+    }
+
+    companion object {
+        const val KEY_DESTINATION = "destination"
+        const val KEY_SELECTED_DATE = "selectedDate"
+        const val ADD_TODO = "addTodo"
     }
 }

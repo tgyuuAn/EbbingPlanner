@@ -13,8 +13,8 @@ android {
     namespace = "com.tgyuu.ebbingplanner"
 
     defaultConfig {
-        versionCode = 7
-        versionName = "1.0.6"
+        versionCode = 8
+        versionName = "1.0.7"
         targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -25,9 +25,7 @@ android {
 
     signingConfigs {
         val keystoreProperties = Properties()
-        keystoreProperties.load(
-            project.rootProject.file("keystore.properties").bufferedReader()
-        )
+        keystoreProperties.load(project.rootProject.file("keystore.properties").bufferedReader())
         create("release") {
             storeFile = file(keystoreProperties["STORE_FILE_PATH"] as String)
             storePassword = keystoreProperties["STORE_PASSWORD"] as String
@@ -80,6 +78,4 @@ dependencies {
     implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.glance.appwidget.preview)
     implementation(libs.gson)
-
-    implementation(libs.androidx.metrics.performance)
 }
