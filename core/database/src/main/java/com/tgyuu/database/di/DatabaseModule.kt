@@ -3,6 +3,7 @@ package com.tgyuu.database.di
 import android.content.Context
 import androidx.room.Room
 import com.tgyuu.database.EbbingDatabase
+import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSourceImpl
 import com.tgyuu.database.source.todo.LocalTodoDataSource
@@ -44,4 +45,10 @@ abstract class DatabaseBindsModule {
     abstract fun bindsLocalTodoDataSource(
         localTodoDataSourceImpl: LocalTodoDataSourceImpl
     ): LocalTodoDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindsLocalRepeatCycleDataSource(
+        localRepeatCycleDataSource: LocalRepeatCycleDataSource
+    ): LocalRepeatCycleDataSource
 }

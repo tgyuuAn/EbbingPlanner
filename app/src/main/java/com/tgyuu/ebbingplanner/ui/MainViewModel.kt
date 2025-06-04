@@ -36,4 +36,8 @@ class MainViewModel @Inject constructor(
     internal suspend fun insertDefaultTag() {
         todoRepository.addDefaultTag()
     }
+
+    internal suspend fun insertDefaultRepeatCycle() {
+        todoRepository.addDefaultRepeatCycle()
+    }
 }

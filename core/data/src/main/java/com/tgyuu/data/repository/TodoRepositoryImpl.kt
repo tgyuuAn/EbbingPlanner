@@ -1,20 +1,24 @@
 package com.tgyuu.data.repository
 
 import com.tgyuu.database.model.TodoTagEntity
+import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
+import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.Flow
+import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
+    private val localRepeatCycleDataSource: LocalRepeatCycleDataSource,
 ) : TodoRepository {
     private var _recentAddedTagId: Long? = null
     override val recentAddedTagId: Long?
@@ -37,14 +41,21 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTagList(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
 
-    override suspend fun loadRepeatCycle(id: Int): RepeatCycle = RepeatCycle.SAME_DAY
+    override suspend fun loadRepeatCycle(id: Int): RepeatCycle =
+        localRepeatCycleDataSource.getRepeatCycle(id).toDomain()
 
     override suspend fun loadRepeatCycles(): List<RepeatCycle> = emptyList()
 
     override fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
         localTodoDataSource.subscribeSchedulesByDate(date)
 
-    override suspend fun addDefaultTag(): Long = localTagDataSource.insertTag(DefaultTodoTag)
+    override suspend fun addDefaultTag() {
+        localTagDataSource.insertTag(DefaultTodoTag)
+    }
+
+    override suspend fun addDefaultRepeatCycle() {
+        DefaultRepeatCycles.forEach { localRepeatCycleDataSource.insertTag(it) }
+    }
 
     override suspend fun addTag(
         name: String,
@@ -70,6 +81,22 @@ class TodoRepositoryImpl @Inject constructor(
         dates = dates,
         priority = priority,
     )
+
+    override suspend fun addRepeatCycle(intervals: List<Int>, restDays: List<DayOfWeek>): Long {
+        val newId = localRepeatCycleDataSource.insertTag(
+            intervals = intervals,
+            restDays = restDays,
+        )
+
+        _recentAddedRepeatCycleId = newId
+        return newId
+    }
+
+    override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) =
+        localRepeatCycleDataSource.updateRepeatCycle(repeatCycle)
+
+    override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) =
+        localRepeatCycleDataSource.deleteRepeatCycle(repeatCycle)
 
     override suspend fun loadSchedule(id: Int): TodoSchedule = localTodoDataSource.getSchedule(id)
 
