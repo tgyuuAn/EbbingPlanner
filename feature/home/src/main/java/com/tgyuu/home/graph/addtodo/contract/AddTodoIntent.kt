@@ -16,6 +16,7 @@ sealed class AddTodoIntent : UiIntent {
     data class OnTagDropDownClick(val content: BottomSheetContent) : AddTodoIntent()
     data class OnTagChange(val tag: TodoTag) : AddTodoIntent()
     data object OnAddTagClick : AddTodoIntent()
+    data object OnAddRepeatCycleClick : AddTodoIntent()
     data class OnRepeatCycleDropDownClick(val content: BottomSheetContent) : AddTodoIntent()
     data class OnRepeatCycleChange(val repeatCycle: RepeatCycle) : AddTodoIntent()
     data class OnRestDayChange(val restDay: DayOfWeek) : AddTodoIntent()

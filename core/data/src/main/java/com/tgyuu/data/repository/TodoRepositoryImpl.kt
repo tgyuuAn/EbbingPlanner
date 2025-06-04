@@ -4,6 +4,7 @@ import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
 import com.tgyuu.domain.model.DefaultTodoTag
+import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
@@ -19,6 +20,10 @@ class TodoRepositoryImpl @Inject constructor(
     override val recentAddedTagId: Long?
         get() = _recentAddedTagId.also { _recentAddedTagId = null }
 
+    private var _recentAddedRepeatCycleId: Long? = null
+    override val recentAddedRepeatCycleId: Long?
+        get() = _recentAddedRepeatCycleId.also { _recentAddedRepeatCycleId = null }
+
     override suspend fun loadSchedules(): List<TodoSchedule> = localTodoDataSource.getSchedules()
     override suspend fun loadSchedulesByTodoInfo(id: Int): List<TodoSchedule> =
         localTodoDataSource.getScheduleByTodoInfo(id)
@@ -31,6 +36,10 @@ class TodoRepositoryImpl @Inject constructor(
 
     override suspend fun loadTagList(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
+
+    override suspend fun loadRepeatCycle(id: Int): RepeatCycle = RepeatCycle.SAME_DAY
+
+    override suspend fun loadRepeatCycles(): List<RepeatCycle> = emptyList()
 
     override fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
         localTodoDataSource.subscribeSchedulesByDate(date)

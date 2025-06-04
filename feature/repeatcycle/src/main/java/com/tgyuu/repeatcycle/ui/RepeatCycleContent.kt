@@ -11,10 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.component.EbbingChip
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
@@ -25,12 +23,9 @@ import java.time.DayOfWeek
 @Composable
 internal fun RepeatCycleContent(
     repeatCycle: String,
-    repeatCycleInputState: InputState,
     onRepeatCycleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isSaveFailed = repeatCycleInputState == InputState.WARNING
-
     Text(
         text = "반복 주기",
         style = EbbingTheme.typography.bodyMSB,
@@ -40,8 +35,8 @@ internal fun RepeatCycleContent(
 
     EbbingTextInputDefault(
         value = repeatCycle,
-        hint = "어떤 메모를 남겨둘까요?",
-        keyboardType = KeyboardType.Text,
+        hint = "어떤 주기로 일정을 반복할까요?",
+        keyboardType = KeyboardType.Number,
         onValueChange = onRepeatCycleChange,
         limit = 100,
         rightComponent = {
@@ -61,18 +56,15 @@ internal fun RepeatCycleContent(
             .fillMaxWidth(),
     )
 
-    EbbingVisibleAnimation(visible = isSaveFailed) {
-        Text(
-            text = "필수 항목을 입력해 주세요.",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.error,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
+    Text(
+        text = "' , '를 기준으로 숫자를 분리해주세요.\n당일을 포함하려면 0을 기입해주세요.\n ex) 0, 1, 3, 7, 15",
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        textAlign = TextAlign.Start,
+        modifier = Modifier
+            .padding(top = 8.dp, start = 8.dp)
+            .fillMaxWidth(),
+    )
 }
 
 @Composable

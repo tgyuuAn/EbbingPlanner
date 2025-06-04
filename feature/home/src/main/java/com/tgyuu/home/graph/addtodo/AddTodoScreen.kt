@@ -76,6 +76,7 @@ internal fun AddTodoRoute(
 
     LaunchedEffect(Unit) {
         viewModel.loadNewTag()
+        viewModel.loadNewRepeatCycle()
         viewModel.loadTags()
     }
 
@@ -121,8 +122,13 @@ internal fun AddTodoRoute(
                     {
                         RepeatCycleBottomSheet(
                             originRepeatCycle = state.repeatCycle,
+                            onAddRepeatCycleClick = {
+                                viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
+                            },
                             updateRepeatCycle = {
-                                viewModel.onIntent(AddTodoIntent.OnRepeatCycleChange(it))
+                                viewModel.onIntent(
+                                    AddTodoIntent.OnRepeatCycleChange(it)
+                                )
                             },
                         )
                     }

@@ -21,6 +21,7 @@ import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
+import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -47,11 +48,6 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
     }
 
-    internal fun loadTags() = viewModelScope.launch {
-        val loadedTagList = todoRepository.loadTagList()
-        setState { copy(tagList = loadedTagList) }
-    }
-
     internal fun loadNewTag() {
         todoRepository.recentAddedTagId?.let {
             viewModelScope.launch {
@@ -59,6 +55,20 @@ class AddTodoViewModel @Inject constructor(
                 setState { copy(tag = newTag) }
             }
         }
+    }
+
+    internal fun loadNewRepeatCycle() {
+        todoRepository.recentAddedRepeatCycleId?.let {
+            viewModelScope.launch {
+                val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
+                setState { copy(repeatCycle = newRepeatCycle) }
+            }
+        }
+    }
+
+    internal fun loadTags() = viewModelScope.launch {
+        val loadedTagList = todoRepository.loadTagList()
+        setState { copy(tagList = loadedTagList) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {
@@ -90,6 +100,7 @@ class AddTodoViewModel @Inject constructor(
             is AddTodoIntent.OnTagChange -> onTagChange(intent.tag)
             AddTodoIntent.OnAddTagClick -> onAddTagClick()
             AddTodoIntent.OnSaveClick -> onSaveClick()
+            AddTodoIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
         }
     }
 
@@ -142,6 +153,11 @@ class AddTodoViewModel @Inject constructor(
     private suspend fun onAddTagClick() {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         navigationBus.navigate(NavigationEvent.To(TagGraph.AddTagRoute))
+    }
+
+    private suspend fun onAddRepeatCycleClick() {
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
     private suspend fun onSaveClick() {

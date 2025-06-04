@@ -94,7 +94,7 @@ fun EbbingTextInputDefault(
                         Text(
                             text = hint,
                             style = EbbingTheme.typography.bodyMM,
-                            color = EbbingTheme.colors.black,
+                            color = EbbingTheme.colors.dark2,
                             modifier = Modifier.align(Alignment.CenterStart)
                         )
                     }
@@ -150,7 +150,7 @@ fun EbbingTextInputDropDown(
         Text(
             text = value.ifEmpty { hint },
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = if (value.isEmpty()) EbbingTheme.colors.dark2 else EbbingTheme.colors.black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),

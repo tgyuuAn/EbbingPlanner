@@ -53,7 +53,7 @@ class EditRepeatCycleViewModel @Inject constructor(
     }
 
     private suspend fun updateMemo() {
-        if (currentState.repeatCycleInputState != InputState.DEFAULT) {
+        if (currentState.repeatCycle.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }

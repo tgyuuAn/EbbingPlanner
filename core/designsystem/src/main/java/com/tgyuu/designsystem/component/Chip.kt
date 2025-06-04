@@ -29,7 +29,7 @@ fun EbbingChip(
         label = {
             Text(
                 text = label,
-                style = if (selected) EbbingTheme.typography.bodySSB
+                style = if (selected) EbbingTheme.typography.bodyMSB
                 else EbbingTheme.typography.bodyMM,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
