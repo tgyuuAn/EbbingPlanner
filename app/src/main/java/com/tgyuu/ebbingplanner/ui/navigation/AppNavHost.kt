@@ -8,6 +8,7 @@ import com.tgyuu.home.navigation.homeGraph
 import com.tgyuu.memo.navigation.memoGraph
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.onboarding.navigation.onboardingNavigation
+import com.tgyuu.repeatcycle.navigation.repeatCycleGraph
 import com.tgyuu.setting.navigation.settingGraph
 import com.tgyuu.tag.navigation.tagGraph
 
@@ -27,5 +28,6 @@ fun AppNavHost(
 //        dashboardNavigation()
         settingGraph()
         tagGraph()
+        repeatCycleGraph()
     }
 }

@@ -33,6 +33,17 @@ sealed interface MemoGraph : Route {
 }
 
 @Serializable
+data object RepeatCycleBaseRoute : Route
+
+sealed interface RepeatCycleGraph : Route {
+    @Serializable
+    data object AddRepeatCycleRoute : Route
+
+    @Serializable
+    data class EditRepeatCycleRoute(val repeatCycleId: Int? = null) : Route
+}
+
+@Serializable
 data object DashboardRoute : Route
 
 @Serializable

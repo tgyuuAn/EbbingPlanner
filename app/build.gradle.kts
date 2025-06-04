@@ -68,6 +68,7 @@ dependencies {
     implementation(projects.feature.setting)
     implementation(projects.feature.alarm)
     implementation(projects.feature.tag)
+    implementation(projects.feature.repeatcycle)
     baselineProfile(projects.baselineprofile)
 
     implementation(libs.androidx.core.splashscreen)
