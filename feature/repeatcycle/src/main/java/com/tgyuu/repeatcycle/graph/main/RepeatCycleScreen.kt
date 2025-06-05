@@ -98,7 +98,7 @@ private fun RepeatCycleScreen(
                 .clickable { selectedRepeatCycle = null },
         ) {
             EbbingSubTopBar(
-                title = "태그 관리",
+                title = "반복 주기 관리",
                 onNavigationClick = onBackClick,
                 modifier = Modifier.padding(horizontal = 20.dp),
             )

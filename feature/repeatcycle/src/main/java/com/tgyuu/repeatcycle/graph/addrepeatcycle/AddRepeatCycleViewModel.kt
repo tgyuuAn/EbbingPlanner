@@ -23,7 +23,6 @@ class AddRepeatCycleViewModel @Inject constructor(
     override suspend fun processIntent(intent: AddRepeatCycleIntent) {
         when (intent) {
             is AddRepeatCycleIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            is AddRepeatCycleIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
             AddRepeatCycleIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             AddRepeatCycleIntent.OnSaveClick -> saveRepeatCycle()
         }
@@ -32,24 +31,6 @@ class AddRepeatCycleViewModel @Inject constructor(
     private fun onRepeatCycleChange(repeatCycle: String) {
         setState { copy(intervals = repeatCycle) }
     }
-
-    private suspend fun onRestDayChange(restDay: DayOfWeek) {
-        val origin = currentState.restDays
-
-        val newRestDays = if (origin.contains(restDay)) {
-            origin - restDay
-        } else {
-            origin + restDay
-        }
-
-        if (newRestDays.size == DayOfWeek.entries.size) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 요일을 휴식할 수는 없습니다"))
-            return
-        }
-
-        setState { copy(restDays = newRestDays) }
-    }
-
 
     private suspend fun saveRepeatCycle() {
         if (currentState.intervals.isEmpty()) {

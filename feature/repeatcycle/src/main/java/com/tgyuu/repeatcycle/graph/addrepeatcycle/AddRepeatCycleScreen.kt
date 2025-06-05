@@ -31,7 +31,6 @@ import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.ui.PreviewContent
 import com.tgyuu.repeatcycle.ui.RepeatCycleContent
-import java.time.DayOfWeek
 
 @Composable
 internal fun AddRepeatCycleRoute(viewModel: AddRepeatCycleViewModel = hiltViewModel()) {
@@ -42,7 +41,6 @@ internal fun AddRepeatCycleRoute(viewModel: AddRepeatCycleViewModel = hiltViewMo
         onBackClick = { viewModel.onIntent(AddRepeatCycleIntent.OnBackClick) },
         onSaveClick = { viewModel.onIntent(AddRepeatCycleIntent.OnSaveClick) },
         onRepeatCycleChange = { viewModel.onIntent(AddRepeatCycleIntent.OnRepeatCycleChange(it)) },
-        onRestDayChange = { viewModel.onIntent(AddRepeatCycleIntent.OnRestDayChange(it)) },
     )
 }
 
@@ -52,7 +50,6 @@ private fun AddRepeatCycleScreen(
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onRepeatCycleChange: (String) -> Unit,
-    onRestDayChange: (DayOfWeek) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -177,7 +174,6 @@ private fun PreviewRepeatCycle() {
             onBackClick = {},
             onSaveClick = {},
             onRepeatCycleChange = {},
-            onRestDayChange = {},
         )
     }
 }
