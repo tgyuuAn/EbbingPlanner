@@ -12,6 +12,7 @@ private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
     TagGraph.TagRoute::class,
     TagGraph.AddTagRoute::class,
     TagGraph.EditTagRoute::class,
+    RepeatCycleGraph.RepeatCycleRoute::class,
     RepeatCycleGraph.AddRepeatCycleRoute::class,
     RepeatCycleGraph.EditRepeatCycleRoute::class,
     SettingGraph.WebViewRoute::class,

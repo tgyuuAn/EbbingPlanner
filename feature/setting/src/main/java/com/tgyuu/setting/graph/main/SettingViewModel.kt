@@ -9,6 +9,7 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
+import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.navigation.TagGraph
 import com.tgyuu.setting.BuildConfig
@@ -80,6 +81,8 @@ class SettingViewModel @Inject constructor(
 
             SettingIntent.OnTagManageClick -> navigationBus.navigate(To(TagGraph.TagRoute))
             is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
+            SettingIntent.OnRepeatCycleManageClick ->
+                navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
         }
     }
 

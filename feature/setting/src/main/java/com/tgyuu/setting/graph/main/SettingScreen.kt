@@ -80,6 +80,7 @@ internal fun SettingRoute(
             }))
         },
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
+        onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
@@ -93,6 +94,7 @@ private fun SettingScreen(
     onNoticeClick: () -> Unit,
     onAlarmTimeClick: () -> Unit,
     onTagManageClick: () -> Unit,
+    onRepeatCycleManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -126,7 +128,10 @@ private fun SettingScreen(
                     onAlarmTimeClick = onAlarmTimeClick,
                 )
 
-                TagBody(onTagManageClick = onTagManageClick)
+                UserConfigBody(
+                    onTagManageClick = onTagManageClick,
+                    onRepeatCycleManageClick = onRepeatCycleManageClick,
+                )
 
                 InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -165,7 +170,10 @@ private fun SettingScreen(
                         onAlarmTimeClick = onAlarmTimeClick,
                     )
 
-                    TagBody(onTagManageClick = onTagManageClick)
+                    UserConfigBody(
+                        onTagManageClick = onTagManageClick,
+                        onRepeatCycleManageClick = onRepeatCycleManageClick,
+                    )
 
                     InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -322,9 +330,12 @@ internal fun handlePermission(
 }
 
 @Composable
-private fun TagBody(onTagManageClick: () -> Unit) {
+private fun UserConfigBody(
+    onTagManageClick: () -> Unit,
+    onRepeatCycleManageClick: () -> Unit,
+) {
     Text(
-        text = "태그",
+        text = "태그 / 반복 주기",
         style = EbbingTheme.typography.bodySM,
         color = EbbingTheme.colors.dark2,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -339,6 +350,27 @@ private fun TagBody(onTagManageClick: () -> Unit) {
     ) {
         Text(
             text = "태그 관리",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onRepeatCycleManageClick() },
+    ) {
+        Text(
+            text = "반복 주기 관리",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -561,6 +593,7 @@ private fun PreviewSettingScreen() {
             onNoticeClick = {},
             onAlarmTimeClick = {},
             onTagManageClick = {},
+            onRepeatCycleManageClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},
