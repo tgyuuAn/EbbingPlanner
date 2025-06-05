@@ -8,7 +8,7 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
-import com.tgyuu.repeatcycle.graph.parsingIntervals
+import com.tgyuu.repeatcycle.util.parsingIntervals
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.DayOfWeek
 import javax.inject.Inject
@@ -57,17 +57,21 @@ class AddRepeatCycleViewModel @Inject constructor(
             return
         }
 
-        val intervals = parsingIntervals(currentState.repeatCycle)
-        if (intervals.isEmpty()) {
+        parsingIntervals(currentState.repeatCycle).onSuccess { intervals ->
+            if (intervals.isEmpty()) {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기가 적절하지 않습니다."))
+                return
+            }
+
+            todoRepository.addRepeatCycle(
+                intervals = intervals,
+                restDays = currentState.restDays.toList().sortedBy { it.value }
+            )
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 추가하였습니다"))
+            navigationBus.navigate(NavigationEvent.Up)
+        }.onFailure {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기가 적절하지 않습니다."))
             return
         }
-
-        todoRepository.addRepeatCycle(
-            intervals = intervals,
-            restDays = currentState.restDays.toList().sortedBy { it.value }
-        )
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 추가하였습니다"))
-        navigationBus.navigate(NavigationEvent.Up)
     }
 }
