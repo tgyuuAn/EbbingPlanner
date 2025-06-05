@@ -13,8 +13,8 @@ android {
     namespace = "com.tgyuu.ebbingplanner"
 
     defaultConfig {
-        versionCode = 8
-        versionName = "1.0.7"
+        versionCode = 9
+        versionName = "1.0.8"
         targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
