@@ -1,17 +1,16 @@
 package com.tgyuu.data.repository
 
+import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
-import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.Flow
-import java.time.DayOfWeek
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -44,17 +43,14 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadRepeatCycle(id: Int): RepeatCycle =
         localRepeatCycleDataSource.getRepeatCycle(id).toDomain()
 
-    override suspend fun loadRepeatCycles(): List<RepeatCycle> = emptyList()
+    override suspend fun loadRepeatCycles(): List<RepeatCycle> =
+        localRepeatCycleDataSource.getRepeatCycles().map(RepeatCycleEntity::toDomain)
 
     override fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
         localTodoDataSource.subscribeSchedulesByDate(date)
 
     override suspend fun addDefaultTag() {
         localTagDataSource.insertTag(DefaultTodoTag)
-    }
-
-    override suspend fun addDefaultRepeatCycle() {
-        DefaultRepeatCycles.forEach { localRepeatCycleDataSource.insertTag(it) }
     }
 
     override suspend fun addTag(
@@ -82,11 +78,8 @@ class TodoRepositoryImpl @Inject constructor(
         priority = priority,
     )
 
-    override suspend fun addRepeatCycle(intervals: List<Int>, restDays: List<DayOfWeek>): Long {
-        val newId = localRepeatCycleDataSource.insertTag(
-            intervals = intervals,
-            restDays = restDays,
-        )
+    override suspend fun addRepeatCycle(intervals: List<Int>): Long {
+        val newId = localRepeatCycleDataSource.insertRepeatCycle(intervals = intervals)
 
         _recentAddedRepeatCycleId = newId
         return newId

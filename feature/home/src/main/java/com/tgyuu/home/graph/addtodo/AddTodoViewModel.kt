@@ -12,6 +12,7 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.common.ui.InputState.Companion.getStringInputState
+import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.ConfigRepository
@@ -37,8 +38,8 @@ class AddTodoViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
-    private val savedStateHandle: SavedStateHandle,
     private val alarmScheduler: AlarmScheduler,
+    private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
 
     init {
@@ -69,6 +70,12 @@ class AddTodoViewModel @Inject constructor(
     internal fun loadTags() = viewModelScope.launch {
         val loadedTagList = todoRepository.loadTagList()
         setState { copy(tagList = loadedTagList) }
+    }
+
+    internal fun loadRepeatCycles() = viewModelScope.launch {
+        val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
+
+        setState { copy(repeatCycleList = DefaultRepeatCycles + loadedRepeatCycleList) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {

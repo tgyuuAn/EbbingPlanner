@@ -18,11 +18,11 @@ androidxNavigation = "2.8.8"
 # https://developer.android.com/jetpack/androidx/releases/core
 androidxSplashscreen = "1.0.1"
 # https://developer.android.com/develop/ui/compose/bom/bom-mapping
-androidxComposeBom = "2025.02.00"
+androidxComposeBom = "2025.06.00"
 # https://developer.android.com/jetpack/androidx/releases/navigation
 androidxComposeNavigation = "2.8.8"
 # https://developer.android.com/jetpack/androidx/releases/compose-foundation
-androidxComposeFoundation = "1.7.8"
+androidxComposeFoundation = "1.8.2"
 # https://developer.android.com/training/data-storage/room
 androidxRoom = "2.7.1"
 glanceAppwidget = "1.1.1"

@@ -63,10 +63,7 @@ class AddRepeatCycleViewModel @Inject constructor(
                 return
             }
 
-            todoRepository.addRepeatCycle(
-                intervals = intervals,
-                restDays = currentState.restDays.toList().sortedBy { it.value }
-            )
+            todoRepository.addRepeatCycle(intervals = intervals)
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 추가하였습니다"))
             navigationBus.navigate(NavigationEvent.Up)
         }.onFailure {

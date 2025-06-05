@@ -4,7 +4,6 @@ import com.tgyuu.database.dao.RepeatCyclesDao
 import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.RepeatCycle
-import java.time.DayOfWeek
 import javax.inject.Inject
 
 class LocalRepeatCycleDataSourceImpl @Inject constructor(
@@ -13,11 +12,10 @@ class LocalRepeatCycleDataSourceImpl @Inject constructor(
     override suspend fun insertTag(repeatCycle: RepeatCycle): Long =
         repeatCyclesDao.insertRepeatCycle(repeatCycle.toEntity())
 
-    override suspend fun insertTag(intervals: List<Int>, restDays: List<DayOfWeek>): Long =
+    override suspend fun insertRepeatCycle(intervals: List<Int>): Long =
         repeatCyclesDao.insertRepeatCycle(
             RepeatCycleEntity(
                 intervals = intervals,
-                restDays = restDays,
             )
         )
 

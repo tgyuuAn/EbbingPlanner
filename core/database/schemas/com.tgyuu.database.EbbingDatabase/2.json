@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "168c1ff2c298434766dc52aa08d3a4b4",
+    "identityHash": "f99679827b26e80c396de84b3830e521",
     "entities": [
       {
         "tableName": "todo_tag",
@@ -38,9 +38,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "schedule",
@@ -189,7 +187,7 @@
       },
       {
         "tableName": "repeat_cycle",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `displayName` TEXT NOT NULL, `intervals` TEXT NOT NULL, `restDays` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `intervals` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -198,20 +196,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "displayName",
-            "columnName": "displayName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "intervals",
             "columnName": "intervals",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "restDays",
-            "columnName": "restDays",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -221,15 +207,12 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '168c1ff2c298434766dc52aa08d3a4b4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f99679827b26e80c396de84b3830e521')"
     ]
   }
 }

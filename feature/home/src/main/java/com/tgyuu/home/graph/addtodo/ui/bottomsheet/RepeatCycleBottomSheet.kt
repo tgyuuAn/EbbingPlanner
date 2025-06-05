@@ -57,7 +57,7 @@ internal fun RepeatCycleBottomSheet(
         ) {
             repeatCycleList.forEach { cycle ->
                 EbbingBottomSheetListItemDefault(
-                    label = cycle.displayName,
+                    label = cycle.toDisplayName(),
                     checked = cycle == newRepeatCycle,
                     onChecked = { newRepeatCycle = cycle },
                 )

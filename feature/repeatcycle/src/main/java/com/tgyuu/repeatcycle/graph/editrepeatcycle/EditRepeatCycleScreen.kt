@@ -28,8 +28,8 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleState
+import com.tgyuu.repeatcycle.ui.PreviewContent
 import com.tgyuu.repeatcycle.ui.RepeatCycleContent
-import com.tgyuu.repeatcycle.ui.RestDayContent
 import java.time.DayOfWeek
 
 @Composable
@@ -96,14 +96,10 @@ private fun EditRepeatCycleScreen(
 
                 RepeatCycleContent(
                     repeatCycle = state.intervals,
-                    preview = state.previewRepeatCycle,
                     onRepeatCycleChange = onRepeatCycleChange,
                 )
 
-                RestDayContent(
-                    restDays = state.restDays,
-                    onRestDayChange = onRestDayChange,
-                )
+                PreviewContent(preview = state.previewRepeatCycle)
 
                 Spacer(modifier = Modifier.height(60.dp))
             }
@@ -154,7 +150,6 @@ private fun EditRepeatCycleScreen(
 
                     RepeatCycleContent(
                         repeatCycle = state.intervals,
-                        preview = state.previewRepeatCycle,
                         onRepeatCycleChange = onRepeatCycleChange,
                     )
                 }
@@ -165,10 +160,7 @@ private fun EditRepeatCycleScreen(
                         .padding(20.dp)
                         .padding(horizontal = 20.dp),
                 ) {
-                    RestDayContent(
-                        restDays = state.restDays,
-                        onRestDayChange = onRestDayChange,
-                    )
+                    PreviewContent(preview = state.previewRepeatCycle)
                 }
             }
         }

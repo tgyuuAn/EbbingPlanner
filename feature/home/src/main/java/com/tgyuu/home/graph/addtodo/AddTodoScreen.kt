@@ -79,6 +79,7 @@ internal fun AddTodoRoute(
         viewModel.loadNewTag()
         viewModel.loadNewRepeatCycle()
         viewModel.loadTags()
+        viewModel.loadRepeatCycles()
     }
 
     AddTodoScreen(
@@ -447,7 +448,7 @@ private fun RepeatCycleContent(
     )
 
     EbbingTextInputDropDown(
-        value = repeatCycle.displayName,
+        value = repeatCycle.toDisplayName(),
         onDropDownClick = onRepeatCycleDropDownClick,
         modifier = modifier
             .padding(top = 8.dp)

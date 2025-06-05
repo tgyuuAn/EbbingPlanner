@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material3.Text
@@ -26,6 +28,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -132,12 +135,18 @@ fun EbbingBottomSheetListItemDefault(
             )
         }
 
-        Text(
+        val textColor = if (!enabled) EbbingTheme.colors.dark3
+        else if (checked) EbbingTheme.colors.primaryDefault
+        else EbbingTheme.colors.black
+
+        BasicText(
             text = label,
             style = if (checked) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-            color = if (!enabled) EbbingTheme.colors.dark3
-            else if (checked) EbbingTheme.colors.primaryDefault
-            else EbbingTheme.colors.black,
+            color = { textColor },
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 8.sp,
+                maxFontSize = 16.sp,
+            ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
@@ -149,7 +158,13 @@ fun EbbingBottomSheetListItemDefault(
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(color = EbbingTheme.colors.primaryDefault),
                 modifier = Modifier
-                    .padding(start = 36.dp)
+                    .padding(start = 8.dp)
+                    .size(32.dp),
+            )
+        } else {
+            Spacer(
+                modifier = Modifier
+                    .padding(start = 8.dp)
                     .size(32.dp),
             )
         }
