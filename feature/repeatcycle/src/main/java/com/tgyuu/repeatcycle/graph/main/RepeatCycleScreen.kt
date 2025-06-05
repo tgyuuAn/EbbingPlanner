@@ -81,7 +81,6 @@ private fun RepeatCycleScreen(
 
     if (isShowDialog && selectedRepeatCycle != null) {
         DeleteDialog(
-            repeatCycle = selectedRepeatCycle!!,
             onDismissRequest = { isShowDialog = false },
             onDeleteClick = {
                 onDeleteClick(selectedRepeatCycle!!)

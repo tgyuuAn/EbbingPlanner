@@ -12,7 +12,6 @@ import com.tgyuu.domain.model.RepeatCycle
 
 @Composable
 internal fun DeleteDialog(
-    repeatCycle: RepeatCycle,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -20,13 +19,13 @@ internal fun DeleteDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("${repeatCycle.toDisplayName()} 을")
+                    append("선택하신 반복 주기를 ")
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
                         append("삭제")
                     }
                     append(" 하시겠습니까?")
                 },
-                subText = "삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요."
+                subText = "삭제한 반복 주기는 되돌릴 수 없으니 신중히 선택해 주세요."
             )
         },
         dialogBottom = {
