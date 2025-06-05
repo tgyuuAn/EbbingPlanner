@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -485,16 +486,19 @@ private fun TodoListCard(
                         )
 
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
-                            todosWithSameInfo.forEach {
-                                EbbingCheck(
-                                    checked = it.isDone,
-                                    colorValue = it.color,
-                                    onCheckedChange = {},
-                                    modifier = Modifier.size(16.dp),
-                                )
+                            FlowRow(modifier = Modifier.weight(1f)) {
+                                todosWithSameInfo.forEach {
+                                    EbbingCheck(
+                                        checked = it.isDone,
+                                        colorValue = it.color,
+                                        onCheckedChange = {},
+                                        modifier = Modifier.size(16.dp),
+                                    )
+                                }
                             }
 
                             Text(
@@ -504,7 +508,7 @@ private fun TodoListCard(
                                 maxLines = 1,
                                 textAlign = TextAlign.End,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.padding(start = 12.dp, bottom = 2.dp),
                             )
                         }
                     }
