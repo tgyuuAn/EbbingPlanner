@@ -23,6 +23,7 @@ import java.time.DayOfWeek
 @Composable
 internal fun RepeatCycleContent(
     repeatCycle: String,
+    preview: List<Int>,
     onRepeatCycleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -63,6 +64,23 @@ internal fun RepeatCycleContent(
         textAlign = TextAlign.Start,
         modifier = Modifier
             .padding(top = 8.dp, start = 8.dp)
+            .fillMaxWidth(),
+    )
+
+    Text(
+        text = "예상 반복 주기",
+        style = EbbingTheme.typography.bodyMSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(top = 32.dp),
+    )
+
+    Text(
+        text = preview.toString(),
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        textAlign = TextAlign.Start,
+        modifier = Modifier
+            .padding(top = 8.dp)
             .fillMaxWidth(),
     )
 }

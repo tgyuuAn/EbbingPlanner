@@ -24,7 +24,7 @@ androidxComposeNavigation = "2.8.8"
 # https://developer.android.com/jetpack/androidx/releases/compose-foundation
 androidxComposeFoundation = "1.7.8"
 # https://developer.android.com/training/data-storage/room
-androidxRoom = "2.6.1"
+androidxRoom = "2.7.1"
 glanceAppwidget = "1.1.1"
 
 ## Material
@@ -114,6 +114,7 @@ compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compil
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidxRoom" }
 androidx-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive-android" }
 androidx-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite-android" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
@@ -164,6 +165,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+room = { id = "androidx.room", version.ref = "androidxRoom" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-test = { id = "com.android.test", version.ref = "androidGradlePlugin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

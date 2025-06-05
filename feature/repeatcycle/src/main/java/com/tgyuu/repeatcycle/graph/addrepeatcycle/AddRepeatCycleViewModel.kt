@@ -30,7 +30,7 @@ class AddRepeatCycleViewModel @Inject constructor(
     }
 
     private fun onRepeatCycleChange(repeatCycle: String) {
-        setState { copy(repeatCycle = repeatCycle) }
+        setState { copy(intervals = repeatCycle) }
     }
 
     private suspend fun onRestDayChange(restDay: DayOfWeek) {
@@ -52,12 +52,12 @@ class AddRepeatCycleViewModel @Inject constructor(
 
 
     private suspend fun saveRepeatCycle() {
-        if (currentState.repeatCycle.isEmpty()) {
+        if (currentState.intervals.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }
 
-        parsingIntervals(currentState.repeatCycle).onSuccess { intervals ->
+        parsingIntervals(currentState.intervals).onSuccess { intervals ->
             if (intervals.isEmpty()) {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기가 적절하지 않습니다."))
                 return

@@ -16,6 +16,7 @@ data class RepeatCycleEntity(
         id = id,
         displayName = displayName,
         intervals = intervals,
+        restDays = restDays,
     )
 }
 

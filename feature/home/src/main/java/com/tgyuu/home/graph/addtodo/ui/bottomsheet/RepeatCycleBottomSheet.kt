@@ -24,6 +24,7 @@ import com.tgyuu.domain.model.RepeatCycle
 
 @Composable
 internal fun RepeatCycleBottomSheet(
+    repeatCycleList: List<RepeatCycle>,
     originRepeatCycle: RepeatCycle,
     updateRepeatCycle: (RepeatCycle) -> Unit,
     onAddRepeatCycleClick: () -> Unit,
@@ -54,7 +55,7 @@ internal fun RepeatCycleBottomSheet(
                 .heightIn(max = 400.dp)
                 .padding(top = 12.dp)
         ) {
-            RepeatCycle.entries.forEach { cycle ->
+            repeatCycleList.forEach { cycle ->
                 EbbingBottomSheetListItemDefault(
                     label = cycle.displayName,
                     checked = cycle == newRepeatCycle,

@@ -1,10 +1,11 @@
 package com.tgyuu.home.graph.addtodo.contract
 
 import com.tgyuu.common.base.UiState
+import com.tgyuu.common.ui.InputState
+import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.common.ui.InputState
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -15,7 +16,8 @@ data class AddTodoState(
     val priority: String? = null,
     val tag: TodoTag = DefaultTodoTag,
     val tagList: List<TodoTag> = emptyList(),
-    val repeatCycle: RepeatCycle = RepeatCycle.SAME_DAY,
+    val repeatCycleList: List<RepeatCycle> = DefaultRepeatCycles,
+    val repeatCycle: RepeatCycle = DefaultRepeatCycles.first(),
     val restDays: Set<DayOfWeek> = emptySet(),
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()

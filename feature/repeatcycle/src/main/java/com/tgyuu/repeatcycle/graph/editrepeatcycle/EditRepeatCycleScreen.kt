@@ -95,7 +95,8 @@ private fun EditRepeatCycleScreen(
                 )
 
                 RepeatCycleContent(
-                    repeatCycle = state.repeatCycle,
+                    repeatCycle = state.intervals,
+                    preview = state.previewRepeatCycle,
                     onRepeatCycleChange = onRepeatCycleChange,
                 )
 
@@ -152,7 +153,8 @@ private fun EditRepeatCycleScreen(
                     )
 
                     RepeatCycleContent(
-                        repeatCycle = state.repeatCycle,
+                        repeatCycle = state.intervals,
+                        preview = state.previewRepeatCycle,
                         onRepeatCycleChange = onRepeatCycleChange,
                     )
                 }

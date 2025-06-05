@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -32,7 +31,7 @@ class EditRepeatCycleViewModel @Inject constructor(
     }
 
     private fun onMemoChange(repeatCycle: String) {
-        setState { copy(repeatCycle = repeatCycle) }
+        setState { copy(intervals = repeatCycle) }
     }
 
     private suspend fun onRestDayChange(restDay: DayOfWeek) {
@@ -53,7 +52,7 @@ class EditRepeatCycleViewModel @Inject constructor(
     }
 
     private suspend fun updateMemo() {
-        if (currentState.repeatCycle.isEmpty()) {
+        if (currentState.intervals.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }

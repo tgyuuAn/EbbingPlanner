@@ -58,6 +58,7 @@ import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingTextInputDropDown
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
@@ -121,6 +122,7 @@ internal fun AddTodoRoute(
                 AddTodoIntent.OnRepeatCycleDropDownClick(
                     {
                         RepeatCycleBottomSheet(
+                            repeatCycleList = state.repeatCycleList,
                             originRepeatCycle = state.repeatCycle,
                             onAddRepeatCycleClick = {
                                 viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
@@ -566,7 +568,7 @@ private fun PreviewAddTodo() {
                 title = "토익",
                 titleInputState = InputState.DEFAULT,
                 priority = "3",
-                repeatCycle = RepeatCycle.D1_7_15_30_60,
+                repeatCycle = DefaultRepeatCycles.last(),
                 restDays = setOf(DayOfWeek.MONDAY),
             ),
             onSelectedDateChangeClick = {},
