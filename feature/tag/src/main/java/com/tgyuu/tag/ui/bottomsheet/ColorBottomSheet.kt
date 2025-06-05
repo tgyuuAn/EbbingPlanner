@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,9 +32,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.ui.EbbingVisibleAnimation
 import com.tgyuu.common.ui.clickable
+import com.tgyuu.common.ui.verticalScrollbar
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.EbbingSolidButton
+import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Composable
 internal fun ColorBottomSheet(
@@ -40,6 +44,7 @@ internal fun ColorBottomSheet(
     updateColor: (Int) -> Unit,
 ) {
     var newColor by remember(originColor) { mutableIntStateOf(originColor) }
+    val listState = rememberLazyGridState()
     val colorOptions: List<Int> = listOf(
         // 빨강 계열 (Red → Light Red)
         0xFFFF0000.toInt(), // Red
@@ -98,13 +103,18 @@ internal fun ColorBottomSheet(
         EbbingBottomSheetHeader(title = "색상")
 
         LazyVerticalGrid(
+            state = listState,
             columns = GridCells.Fixed(6),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 20.dp)
-                .heightIn(max = 228.dp),
+                .heightIn(max = 228.dp)
+                .verticalScrollbar(
+                    state = listState,
+                    color = EbbingTheme.colors.light1,
+                ),
         ) {
             items(colorOptions) { colorValue ->
                 val baseColor = Color(colorValue)

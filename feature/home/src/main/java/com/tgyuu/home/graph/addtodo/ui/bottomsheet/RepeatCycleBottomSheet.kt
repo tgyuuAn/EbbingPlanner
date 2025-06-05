@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -16,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.ui.clickable
+import com.tgyuu.common.ui.verticalScrollbar
 import com.tgyuu.designsystem.component.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -30,6 +34,7 @@ internal fun RepeatCycleBottomSheet(
     onAddRepeatCycleClick: () -> Unit,
 ) {
     var newRepeatCycle by remember(originRepeatCycle) { mutableStateOf(originRepeatCycle) }
+    val listState = rememberLazyListState()
 
     Column(
         modifier = Modifier
@@ -49,13 +54,21 @@ internal fun RepeatCycleBottomSheet(
                 )
             })
 
-        Column(
+        LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 400.dp)
+                .heightIn(max = 300.dp)
                 .padding(top = 12.dp)
+                .verticalScrollbar(
+                    state = listState,
+                    color = EbbingTheme.colors.light1,
+                ),
         ) {
-            repeatCycleList.forEach { cycle ->
+            items(
+                items = repeatCycleList,
+                key = { it.id },
+            ) { cycle ->
                 EbbingBottomSheetListItemDefault(
                     label = cycle.toDisplayName(),
                     checked = cycle == newRepeatCycle,

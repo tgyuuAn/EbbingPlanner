@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -96,6 +97,50 @@ fun Modifier.throttledClickable(
 @Composable
 fun Modifier.verticalScrollbar(
     state: LazyListState,
+    width: Dp = 6.dp,
+    color: Color,
+): Modifier {
+    val targetAlpha = if (state.isScrollInProgress) .7f else 0f
+    val duration = if (state.isScrollInProgress) 150 else 1000
+
+    val alpha by animateFloatAsState(
+        targetValue = targetAlpha,
+        animationSpec = tween(durationMillis = duration)
+    )
+
+    val firstIndex by animateFloatAsState(
+        targetValue = state.layoutInfo.visibleItemsInfo.firstOrNull()?.index?.toFloat() ?: 0f,
+        animationSpec = spring(stiffness = StiffnessMediumLow)
+    )
+
+    val lastIndex by animateFloatAsState(
+        targetValue = state.layoutInfo.visibleItemsInfo.lastOrNull()?.index?.toFloat() ?: 0f,
+        animationSpec = spring(stiffness = StiffnessMediumLow)
+    )
+
+    return drawWithContent {
+        drawContent()
+
+        val itemsCount = state.layoutInfo.totalItemsCount
+
+        if (itemsCount > 0 && alpha > 0f) {
+            val scrollbarTop = firstIndex / itemsCount * size.height
+            val scrollBottom = (lastIndex + 1f) / itemsCount * size.height
+            val scrollbarHeight = scrollBottom - scrollbarTop
+            drawRoundRect(
+                color = color,
+                cornerRadius = CornerRadius(0.1f),
+                topLeft = Offset(size.width - width.toPx(), scrollbarTop),
+                size = Size(width.toPx(), scrollbarHeight),
+                alpha = alpha
+            )
+        }
+    }
+}
+
+@Composable
+fun Modifier.verticalScrollbar(
+    state: LazyGridState,
     width: Dp = 6.dp,
     color: Color,
 ): Modifier {
