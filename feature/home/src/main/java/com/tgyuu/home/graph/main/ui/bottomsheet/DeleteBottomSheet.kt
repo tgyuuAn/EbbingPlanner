@@ -25,7 +25,7 @@ internal fun DeleteBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "정렬 순서")
+        EbbingBottomSheetHeader(title = "삭제 방법")
 
         Column(
             modifier = Modifier
