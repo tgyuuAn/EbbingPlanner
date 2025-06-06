@@ -71,10 +71,10 @@ import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.EditScheduleBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
-import com.tgyuu.home.graph.main.ui.dialog.DelayDialog
-import com.tgyuu.home.graph.main.ui.dialog.DeleteAllDialog
-import com.tgyuu.home.graph.main.ui.dialog.DeleteMemoDialog
-import com.tgyuu.home.graph.main.ui.dialog.DeleteSpecificDialog
+import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayDialog
+import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteRemainingDialog
+import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteMemoDialog
+import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteSingleDialog
 import com.tgyuu.home.graph.main.ui.dialog.DialogType
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteSingle
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteRemaining
@@ -98,7 +98,7 @@ internal fun HomeRoute(
 
     if (isShowDialog && dialogType != null) {
         when (val dt = dialogType) {
-            is ConfirmDeleteSingle -> DeleteSpecificDialog(
+            is ConfirmDeleteSingle -> ConfirmDeleteSingleDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
@@ -107,7 +107,7 @@ internal fun HomeRoute(
                 },
             )
 
-            is ConfirmDeleteRemaining -> DeleteAllDialog(
+            is ConfirmDeleteRemaining -> ConfirmDeleteRemainingDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
@@ -116,7 +116,7 @@ internal fun HomeRoute(
                 },
             )
 
-            is DialogType.ConfirmDelay -> DelayDialog(
+            is DialogType.ConfirmDelay -> ConfirmDelayDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDelayClick = {
@@ -125,7 +125,7 @@ internal fun HomeRoute(
                 },
             )
 
-            is DialogType.ConfirmDeleteMemo -> DeleteMemoDialog(
+            is DialogType.ConfirmDeleteMemo -> ConfirmDeleteMemoDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {

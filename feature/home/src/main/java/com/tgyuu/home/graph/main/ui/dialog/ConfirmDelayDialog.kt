@@ -7,7 +7,7 @@ import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.domain.model.TodoSchedule
 
 @Composable
-internal fun DelayDialog(
+internal fun ConfirmDelayDialog(
     schedule: TodoSchedule,
     onDismissRequest: () -> Unit,
     onDelayClick: () -> Unit,
