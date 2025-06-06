@@ -75,8 +75,8 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
             is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule)
             is HomeIntent.OnDeleteScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
-            is HomeIntent.OnDeleteSpecificScheduleClick -> onDeleteSpecificSchedule(intent.schedule)
-            is HomeIntent.OnDeleteAllScheduleClick -> onDeleteAllSchedule(intent.schedule)
+            is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)
+            is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule)
         }
     }
 
@@ -99,7 +99,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun onDeleteSpecificSchedule(schedule: TodoSchedule) {
+    private suspend fun onDeleteSingleSchedule(schedule: TodoSchedule) {
         todoRepository.deleteTodo(schedule)
 
         allSchedules = allSchedules.filterNot { it.id == schedule.id }
@@ -117,12 +117,12 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 지웠습니다."))
     }
 
-    private suspend fun onDeleteAllSchedule(schedule: TodoSchedule) {
-        val schedulesToDelete = todoRepository
+    private suspend fun onDeleteRemainingSchedule(schedule: TodoSchedule) {
+        val futureSchedulesToDelete = todoRepository
             .loadSchedulesByTodoInfo(schedule.infoId)
             .filter { it.date >= schedule.date }
 
-        for (item in schedulesToDelete) {
+        for (item in futureSchedulesToDelete) {
             todoRepository.deleteTodo(item)
             allSchedules = allSchedules.filterNot { it.id == item.id }
         }

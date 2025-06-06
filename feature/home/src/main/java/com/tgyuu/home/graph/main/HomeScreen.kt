@@ -76,8 +76,8 @@ import com.tgyuu.home.graph.main.ui.dialog.DeleteAllDialog
 import com.tgyuu.home.graph.main.ui.dialog.DeleteMemoDialog
 import com.tgyuu.home.graph.main.ui.dialog.DeleteSpecificDialog
 import com.tgyuu.home.graph.main.ui.dialog.DialogType
-import com.tgyuu.home.graph.main.ui.dialog.DialogType.Delete
-import com.tgyuu.home.graph.main.ui.dialog.DialogType.DeleteAll
+import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteSingle
+import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteRemaining
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -98,25 +98,25 @@ internal fun HomeRoute(
 
     if (isShowDialog && dialogType != null) {
         when (val dt = dialogType) {
-            is Delete -> DeleteSpecificDialog(
+            is ConfirmDeleteSingle -> DeleteSpecificDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
                     isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteSpecificScheduleClick(dt.schedule))
+                    viewModel.onIntent(HomeIntent.OnDeleteSingleClick(dt.schedule))
                 },
             )
 
-            is DeleteAll -> DeleteAllDialog(
+            is ConfirmDeleteRemaining -> DeleteAllDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
                     isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteAllScheduleClick(dt.schedule))
+                    viewModel.onIntent(HomeIntent.OnDeleteRemainingClick(dt.schedule))
                 },
             )
 
-            is DialogType.Delay -> DelayDialog(
+            is DialogType.ConfirmDelay -> DelayDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDelayClick = {
@@ -125,7 +125,7 @@ internal fun HomeRoute(
                 },
             )
 
-            is DialogType.DeleteMemo -> DeleteMemoDialog(
+            is DialogType.ConfirmDeleteMemo -> DeleteMemoDialog(
                 schedule = dt.schedule,
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
@@ -159,7 +159,7 @@ internal fun HomeRoute(
                         onDelayClick = { delayedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                dialogType = DialogType.Delay(delayedSchedule)
+                                dialogType = DialogType.ConfirmDelay(delayedSchedule)
                                 isShowDialog = true
                             }
                         },
@@ -171,17 +171,17 @@ internal fun HomeRoute(
                                     HomeIntent.OnDeleteScheduleClick {
                                         DeleteBottomSheet(
                                             selectedSchedule = deletedSchedule,
-                                            onDeleteSpecificClick = {
+                                            onDeleteSingleClick = {
                                                 scope.launch {
                                                     viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                                    dialogType = Delete(deletedSchedule)
+                                                    dialogType = ConfirmDeleteSingle(deletedSchedule)
                                                     isShowDialog = true
                                                 }
                                             },
-                                            onDeleteAllClick = {
+                                            onDeleteRemainingClick = {
                                                 scope.launch {
                                                     viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                                    dialogType = DeleteAll(deletedSchedule)
+                                                    dialogType = ConfirmDeleteRemaining(deletedSchedule)
                                                     isShowDialog = true
                                                 }
                                             },
@@ -199,7 +199,7 @@ internal fun HomeRoute(
                         onDeleteMemoClick = { selectedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                dialogType = DialogType.DeleteMemo(selectedSchedule)
+                                dialogType = DialogType.ConfirmDeleteMemo(selectedSchedule)
                                 isShowDialog = true
                             }
                         }
