@@ -12,8 +12,10 @@ sealed interface HomeIntent : UiIntent {
     data class OnSortTypeClick(val content: BottomSheetContent) : HomeIntent
     data class OnUpdateSortType(val sortType: SortType) : HomeIntent
     data class OnEditScheduleClick(val content: BottomSheetContent) : HomeIntent
+    data class OnDeleteScheduleClick(val content: BottomSheetContent) : HomeIntent
+    data class OnDeleteSingleClick(val schedule: TodoSchedule) : HomeIntent
+    data class OnDeleteRemainingClick(val schedule: TodoSchedule) : HomeIntent
     data class OnUpdateScheduleClick(val schedule: TodoSchedule) : HomeIntent
-    data class OnDeleteScheduleClick(val schedule: TodoSchedule) : HomeIntent
     data class OnDelayScheduleClick(val schedule: TodoSchedule) : HomeIntent
     data class OnMemoClick(val schedule: TodoSchedule) : HomeIntent
     data class OnDeleteMemoClick(val schedule: TodoSchedule) : HomeIntent
