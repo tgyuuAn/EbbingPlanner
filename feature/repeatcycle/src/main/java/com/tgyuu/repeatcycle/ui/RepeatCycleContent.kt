@@ -31,7 +31,7 @@ internal fun RepeatCycleContent(
     EbbingTextInputDefault(
         value = repeatCycle,
         hint = "어떤 주기로 일정을 반복할까요?",
-        keyboardType = KeyboardType.Number,
+        keyboardType = KeyboardType.Text,
         onValueChange = onRepeatCycleChange,
         limit = 60,
         rightComponent = {

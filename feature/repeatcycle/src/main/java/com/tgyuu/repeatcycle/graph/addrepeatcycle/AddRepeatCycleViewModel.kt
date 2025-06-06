@@ -29,7 +29,9 @@ class AddRepeatCycleViewModel @Inject constructor(
     }
 
     private fun onRepeatCycleChange(repeatCycle: String) {
-        setState { copy(intervals = repeatCycle) }
+        val allowed = repeatCycle.matches(Regex("^[0-9,\\s]*$"))
+
+        if (allowed) { setState { copy(intervals = repeatCycle) } }
     }
 
     private suspend fun saveRepeatCycle() {
