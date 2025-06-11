@@ -6,7 +6,6 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.memo.graph.addmemo.contract.AddMemoIntent
 import com.tgyuu.memo.graph.addmemo.contract.AddMemoState
@@ -49,21 +48,18 @@ class AddMemoViewModel @Inject constructor(
     }
 
     private suspend fun saveMemo() {
-        val newState = currentState.copy(
-            memoInputState = getStringInputState(currentState.memo.trim())
-        )
-
-        if (newState.isInputFieldIncomplete) {
-            setState { newState }
+        if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }
 
-        todoRepository.updateTodo(currentState.originSchedule?.copy(memo = newState.memo) ?: return)
+        todoRepository.updateTodo(
+            currentState.originSchedule?.copy(memo = currentState.memo) ?: return
+        )
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 추가하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
-                route = HomeRoute(newState.originSchedule!!.date.toFormattedString()),
+                route = HomeRoute(currentState.originSchedule!!.date.toFormattedString()),
                 popUpTo = true,
             )
         )

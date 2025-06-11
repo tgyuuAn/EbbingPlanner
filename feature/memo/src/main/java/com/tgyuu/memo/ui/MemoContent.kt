@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
@@ -41,12 +40,9 @@ import com.tgyuu.domain.model.TodoSchedule
 @Composable
 internal fun MemoContent(
     memo: String,
-    memoInputState: InputState,
     onMemoChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isSaveFailed = memoInputState == InputState.WARNING
-
     Text(
         text = "메모",
         style = EbbingTheme.typography.bodyMSB,
@@ -76,19 +72,6 @@ internal fun MemoContent(
             .padding(top = 8.dp)
             .fillMaxWidth(),
     )
-
-    EbbingVisibleAnimation(visible = isSaveFailed) {
-        Text(
-            text = "필수 항목을 입력해 주세요.",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.error,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
 }
 
 @Composable

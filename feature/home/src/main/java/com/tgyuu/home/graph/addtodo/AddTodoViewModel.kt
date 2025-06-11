@@ -11,7 +11,6 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
-import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
@@ -168,12 +167,7 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
-        val newState = currentState.copy(
-            titleInputState = getStringInputState(currentState.title.trim())
-        )
-
-        if (newState.isInputFieldIncomplete) {
-            setState { newState }
+        if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }
@@ -187,7 +181,7 @@ class AddTodoViewModel @Inject constructor(
 
         val (hour, minute) = configRepository.getAlarmTime()
 
-        newState.schedules.forEach { schedule ->
+        currentState.schedules.forEach { schedule ->
             try {
                 val triggerAtMillis = schedule
                     .atTime(LocalTime.of(hour, minute))
@@ -209,7 +203,7 @@ class AddTodoViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
-                route = HomeRoute(newState.selectedDate.toFormattedString()),
+                route = HomeRoute(currentState.selectedDate.toFormattedString()),
                 popUpTo = true,
             )
         )

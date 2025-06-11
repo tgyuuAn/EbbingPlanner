@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -65,10 +64,7 @@ class EditTagViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
-        val newState = currentState.copy(nameInputState = getStringInputState(currentState.name))
-
-        if (newState.isInputFieldIncomplete) {
-            setState { newState }
+        if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }

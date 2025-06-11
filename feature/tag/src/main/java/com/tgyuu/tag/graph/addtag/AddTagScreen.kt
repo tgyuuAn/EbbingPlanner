@@ -26,12 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -115,7 +112,6 @@ private fun AddTagScreen(
 
             NameContent(
                 name = state.name,
-                nameInputState = state.nameInputState,
                 onNameChange = onNameChange,
             )
 
@@ -130,12 +126,10 @@ private fun AddTagScreen(
 @Composable
 private fun NameContent(
     name: String,
-    nameInputState: InputState,
     onNameChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isInputFocused by remember { mutableStateOf(false) }
-    val isSaveFailed = nameInputState == InputState.WARNING
 
     Text(
         text = "태그 이름",
@@ -167,19 +161,6 @@ private fun NameContent(
             .fillMaxWidth()
             .onFocusChanged { isInputFocused = it.isFocused },
     )
-
-    EbbingVisibleAnimation(visible = isSaveFailed) {
-        Text(
-            text = "필수 항목을 입력해 주세요.",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.error,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
 }
 
 @Composable
