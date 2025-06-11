@@ -33,14 +33,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -54,6 +51,7 @@ import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
+import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import java.time.LocalDate
 
 @Composable
@@ -68,12 +66,7 @@ internal fun EditTodoRoute(
     }
 
     EditTodoScreen(
-        selectedDate = state.selectedDate,
-        title = state.title,
-        titleInputState = state.titleInputState,
-        priority = state.priority,
-        tag = state.tag,
-        isSaveEnabled = state.isSaveEnabled,
+        state = state,
         onBackClick = { viewModel.onIntent(EditTodoIntent.OnBackClick) },
         onSelectedDateChangeClick = {
             viewModel.onIntent(
@@ -114,12 +107,7 @@ internal fun EditTodoRoute(
 
 @Composable
 private fun EditTodoScreen(
-    selectedDate: LocalDate,
-    title: String,
-    titleInputState: InputState,
-    priority: String?,
-    tag: TodoTag?,
-    isSaveEnabled: Boolean,
+    state: EditTodoState,
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
@@ -141,13 +129,13 @@ private fun EditTodoScreen(
             rightComponent = {
                 Text(
                     text = "저장",
-                    style = if (isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
                             throttleTime = 1500L,
-                            enabled = isSaveEnabled
+                            enabled = state.isSaveEnabled
                         ) {
                             onSaveClick()
                             focusManager.clearFocus()
@@ -166,7 +154,7 @@ private fun EditTodoScreen(
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일")
+                        append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
                     }
                     append(" 에\n진행하는 걸로 바꿀래요")
                 },
@@ -177,19 +165,18 @@ private fun EditTodoScreen(
 
             TitleContent(
                 scrollState = scrollState,
-                title = title,
-                titleInputState = titleInputState,
+                title = state.title,
                 onTitleChange = onTitleChange,
             )
 
             if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 TagContent(
-                    tag = tag,
+                    tag = state.tag,
                     onTagDropDownClick = onTagDropDownClick,
                 )
 
                 PriorityContent(
-                    priority = priority,
+                    priority = state.priority,
                     onPriorityChange = onPriorityChange,
                 )
 
@@ -200,13 +187,13 @@ private fun EditTodoScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     TagContent(
-                        tag = tag,
+                        tag = state.tag,
                         onTagDropDownClick = onTagDropDownClick,
                         modifier = Modifier.weight(1f),
                     )
 
                     PriorityContent(
-                        priority = priority,
+                        priority = state.priority,
                         onPriorityChange = onPriorityChange,
                         modifier = Modifier.weight(1f),
                     )
@@ -220,13 +207,11 @@ private fun EditTodoScreen(
 private fun TitleContent(
     scrollState: ScrollState,
     title: String,
-    titleInputState: InputState,
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
     var isInputFocused by remember { mutableStateOf(false) }
-    val isSaveFailed = titleInputState == InputState.WARNING
 
     Text(
         text = "제목",
@@ -262,19 +247,6 @@ private fun TitleContent(
                 verticalWeightPx = with(density) { -200.dp.roundToPx() },
             ),
     )
-
-    EbbingVisibleAnimation(visible = isSaveFailed) {
-        Text(
-            text = "필수 항목을 입력해 주세요.",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.error,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
 }
 
 @Composable
@@ -333,12 +305,11 @@ private fun PriorityContent(
 private fun PreviewAddTodo() {
     BasePreview {
         EditTodoScreen(
-            selectedDate = LocalDate.now(),
-            title = "토익",
-            titleInputState = InputState.DEFAULT,
-            priority = "3",
-            tag = null,
-            isSaveEnabled = true,
+            state = EditTodoState(
+                selectedDate = LocalDate.now(),
+                title = "토익",
+                priority = "3",
+            ),
             onSelectedDateChangeClick = {},
             onSaveClick = {},
             onBackClick = {},

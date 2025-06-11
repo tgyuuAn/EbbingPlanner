@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.addtodo
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -37,7 +38,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,7 +46,6 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.InputState
 import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -66,6 +65,7 @@ import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
+import com.tgyuu.home.graph.addtodo.ui.dialog.ConfirmExitDialog
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -159,12 +159,34 @@ private fun AddTodoScreen(
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    var isShowExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = state.isModified) {
+        isShowExitDialog = !isShowExitDialog
+    }
+
+    if (isShowExitDialog) {
+        ConfirmExitDialog(
+            onContinueClick = { isShowExitDialog = false },
+            onExitClick = {
+                isShowExitDialog = false
+                onBackClick()
+            },
+        )
+    }
 
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         Column(modifier = modifier.fillMaxSize()) {
             EbbingSubTopBar(
                 title = "일정 추가",
-                onNavigationClick = onBackClick,
+                onNavigationClick = {
+                    if (state.isModified) {
+                        isShowExitDialog = true
+                    } else {
+                        isShowExitDialog = false
+                        onBackClick()
+                    }
+                },
                 rightComponent = {
                     Text(
                         text = "저장",
@@ -205,7 +227,6 @@ private fun AddTodoScreen(
                 TitleContent(
                     scrollState = scrollState,
                     title = state.title,
-                    titleInputState = state.titleInputState,
                     onTitleChange = onTitleChange,
                 )
 
@@ -285,7 +306,6 @@ private fun AddTodoScreen(
                     TitleContent(
                         scrollState = scrollState,
                         title = state.title,
-                        titleInputState = state.titleInputState,
                         onTitleChange = onTitleChange,
                     )
 
@@ -329,13 +349,11 @@ private fun AddTodoScreen(
 private fun TitleContent(
     scrollState: ScrollState,
     title: String,
-    titleInputState: InputState,
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
     var isInputFocused by remember { mutableStateOf(false) }
-    val isSaveFailed = titleInputState == InputState.WARNING
 
     Text(
         text = "제목",
@@ -371,19 +389,6 @@ private fun TitleContent(
                 verticalWeightPx = with(density) { -200.dp.roundToPx() },
             ),
     )
-
-    EbbingVisibleAnimation(visible = isSaveFailed) {
-        Text(
-            text = "필수 항목을 입력해 주세요.",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.error,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
 }
 
 @Composable
@@ -567,7 +572,6 @@ private fun PreviewAddTodo() {
             state = AddTodoState(
                 selectedDate = LocalDate.now(),
                 title = "토익",
-                titleInputState = InputState.DEFAULT,
                 priority = "3",
                 repeatCycle = DefaultRepeatCycles.last(),
                 restDays = setOf(DayOfWeek.MONDAY),

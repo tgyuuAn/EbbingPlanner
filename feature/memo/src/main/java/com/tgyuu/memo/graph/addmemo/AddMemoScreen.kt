@@ -102,7 +102,6 @@ private fun AddMemoScreen(
 
                 MemoContent(
                     memo = state.memo,
-                    memoInputState = state.memoInputState,
                     onMemoChange = onMemoChange,
                 )
 
@@ -165,7 +164,6 @@ private fun AddMemoScreen(
 
                     MemoContent(
                         memo = state.memo,
-                        memoInputState = state.memoInputState,
                         onMemoChange = onMemoChange,
                     )
                 }

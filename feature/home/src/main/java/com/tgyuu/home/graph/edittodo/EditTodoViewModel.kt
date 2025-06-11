@@ -9,7 +9,6 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.ui.InputState.Companion.getStringInputState
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
@@ -146,23 +145,18 @@ class EditTodoViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
-        val newState = currentState.copy(
-            titleInputState = getStringInputState(currentState.title.trim())
-        )
-
-        if (newState.isInputFieldIncomplete) {
-            setState { newState }
+        if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }
 
-        val newSchedule = newState.originSchedule!!.copy(
-            title = newState.title,
-            date = newState.selectedDate,
-            tagId = newState.tag.id,
-            name = newState.tag.name,
-            color = newState.tag.color,
-            priority = newState.priority?.toIntOrNull() ?: 0,
+        val newSchedule = currentState.originSchedule!!.copy(
+            title = currentState.title,
+            date = currentState.selectedDate,
+            tagId = currentState.tag.id,
+            name = currentState.tag.name,
+            color = currentState.tag.color,
+            priority = currentState.priority?.toIntOrNull() ?: 0,
         )
 
         todoRepository.updateTodo(newSchedule)
