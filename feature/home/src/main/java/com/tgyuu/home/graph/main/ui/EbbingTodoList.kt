@@ -190,13 +190,13 @@ private fun TodoPage(
         }
     } else {
         Text(
-            text = "${date.monthValue}월 ${date.dayOfMonth}일 스케줄이 없어요.",
+            text = "${date.monthValue}월 ${date.dayOfMonth}일 스케줄이 없어요.\n우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
             style = EbbingTheme.typography.bodySM,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.dark3,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 48.dp)
+                .padding(top = 30.dp),
         )
     }
 }
