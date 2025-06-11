@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,6 +26,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,12 +55,29 @@ internal fun EbbingTodoList(
     selectedDate: LocalDate,
     todoLists: List<TodoSchedule>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
+    onSelectDate: (LocalDate) -> Unit,
     onCheckedChange: (TodoSchedule) -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
     onAddTodoClick: () -> Unit,
     onSortTypeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val initialPage = Int.MAX_VALUE / 2
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = { Int.MAX_VALUE },
+    )
+
+    var prevPage by remember { mutableIntStateOf(initialPage) }
+    LaunchedEffect(pagerState.currentPage) {
+        val newPage = pagerState.currentPage
+        val delta = newPage - prevPage
+        if (delta != 0) {
+            onSelectDate(selectedDate.plusDays(delta.toLong()))
+            prevPage = newPage
+        }
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
@@ -108,36 +132,40 @@ internal fun EbbingTodoList(
             )
         }
 
-        if (todoLists.isNotEmpty()) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(
-                    items = todoLists,
-                    key = { item -> item.id },
-                ) { item ->
-                    TodoListCard(
-                        todo = item,
-                        todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
-                        onCheckedChange = onCheckedChange,
-                        onEditScheduleClick = onEditScheduleClick,
-                        modifier = Modifier.animateItem()
-                    )
-                }
+        HorizontalPager(
+            state = pagerState,
+        ) {
+            if (todoLists.isNotEmpty()) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    items(
+                        items = todoLists,
+                        key = { item -> item.id },
+                    ) { item ->
+                        TodoListCard(
+                            todo = item,
+                            todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
+                            onCheckedChange = onCheckedChange,
+                            onEditScheduleClick = onEditScheduleClick,
+                            modifier = Modifier.animateItem()
+                        )
+                    }
 
-                item { Spacer(modifier = Modifier.height(20.dp)) }
+                    item { Spacer(modifier = Modifier.height(20.dp)) }
+                }
+            } else {
+                Text(
+                    text = "금일 스케줄이 없어요.\n우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
+                    style = EbbingTheme.typography.bodySM,
+                    textAlign = TextAlign.Center,
+                    color = EbbingTheme.colors.dark3,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 30.dp),
+                )
             }
-        } else {
-            Text(
-                text = "금일 스케줄이 없어요.\n우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
-                style = EbbingTheme.typography.bodySM,
-                textAlign = TextAlign.Center,
-                color = EbbingTheme.colors.dark3,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 30.dp),
-            )
         }
     }
 }

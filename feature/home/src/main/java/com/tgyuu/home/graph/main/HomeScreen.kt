@@ -264,7 +264,7 @@ private fun PhoneHomeScreen(
             EbbingCalendar(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
-                onDateSelect = {
+                onSelectDate = {
                     if (selectedDate != it) {
                         scope.launch {
                             selectedDate = it
@@ -318,6 +318,15 @@ private fun PhoneHomeScreen(
                     selectedDate = selectedDate,
                     todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
                     schedulesByTodoInfo = state.schedulesByTodoInfo,
+                    onSelectDate = {
+                        if (selectedDate != it) {
+                            scope.launch {
+                                selectedDate = it
+                                calendarState.onDateSelect(it)
+                                listState.animateScrollToItem(0)
+                            }
+                        }
+                    },
                     onAddTodoClick = { onAddTodoClick(selectedDate) },
                     onCheckedChange = onCheckedChange,
                     onSortTypeClick = onSortTypeClick,
@@ -352,7 +361,7 @@ private fun TabletHomeScreen(
         EbbingCalendar(
             calendarState = calendarState,
             schedulesByDateMap = state.schedulesByDateMap,
-            onDateSelect = {
+            onSelectDate = {
                 if (selectedDate != it) {
                     scope.launch {
                         selectedDate = it
@@ -385,6 +394,15 @@ private fun TabletHomeScreen(
                 selectedDate = selectedDate,
                 todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
                 schedulesByTodoInfo = state.schedulesByTodoInfo,
+                onSelectDate = {
+                    if (selectedDate != it) {
+                        scope.launch {
+                            selectedDate = it
+                            calendarState.onDateSelect(it)
+                            listState.animateScrollToItem(0)
+                        }
+                    }
+                },
                 onAddTodoClick = { onAddTodoClick(selectedDate) },
                 onCheckedChange = onCheckedChange,
                 onSortTypeClick = onSortTypeClick,

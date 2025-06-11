@@ -20,7 +20,7 @@ fun EbbingCalendar(
     calendarState: CalendarState,
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     modifier: Modifier = Modifier,
-    onDateSelect: (LocalDate) -> Unit = {},
+    onSelectDate: (LocalDate) -> Unit = {},
 ) {
     val initialPage = Int.MAX_VALUE / 2
     val pagerState = rememberPagerState(
@@ -46,7 +46,7 @@ fun EbbingCalendar(
                 scope.launch {
                     pagerState.animateScrollToPage(initialPage)
                     calendarState.onDateSelect(LocalDate.now())
-                    onDateSelect(LocalDate.now())
+                    onSelectDate(LocalDate.now())
                 }
             },
         )
@@ -70,11 +70,11 @@ fun EbbingCalendar(
                         scope.launch {
                             pagerState.animateScrollToPage(initialPage + selectedOffset)
                             calendarState.onDateSelect(selectedDate)
-                            onDateSelect(selectedDate)
+                            onSelectDate(selectedDate)
                         }
                     } else {
                         calendarState.onDateSelect(selectedDate)
-                        onDateSelect(selectedDate)
+                        onSelectDate(selectedDate)
                     }
                 },
             )
