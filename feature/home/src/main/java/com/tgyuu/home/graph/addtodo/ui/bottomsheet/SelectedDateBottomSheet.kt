@@ -31,7 +31,7 @@ internal fun SelectedDateBottomSheet(
         EbbingCalendar(
             calendarState = calendarState,
             schedulesByDateMap = schedulesByDateMap,
-            onDateSelect = { newSelectedDate = it },
+            onSelectDate = { newSelectedDate = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),
