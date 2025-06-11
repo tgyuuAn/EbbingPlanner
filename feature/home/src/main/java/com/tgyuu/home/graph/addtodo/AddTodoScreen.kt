@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.addtodo
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -64,6 +65,7 @@ import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
+import com.tgyuu.home.graph.addtodo.ui.dialog.ConfirmExitDialog
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -157,12 +159,34 @@ private fun AddTodoScreen(
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    var isShowExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = state.isModified) {
+        isShowExitDialog = !isShowExitDialog
+    }
+
+    if (isShowExitDialog) {
+        ConfirmExitDialog(
+            onContinueClick = { isShowExitDialog = false },
+            onExitClick = {
+                isShowExitDialog = false
+                onBackClick()
+            },
+        )
+    }
 
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         Column(modifier = modifier.fillMaxSize()) {
             EbbingSubTopBar(
                 title = "일정 추가",
-                onNavigationClick = onBackClick,
+                onNavigationClick = {
+                    if (state.isModified) {
+                        isShowExitDialog = true
+                    } else {
+                        isShowExitDialog = false
+                        onBackClick()
+                    }
+                },
                 rightComponent = {
                     Text(
                         text = "저장",

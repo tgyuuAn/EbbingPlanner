@@ -19,6 +19,7 @@ data class AddTodoState(
     val restDays: Set<DayOfWeek> = emptySet(),
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
+    val isModified = title.isNotEmpty() || !priority.isNullOrEmpty() || restDays.isNotEmpty()
 
     val schedules: List<LocalDate>
         get() = repeatCycle.intervals.fold(mutableListOf()) { acc, interval ->

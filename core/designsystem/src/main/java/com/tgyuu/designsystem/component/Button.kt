@@ -35,7 +35,7 @@ fun EbbingSolidButton(
             disabledContainerColor = EbbingTheme.colors.light1,
             disabledContentColor = EbbingTheme.colors.background,
         ),
-        contentPadding = PaddingValues(vertical = 14.dp, horizontal = 12.dp),
+        contentPadding = PaddingValues(vertical = 14.dp),
         modifier = modifier
             .height(52.dp)
             .widthIn(min = 100.dp),
@@ -66,6 +66,7 @@ fun EbbingOutlinedButton(
             disabledContainerColor = EbbingTheme.colors.light1,
             disabledContentColor = EbbingTheme.colors.primaryDefault,
         ),
+        contentPadding = PaddingValues(vertical = 14.dp),
         modifier = modifier
             .height(52.dp)
             .widthIn(min = 100.dp),
