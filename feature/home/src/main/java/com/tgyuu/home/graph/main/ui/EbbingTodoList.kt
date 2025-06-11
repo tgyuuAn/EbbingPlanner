@@ -82,91 +82,122 @@ internal fun EbbingTodoList(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
     ) {
+        TodoHeader(
+            displayDate = selectedDate,
+            count = todoLists.size,
+            sortType = sortType,
+            onAddTodoClick = onAddTodoClick,
+            onSortTypeClick = onSortTypeClick,
+        )
+
+        HorizontalPager(state = pagerState) { page ->
+            TodoPage(
+                date = selectedDate,
+                todos = todoLists,
+                schedulesByTodoInfo = schedulesByTodoInfo,
+                listState = listState,
+                onCheckedChange = onCheckedChange,
+                onEdit = onEditScheduleClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun TodoHeader(
+    displayDate: LocalDate,
+    count: Int,
+    sortType: SortType,
+    onAddTodoClick: () -> Unit,
+    onSortTypeClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 8.dp)
+    ) {
+        val dateText = if (displayDate == LocalDate.now()) "오늘"
+        else "${displayDate.monthValue}월 ${displayDate.dayOfMonth}일"
+        Text(
+            text = "$dateText  할 일 $count",
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
+            modifier = Modifier.weight(1f)
+        )
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 16.dp),
+                .clickable { onSortTypeClick() }
+                .padding(end = 16.dp)
         ) {
-            val displayDate = if (selectedDate == LocalDate.now()) "오늘"
-            else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일"
-
             Text(
-                text = "${displayDate}  할 일 ${todoLists.size}",
+                text = sortType.displayName,
                 style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.weight(1f),
+                color = EbbingTheme.colors.black
             )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .clickable { onSortTypeClick() },
-            ) {
-                Text(
-                    text = sortType.displayName,
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black,
-                )
-
-                Image(
-                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_down),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-
-            Icon(
-                imageVector = Icons.Default.Add,
+            Image(
+                painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_down),
                 contentDescription = null,
-                tint = EbbingTheme.colors.background,
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(EbbingTheme.colors.primaryDefault)
-                    .clickable { onAddTodoClick() },
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                modifier = Modifier.size(20.dp)
             )
         }
 
-        HorizontalPager(
-            state = pagerState,
-        ) {
-            if (todoLists.isNotEmpty()) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    items(
-                        items = todoLists,
-                        key = { item -> item.id },
-                    ) { item ->
-                        TodoListCard(
-                            todo = item,
-                            todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
-                            onCheckedChange = onCheckedChange,
-                            onEditScheduleClick = onEditScheduleClick,
-                            modifier = Modifier.animateItem()
-                        )
-                    }
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = null,
+            tint = EbbingTheme.colors.background,
+            modifier = Modifier
+                .size(28.dp)
+                .clip(RoundedCornerShape(6.dp))
+                .background(EbbingTheme.colors.primaryDefault)
+                .clickable { onAddTodoClick() }
+                .padding(4.dp)
+        )
+    }
+}
 
-                    item { Spacer(modifier = Modifier.height(20.dp)) }
-                }
-            } else {
-                Text(
-                    text = "금일 스케줄이 없어요.\n우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
-                    style = EbbingTheme.typography.bodySM,
-                    textAlign = TextAlign.Center,
-                    color = EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 30.dp),
+@Composable
+private fun TodoPage(
+    date: LocalDate,
+    todos: List<TodoSchedule>,
+    schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
+    listState: LazyListState,
+    onCheckedChange: (TodoSchedule) -> Unit,
+    onEdit: (TodoSchedule) -> Unit
+) {
+    if (todos.isNotEmpty()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(
+                items = todos,
+                key = { it.id },
+            ) { item ->
+                TodoListCard(
+                    todo = item,
+                    todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
+                    onCheckedChange = onCheckedChange,
+                    onEditScheduleClick = onEdit,
+                    modifier = Modifier.animateItem()
                 )
             }
+
+            item { Spacer(modifier = Modifier.height(20.dp)) }
         }
+    } else {
+        Text(
+            text = "${date.monthValue}월 ${date.dayOfMonth}일 스케줄이 없어요.",
+            style = EbbingTheme.typography.bodySM,
+            textAlign = TextAlign.Center,
+            color = EbbingTheme.colors.dark3,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 48.dp)
+        )
     }
 }
 
