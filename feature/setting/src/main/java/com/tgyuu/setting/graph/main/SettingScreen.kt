@@ -103,22 +103,115 @@ private fun SettingScreen(
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            EbbingMainTopBar(
-                title = "설정",
-                modifier = Modifier.padding(horizontal = 20.dp),
+        PhoneSettingScreen(
+            state = state,
+            onNoticeClick = onNoticeClick,
+            onAlarmTimeClick = onAlarmTimeClick,
+            onTagManageClick = onTagManageClick,
+            onRepeatCycleManageClick = onRepeatCycleManageClick,
+            onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
+            onTermsOfUseClick = onTermsOfUseClick,
+            onInquiryClick = onInquiryClick,
+            onNotificationToggleClick = onNotificationToggleClick,
+        )
+    } else {
+        TabletSettingScreen(
+            state = state,
+            onNoticeClick = onNoticeClick,
+            onAlarmTimeClick = onAlarmTimeClick,
+            onTagManageClick = onTagManageClick,
+            onRepeatCycleManageClick = onRepeatCycleManageClick,
+            onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
+            onTermsOfUseClick = onTermsOfUseClick,
+            onInquiryClick = onInquiryClick,
+            onNotificationToggleClick = onNotificationToggleClick,
+        )
+    }
+}
+
+@Composable
+private fun PhoneSettingScreen(
+    state: SettingState,
+    onNoticeClick: () -> Unit,
+    onAlarmTimeClick: () -> Unit,
+    onTagManageClick: () -> Unit,
+    onRepeatCycleManageClick: () -> Unit,
+    onPrivacyAndPolicyClick: () -> Unit,
+    onTermsOfUseClick: () -> Unit,
+    onInquiryClick: () -> Unit,
+    onNotificationToggleClick: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        EbbingMainTopBar(
+            title = "설정",
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        HorizontalDivider(
+            color = EbbingTheme.colors.light2,
+            thickness = 1.dp,
+            modifier = Modifier.padding(bottom = 16.dp),
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp),
+        ) {
+            NotificationBody(
+                notificationEnabled = state.notificationEnabled,
+                alarmTime = "${state.alarmHour}:${state.alarmMinute}",
+                onNotificationToggleClick = onNotificationToggleClick,
+                onAlarmTimeClick = onAlarmTimeClick,
             )
 
-            HorizontalDivider(
-                color = EbbingTheme.colors.light2,
-                thickness = 1.dp,
-                modifier = Modifier.padding(bottom = 16.dp),
+            UserConfigBody(
+                onTagManageClick = onTagManageClick,
+                onRepeatCycleManageClick = onRepeatCycleManageClick,
             )
 
+            InquiryBody(onContactUsClick = onInquiryClick)
+
+            AnnouncementBody(
+                onNoticeClick = onNoticeClick,
+                onPrivacyPolicy = onPrivacyAndPolicyClick,
+                onTermsClick = onTermsOfUseClick,
+            )
+
+            UpdateBody(
+                updateInfo = state.updateInfo,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 17.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun TabletSettingScreen(
+    state: SettingState,
+    onNoticeClick: () -> Unit,
+    onAlarmTimeClick: () -> Unit,
+    onTagManageClick: () -> Unit,
+    onRepeatCycleManageClick: () -> Unit,
+    onPrivacyAndPolicyClick: () -> Unit,
+    onTermsOfUseClick: () -> Unit,
+    onInquiryClick: () -> Unit,
+    onNotificationToggleClick: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        EbbingMainTopBar(
+            title = "설정",
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        Row(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxHeight()
+                    .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
                 NotificationBody(
@@ -140,63 +233,20 @@ private fun SettingScreen(
                     onPrivacyPolicy = onPrivacyAndPolicyClick,
                     onTermsClick = onTermsOfUseClick,
                 )
+            }
 
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+            ) {
                 UpdateBody(
                     updateInfo = state.updateInfo,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 17.dp),
                 )
-            }
-        }
-    } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            EbbingMainTopBar(
-                title = "설정",
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
-                ) {
-                    NotificationBody(
-                        notificationEnabled = state.notificationEnabled,
-                        alarmTime = "${state.alarmHour}:${state.alarmMinute}",
-                        onNotificationToggleClick = onNotificationToggleClick,
-                        onAlarmTimeClick = onAlarmTimeClick,
-                    )
-
-                    UserConfigBody(
-                        onTagManageClick = onTagManageClick,
-                        onRepeatCycleManageClick = onRepeatCycleManageClick,
-                    )
-
-                    InquiryBody(onContactUsClick = onInquiryClick)
-
-                    AnnouncementBody(
-                        onNoticeClick = onNoticeClick,
-                        onPrivacyPolicy = onPrivacyAndPolicyClick,
-                        onTermsClick = onTermsOfUseClick,
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
-                ) {
-                    UpdateBody(
-                        updateInfo = state.updateInfo,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 17.dp),
-                    )
-                }
             }
         }
     }
@@ -301,32 +351,6 @@ private fun NotificationBody(
         thickness = 1.dp,
         color = EbbingTheme.colors.light2
     )
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-internal fun handlePermission(
-    context: Context,
-    permission: PermissionState?,
-    onNotificationToggleClick: () -> Unit,
-) {
-    permission?.let { state ->
-        when (state.status) {
-            PermissionStatus.Granted -> onNotificationToggleClick()
-
-            is PermissionStatus.Denied -> {
-                if (state.status.shouldShowRationale) {
-                    // 한 번 거부한 상태 → (선택) 설명 다이얼로그를 띄우거나,
-                    // 사용자가 다시 권한을 허용할 수 있도록 설정 화면으로 보냅니다.
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        .apply { data = Uri.fromParts("package", context.packageName, null) }
-                    context.startActivity(intent)
-                } else {
-                    // 최초 요청 혹은 '다시 묻지 않음' 상태 → 권한 요청 다이얼로그
-                    state.launchPermissionRequest()
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -549,6 +573,32 @@ private fun UpdateBody(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
+internal fun handlePermission(
+    context: Context,
+    permission: PermissionState?,
+    onNotificationToggleClick: () -> Unit,
+) {
+    permission?.let { state ->
+        when (state.status) {
+            PermissionStatus.Granted -> onNotificationToggleClick()
+
+            is PermissionStatus.Denied -> {
+                if (state.status.shouldShowRationale) {
+                    // 한 번 거부한 상태 → (선택) 설명 다이얼로그를 띄우거나,
+                    // 사용자가 다시 권한을 허용할 수 있도록 설정 화면으로 보냅니다.
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .apply { data = Uri.fromParts("package", context.packageName, null) }
+                    context.startActivity(intent)
+                } else {
+                    // 최초 요청 혹은 '다시 묻지 않음' 상태 → 권한 요청 다이얼로그
+                    state.launchPermissionRequest()
+                }
+            }
+        }
+    }
+}
+
 private fun getVersionInfo(
     context: Context,
     onError: (Exception) -> Unit,
@@ -582,7 +632,6 @@ private fun checkShouldUpdate(currentVersion: String, minVersion: String): Boole
 private fun normalizeVersion(version: String): List<Int> = version.split('.')
     .map { it.toIntOrNull() ?: 0 }
     .let { if (it.size == 2) it + 0 else it }
-
 
 @EbbingPreview
 @Composable
