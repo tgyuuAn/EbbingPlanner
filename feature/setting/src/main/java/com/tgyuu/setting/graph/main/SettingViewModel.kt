@@ -83,6 +83,8 @@ class SettingViewModel @Inject constructor(
             is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
             SettingIntent.OnRepeatCycleManageClick ->
                 navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
+
+            SettingIntent.OnSyncClick -> navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
         }
     }
 

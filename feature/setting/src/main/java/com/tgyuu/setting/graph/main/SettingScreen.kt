@@ -81,6 +81,7 @@ internal fun SettingRoute(
         },
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
+        onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
@@ -95,6 +96,7 @@ private fun SettingScreen(
     onAlarmTimeClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
+    onSyncClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -109,6 +111,7 @@ private fun SettingScreen(
             onAlarmTimeClick = onAlarmTimeClick,
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
+            onSyncClick = onSyncClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -121,6 +124,7 @@ private fun SettingScreen(
             onAlarmTimeClick = onAlarmTimeClick,
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
+            onSyncClick = onSyncClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -136,6 +140,7 @@ private fun PhoneSettingScreen(
     onAlarmTimeClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
+    onSyncClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -166,10 +171,12 @@ private fun PhoneSettingScreen(
                 onAlarmTimeClick = onAlarmTimeClick,
             )
 
-            UserConfigBody(
+            TagRepeatCycleBody(
                 onTagManageClick = onTagManageClick,
                 onRepeatCycleManageClick = onRepeatCycleManageClick,
             )
+
+            SyncBody(onSyncClick = onSyncClick)
 
             InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -196,6 +203,7 @@ private fun TabletSettingScreen(
     onAlarmTimeClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
+    onSyncClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -221,18 +229,12 @@ private fun TabletSettingScreen(
                     onAlarmTimeClick = onAlarmTimeClick,
                 )
 
-                UserConfigBody(
+                TagRepeatCycleBody(
                     onTagManageClick = onTagManageClick,
                     onRepeatCycleManageClick = onRepeatCycleManageClick,
                 )
 
-                InquiryBody(onContactUsClick = onInquiryClick)
-
-                AnnouncementBody(
-                    onNoticeClick = onNoticeClick,
-                    onPrivacyPolicy = onPrivacyAndPolicyClick,
-                    onTermsClick = onTermsOfUseClick,
-                )
+                SyncBody(onSyncClick = onSyncClick)
             }
 
             Column(
@@ -241,6 +243,14 @@ private fun TabletSettingScreen(
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
+                InquiryBody(onContactUsClick = onInquiryClick)
+
+                AnnouncementBody(
+                    onNoticeClick = onNoticeClick,
+                    onPrivacyPolicy = onPrivacyAndPolicyClick,
+                    onTermsClick = onTermsOfUseClick,
+                )
+
                 UpdateBody(
                     updateInfo = state.updateInfo,
                     modifier = Modifier
@@ -354,7 +364,7 @@ private fun NotificationBody(
 }
 
 @Composable
-private fun UserConfigBody(
+private fun TagRepeatCycleBody(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
 ) {
@@ -395,6 +405,43 @@ private fun UserConfigBody(
     ) {
         Text(
             text = "반복 주기 관리",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+private fun SyncBody(onSyncClick: () -> Unit) {
+    Text(
+        text = "동기화",
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onSyncClick() },
+    ) {
+        Text(
+            text = "다른 기기와 동기화 하기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -643,6 +690,7 @@ private fun PreviewSettingScreen() {
             onAlarmTimeClick = {},
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
+            onSyncClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},
