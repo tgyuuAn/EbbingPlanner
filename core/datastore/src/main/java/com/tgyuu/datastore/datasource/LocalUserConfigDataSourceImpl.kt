@@ -64,7 +64,7 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[ALARM_TIME] = "$hour:$minute" }
     }
 
-    override suspend fun ensureUuidExists() {
+    override suspend fun ensureUUIDExists() {
         dataStore.edit { prefs ->
             val savedUuid = prefs[UUID]
             if (savedUuid == null) {

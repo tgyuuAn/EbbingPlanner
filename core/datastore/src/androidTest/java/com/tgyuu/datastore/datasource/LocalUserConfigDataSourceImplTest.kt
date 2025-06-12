@@ -45,7 +45,7 @@ class LocalUserConfigDataSourceTest {
     @Test
     fun UUID는_디바이스에_저장된_UUID가_없을_경우에만_생성한다() = runTest {
         // when
-        dataSource.ensureUuidExists()
+        dataSource.ensureUUIDExists()
 
         // then
         val actual = dataStore.data.first()[UUID]
@@ -60,7 +60,7 @@ class LocalUserConfigDataSourceTest {
         dataStore.edit { prefs -> prefs[UUID] = expected }
 
         // when
-        dataSource.ensureUuidExists()
+        dataSource.ensureUUIDExists()
 
         // then
         val actual = dataStore.data.first()[UUID]

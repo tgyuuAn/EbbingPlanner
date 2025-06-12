@@ -39,4 +39,7 @@ class ConfigRepositoryImpl @Inject constructor(
             defaultValue = GetUpdateInfoResponse(),
         ).toDomain()
     }
+
+    override suspend fun ensureUUIDExists() = localUserConfigDataSource.ensureUUIDExists()
+    override suspend fun getUUID(): String = localUserConfigDataSource.uuid.first()
 }
