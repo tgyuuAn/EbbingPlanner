@@ -83,6 +83,7 @@ import com.tgyuu.navigation.isRootRoute
 import com.tgyuu.navigation.isRouteInHierarchy
 import com.tgyuu.navigation.shouldHideBottomBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -107,17 +108,8 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         lifecycleScope.launch {
-            val getUpdateInfoJob = launch { viewModel.getUpdateInfo() }
-            val insertDefaultTagJob = launch { viewModel.insertDefaultTag() }
-            val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
-            val ensureUUIDExists = launch { viewModel.ensureUUIDExists() }
-
-            getUpdateInfoJob.join()
-            insertDefaultTagJob.join()
-            checkOnboardingJob.join()
-            ensureUUIDExists.join()
+            initAppState()
             handleDestinationIntent(intent)
-
             isInitialized = false
         }
 
@@ -186,6 +178,18 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleDestinationIntent(intent)
+    }
+
+    private suspend fun initAppState()  = coroutineScope {
+        val getUpdateInfoJob = launch { viewModel.getUpdateInfo() }
+        val insertDefaultTagJob = launch { viewModel.insertDefaultTag() }
+        val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
+        val ensureUUIDExistsJob = launch { viewModel.ensureUUIDExists() }
+
+        getUpdateInfoJob.join()
+        insertDefaultTagJob.join()
+        checkOnboardingJob.join()
+        ensureUUIDExistsJob.join()
     }
 
     private fun handleDestinationIntent(intent: Intent) {
