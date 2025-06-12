@@ -82,6 +82,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
-        internal val UUID = stringPreferencesKey("UUID")
+        private val UUID = stringPreferencesKey("UUID")
     }
 }
