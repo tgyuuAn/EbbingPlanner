@@ -1,6 +1,7 @@
 package com.tgyuu.sync.graph.main
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,15 +28,18 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
+import com.tgyuu.sync.network.NetworkState
 
 @Composable
 internal fun SyncMainRoute(
     viewModel: SyncViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val networkState by viewModel.networkMonitor.networkState.collectAsStateWithLifecycle()
 
     SyncMainScreen(
         state = state,
+        networkState = networkState,
         onBackClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
         onUuidClick = { viewModel.onIntent(SyncIntent.OnUuidClick) },
         onUploadClick = { viewModel.onIntent(SyncIntent.OnUploadClick) },
@@ -47,6 +51,7 @@ internal fun SyncMainRoute(
 @Composable
 internal fun SyncMainScreen(
     state: SyncMainState,
+    networkState: NetworkState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
@@ -59,6 +64,7 @@ internal fun SyncMainScreen(
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         PhoneSyncMainScreen(
             state = state,
+            networkState = networkState,
             onBackClick = onBackClick,
             onUuidClick = onUuidClick,
             onUploadClick = onUploadClick,
@@ -69,6 +75,7 @@ internal fun SyncMainScreen(
     } else {
         TabletSyncMainScreen(
             state = state,
+            networkState = networkState,
             onBackClick = onBackClick,
             onUuidClick = onUuidClick,
             onUploadClick = onUploadClick,
@@ -82,6 +89,7 @@ internal fun SyncMainScreen(
 @Composable
 private fun PhoneSyncMainScreen(
     state: SyncMainState,
+    networkState: NetworkState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
@@ -89,33 +97,36 @@ private fun PhoneSyncMainScreen(
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-    ) {
-        EbbingSubTopBar(
-            title = "동기화",
-            onNavigationClick = onBackClick,
-            modifier = Modifier.padding(bottom = 20.dp),
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp)
+        ) {
+            EbbingSubTopBar(
+                title = "동기화",
+                onNavigationClick = onBackClick,
+                modifier = Modifier.padding(bottom = 20.dp),
+            )
 
-        UuidBody(
-            uuid = state.uuid,
-            onUuidClick = onUuidClick,
-        )
+            UuidBody(
+                uuid = state.uuid,
+                onUuidClick = onUuidClick,
+            )
 
-        UploadBody(
-            onUploadClick = onUploadClick,
-            onDownloadClick = onDownloadClick,
-            onLinkClick = onLinkClick,
-        )
+            UploadBody(
+                onUploadClick = onUploadClick,
+                onDownloadClick = onDownloadClick,
+                onLinkClick = onLinkClick,
+            )
+        }
     }
 }
 
 @Composable
 private fun TabletSyncMainScreen(
     state: SyncMainState,
+    networkState: NetworkState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,

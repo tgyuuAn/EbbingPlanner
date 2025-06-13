@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
@@ -79,9 +80,12 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.NavigationEvent.BottomBarTo
 import com.tgyuu.navigation.SettingGraph
+import com.tgyuu.navigation.hasRouteInHierarchy
 import com.tgyuu.navigation.isRootRoute
-import com.tgyuu.navigation.isRouteInHierarchy
+import com.tgyuu.navigation.requiresNetworkConnection
 import com.tgyuu.navigation.shouldHideBottomBar
+import com.tgyuu.sync.network.NetworkBanner
+import com.tgyuu.sync.network.NetworkMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -95,6 +99,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var eventBus: EventBus
+
+    @Inject
+    lateinit var networkMonitor: NetworkMonitor
 
     private val viewModel: MainViewModel by viewModels()
     private var isInitialized: Boolean = true
@@ -116,6 +123,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EbbingTheme {
                 val navController = rememberNavController()
+                val networkState by networkMonitor.networkState.collectAsStateWithLifecycle()
                 val snackBarHostState = remember { SnackbarHostState() }
                 var bottomSheetContent by remember { mutableStateOf<BottomSheetContent?>(null) }
                 val sheetState = rememberModalBottomSheetState(
@@ -141,18 +149,26 @@ class MainActivity : ComponentActivity() {
                     sheetState = sheetState,
                     sheetContent = bottomSheetContent,
                 ) {
-                    if (windowSize.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-                        PhoneContent(
-                            navController = navController,
-                            snackBarHostState = snackBarHostState,
-                            sheetState = sheetState,
-                            currentDestination = currentDestination,
-                        )
-                    } else {
-                        TabletContent(
-                            navController = navController,
-                            snackBarHostState = snackBarHostState,
-                            currentDestination = currentDestination,
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (windowSize.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+                            PhoneContent(
+                                navController = navController,
+                                snackBarHostState = snackBarHostState,
+                                sheetState = sheetState,
+                                currentDestination = currentDestination,
+                            )
+                        } else {
+                            TabletContent(
+                                navController = navController,
+                                snackBarHostState = snackBarHostState,
+                                currentDestination = currentDestination,
+                            )
+                        }
+
+                        NetworkBanner(
+                            needsNetwork = currentDestination.requiresNetworkConnection(),
+                            networkState = networkState,
+                            modifier = Modifier.align(Alignment.BottomCenter),
                         )
                     }
                 }
@@ -180,7 +196,7 @@ class MainActivity : ComponentActivity() {
         handleDestinationIntent(intent)
     }
 
-    private suspend fun initAppState()  = coroutineScope {
+    private suspend fun initAppState() = coroutineScope {
         val getUpdateInfoJob = launch { viewModel.getUpdateInfo() }
         val insertDefaultTagJob = launch { viewModel.insertDefaultTag() }
         val checkOnboardingJob = launch { viewModel.isFirstAppOpen() }
@@ -314,7 +330,7 @@ class MainActivity : ComponentActivity() {
                         navigationSuiteItems = {
                             TopLevelDestination.topLevelDestinations.forEach { dest ->
                                 item(
-                                    selected = currentDestination.isRouteInHierarchy(dest.route),
+                                    selected = currentDestination.hasRouteInHierarchy(dest.route),
                                     icon = {
                                         Icon(
                                             painterResource(dest.iconDrawableId),

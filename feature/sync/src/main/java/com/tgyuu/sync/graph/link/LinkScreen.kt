@@ -67,7 +67,7 @@ private fun PhoneLinkScreen(
             .padding(horizontal = 20.dp)
     ) {
         EbbingSubTopBar(
-            title = "디바이스 연결",
+            title = "다른 기기와 연동",
             onNavigationClick = onBackClick,
             modifier = Modifier.padding(bottom = 20.dp),
         )
@@ -87,7 +87,7 @@ private fun TabletLinkScreen(
             .padding(horizontal = 20.dp)
     ) {
         EbbingSubTopBar(
-            title = "디바이스 연결",
+            title = "다른 기기와 연동",
             onNavigationClick = onBackClick,
             modifier = Modifier.padding(bottom = 20.dp),
         )

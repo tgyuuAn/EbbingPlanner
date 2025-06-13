@@ -5,7 +5,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import kotlin.reflect.KClass
 
-private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
+private val BOTTOM_BAR_HIDDEN_ROUTES = setOf(
     OnboardingRoute::class,
     HomeGraph.AddTodoRoute::class,
     HomeGraph.EditTodoRoute::class,
@@ -29,8 +29,15 @@ private val ROOT_ROUTES = setOf(
     HomeGraph.HomeRoute::class,
 )
 
+private val NETWORK_REQUIRED_ROUTES = setOf(
+    SyncGraph.SyncMainRoute::class,
+    SyncGraph.UploadRoute::class,
+    SyncGraph.DownloadRoute::class,
+    SyncGraph.LinkRoute::class,
+)
+
 fun NavDestination?.shouldHideBottomBar(): Boolean = this?.hierarchy?.any { destination ->
-    HIDDEN_BOTTOM_BAR_ROUTES.any {
+    BOTTOM_BAR_HIDDEN_ROUTES.any {
         destination.route?.startsWith(it.qualifiedName ?: "") == true
     }
 } ?: false
@@ -39,5 +46,9 @@ fun NavDestination?.isRootRoute(): Boolean = this?.hierarchy?.any { destination 
     ROOT_ROUTES.any { destination.route?.startsWith(it.qualifiedName ?: "") == true }
 } ?: false
 
-fun NavDestination?.isRouteInHierarchy(route: KClass<*>): Boolean =
+fun NavDestination?.requiresNetworkConnection(): Boolean = this?.hierarchy?.any { destination ->
+    NETWORK_REQUIRED_ROUTES.any { destination.route?.startsWith(it.qualifiedName ?: "") == true }
+} ?: false
+
+fun NavDestination?.hasRouteInHierarchy(route: KClass<*>): Boolean =
     this?.hierarchy?.any { it.hasRoute(route) } == true
