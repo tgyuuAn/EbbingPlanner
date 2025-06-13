@@ -18,7 +18,10 @@ private val HIDDEN_BOTTOM_BAR_ROUTES = setOf(
     SettingGraph.WebViewRoute::class,
     MemoGraph.AddMemoRoute::class,
     MemoGraph.EditMemoRoute::class,
-    SyncRoute::class,
+    SyncGraph.SyncMainRoute::class,
+    SyncGraph.UploadRoute::class,
+    SyncGraph.DownloadRoute::class,
+    SyncGraph.LinkRoute::class,
 )
 
 private val ROOT_ROUTES = setOf(

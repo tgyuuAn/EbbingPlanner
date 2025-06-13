@@ -75,4 +75,19 @@ sealed interface RepeatCycleGraph : Route {
 }
 
 @Serializable
-data object SyncRoute : Route
+data object SyncBaseRoute : Route
+
+sealed interface SyncGraph : Route {
+
+    @Serializable
+    data object SyncMainRoute : SyncGraph
+
+    @Serializable
+    data object UploadRoute : SyncGraph
+
+    @Serializable
+    data object DownloadRoute : SyncGraph
+
+    @Serializable
+    data object LinkRoute : SyncGraph
+}

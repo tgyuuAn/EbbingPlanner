@@ -1,24 +1,23 @@
-package com.tgyuu.sync
+package com.tgyuu.sync.graph.upload
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
-import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
-import com.tgyuu.sync.contract.SyncIntent
-import com.tgyuu.sync.contract.SyncState
+import com.tgyuu.sync.graph.upload.contract.UploadIntent
+import com.tgyuu.sync.graph.upload.contract.UploadState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SyncViewModel @Inject constructor(
+class UploadViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-) : BaseViewModel<SyncState, SyncIntent>(SyncState()) {
+) : BaseViewModel<UploadState, UploadIntent>(UploadState()) {
 
     init {
         viewModelScope.launch {
@@ -27,11 +26,10 @@ class SyncViewModel @Inject constructor(
         }
     }
 
-    override suspend fun processIntent(intent: SyncIntent) {
+    override suspend fun processIntent(intent: UploadIntent) {
         when (intent) {
-            SyncIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            SyncIntent.OnSyncClick -> Unit
-            SyncIntent.OnUuidClick -> eventBus.sendEvent(EbbingEvent.ShowSnackBar("ID를 복사하였습니다."))
+            UploadIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            UploadIntent.OnUploadClick -> Unit
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.tgyuu.sync
+package com.tgyuu.sync.graph.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -25,11 +25,11 @@ import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.sync.contract.SyncIntent
-import com.tgyuu.sync.contract.SyncState
+import com.tgyuu.sync.graph.main.contract.SyncIntent
+import com.tgyuu.sync.graph.main.contract.SyncState
 
 @Composable
-internal fun SyncRoute(
+internal fun SyncMainRoute(
     viewModel: SyncViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -38,7 +38,7 @@ internal fun SyncRoute(
         state = state,
         onBackClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
         onUuidClick = { viewModel.onIntent(SyncIntent.OnUuidClick) },
-        onSyncClick = { viewModel.onIntent(SyncIntent.OnSyncClick) },
+        onSyncClick = { viewModel.onIntent(SyncIntent.OnUploadClick) },
     )
 }
 
@@ -182,7 +182,7 @@ private fun UploadBody(
             .clickable { onUploadClick() },
     ) {
         Text(
-            text = "데이터 1회 업로드 하기",
+            text = "데이터 업로드 하기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -203,7 +203,7 @@ private fun UploadBody(
             .clickable { onDownloadClick() },
     ) {
         Text(
-            text = "데이터 1회 다운로드 하기",
+            text = "데이터 다운로드 하기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -224,7 +224,7 @@ private fun UploadBody(
             .clickable { onRealtimeClick() },
     ) {
         Text(
-            text = "다른 디바이스와 실시간 연결하기",
+            text = "다른 기기와 연동하기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),

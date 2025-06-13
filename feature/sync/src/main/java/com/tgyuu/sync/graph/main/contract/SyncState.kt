@@ -1,4 +1,4 @@
-package com.tgyuu.sync.contract
+package com.tgyuu.sync.graph.main.contract
 
 import com.tgyuu.common.base.UiState
 
