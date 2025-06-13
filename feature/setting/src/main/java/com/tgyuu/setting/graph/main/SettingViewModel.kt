@@ -11,6 +11,7 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.SettingGraph
+import com.tgyuu.navigation.SyncRoute
 import com.tgyuu.navigation.TagGraph
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
@@ -84,7 +85,7 @@ class SettingViewModel @Inject constructor(
             SettingIntent.OnRepeatCycleManageClick ->
                 navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
 
-            SettingIntent.OnSyncClick -> navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
+            SettingIntent.OnSyncClick -> navigationBus.navigate(To(SyncRoute))
         }
     }
 

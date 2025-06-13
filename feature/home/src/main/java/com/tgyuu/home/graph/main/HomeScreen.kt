@@ -243,7 +243,7 @@ private fun PhoneHomeScreen(
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
     var isExpanded by remember { mutableStateOf(false) }
-    var calendarHeight by remember { mutableStateOf(0.dp) }
+    var calendarHeight by remember { mutableStateOf(1000.dp) }
     val animatedTopPadding by animateDpAsState(targetValue = if (isExpanded) 0.dp else calendarHeight)
 
     LaunchedEffect(workedDate) {

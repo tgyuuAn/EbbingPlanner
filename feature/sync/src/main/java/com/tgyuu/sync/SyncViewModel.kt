@@ -2,6 +2,8 @@ package com.tgyuu.sync
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
+import com.tgyuu.common.event.EbbingEvent
+import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -15,6 +17,7 @@ import javax.inject.Inject
 class SyncViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
+    private val eventBus: EventBus,
 ) : BaseViewModel<SyncState, SyncIntent>(SyncState()) {
 
     init {
@@ -27,6 +30,8 @@ class SyncViewModel @Inject constructor(
     override suspend fun processIntent(intent: SyncIntent) {
         when (intent) {
             SyncIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            SyncIntent.OnSyncClick -> Unit
+            SyncIntent.OnUuidClick -> eventBus.sendEvent(EbbingEvent.ShowSnackBar("ID를 복사하였습니다."))
         }
     }
 }
