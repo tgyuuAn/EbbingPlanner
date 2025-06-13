@@ -26,7 +26,7 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
-import com.tgyuu.sync.graph.main.contract.SyncState
+import com.tgyuu.sync.graph.main.contract.SyncMainState
 
 @Composable
 internal fun SyncMainRoute(
@@ -34,49 +34,59 @@ internal fun SyncMainRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    SyncScreen(
+    SyncMainScreen(
         state = state,
         onBackClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
         onUuidClick = { viewModel.onIntent(SyncIntent.OnUuidClick) },
-        onSyncClick = { viewModel.onIntent(SyncIntent.OnUploadClick) },
+        onUploadClick = { viewModel.onIntent(SyncIntent.OnUploadClick) },
+        onDownloadClick = { viewModel.onIntent(SyncIntent.OnDownloadClick) },
+        onLinkClick = { viewModel.onIntent(SyncIntent.OnLinkClick) },
     )
 }
 
 @Composable
-internal fun SyncScreen(
-    state: SyncState,
+internal fun SyncMainScreen(
+    state: SyncMainState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
-    onSyncClick: () -> Unit,
+    onUploadClick: () -> Unit,
+    onDownloadClick: () -> Unit,
+    onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-        PhoneSyncScreen(
+        PhoneSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
             onUuidClick = onUuidClick,
-            onSyncClick = onSyncClick,
+            onUploadClick = onUploadClick,
+            onDownloadClick = onDownloadClick,
+            onLinkClick = onLinkClick,
             modifier = modifier,
         )
     } else {
-        TabletSyncScreen(
+        TabletSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
             onUuidClick = onUuidClick,
-            onSyncClick = onSyncClick,
+            onUploadClick = onUploadClick,
+            onDownloadClick = onDownloadClick,
+            onLinkClick = onLinkClick,
             modifier = modifier,
         )
     }
 }
 
 @Composable
-private fun PhoneSyncScreen(
-    state: SyncState,
+private fun PhoneSyncMainScreen(
+    state: SyncMainState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
-    onSyncClick: () -> Unit,
+    onUploadClick: () -> Unit,
+    onDownloadClick: () -> Unit,
+    onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -93,23 +103,24 @@ private fun PhoneSyncScreen(
         UuidBody(
             uuid = state.uuid,
             onUuidClick = onUuidClick,
-            onSyncClick = onSyncClick,
         )
 
         UploadBody(
-            onUploadClick = {},
-            onDownloadClick = {},
-            onRealtimeClick = {},
+            onUploadClick = onUploadClick,
+            onDownloadClick = onDownloadClick,
+            onLinkClick = onLinkClick,
         )
     }
 }
 
 @Composable
-private fun TabletSyncScreen(
-    state: SyncState,
+private fun TabletSyncMainScreen(
+    state: SyncMainState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
-    onSyncClick: () -> Unit,
+    onUploadClick: () -> Unit,
+    onDownloadClick: () -> Unit,
+    onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -129,7 +140,6 @@ private fun TabletSyncScreen(
 private fun UuidBody(
     uuid: String,
     onUuidClick: () -> Unit,
-    onSyncClick: () -> Unit,
 ) {
     val clipboardManager = LocalClipboardManager.current
 
@@ -165,7 +175,7 @@ private fun UuidBody(
 private fun UploadBody(
     onUploadClick: () -> Unit,
     onDownloadClick: () -> Unit,
-    onRealtimeClick: () -> Unit,
+    onLinkClick: () -> Unit,
 ) {
     Text(
         text = "업로드 / 다운로드",
@@ -221,7 +231,7 @@ private fun UploadBody(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 17.dp)
-            .clickable { onRealtimeClick() },
+            .clickable { onLinkClick() },
     ) {
         Text(
             text = "다른 기기와 연동하기",

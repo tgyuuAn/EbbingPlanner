@@ -9,7 +9,7 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.SyncGraph
 import com.tgyuu.sync.graph.main.contract.SyncIntent
-import com.tgyuu.sync.graph.main.contract.SyncState
+import com.tgyuu.sync.graph.main.contract.SyncMainState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class SyncViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-) : BaseViewModel<SyncState, SyncIntent>(SyncState()) {
+) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
     init {
         viewModelScope.launch {
