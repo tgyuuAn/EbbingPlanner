@@ -18,6 +18,7 @@ import com.tgyuu.navigation.HomeGraph.EditTodoRoute
 import com.tgyuu.navigation.MemoGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
+import com.tgyuu.navigation.SyncGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -77,6 +78,7 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnDeleteScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)
             is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule)
+            HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
         }
     }
 
