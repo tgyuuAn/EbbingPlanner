@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -20,6 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,7 +35,6 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.ui.UuidBody
-import com.tgyuu.sync.ui.UuidLoadingBody
 
 @Composable
 internal fun SyncMainRoute(
@@ -95,9 +98,12 @@ private fun PhoneSyncMainScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
+        val scrollState = rememberScrollState()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(horizontal = 20.dp)
         ) {
             EbbingSubTopBar(
@@ -106,16 +112,12 @@ private fun PhoneSyncMainScreen(
                 modifier = Modifier.padding(bottom = 20.dp),
             )
 
-            if (state.isFirstLoading) {
-                UuidLoadingBody()
-            } else {
-                UuidBody(
-                    uuid = state.uuid,
-                    lastSyncedAt = state.localLastSyncedAt,
-                    lastUpdatedAt = state.serverLastUpdatedAt,
-                    onUuidClick = onUuidClick,
-                )
-            }
+            UuidBody(
+                uuid = state.uuid,
+                lastSyncedAt = state.localLastSyncedAt,
+                lastUpdatedAt = state.serverLastUpdatedAt,
+                onUuidClick = onUuidClick,
+            )
 
             UpDownLoadBody(
                 onUploadClick = onUploadClick,
@@ -123,6 +125,8 @@ private fun PhoneSyncMainScreen(
             )
 
             RegisterBody(onRegisterClick = onLinkClick)
+
+            DescriptionBody()
         }
     }
 }
@@ -147,15 +151,6 @@ private fun TabletSyncMainScreen(
                 title = "동기화",
                 onNavigationClick = onBackClick,
                 modifier = Modifier.padding(bottom = 20.dp),
-            )
-        }
-
-        if (state.isFirstLoading) {
-            CircularProgressIndicator(
-                color = EbbingTheme.colors.primaryDefault,
-                modifier = Modifier
-                    .size(50.dp)
-                    .align(Alignment.Center),
             )
         }
     }
@@ -256,5 +251,27 @@ private fun RegisterBody(onRegisterClick: () -> Unit) {
         color = EbbingTheme.colors.light2,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+internal fun DescriptionBody() {
+    Text(
+        text = buildAnnotatedString {
+            append("- 업로드와 다운로드는 ")
+            withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+                append("기존 데이터를 덮어쓰는")
+            }
+            append(" 방식입니다. 신중히 진행해주세요.\n")
+            append("- 특히 ")
+            withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+                append("오프라인 중 수정한 데이터")
+            }
+            append("는 업로드하지 않으면 서버에 반영되지 않습니다.\n")
+            append("- 동기화 전, 최신 데이터를 어디에 보관 중인지 확인해주세요.")
+        },
+        textAlign = TextAlign.Start,
+        style = EbbingTheme.typography.bodyMM,
+        color = EbbingTheme.colors.dark3,
     )
 }

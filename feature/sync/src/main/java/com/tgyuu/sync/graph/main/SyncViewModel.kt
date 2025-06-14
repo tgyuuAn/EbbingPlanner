@@ -44,7 +44,6 @@ class SyncViewModel @Inject constructor(
             uuidJob.join()
             serverLastUpdatedAtJob.join()
             localLastSyncedAtJob.join()
-            setState { copy(isFirstLoading = false) }
         }
     }
 
@@ -63,7 +62,7 @@ class SyncViewModel @Inject constructor(
             return@launch
         }
 
-        setState { copy(isFirstLoading = true) }
+        setState { copy(isNetworkLoading = true) }
         syncRepository.uploadData()
             .onSuccess {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
@@ -77,7 +76,7 @@ class SyncViewModel @Inject constructor(
             .onFailure {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
             }.also {
-                setState { copy(isFirstLoading = false) }
+                setState { copy(isNetworkLoading = false) }
             }
     }
 

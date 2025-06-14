@@ -1,11 +1,7 @@
 package com.tgyuu.sync.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -91,66 +87,6 @@ internal fun UuidBody(
                 clipboardManager.setText(AnnotatedString(uuid))
                 onUuidClick()
             },
-    )
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.light2,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
-}
-
-@Composable
-internal fun UuidLoadingBody() {
-    val skeletonColor = EbbingTheme.colors.primaryDefault.copy(alpha = 0.2f)
-
-    Text(
-        text = "해당 디바이스의 고유 ID :",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
-
-    Spacer(
-        modifier = Modifier
-            .width(290.dp)
-            .height(20.dp)
-            .background(skeletonColor)
-            .padding(bottom = 12.dp)
-    )
-
-    Text(
-        text = "해당 기기의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-    )
-
-    Spacer(
-        modifier = Modifier
-            .width(230.dp)
-            .height(20.dp)
-            .background(skeletonColor)
-            .padding(bottom = 12.dp)
-    )
-
-    Text(
-        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-    )
-
-    Spacer(
-        modifier = Modifier
-            .width(230.dp)
-            .height(20.dp)
-            .background(skeletonColor)
-            .padding(bottom = 12.dp),
     )
 
     HorizontalDivider(
