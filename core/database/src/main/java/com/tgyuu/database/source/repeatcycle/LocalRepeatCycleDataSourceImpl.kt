@@ -1,5 +1,6 @@
 package com.tgyuu.database.source.repeatcycle
 
+import com.tgyuu.database.converter.EbbingConverters
 import com.tgyuu.database.dao.RepeatCyclesDao
 import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.toEntity
@@ -13,17 +14,18 @@ class LocalRepeatCycleDataSourceImpl @Inject constructor(
         repeatCyclesDao.insertRepeatCycle(repeatCycle.toEntity())
 
     override suspend fun insertRepeatCycle(intervals: List<Int>): Long =
-        repeatCyclesDao.insertRepeatCycle(
-            RepeatCycleEntity(
-                intervals = intervals,
-            )
-        )
+        repeatCyclesDao.insertRepeatCycle(RepeatCycleEntity(intervals = intervals))
 
-    override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) =
-        repeatCyclesDao.updateRepeatCycle(repeatCycle.toEntity())
+    override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) {
+        val json = EbbingConverters().fromIntList(repeatCycle.intervals)
+        repeatCyclesDao.updateRepeatCycle(repeatCycle.id, json!!)
+    }
 
-    override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) =
-        repeatCyclesDao.deleteRepeatCycle(repeatCycle.toEntity())
+    override suspend fun softDeleteRepeatCycle(repeatCycle: RepeatCycle) =
+        repeatCyclesDao.softDeleteRepeatCycle(repeatCycle.toEntity().id)
+
+    override suspend fun hardDeleteRepeatCycle(repeatCycle: RepeatCycle) =
+        repeatCyclesDao.hardDeleteRepeatCycle(repeatCycle.toEntity())
 
     override suspend fun getRepeatCycles(): List<RepeatCycleEntity> =
         repeatCyclesDao.getRepeatCycles()

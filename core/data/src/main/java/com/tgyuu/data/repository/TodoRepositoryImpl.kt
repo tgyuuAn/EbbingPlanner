@@ -89,7 +89,7 @@ class TodoRepositoryImpl @Inject constructor(
         localRepeatCycleDataSource.updateRepeatCycle(repeatCycle)
 
     override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) =
-        localRepeatCycleDataSource.deleteRepeatCycle(repeatCycle)
+        localRepeatCycleDataSource.softDeleteRepeatCycle(repeatCycle)
 
     override suspend fun loadSchedule(id: Int): TodoSchedule = localTodoDataSource.getSchedule(id)
 

@@ -29,9 +29,9 @@ interface TodoTagsDao {
     @Update
     suspend fun updateTag(tag: TodoTagEntity)
 
-    @Query(value = "SELECT * FROM todo_tag")
+    @Query(value = "SELECT * FROM todo_tag WHERE isDeleted = 0")
     suspend fun getTags(): List<TodoTagEntity>
 
-    @Query(value = "SELECT * FROM todo_tag WHERE id = :id")
+    @Query(value = "SELECT * FROM todo_tag WHERE id = :id AND isDeleted = 0")
     suspend fun getTag(id: Int): TodoTagEntity
 }

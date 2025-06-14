@@ -64,6 +64,8 @@ class SyncViewModel @Inject constructor(
             return@launch
         }
 
+        Log.d("test", "processUpload 호출")
+        setState { copy(isLoading = true) }
         syncRepository.uploadData()
             .onSuccess {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
@@ -75,8 +77,9 @@ class SyncViewModel @Inject constructor(
                 }
             }
             .onFailure {
-                Log.d("test", it.stackTraceToString())
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
+            }.also {
+                setState { copy(isLoading = false) }
             }
     }
 
