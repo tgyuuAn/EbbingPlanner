@@ -357,12 +357,12 @@ internal fun DescriptionBody() {
                 append("기존 데이터를 덮어쓰는")
             }
             append(" 방식입니다. 신중히 진행해주세요.\n")
-            append("- 특히 ")
+            append("- 특히, ")
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
                 append("오프라인 중 수정한 데이터")
             }
             append("는 업로드하지 않으면 서버에 반영되지 않습니다.\n")
-            append("- 동기화 전, 최신 데이터를 어디에 보관 중인지 확인해주세요.")
+            append("- 동기화 전 최신 데이터를 어디에 보관 중인지 확인해주세요.")
         },
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.bodyMM,

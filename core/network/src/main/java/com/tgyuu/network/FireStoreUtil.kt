@@ -7,8 +7,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.Date
 import kotlin.coroutines.resume
 
@@ -20,6 +18,7 @@ fun Timestamp?.toZonedDateTimeOrNull(): ZonedDateTime? {
 }
 
 fun LocalDate.toDate(): Date = Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
+fun Date.toLocalDate(): LocalDate = this.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
 
 // FireStore CallBack을 SuspendCancellableCoroutine으로 감싼 뒤, Result<T>로 래핑
 suspend inline fun <reified T> Task<DocumentSnapshot>.toResult(): Result<T> =

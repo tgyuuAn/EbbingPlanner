@@ -2,11 +2,10 @@ package com.tgyuu.network.model
 
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.network.toDate
+import com.tgyuu.network.toLocalDate
 import java.util.Date
-import java.time.LocalDate
-import java.time.ZoneId
 
-data class TodoScheduleRequestDto(
+data class TodoScheduleDto(
     val id: Int,
     val infoId: Int,
     val title: String,
@@ -19,9 +18,24 @@ data class TodoScheduleRequestDto(
     val isDone: Boolean,
     val createdAt: Date,
     val infoCreatedAt: Date
-)
+) {
+    fun toDomain(): TodoSchedule = TodoSchedule(
+        id = id,
+        infoId = infoId,
+        date = date.toLocalDate(),
+        memo = memo,
+        priority = priority,
+        isDone = isDone,
+        createdAt = createdAt.toLocalDate(),
+        title = title,
+        tagId = tagId,
+        name = name,
+        color = color,
+        infoCreatedAt = infoCreatedAt.toLocalDate(),
+    )
+}
 
-fun TodoSchedule.toRequestDto(): TodoScheduleRequestDto = TodoScheduleRequestDto(
+fun TodoSchedule.toDto(): TodoScheduleDto = TodoScheduleDto(
     id = id,
     infoId = infoId,
     title = title,
