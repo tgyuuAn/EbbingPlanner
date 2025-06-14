@@ -29,13 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
-import com.tgyuu.sync.ui.UuidBody
+import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncDialog
+import com.tgyuu.sync.graph.main.ui.dialog.DialogType
+import java.time.ZonedDateTime
 
 @Composable
 internal fun SyncMainRoute(
@@ -65,9 +68,21 @@ internal fun SyncMainScreen(
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var isShowQrDialog by remember { mutableStateOf(false) }
-    if (isShowQrDialog) {
+    var isShowDialog by remember { mutableStateOf(false) }
+    var dialogType by remember { mutableStateOf(DialogType.UPLOAD) }
 
+    if (isShowDialog) {
+        ConfirmSyncDialog(
+            dialogType = dialogType,
+            onDismissRequest = { isShowDialog = false },
+            onAcceptClick = {
+                when (dialogType) {
+                    DialogType.UPLOAD -> onUploadClick()
+                    DialogType.DOWNLOAD -> onDownloadClick()
+                }
+                isShowDialog = false
+            },
+        )
     }
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -75,19 +90,31 @@ internal fun SyncMainScreen(
         PhoneSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
-            onUuidClick = { isShowQrDialog = true },
-            onUploadClick = onUploadClick,
-            onDownloadClick = onDownloadClick,
+            onUploadClick = {
+                dialogType = DialogType.UPLOAD
+                isShowDialog = true
+            },
+            onDownloadClick = {
+                dialogType = DialogType.DOWNLOAD
+                isShowDialog = true
+            },
             onLinkClick = onLinkClick,
+            modifier = modifier,
         )
     } else {
         TabletSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
-            onUuidClick = { isShowQrDialog = true },
-            onUploadClick = onUploadClick,
-            onDownloadClick = onDownloadClick,
+            onUploadClick = {
+                dialogType = DialogType.UPLOAD
+                isShowDialog = true
+            },
+            onDownloadClick = {
+                dialogType = DialogType.DOWNLOAD
+                isShowDialog = true
+            },
             onLinkClick = onLinkClick,
+            modifier = modifier,
         )
     }
 }
@@ -96,7 +123,6 @@ internal fun SyncMainScreen(
 private fun PhoneSyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
-    onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onLinkClick: () -> Unit,
@@ -121,7 +147,6 @@ private fun PhoneSyncMainScreen(
                 uuid = state.uuid,
                 lastSyncedAt = state.localLastSyncedAt,
                 lastUpdatedAt = state.serverLastUpdatedAt,
-                onUuidClick = onUuidClick,
             )
 
             UpDownLoadBody(
@@ -140,7 +165,6 @@ private fun PhoneSyncMainScreen(
 private fun TabletSyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
-    onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onLinkClick: () -> Unit,
@@ -214,6 +238,71 @@ private fun UpDownLoadBody(
             modifier = Modifier.padding(start = 4.dp),
         )
     }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+internal fun UuidBody(
+    uuid: String,
+    lastSyncedAt: ZonedDateTime?,
+    lastUpdatedAt: ZonedDateTime?,
+) {
+    Text(
+        text = "해당 디바이스의 고유 ID :",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = uuid,
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    Text(
+        text = "해당 기기의 마지막 업데이트 시점 : ",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    Text(
+        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastUpdatedAt?.toLocalDateTime()?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
 
     HorizontalDivider(
         color = EbbingTheme.colors.light2,

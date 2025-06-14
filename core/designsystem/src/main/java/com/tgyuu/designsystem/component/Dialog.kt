@@ -111,6 +111,33 @@ fun EbbingDialogDefaultTop(
 }
 
 @Composable
+fun EbbingDialogDefaultTop(
+    title: String,
+    subText: AnnotatedString,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(top = 40.dp, bottom = 12.dp),
+    ) {
+        Text(
+            text = title,
+            color = EbbingTheme.colors.black,
+            textAlign = TextAlign.Center,
+            style = EbbingTheme.typography.headingMSB,
+        )
+
+        Text(
+            text = subText,
+            color = EbbingTheme.colors.dark2,
+            textAlign = TextAlign.Center,
+            style = EbbingTheme.typography.bodySM,
+        )
+    }
+}
+
+
+@Composable
 fun EbbingDialogIconTop(
     @DrawableRes iconId: Int,
     title: String,
