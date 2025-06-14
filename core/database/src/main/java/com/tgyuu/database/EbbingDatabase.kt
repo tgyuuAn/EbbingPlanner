@@ -1,6 +1,5 @@
 package com.tgyuu.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -21,10 +20,7 @@ import com.tgyuu.database.model.TodoTagEntity
         TodoInfoEntity::class,
         RepeatCycleEntity::class,
     ],
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2)
-    ],
-    version = 2,
+    version = 3,
 )
 @TypeConverters(EbbingConverters::class)
 internal abstract class EbbingDatabase : RoomDatabase() {

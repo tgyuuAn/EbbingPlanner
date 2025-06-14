@@ -39,9 +39,7 @@ class SyncViewModel @Inject constructor(
 
             val serverLastUpdatedAtJob = launch {
                 syncRepository.getServerLastUpdatedAt()
-                    .onSuccess {
-                        setState { copy(serverLastUpdatedAt = it) }
-                    }
+                    .onSuccess { setState { copy(serverLastUpdatedAt = it) } }
             }
 
             uuidJob.join()

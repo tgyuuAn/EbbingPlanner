@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -68,7 +70,6 @@ internal fun SyncMainScreen(
             onUploadClick = onUploadClick,
             onDownloadClick = onDownloadClick,
             onLinkClick = onLinkClick,
-            modifier = modifier,
         )
     } else {
         TabletSyncMainScreen(
@@ -78,7 +79,6 @@ internal fun SyncMainScreen(
             onUploadClick = onUploadClick,
             onDownloadClick = onDownloadClick,
             onLinkClick = onLinkClick,
-            modifier = modifier,
         )
     }
 }
@@ -93,9 +93,9 @@ private fun PhoneSyncMainScreen(
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 20.dp)
         ) {
@@ -119,6 +119,15 @@ private fun PhoneSyncMainScreen(
 
             RegisterBody(onRegisterClick = onLinkClick)
         }
+
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                color = EbbingTheme.colors.primaryDefault,
+                modifier = Modifier
+                    .size(50.dp)
+                    .align(Alignment.Center),
+            )
+        }
     }
 }
 
@@ -132,16 +141,27 @@ private fun TabletSyncMainScreen(
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
-    ) {
-        EbbingSubTopBar(
-            title = "동기화",
-            onNavigationClick = onBackClick,
-            modifier = Modifier.padding(bottom = 20.dp),
-        )
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp)
+        ) {
+            EbbingSubTopBar(
+                title = "동기화",
+                onNavigationClick = onBackClick,
+                modifier = Modifier.padding(bottom = 20.dp),
+            )
+        }
+
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                color = EbbingTheme.colors.primaryDefault,
+                modifier = Modifier
+                    .size(50.dp)
+                    .align(Alignment.Center),
+            )
+        }
     }
 }
 
