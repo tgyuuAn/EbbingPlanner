@@ -4,8 +4,9 @@ import com.tgyuu.common.base.UiState
 import java.time.ZonedDateTime
 
 data class SyncMainState(
-    val isLoading: Boolean = true,
+    val isFirstLoading: Boolean = true,
     val uuid: String = "",
     val localLastSyncedAt: ZonedDateTime? = null,
     val serverLastUpdatedAt: ZonedDateTime? = null,
+    val isNetworkLoading: Boolean = true,
 ) : UiState

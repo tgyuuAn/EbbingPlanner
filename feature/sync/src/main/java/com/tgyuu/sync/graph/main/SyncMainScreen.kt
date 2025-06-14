@@ -31,6 +31,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.ui.UuidBody
+import com.tgyuu.sync.ui.UuidLoadingBody
 
 @Composable
 internal fun SyncMainRoute(
@@ -105,12 +106,16 @@ private fun PhoneSyncMainScreen(
                 modifier = Modifier.padding(bottom = 20.dp),
             )
 
-            UuidBody(
-                uuid = state.uuid,
-                lastSyncedAt = state.localLastSyncedAt,
-                lastUpdatedAt = state.serverLastUpdatedAt,
-                onUuidClick = onUuidClick,
-            )
+            if (state.isFirstLoading) {
+                UuidLoadingBody()
+            } else {
+                UuidBody(
+                    uuid = state.uuid,
+                    lastSyncedAt = state.localLastSyncedAt,
+                    lastUpdatedAt = state.serverLastUpdatedAt,
+                    onUuidClick = onUuidClick,
+                )
+            }
 
             UpDownLoadBody(
                 onUploadClick = onUploadClick,
@@ -118,15 +123,6 @@ private fun PhoneSyncMainScreen(
             )
 
             RegisterBody(onRegisterClick = onLinkClick)
-        }
-
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                color = EbbingTheme.colors.primaryDefault,
-                modifier = Modifier
-                    .size(50.dp)
-                    .align(Alignment.Center),
-            )
         }
     }
 }
@@ -154,7 +150,7 @@ private fun TabletSyncMainScreen(
             )
         }
 
-        if (state.isLoading) {
+        if (state.isFirstLoading) {
             CircularProgressIndicator(
                 color = EbbingTheme.colors.primaryDefault,
                 modifier = Modifier

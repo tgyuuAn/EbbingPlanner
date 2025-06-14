@@ -1,6 +1,5 @@
 package com.tgyuu.sync.graph.main
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -45,7 +44,7 @@ class SyncViewModel @Inject constructor(
             uuidJob.join()
             serverLastUpdatedAtJob.join()
             localLastSyncedAtJob.join()
-            setState { copy(isLoading = false) }
+            setState { copy(isFirstLoading = false) }
         }
     }
 
@@ -64,8 +63,7 @@ class SyncViewModel @Inject constructor(
             return@launch
         }
 
-        Log.d("test", "processUpload 호출")
-        setState { copy(isLoading = true) }
+        setState { copy(isFirstLoading = true) }
         syncRepository.uploadData()
             .onSuccess {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
@@ -79,7 +77,7 @@ class SyncViewModel @Inject constructor(
             .onFailure {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
             }.also {
-                setState { copy(isLoading = false) }
+                setState { copy(isFirstLoading = false) }
             }
     }
 

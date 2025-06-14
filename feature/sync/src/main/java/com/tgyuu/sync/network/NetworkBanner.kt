@@ -33,14 +33,18 @@ fun NetworkBanner(
 ) {
     val context = LocalContext.current
     var showConnected by remember { mutableStateOf(false) }
+    var previousState by remember { mutableStateOf<NetworkState?>(null) }
 
     LaunchedEffect(networkState) {
-        if (networkState == NetworkState.Connected) {
+        if (previousState == NetworkState.NotConnected && networkState == NetworkState.Connected) {
             showConnected = true
             delay(2000)
             showConnected = false
         }
+
+        previousState = networkState
     }
+
 
     Box(modifier) {
         EbbingVisibleAnimation(
