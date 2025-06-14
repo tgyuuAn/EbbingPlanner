@@ -14,6 +14,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.sync.graph.upload.contract.UploadIntent
 import com.tgyuu.sync.graph.upload.contract.UploadState
+import com.tgyuu.sync.ui.UuidBody
 
 @Composable
 internal fun UploadRoute(
@@ -24,6 +25,7 @@ internal fun UploadRoute(
     UploadScreen(
         state = state,
         onBackClick = { viewModel.onIntent(UploadIntent.OnBackClick) },
+        onUuidClick = { viewModel.onIntent(UploadIntent.OnUuidClick)},
         onUploadClick = { viewModel.onIntent(UploadIntent.OnUploadClick) },
     )
 }
@@ -32,6 +34,7 @@ internal fun UploadRoute(
 internal fun UploadScreen(
     state: UploadState,
     onBackClick: () -> Unit,
+    onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -41,6 +44,7 @@ internal fun UploadScreen(
         PhoneUploadScreen(
             state = state,
             onBackClick = onBackClick,
+            onUuidClick = onUuidClick,
             onUploadClick = onUploadClick,
             modifier = modifier,
         )
@@ -58,6 +62,7 @@ internal fun UploadScreen(
 private fun PhoneUploadScreen(
     state: UploadState,
     onBackClick: () -> Unit,
+    onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -70,6 +75,11 @@ private fun PhoneUploadScreen(
             title = "데이터 업로드",
             onNavigationClick = onBackClick,
             modifier = Modifier.padding(bottom = 20.dp),
+        )
+
+        UuidBody(
+            uuid = state.uuid,
+            onUuidClick = onUuidClick,
         )
     }
 }

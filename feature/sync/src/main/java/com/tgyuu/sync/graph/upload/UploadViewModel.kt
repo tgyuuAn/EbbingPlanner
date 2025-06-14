@@ -2,8 +2,9 @@ package com.tgyuu.sync.graph.upload
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
+import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.sync.graph.upload.contract.UploadIntent
@@ -14,14 +15,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UploadViewModel @Inject constructor(
-    private val configRepository: ConfigRepository,
+    private val syncRepository: SyncRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
 ) : BaseViewModel<UploadState, UploadIntent>(UploadState()) {
 
     init {
         viewModelScope.launch {
-            val uuid = configRepository.getUUID()
+            val uuid = syncRepository.getUUID()
             setState { copy(uuid = uuid) }
         }
     }
@@ -29,6 +30,7 @@ class UploadViewModel @Inject constructor(
     override suspend fun processIntent(intent: UploadIntent) {
         when (intent) {
             UploadIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            UploadIntent.OnUuidClick -> eventBus.sendEvent(EbbingEvent.ShowSnackBar("ID를 복사하였습니다."))
             UploadIntent.OnUploadClick -> Unit
         }
     }

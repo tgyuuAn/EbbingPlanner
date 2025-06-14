@@ -1,4 +1,4 @@
-package com.tgyuu.datastore.datasource
+package com.tgyuu.datastore.datasource.user
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -39,10 +39,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
                 } ?: default
         }
 
-    override val uuid: Flow<String>
-        get() = dataStore.data
-            .map { prefs -> prefs[UUID] ?: "INVALID" }
-
     override suspend fun consumeIsFirstAppOpen(): Boolean {
         var firstRun = false
         dataStore.edit { prefs ->
@@ -64,24 +60,10 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[ALARM_TIME] = "$hour:$minute" }
     }
 
-    override suspend fun ensureUUIDExists() {
-        dataStore.edit { prefs ->
-            val savedUuid = prefs[UUID]
-            if (savedUuid == null) {
-                prefs[UUID] = java.util.UUID.randomUUID().toString()
-            }
-        }
-    }
-
-    override suspend fun setUuid(uuid: String) {
-        dataStore.edit { prefs -> prefs[UUID] = uuid }
-    }
-
     companion object {
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
-        private val UUID = stringPreferencesKey("UUID")
     }
 }

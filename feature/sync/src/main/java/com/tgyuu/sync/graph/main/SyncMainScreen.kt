@@ -14,10 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,6 +26,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.network.NetworkState
+import com.tgyuu.sync.ui.UuidBody
 
 @Composable
 internal fun SyncMainRoute(
@@ -145,41 +143,6 @@ private fun TabletSyncMainScreen(
             modifier = Modifier.padding(bottom = 20.dp),
         )
     }
-}
-
-@Composable
-private fun UuidBody(
-    uuid: String,
-    onUuidClick: () -> Unit,
-) {
-    val clipboardManager = LocalClipboardManager.current
-
-    Text(
-        text = "해당 디바이스의 고유 ID",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = uuid,
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.primaryDefault,
-        textDecoration = TextDecoration.Underline,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 17.dp)
-            .clickable {
-                clipboardManager.setText(AnnotatedString(uuid))
-                onUuidClick()
-            },
-    )
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.light2,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
 }
 
 @Composable

@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.tgyuu.datastore.datasource.sync.LocalSyncDataSource
+import com.tgyuu.datastore.datasource.sync.LocalSyncDataSourceImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,9 +20,9 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 
-class LocalUserConfigDataSourceTest {
+class LocalSyncConfigDataSourceTest {
     private lateinit var dataStore: DataStore<Preferences>
-    private lateinit var dataSource: LocalUserConfigDataSource
+    private lateinit var dataSource: LocalSyncDataSource
     private lateinit var tempFile: File
 
     @Before
@@ -32,7 +34,7 @@ class LocalUserConfigDataSourceTest {
             scope = testScope,
             produceFile = { tempFile }
         )
-        dataSource = LocalUserConfigDataSourceImpl(dataStore)
+        dataSource = LocalSyncDataSourceImpl(dataStore)
     }
 
     @After

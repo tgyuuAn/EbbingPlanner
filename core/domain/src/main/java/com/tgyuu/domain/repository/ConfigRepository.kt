@@ -13,6 +13,4 @@ interface ConfigRepository {
     suspend fun updateAlarmTime(hour: String, minute: String)
     suspend fun getAlarmTime(): Pair<Int, Int>
     suspend fun getUpdateInfo(): Result<UpdateInfo>
-    suspend fun ensureUUIDExists()
-    suspend fun getUUID(): String
 }

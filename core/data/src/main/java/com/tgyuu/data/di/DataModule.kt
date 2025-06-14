@@ -1,8 +1,10 @@
 package com.tgyuu.data.di
 
 import com.tgyuu.data.repository.ConfigRepositoryImpl
+import com.tgyuu.data.repository.SyncRepositoryImpl
 import com.tgyuu.data.repository.TodoRepositoryImpl
 import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
 import dagger.Binds
 import dagger.Module
@@ -25,4 +27,10 @@ abstract class DataModule {
     abstract fun bindsConfigRepository(
         configRepositoryImpl: ConfigRepositoryImpl
     ): ConfigRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsSyncRepository(
+        syncRepositoryImpl: SyncRepositoryImpl
+    ): SyncRepository
 }

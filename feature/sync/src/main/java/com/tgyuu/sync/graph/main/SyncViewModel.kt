@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.SyncGraph
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncViewModel @Inject constructor(
-    private val configRepository: ConfigRepository,
+    private val syncRepository: SyncRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     internal val networkMonitor: NetworkMonitor,
@@ -25,7 +25,7 @@ class SyncViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val uuid = configRepository.getUUID()
+            val uuid = syncRepository.getUUID()
             setState { copy(uuid = uuid) }
         }
     }
