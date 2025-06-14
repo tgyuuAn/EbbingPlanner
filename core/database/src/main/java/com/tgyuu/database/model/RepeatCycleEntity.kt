@@ -8,6 +8,8 @@ import com.tgyuu.domain.model.RepeatCycle
 data class RepeatCycleEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val intervals: List<Int> = emptyList(),
+    val isDeleted: Boolean = false,
+    val isSynced: Boolean = false,
 ) {
     fun toDomain() = RepeatCycle(
         id = id,

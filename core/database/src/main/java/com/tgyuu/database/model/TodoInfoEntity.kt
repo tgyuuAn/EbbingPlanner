@@ -24,6 +24,8 @@ data class TodoInfoEntity(
     val tagId: Int,
     val priority: Int,
     val createdAt: LocalDate = LocalDate.now(),
+    val isDeleted: Boolean = false,
+    val isSynced: Boolean = false,
 )
 
 fun TodoSchedule.toInfoEntity() = TodoInfoEntity(

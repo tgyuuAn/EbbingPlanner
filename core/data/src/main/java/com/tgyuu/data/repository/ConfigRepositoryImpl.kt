@@ -1,6 +1,6 @@
 package com.tgyuu.data.repository
 
-import com.tgyuu.datastore.datasource.LocalUserConfigDataSource
+import com.tgyuu.datastore.datasource.user.LocalUserConfigDataSource
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.repository.ConfigRepository

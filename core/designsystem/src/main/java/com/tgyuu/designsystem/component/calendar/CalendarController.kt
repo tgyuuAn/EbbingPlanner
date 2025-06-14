@@ -2,6 +2,7 @@ package com.tgyuu.designsystem.component.calendar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.LocalDate
@@ -27,6 +29,7 @@ internal fun CalendarController(
     currentDate: LocalDate,
     onGotoTodayClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onSyncClick: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -56,6 +59,18 @@ internal fun CalendarController(
             color = EbbingTheme.colors.black,
         )
 
-        Spacer(modifier = Modifier.size(40.dp))
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(40.dp)
+                .clickable(onClick = onSyncClick),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_link),
+                contentDescription = "데이터 동기화",
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                modifier = Modifier.size(28.dp),
+            )
+        }
     }
 }

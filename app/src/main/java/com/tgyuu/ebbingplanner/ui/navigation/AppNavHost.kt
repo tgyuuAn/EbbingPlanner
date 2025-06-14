@@ -10,6 +10,7 @@ import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.onboarding.navigation.onboardingNavigation
 import com.tgyuu.repeatcycle.navigation.repeatCycleGraph
 import com.tgyuu.setting.navigation.settingGraph
+import com.tgyuu.sync.navigation.syncNavigation
 import com.tgyuu.tag.navigation.tagGraph
 
 @Composable
@@ -29,5 +30,6 @@ fun AppNavHost(
         settingGraph()
         tagGraph()
         repeatCycleGraph()
+        syncNavigation()
     }
 }

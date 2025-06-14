@@ -28,6 +28,7 @@ interface SchedulesDao {
         FROM schedule s
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
+        WHERE s.isDeleted = 0 AND i.isDeleted = 0 AND t.isDeleted = 0
         ORDER BY s.date
         """
     )
@@ -52,6 +53,7 @@ interface SchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.id = :id
+          AND s.isDeleted = 0 AND i.isDeleted = 0 AND t.isDeleted = 0
         """
     )
     suspend fun loadScheduleWithInfoAndTag(id: Int): TodoSchedule
@@ -75,6 +77,7 @@ interface SchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.infoId = :id
+          AND s.isDeleted = 0 AND i.isDeleted = 0 AND t.isDeleted = 0
         ORDER BY s.date
         """
     )
@@ -99,6 +102,7 @@ interface SchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.date = :date
+          AND s.isDeleted = 0 AND i.isDeleted = 0 AND t.isDeleted = 0
         ORDER BY s.date
         """
     )
@@ -123,13 +127,17 @@ interface SchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.date >= :date
+          AND s.isDeleted = 0 AND i.isDeleted = 0 AND t.isDeleted = 0
         ORDER BY s.date               
         """
     )
     suspend fun loadUpcomingSchedules(date: LocalDate): List<TodoSchedule>
 
+    @Query("UPDATE schedule SET isDeleted = 1, isSynced = 0 WHERE id = :id")
+    suspend fun softDeleteSchedule(id: Int)
+
     @Delete
-    suspend fun deleteSchedules(schedule: ScheduleEntity)
+    suspend fun hardDeleteSchedule(schedule: ScheduleEntity)
 
     @Query(
         """
@@ -150,6 +158,7 @@ interface SchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.date = :date
+          AND s.isDeleted = 0 AND i.isDeleted = 0 AND t.isDeleted = 0
         ORDER BY s.date
         """
     )

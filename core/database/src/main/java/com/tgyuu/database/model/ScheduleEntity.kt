@@ -27,6 +27,8 @@ data class ScheduleEntity(
     val priority: Int,
     val isDone: Boolean = false,
     val createdAt: LocalDate = LocalDate.now(),
+    val isDeleted: Boolean = false,
+    val isSynced: Boolean = false,
 )
 
 fun TodoSchedule.toEntity() = ScheduleEntity(

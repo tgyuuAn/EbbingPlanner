@@ -1,14 +1,15 @@
 package com.tgyuu.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.tgyuu.database.converter.EbbingConverters
+import com.tgyuu.database.dao.LinkedDevicesDao
 import com.tgyuu.database.dao.RepeatCyclesDao
 import com.tgyuu.database.dao.SchedulesDao
 import com.tgyuu.database.dao.TodoTagsDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
+import com.tgyuu.database.model.LinkedDeviceEntity
 import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.ScheduleEntity
 import com.tgyuu.database.model.TodoInfoEntity
@@ -20,11 +21,9 @@ import com.tgyuu.database.model.TodoTagEntity
         ScheduleEntity::class,
         TodoInfoEntity::class,
         RepeatCycleEntity::class,
+        LinkedDeviceEntity::class,
     ],
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2)
-    ],
-    version = 2,
+    version = 3,
 )
 @TypeConverters(EbbingConverters::class)
 internal abstract class EbbingDatabase : RoomDatabase() {
@@ -32,6 +31,7 @@ internal abstract class EbbingDatabase : RoomDatabase() {
     abstract fun schedulesDao(): SchedulesDao
     abstract fun todoWithSchedulesDao(): TodoWithSchedulesDao
     abstract fun repeatCyclesDao(): RepeatCyclesDao
+    abstract fun linkedDevicesDao(): LinkedDevicesDao
 
     companion object {
         internal const val NAME = "ebbing-database"

@@ -44,3 +44,4 @@ include(":feature:repeatcycle")
 include(":feature:alarm")
 
 include(":baselineprofile")
+include(":feature:sync")

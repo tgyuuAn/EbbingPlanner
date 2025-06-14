@@ -11,6 +11,8 @@ data class TodoTagEntity(
     val name: String,
     val color: Int,
     val createdAt: LocalDate = LocalDate.now(),
+    val isDeleted: Boolean = false,
+    val isSynced: Boolean = false,
 ) {
     fun toDomain() = TodoTag(
         id = id,

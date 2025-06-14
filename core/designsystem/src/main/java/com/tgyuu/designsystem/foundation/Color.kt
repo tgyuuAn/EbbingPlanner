@@ -22,6 +22,7 @@ private val Light3 = Color(0xFFF4F6FA)
 private val White = Color(0xFFFFFFFF)
 
 private val Error = Color(0xFFFF3059)
+private val Success = Color(0xFF5DB441)
 
 @Immutable
 data class EbbingColors(
@@ -38,6 +39,7 @@ data class EbbingColors(
     val light3: Color = Light3,
     val white: Color = White,
     val error: Color = Error,
+    val success: Color = Success,
 )
 
 internal val darkModeColorScheme = EbbingColors(

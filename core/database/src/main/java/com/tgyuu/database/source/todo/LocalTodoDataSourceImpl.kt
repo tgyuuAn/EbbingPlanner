@@ -45,6 +45,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =
         todoWithSchedulesDao.updateTodoSchedules(todoSchedule)
 
-    override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
-        schedulesDao.deleteSchedules(todoSchedule.toEntity())
+    override suspend fun softDeleteTodo(todoSchedule: TodoSchedule) =
+        schedulesDao.softDeleteSchedule(todoSchedule.toEntity().id)
+
+    override suspend fun hardDeleteTodo(todoSchedule: TodoSchedule) =
+        schedulesDao.hardDeleteSchedule(todoSchedule.toEntity())
 }

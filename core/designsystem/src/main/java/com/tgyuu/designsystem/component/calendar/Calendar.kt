@@ -21,6 +21,7 @@ fun EbbingCalendar(
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     modifier: Modifier = Modifier,
     onSelectDate: (LocalDate) -> Unit = {},
+    onSyncClick: () -> Unit = {},
 ) {
     val initialPage = Int.MAX_VALUE / 2
     val pagerState = rememberPagerState(
@@ -49,7 +50,9 @@ fun EbbingCalendar(
                     onSelectDate(LocalDate.now())
                 }
             },
+            onSyncClick = onSyncClick,
         )
+
         CalendarHeader()
 
         HorizontalPager(

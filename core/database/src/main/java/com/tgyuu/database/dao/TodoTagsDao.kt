@@ -14,24 +14,27 @@ interface TodoTagsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTag(tag: TodoTagEntity): Long
 
-    @Delete
-    suspend fun deleteTag(tag: TodoTagEntity)
-
     @Query("UPDATE todo_info SET tagId = 1 WHERE tagId = :tagId")
     suspend fun resetTagId(tagId: Int)
 
+    @Query("UPDATE todo_tag SET isDeleted = 1, isSynced = 0 WHERE id = :tagId")
+    suspend fun softDeleteTag(tagId: Int)
+
+    @Delete
+    suspend fun hardDeleteTag(tag: TodoTagEntity)
+
     @Transaction
-    suspend fun deleteTagWithReset(todoTag: TodoTagEntity) {
+    suspend fun softDeleteTagWithReset(todoTag: TodoTagEntity) {
         resetTagId(todoTag.id)
-        deleteTag(todoTag)
+        softDeleteTag(todoTag.id)
     }
 
     @Update
     suspend fun updateTag(tag: TodoTagEntity)
 
-    @Query(value = "SELECT * FROM todo_tag")
+    @Query(value = "SELECT * FROM todo_tag WHERE isDeleted = 0")
     suspend fun getTags(): List<TodoTagEntity>
 
-    @Query(value = "SELECT * FROM todo_tag WHERE id = :id")
+    @Query(value = "SELECT * FROM todo_tag WHERE id = :id AND isDeleted = 0")
     suspend fun getTag(id: Int): TodoTagEntity
 }

@@ -2,6 +2,7 @@ package com.tgyuu.database.di
 
 import android.content.Context
 import androidx.room.Room
+import com.tgyuu.database.DatabaseMigrations
 import com.tgyuu.database.EbbingDatabase
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSourceImpl
@@ -28,7 +29,10 @@ internal object DatabaseProvidesModule {
         context,
         EbbingDatabase::class.java,
         EbbingDatabase.NAME,
-    ).build()
+    )
+        .addMigrations(DatabaseMigrations.MIGRATION_1_TO_2)
+        .addMigrations(DatabaseMigrations.MIGRATION_2_TO_3)
+        .build()
 }
 
 @Module
