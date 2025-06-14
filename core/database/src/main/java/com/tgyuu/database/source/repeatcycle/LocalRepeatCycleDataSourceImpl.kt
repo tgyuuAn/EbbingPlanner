@@ -10,9 +10,6 @@ import javax.inject.Inject
 class LocalRepeatCycleDataSourceImpl @Inject constructor(
     private val repeatCyclesDao: RepeatCyclesDao,
 ) : LocalRepeatCycleDataSource {
-    override suspend fun insertTag(repeatCycle: RepeatCycle): Long =
-        repeatCyclesDao.insertRepeatCycle(repeatCycle.toEntity())
-
     override suspend fun insertRepeatCycle(intervals: List<Int>): Long =
         repeatCyclesDao.insertRepeatCycle(RepeatCycleEntity(intervals = intervals))
 

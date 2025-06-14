@@ -31,6 +31,16 @@ class DatabaseMigrations {
 
                 database.execSQL("ALTER TABLE todo_tag ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0")
                 database.execSQL("ALTER TABLE todo_tag ADD COLUMN isSynced INTEGER NOT NULL DEFAULT 0")
+
+                database.execSQL(
+                    """
+                        CREATE TABLE IF NOT EXISTS linked_device (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        uuid TEXT NOT NULL,
+                        lastUsedAt TEXT NOT NULL
+                        )
+                    """.trimIndent()
+                )
             }
         }
     }

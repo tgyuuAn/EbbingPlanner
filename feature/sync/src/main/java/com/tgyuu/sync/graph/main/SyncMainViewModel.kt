@@ -17,34 +17,32 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SyncViewModel @Inject constructor(
+class SyncMainViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val networkMonitor: NetworkMonitor,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
-    init {
-        viewModelScope.launch {
-            val uuidJob = launch {
-                val uuid = syncRepository.getUUID()
-                setState { copy(uuid = uuid) }
-            }
-
-            val localLastSyncedAtJob = launch {
-                val lastSyncedAt = syncRepository.getLocalSyncedAt()
-                setState { copy(localLastSyncedAt = lastSyncedAt) }
-            }
-
-            val serverLastUpdatedAtJob = launch {
-                syncRepository.getServerLastUpdatedAt()
-                    .onSuccess { setState { copy(serverLastUpdatedAt = it) } }
-            }
-
-            uuidJob.join()
-            serverLastUpdatedAtJob.join()
-            localLastSyncedAtJob.join()
+    internal fun loadInitData() = viewModelScope.launch {
+        val uuidJob = launch {
+            val uuid = syncRepository.getUUID()
+            setState { copy(uuid = uuid) }
         }
+
+        val localLastSyncedAtJob = launch {
+            val lastSyncedAt = syncRepository.getLocalSyncedAt()
+            setState { copy(localLastSyncedAt = lastSyncedAt) }
+        }
+
+        val serverLastUpdatedAtJob = launch {
+            syncRepository.getServerLastUpdatedAt()
+                .onSuccess { setState { copy(serverLastUpdatedAt = it) } }
+        }
+
+        uuidJob.join()
+        serverLastUpdatedAtJob.join()
+        localLastSyncedAtJob.join()
     }
 
     override suspend fun processIntent(intent: SyncIntent) {
@@ -86,12 +84,15 @@ class SyncViewModel @Inject constructor(
             return@launch
         }
 
+        setState { copy(isNetworkLoading = true) }
         syncRepository.downloadData()
             .onSuccess {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 다운로드 하였습니다."))
             }
             .onFailure {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("다운로드에 실패하였습니다."))
+            }.also {
+                setState { copy(isNetworkLoading = false) }
             }
     }
 }

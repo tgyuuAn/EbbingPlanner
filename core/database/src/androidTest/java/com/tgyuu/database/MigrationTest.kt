@@ -29,7 +29,6 @@ class MigrationTest {
     }
 
     @Test
-    @Throws(IOException::class)
     fun `마이그레이션_1에서2_테스트`() {
         // given
         helper.createDatabase(testDbName, 1).apply {

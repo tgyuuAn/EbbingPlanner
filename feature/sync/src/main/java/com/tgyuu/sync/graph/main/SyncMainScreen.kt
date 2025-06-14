@@ -13,6 +13,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,9 +39,13 @@ import com.tgyuu.sync.ui.UuidBody
 
 @Composable
 internal fun SyncMainRoute(
-    viewModel: SyncViewModel = hiltViewModel(),
+    viewModel: SyncMainViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.loadInitData()
+    }
 
     SyncMainScreen(
         state = state,
