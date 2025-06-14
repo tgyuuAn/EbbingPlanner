@@ -99,7 +99,7 @@ class TodoRepositoryImpl @Inject constructor(
         localTodoDataSource.updateTodo(todoSchedule)
 
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
-        localTodoDataSource.deleteTodo(todoSchedule)
+        localTodoDataSource.softDeleteTodo(todoSchedule)
 
     override suspend fun updateTag(todoTag: TodoTag) = localTagDataSource.updateTag(todoTag)
     override suspend fun deleteTag(todoTag: TodoTag) = localTagDataSource.deleteTag(todoTag)

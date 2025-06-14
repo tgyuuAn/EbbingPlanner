@@ -133,8 +133,11 @@ interface SchedulesDao {
     )
     suspend fun loadUpcomingSchedules(date: LocalDate): List<TodoSchedule>
 
+    @Query("UPDATE schedule SET isDeleted = 1, isSynced = 0 WHERE id = :id")
+    suspend fun softDeleteSchedule(id: Int)
+
     @Delete
-    suspend fun deleteSchedules(schedule: ScheduleEntity)
+    suspend fun hardDeleteSchedule(schedule: ScheduleEntity)
 
     @Query(
         """
