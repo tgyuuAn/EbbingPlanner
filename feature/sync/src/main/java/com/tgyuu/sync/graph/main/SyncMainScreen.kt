@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,7 +28,6 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
-import com.tgyuu.sync.network.NetworkState
 import com.tgyuu.sync.ui.UuidBody
 
 @Composable
@@ -33,13 +35,10 @@ internal fun SyncMainRoute(
     viewModel: SyncViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val networkState by viewModel.networkMonitor.networkState.collectAsStateWithLifecycle()
 
     SyncMainScreen(
         state = state,
-        networkState = networkState,
         onBackClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
-        onUuidClick = { viewModel.onIntent(SyncIntent.OnUuidClick) },
         onUploadClick = { viewModel.onIntent(SyncIntent.OnUploadClick) },
         onDownloadClick = { viewModel.onIntent(SyncIntent.OnDownloadClick) },
         onLinkClick = { viewModel.onIntent(SyncIntent.OnLinkClick) },
@@ -49,22 +48,23 @@ internal fun SyncMainRoute(
 @Composable
 internal fun SyncMainScreen(
     state: SyncMainState,
-    networkState: NetworkState,
     onBackClick: () -> Unit,
-    onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    var isShowQrDialog by remember { mutableStateOf(false) }
+    if (isShowQrDialog) {
 
+    }
+
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         PhoneSyncMainScreen(
             state = state,
-            networkState = networkState,
             onBackClick = onBackClick,
-            onUuidClick = onUuidClick,
+            onUuidClick = { isShowQrDialog = true },
             onUploadClick = onUploadClick,
             onDownloadClick = onDownloadClick,
             onLinkClick = onLinkClick,
@@ -73,9 +73,8 @@ internal fun SyncMainScreen(
     } else {
         TabletSyncMainScreen(
             state = state,
-            networkState = networkState,
             onBackClick = onBackClick,
-            onUuidClick = onUuidClick,
+            onUuidClick = { isShowQrDialog = true },
             onUploadClick = onUploadClick,
             onDownloadClick = onDownloadClick,
             onLinkClick = onLinkClick,
@@ -87,7 +86,6 @@ internal fun SyncMainScreen(
 @Composable
 private fun PhoneSyncMainScreen(
     state: SyncMainState,
-    networkState: NetworkState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
@@ -109,14 +107,17 @@ private fun PhoneSyncMainScreen(
 
             UuidBody(
                 uuid = state.uuid,
+                lastSyncedAt = state.localLastSyncedAt,
+                lastUpdatedAt = state.serverLastUpdatedAt,
                 onUuidClick = onUuidClick,
             )
 
-            UploadBody(
+            UpDownLoadBody(
                 onUploadClick = onUploadClick,
                 onDownloadClick = onDownloadClick,
-                onLinkClick = onLinkClick,
             )
+
+            RegisterBody(onRegisterClick = onLinkClick)
         }
     }
 }
@@ -124,7 +125,6 @@ private fun PhoneSyncMainScreen(
 @Composable
 private fun TabletSyncMainScreen(
     state: SyncMainState,
-    networkState: NetworkState,
     onBackClick: () -> Unit,
     onUuidClick: () -> Unit,
     onUploadClick: () -> Unit,
@@ -146,13 +146,12 @@ private fun TabletSyncMainScreen(
 }
 
 @Composable
-private fun UploadBody(
+private fun UpDownLoadBody(
     onUploadClick: () -> Unit,
     onDownloadClick: () -> Unit,
-    onLinkClick: () -> Unit,
 ) {
     Text(
-        text = "업로드 / 다운로드",
+        text = "데이터 가져오기 / 보내기",
         style = EbbingTheme.typography.bodySM,
         color = EbbingTheme.colors.dark2,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -166,7 +165,7 @@ private fun UploadBody(
             .clickable { onUploadClick() },
     ) {
         Text(
-            text = "데이터 업로드 하기",
+            text = "현재 기기 데이터를 서버에 저장",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -187,7 +186,7 @@ private fun UploadBody(
             .clickable { onDownloadClick() },
     ) {
         Text(
-            text = "데이터 다운로드 하기",
+            text = "서버 데이터를 이 기기로 불러오기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -200,12 +199,28 @@ private fun UploadBody(
         )
     }
 
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+private fun RegisterBody(onRegisterClick: () -> Unit) {
+    Text(
+        text = "연동하기",
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 17.dp)
-            .clickable { onLinkClick() },
+            .clickable { onRegisterClick() },
     ) {
         Text(
             text = "다른 기기와 연동하기",

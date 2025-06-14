@@ -1,5 +1,6 @@
 package com.tgyuu.sync.graph.main
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -11,6 +12,7 @@ import com.tgyuu.navigation.SyncGraph
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.network.NetworkMonitor
+import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,23 +22,78 @@ class SyncViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-    internal val networkMonitor: NetworkMonitor,
+    private val networkMonitor: NetworkMonitor,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
     init {
         viewModelScope.launch {
-            val uuid = syncRepository.getUUID()
-            setState { copy(uuid = uuid) }
+            val uuidJob = launch {
+                val uuid = syncRepository.getUUID()
+                setState { copy(uuid = uuid) }
+            }
+
+            val localLastSyncedAtJob = launch {
+                val lastSyncedAt = syncRepository.getLocalSyncedAt()
+                setState { copy(localLastSyncedAt = lastSyncedAt) }
+            }
+
+            val serverLastUpdatedAtJob = launch {
+                syncRepository.getServerLastUpdatedAt()
+                    .onSuccess {
+                        setState { copy(serverLastUpdatedAt = it) }
+                    }
+            }
+
+            uuidJob.join()
+            serverLastUpdatedAtJob.join()
+            localLastSyncedAtJob.join()
+            setState { copy(isLoading = false) }
         }
     }
 
     override suspend fun processIntent(intent: SyncIntent) {
         when (intent) {
             SyncIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            SyncIntent.OnUploadClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.UploadRoute))
-            SyncIntent.OnDownloadClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.DownloadRoute))
+            SyncIntent.OnUploadClick -> processUpload()
+            SyncIntent.OnDownloadClick -> processDownload()
             SyncIntent.OnLinkClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.LinkRoute))
-            SyncIntent.OnUuidClick -> eventBus.sendEvent(EbbingEvent.ShowSnackBar("ID를 복사하였습니다."))
         }
+    }
+
+    private fun processUpload() = viewModelScope.launch {
+        if (networkMonitor.networkState.value != NetworkState.Connected) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            return@launch
+        }
+
+        syncRepository.uploadData()
+            .onSuccess {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
+                setState {
+                    copy(
+                        localLastSyncedAt = it,
+                        serverLastUpdatedAt = it,
+                    )
+                }
+            }
+            .onFailure {
+                Log.d("test", it.stackTraceToString())
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
+            }
+    }
+
+    private fun processDownload() = viewModelScope.launch {
+        if (networkMonitor.networkState.value != NetworkState.Connected) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            return@launch
+        }
+
+        syncRepository.downloadData()
+            .onSuccess {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 다운로드 하였습니다."))
+            }
+            .onFailure {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("다운로드에 실패하였습니다."))
+            }
     }
 }

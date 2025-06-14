@@ -1,7 +1,11 @@
 package com.tgyuu.sync.graph.main.contract
 
 import com.tgyuu.common.base.UiState
+import java.time.ZonedDateTime
 
 data class SyncMainState(
+    val isLoading: Boolean = true,
     val uuid: String = "",
+    val localLastSyncedAt: ZonedDateTime? = null,
+    val serverLastUpdatedAt: ZonedDateTime? = null,
 ) : UiState

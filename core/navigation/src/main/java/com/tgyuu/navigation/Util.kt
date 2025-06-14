@@ -19,8 +19,6 @@ private val BOTTOM_BAR_HIDDEN_ROUTES = setOf(
     MemoGraph.AddMemoRoute::class,
     MemoGraph.EditMemoRoute::class,
     SyncGraph.SyncMainRoute::class,
-    SyncGraph.UploadRoute::class,
-    SyncGraph.DownloadRoute::class,
     SyncGraph.LinkRoute::class,
 )
 
@@ -31,8 +29,6 @@ private val ROOT_ROUTES = setOf(
 
 private val NETWORK_REQUIRED_ROUTES = setOf(
     SyncGraph.SyncMainRoute::class,
-    SyncGraph.UploadRoute::class,
-    SyncGraph.DownloadRoute::class,
     SyncGraph.LinkRoute::class,
 )
 

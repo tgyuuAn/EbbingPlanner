@@ -2,12 +2,43 @@ package com.tgyuu.data.repository
 
 import com.tgyuu.datastore.datasource.sync.LocalSyncDataSource
 import com.tgyuu.domain.repository.SyncRepository
+import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.network.model.GetSyncInfoResponse
+import com.tgyuu.network.source.SyncDataSource
 import kotlinx.coroutines.flow.first
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class SyncRepositoryImpl @Inject constructor(
+    private val todoRepository: TodoRepository,
+    private val syncDataSource: SyncDataSource,
     private val localSyncDataSource: LocalSyncDataSource,
 ) : SyncRepository {
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
     override suspend fun getUUID(): String = localSyncDataSource.uuid.first()
+    override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> =
+        syncDataSource.getSyncInfo(getUUID())
+            .map(GetSyncInfoResponse::toDomain)
+
+    override suspend fun getLocalSyncedAt(): ZonedDateTime? = localSyncDataSource.syncedAt.first()
+
+    override suspend fun uploadData(): Result<ZonedDateTime> {
+        val uuid = getUUID()
+        val schedules = todoRepository.loadSchedules()
+        val repeatCycles = todoRepository.loadRepeatCycles()
+        val tags = todoRepository.loadTags()
+
+        return syncDataSource.uploadData(
+            uuid = uuid,
+            schedules = schedules,
+            repeatCycles = repeatCycles,
+            tags = tags,
+        ).onSuccess {
+            localSyncDataSource.setSyncedAt(it)
+        }
+    }
+
+    override suspend fun downloadData(): Result<ZonedDateTime> {
+        return Result.success(ZonedDateTime.now())
+    }
 }

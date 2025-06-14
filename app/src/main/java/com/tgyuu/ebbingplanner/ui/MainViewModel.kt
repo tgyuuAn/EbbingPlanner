@@ -3,6 +3,7 @@ package com.tgyuu.ebbingplanner.ui
 import androidx.lifecycle.ViewModel
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
+    private val syncRepository: SyncRepository,
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
 ) : ViewModel() {
@@ -38,6 +40,6 @@ class MainViewModel @Inject constructor(
     }
 
     internal suspend fun ensureUUIDExists() {
-        configRepository.ensureUUIDExists()
+        syncRepository.ensureUUIDExists()
     }
 }

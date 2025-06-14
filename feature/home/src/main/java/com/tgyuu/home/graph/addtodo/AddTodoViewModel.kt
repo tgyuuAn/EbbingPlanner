@@ -67,7 +67,7 @@ class AddTodoViewModel @Inject constructor(
     }
 
     internal fun loadTags() = viewModelScope.launch {
-        val loadedTagList = todoRepository.loadTagList()
+        val loadedTagList = todoRepository.loadTags()
         setState { copy(tagList = loadedTagList) }
     }
 

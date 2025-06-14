@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.tgyuu.datastore.datasource.sync.LocalSyncDataSource
+import com.tgyuu.datastore.datasource.sync.LocalSyncDataSourceImpl
 import com.tgyuu.datastore.datasource.user.LocalUserConfigDataSource
 import com.tgyuu.datastore.datasource.user.LocalUserConfigDataSourceImpl
 import dagger.Binds
@@ -48,4 +50,10 @@ abstract class DatastoreBindsModule {
     abstract fun bindsLocalUserConfigDataSource(
         localUserConfigDataSourceImpl: LocalUserConfigDataSourceImpl,
     ): LocalUserConfigDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindsLocalSyncDataSource(
+        localSyncDataSourceImpl: LocalSyncDataSourceImpl
+    ): LocalSyncDataSource
 }

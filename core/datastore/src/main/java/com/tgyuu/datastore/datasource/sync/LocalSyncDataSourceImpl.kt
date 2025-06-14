@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -15,6 +16,10 @@ class LocalSyncDataSourceImpl @Inject constructor(
     override val uuid: Flow<String>
         get() = dataStore.data
             .map { prefs -> prefs[UUID] ?: "INVALID" }
+
+    override val syncedAt: Flow<ZonedDateTime?>
+        get() = dataStore.data
+            .map { prefs -> prefs[SYNCEDED_AT]?.let { ZonedDateTime.parse(it) } }
 
     override suspend fun ensureUUIDExists() {
         dataStore.edit { prefs ->
@@ -29,7 +34,14 @@ class LocalSyncDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[UUID] = uuid }
     }
 
+    override suspend fun setSyncedAt(time: ZonedDateTime?) {
+        time?.let {
+            dataStore.edit { prefs -> prefs[SYNCEDED_AT] = time.toString() }
+        }
+    }
+
     companion object {
         private val UUID = stringPreferencesKey("UUID")
+        private val SYNCEDED_AT = stringPreferencesKey("UPLOADED_AT")
     }
 }
