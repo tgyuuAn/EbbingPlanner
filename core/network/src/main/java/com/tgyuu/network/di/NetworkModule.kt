@@ -6,6 +6,9 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.tgyuu.network.source.sync.SyncDataSource
+import com.tgyuu.network.source.sync.SyncDataSourceImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,3 +46,14 @@ annotation class Debug
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class Release
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class NetworkBindModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindSyncDataSource(
+        syncDataSourceImpl: SyncDataSourceImpl
+    ): SyncDataSource
+}

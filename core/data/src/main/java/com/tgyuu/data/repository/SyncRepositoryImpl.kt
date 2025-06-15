@@ -11,7 +11,7 @@ import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.network.model.sync.GetSyncInfoResponse
-import com.tgyuu.network.source.SyncDataSource
+import com.tgyuu.network.source.sync.SyncDataSource
 import com.tgyuu.network.toDate
 import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async

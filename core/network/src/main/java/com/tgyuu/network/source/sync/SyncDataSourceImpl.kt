@@ -1,4 +1,4 @@
-package com.tgyuu.network.source
+package com.tgyuu.network.source.sync
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue.serverTimestamp
@@ -25,10 +25,10 @@ import java.time.ZonedDateTime
 import java.util.Date
 import javax.inject.Inject
 
-class SyncDataSource @Inject constructor(
+class SyncDataSourceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-) {
-    suspend fun getSyncInfo(uuid: String): Result<GetSyncInfoResponse> {
+) : SyncDataSource {
+    override suspend fun getSyncInfo(uuid: String): Result<GetSyncInfoResponse> {
         val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
         return userDoc.collection(COLLECTION_INFO)
@@ -37,7 +37,7 @@ class SyncDataSource @Inject constructor(
             .toResult<GetSyncInfoResponse>()
     }
 
-    suspend fun uploadData(
+    override suspend fun uploadData(
         uuid: String,
         schedules: List<TodoScheduleForSync>,
         infos: List<TodoInfoForSync>,
@@ -101,7 +101,7 @@ class SyncDataSource @Inject constructor(
         }
     }
 
-    suspend fun downloadData(
+    override suspend fun downloadData(
         uuid: String,
         lastSyncTime: Date,
     ): Result<GetDownloadDataResponse> = coroutineScope {

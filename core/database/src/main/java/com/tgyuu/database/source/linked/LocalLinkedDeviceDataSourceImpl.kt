@@ -11,9 +11,6 @@ class LocalLinkedDeviceDataSourceImpl @Inject constructor(
     override suspend fun insertLinkedDevice(linkedDevice: LinkedDevice): Long =
         linkedDevicesDao.insertLinkedDevice(linkedDevice.toEntity())
 
-    override suspend fun updateLinkedDevice(linkedDevice: LinkedDevice) =
-        linkedDevicesDao.updateLinkedDevice(linkedDevice.toEntity())
-
     override suspend fun deleteLinkedDevice(linkedDevice: LinkedDevice) =
         linkedDevicesDao.deleteLinkedDevice(linkedDevice.toEntity())
 }
