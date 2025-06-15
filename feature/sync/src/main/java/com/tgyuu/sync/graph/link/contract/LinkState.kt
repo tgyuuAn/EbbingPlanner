@@ -4,4 +4,7 @@ import com.tgyuu.common.base.UiState
 
 data class LinkState(
     val uuid: String = "",
-) : UiState
+    val code: String = "",
+) : UiState {
+    val isGenerateButtonEnabled = false
+}

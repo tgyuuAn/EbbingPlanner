@@ -415,7 +415,7 @@ private fun SyncUpBody(
 }
 
 @Composable
-internal fun DescriptionBody() {
+private fun DescriptionBody() {
     Text(
         text = buildAnnotatedString {
             append("- 동기화는 기기의 변경 사항을 서버에 반영하고, 서버의 최신 데이터를 가져오는  양방향 동기화 방식입니다.\n")
