@@ -5,7 +5,7 @@ import java.time.ZonedDateTime
 
 interface LocalSyncDataSource {
     val uuid: Flow<String>
-    val linkedUuid: Flow<String>
+    val linkedUuid: Flow<String?>
     val lastSyncTime: Flow<ZonedDateTime?>
     suspend fun ensureUUIDExists()
     suspend fun setUuid(uuid: String)

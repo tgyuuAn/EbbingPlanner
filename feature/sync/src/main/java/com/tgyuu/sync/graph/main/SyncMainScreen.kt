@@ -53,7 +53,8 @@ internal fun SyncMainRoute(
         state = state,
         onBackClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
         onSyncUpClick = { viewModel.onIntent(SyncIntent.OnSyncUpClick) },
-        onLinkClick = { viewModel.onIntent(SyncIntent.OnLinkClick) },
+        onConnectClick = { viewModel.onIntent(SyncIntent.OnLinkClick) },
+        onDisconnectClick = {},
     )
 }
 
@@ -62,7 +63,8 @@ internal fun SyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
     onSyncUpClick: () -> Unit,
-    onLinkClick: () -> Unit,
+    onConnectClick: () -> Unit,
+    onDisconnectClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDialog by remember { mutableStateOf(false) }
@@ -83,7 +85,8 @@ internal fun SyncMainScreen(
             state = state,
             onBackClick = onBackClick,
             onSyncUpClick = { isShowDialog = true },
-            onLinkClick = onLinkClick,
+            onConnectClick = onConnectClick,
+            onDisconnectClick = onDisconnectClick,
             modifier = modifier,
         )
     } else {
@@ -91,7 +94,7 @@ internal fun SyncMainScreen(
             state = state,
             onBackClick = onBackClick,
             onSyncUpClick = { isShowDialog = true },
-            onLinkClick = onLinkClick,
+            onLinkClick = onConnectClick,
             modifier = modifier,
         )
     }
@@ -102,7 +105,8 @@ private fun PhoneSyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
     onSyncUpClick: () -> Unit,
-    onLinkClick: () -> Unit,
+    onConnectClick: () -> Unit,
+    onDisconnectClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -120,15 +124,26 @@ private fun PhoneSyncMainScreen(
                 modifier = Modifier.padding(bottom = 20.dp),
             )
 
-            UuidBody(
-                uuid = state.uuid,
-                lastSyncedAt = state.localLastSyncedAt,
-                lastUpdatedAt = state.serverLastUpdatedAt,
+            if (state.linkedUuid != null) {
+                LinkedUuidBody(
+                    linkedUuid = state.linkedUuid,
+                    lastSyncedAt = state.localLastSyncedAt,
+                    lastUpdatedAt = state.serverLastUpdatedAt,
+                )
+            } else {
+                UuidBody(
+                    uuid = state.uuid,
+                    lastSyncedAt = state.localLastSyncedAt,
+                    lastUpdatedAt = state.serverLastUpdatedAt,
+                )
+            }
+
+            SyncUpBody(
+                isConnected = state.linkedUuid != null,
+                onSyncUpClick = onSyncUpClick,
+                onConnectClick = onConnectClick,
+                onDisconnectClick = onDisconnectClick,
             )
-
-            SyncUpBody(onSyncUpClick = onSyncUpClick)
-
-            RegisterBody(onRegisterClick = onLinkClick)
 
             DescriptionBody()
         }
@@ -156,43 +171,6 @@ private fun TabletSyncMainScreen(
             )
         }
     }
-}
-
-@Composable
-private fun SyncUpBody(onSyncUpClick: () -> Unit) {
-    Text(
-        text = "데이터 가져오기 / 보내기",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 17.dp)
-            .clickable { onSyncUpClick() },
-    ) {
-        Text(
-            text = "데이터 보내기 및 데이터 불러오기",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
-            modifier = Modifier.weight(1f),
-        )
-
-        Image(
-            painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
-            modifier = Modifier.padding(start = 4.dp),
-        )
-    }
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.light2,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
 }
 
 @Composable
@@ -261,9 +239,79 @@ internal fun UuidBody(
 }
 
 @Composable
-private fun RegisterBody(onRegisterClick: () -> Unit) {
+internal fun LinkedUuidBody(
+    linkedUuid: String,
+    lastSyncedAt: ZonedDateTime?,
+    lastUpdatedAt: ZonedDateTime?,
+) {
     Text(
-        text = "연동하기",
+        text = "연동 되어있는 ID :",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = linkedUuid,
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    Text(
+        text = "해당 기기의 마지막 업데이트 시점 : ",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    Text(
+        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastUpdatedAt?.toLocalDateTime()?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+private fun SyncUpBody(
+    isConnected: Boolean,
+    onSyncUpClick: () -> Unit,
+    onConnectClick: () -> Unit,
+    onDisconnectClick: () -> Unit,
+) {
+    Text(
+        text = "데이터 동기화 / 다른 기기와 연동",
         style = EbbingTheme.typography.bodySM,
         color = EbbingTheme.colors.dark2,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -274,10 +322,10 @@ private fun RegisterBody(onRegisterClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 17.dp)
-            .clickable { onRegisterClick() },
+            .clickable { onSyncUpClick() },
     ) {
         Text(
-            text = "다른 기기와 연동하기",
+            text = "서버와 내 기기 동기화하기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -288,6 +336,50 @@ private fun RegisterBody(onRegisterClick: () -> Unit) {
             contentDescription = "상세 내용",
             modifier = Modifier.padding(start = 4.dp),
         )
+    }
+
+    if (isConnected) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 17.dp)
+                .clickable { onDisconnectClick() },
+        ) {
+            Text(
+                text = "연동 해제하기",
+                style = EbbingTheme.typography.headingSSB,
+                color = EbbingTheme.colors.dark1,
+                modifier = Modifier.weight(1f),
+            )
+
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = "상세 내용",
+                modifier = Modifier.padding(start = 4.dp),
+            )
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 17.dp)
+                .clickable { onConnectClick() },
+        ) {
+            Text(
+                text = "다른 기기와 연동하기",
+                style = EbbingTheme.typography.headingSSB,
+                color = EbbingTheme.colors.dark1,
+                modifier = Modifier.weight(1f),
+            )
+
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = "상세 내용",
+                modifier = Modifier.padding(start = 4.dp),
+            )
+        }
     }
 
     HorizontalDivider(

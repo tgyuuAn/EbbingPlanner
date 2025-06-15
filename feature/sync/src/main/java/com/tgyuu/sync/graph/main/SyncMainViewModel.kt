@@ -46,6 +46,7 @@ class SyncMainViewModel @Inject constructor(
         }
 
         uuidJob.join()
+        linkedUuidJob.join()
         serverLastUpdatedAtJob.join()
         localLastSyncedAtJob.join()
     }

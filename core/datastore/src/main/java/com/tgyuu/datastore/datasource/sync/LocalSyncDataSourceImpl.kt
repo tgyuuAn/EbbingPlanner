@@ -17,9 +17,9 @@ class LocalSyncDataSourceImpl @Inject constructor(
         get() = dataStore.data
             .map { prefs -> prefs[UUID] ?: "INVALID" }
 
-    override val linkedUuid: Flow<String>
+    override val linkedUuid: Flow<String?>
         get() = dataStore.data
-            .map { prefs -> prefs[LINKED_UUID] ?: "INVALID" }
+            .map { prefs -> prefs[LINKED_UUID] }
 
 
     override val lastSyncTime: Flow<ZonedDateTime?>
