@@ -2,7 +2,7 @@ package com.tgyuu.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.tgyuu.domain.model.LinkedDevice
+import com.tgyuu.domain.model.sync.LinkedDevice
 import java.time.LocalDate
 
 @Entity(tableName = "linked_device")

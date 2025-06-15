@@ -4,14 +4,17 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue.serverTimestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.tgyuu.common.suspendRunCatching
-import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.network.model.GetDownloadDataResponse
-import com.tgyuu.network.model.GetSyncInfoResponse
-import com.tgyuu.network.model.TodoScheduleDto
-import com.tgyuu.network.model.TodoTagDto
-import com.tgyuu.network.model.toDto
+import com.tgyuu.domain.model.sync.RepeatCycleForSync
+import com.tgyuu.domain.model.sync.TodoInfoForSync
+import com.tgyuu.domain.model.sync.TodoScheduleForSync
+import com.tgyuu.domain.model.sync.TodoTagForSync
+import com.tgyuu.network.model.sync.GetDownloadDataResponse
+import com.tgyuu.network.model.sync.GetSyncInfoResponse
+import com.tgyuu.network.model.sync.RepeatCycleDto
+import com.tgyuu.network.model.sync.TodoInfoDto
+import com.tgyuu.network.model.sync.TodoScheduleDto
+import com.tgyuu.network.model.sync.TodoTagDto
+import com.tgyuu.network.model.sync.toDto
 import com.tgyuu.network.toResult
 import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async
@@ -35,9 +38,10 @@ class SyncDataSource @Inject constructor(
 
     suspend fun uploadData(
         uuid: String,
-        schedules: List<TodoSchedule>,
-        repeatCycles: List<RepeatCycle>,
-        tags: List<TodoTag>,
+        schedules: List<TodoScheduleForSync>,
+        infos: List<TodoInfoForSync>,
+        repeatCycles: List<RepeatCycleForSync>,
+        tags: List<TodoTagForSync>,
     ): Result<ZonedDateTime> = coroutineScope {
         suspendRunCatching {
             val userDoc = firestore.collection("users").document(uuid)
@@ -47,6 +51,15 @@ class SyncDataSource @Inject constructor(
                     userDoc.collection("schedules")
                         .document(schedule.id.toString())
                         .set(schedule.toDto())
+                        .await()
+                }
+            }
+
+            val todoInfosJob = launch {
+                infos.forEach { info ->
+                    userDoc.collection("todoInfos")
+                        .document(info.id.toString())
+                        .set(info.toDto())
                         .await()
                 }
             }
@@ -71,6 +84,7 @@ class SyncDataSource @Inject constructor(
 
             repeatCyclesJob.join()
             tagsJob.join()
+            todoInfosJob.join()
             schedulesJob.join()
 
             val infoDocRef = userDoc.collection("info").document("0")
@@ -97,12 +111,17 @@ class SyncDataSource @Inject constructor(
 
             val repeatCyclesDeferred = async {
                 val snapshot = userDoc.collection("repeatCycles").get().await()
-                snapshot.documents.mapNotNull { it.toObject(RepeatCycle::class.java) }
+                snapshot.documents.mapNotNull { it.toObject(RepeatCycleDto::class.java) }
             }
 
             val tagsDeferred = async {
                 val snapshot = userDoc.collection("tags").get().await()
                 snapshot.documents.mapNotNull { it.toObject(TodoTagDto::class.java) }
+            }
+
+            val todoInfosDeferred = async {
+                val snapshot = userDoc.collection("todoInfos").get().await()
+                snapshot.documents.mapNotNull { it.toObject(TodoInfoDto::class.java) }
             }
 
             val infoSnapshotDeferred = async {
@@ -111,9 +130,11 @@ class SyncDataSource @Inject constructor(
 
             GetDownloadDataResponse(
                 schedules = schedulesDeferred.await(),
+                todoInfos = todoInfosDeferred.await(),
                 repeatCycles = repeatCyclesDeferred.await(),
                 tags = tagsDeferred.await(),
-                syncedAt = infoSnapshotDeferred.await().getTimestamp("lastUpdatedAt") ?: Timestamp.now()
+                syncedAt = infoSnapshotDeferred.await().getTimestamp("lastUpdatedAt")
+                    ?: Timestamp.now()
             )
         }
     }

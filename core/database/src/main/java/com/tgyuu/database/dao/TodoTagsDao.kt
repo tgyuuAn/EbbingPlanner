@@ -8,29 +8,42 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.tgyuu.database.model.TodoTagEntity
+import java.time.LocalDateTime
 
 @Dao
 interface TodoTagsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTag(tag: TodoTagEntity): Long
 
-    @Query("UPDATE todo_info SET tagId = 1 WHERE tagId = :tagId")
-    suspend fun resetTagId(tagId: Int)
+    @Query("UPDATE todo_info SET tagId = 1, updatedAt = :updatedAt WHERE tagId = :tagId")
+    suspend fun resetTagId(tagId: Int, updatedAt: LocalDateTime)
 
-    @Query("UPDATE todo_tag SET isDeleted = 1, isSynced = 0 WHERE id = :tagId")
-    suspend fun softDeleteTag(tagId: Int)
+    @Query("UPDATE todo_tag SET isDeleted = 1, updatedAt = :updatedAt WHERE id = :tagId")
+    suspend fun softDeleteTag(tagId: Int, updatedAt: LocalDateTime)
 
     @Delete
     suspend fun hardDeleteTag(tag: TodoTagEntity)
 
     @Transaction
     suspend fun softDeleteTagWithReset(todoTag: TodoTagEntity) {
-        resetTagId(todoTag.id)
-        softDeleteTag(todoTag.id)
+        val now = LocalDateTime.now()
+        resetTagId(todoTag.id, now)
+        softDeleteTag(todoTag.id, now)
     }
 
-    @Update
-    suspend fun updateTag(tag: TodoTagEntity)
+    @Query(
+        """
+        UPDATE todo_tag
+        SET name = :name, color = :color, updatedAt = :updatedAt
+        WHERE id = :id AND isDeleted = 0
+        """
+    )
+    suspend fun updateTag(
+        id: Int,
+        name: String,
+        color: Int,
+        updatedAt: LocalDateTime,
+    )
 
     @Query(value = "SELECT * FROM todo_tag WHERE isDeleted = 0")
     suspend fun getTags(): List<TodoTagEntity>

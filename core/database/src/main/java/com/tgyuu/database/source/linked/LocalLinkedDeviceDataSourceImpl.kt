@@ -2,7 +2,7 @@ package com.tgyuu.database.source.linked
 
 import com.tgyuu.database.dao.LinkedDevicesDao
 import com.tgyuu.database.model.toEntity
-import com.tgyuu.domain.model.LinkedDevice
+import com.tgyuu.domain.model.sync.LinkedDevice
 import javax.inject.Inject
 
 class LocalLinkedDeviceDataSourceImpl @Inject constructor(

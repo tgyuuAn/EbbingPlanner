@@ -160,6 +160,7 @@ class EditTodoViewModel @Inject constructor(
         )
 
         todoRepository.updateTodo(newSchedule)
+        todoRepository.updateTodoInfo(newSchedule)
         val (hour, minute) = configRepository.getAlarmTime()
 
         currentState.originSchedule?.date?.let { originDate ->

@@ -1,4 +1,4 @@
-package com.tgyuu.network.model
+package com.tgyuu.network.model.sync
 
 import com.google.firebase.Timestamp
 import com.tgyuu.network.toZonedDateTimeOrNull

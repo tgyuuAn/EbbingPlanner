@@ -5,6 +5,7 @@ import com.tgyuu.database.dao.RepeatCyclesDao
 import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.RepeatCycle
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class LocalRepeatCycleDataSourceImpl @Inject constructor(
@@ -15,7 +16,10 @@ class LocalRepeatCycleDataSourceImpl @Inject constructor(
 
     override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) {
         val json = EbbingConverters().fromIntList(repeatCycle.intervals)
-        repeatCyclesDao.updateRepeatCycle(repeatCycle.id, json!!)
+        repeatCyclesDao.updateRepeatCycle(
+            id = repeatCycle.id,
+            intervalsJson = json!!,
+        )
     }
 
     override suspend fun softDeleteRepeatCycle(repeatCycle: RepeatCycle) =

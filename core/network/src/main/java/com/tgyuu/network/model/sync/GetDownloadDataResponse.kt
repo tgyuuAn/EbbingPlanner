@@ -1,11 +1,11 @@
-package com.tgyuu.network.model
+package com.tgyuu.network.model.sync
 
 import com.google.firebase.Timestamp
-import com.tgyuu.domain.model.RepeatCycle
 
 data class GetDownloadDataResponse(
     val schedules: List<TodoScheduleDto> = emptyList(),
-    val repeatCycles: List<RepeatCycle> = emptyList(),
+    val todoInfos: List<TodoInfoDto> = emptyList(),
+    val repeatCycles: List<RepeatCycleDto> = emptyList(),
     val tags: List<TodoTagDto> = emptyList(),
     val syncedAt: Timestamp? = null,
 )

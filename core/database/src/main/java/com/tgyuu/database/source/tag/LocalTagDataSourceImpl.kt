@@ -4,6 +4,7 @@ import com.tgyuu.database.dao.TodoTagsDao
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoTag
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class LocalTagDataSourceImpl @Inject constructor(
@@ -15,7 +16,12 @@ class LocalTagDataSourceImpl @Inject constructor(
         color: Int,
     ) = todoTagsDao.insertTag(TodoTagEntity(name = name, color = color))
 
-    override suspend fun updateTag(tag: TodoTag) = todoTagsDao.updateTag(tag.toEntity())
+    override suspend fun updateTag(tag: TodoTag) = todoTagsDao.updateTag(
+        id = tag.id,
+        name = tag.name,
+        color = tag.color,
+        updatedAt = LocalDateTime.now(),
+    )
 
     override suspend fun softDeleteTag(tag: TodoTag) {
         todoTagsDao.softDeleteTagWithReset(tag.toEntity())

@@ -1,25 +1,24 @@
-package com.tgyuu.network.model
+package com.tgyuu.network.model.sync
 
-import com.tgyuu.domain.model.TodoSchedule
+import com.google.firebase.firestore.PropertyName
+import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.network.toDate
 import com.tgyuu.network.toLocalDate
+import com.tgyuu.network.toLocalDateTime
 import java.util.Date
 
 data class TodoScheduleDto(
     val id: Int,
     val infoId: Int,
-    val title: String,
-    val tagId: Int,
-    val name: String,
-    val color: Int,
     val date: Date,
     val memo: String,
     val priority: Int,
-    val isDone: Boolean,
+    @PropertyName("done") val isDone: Boolean,
     val createdAt: Date,
-    val infoCreatedAt: Date
+    @PropertyName("deleted") val isDeleted: Boolean,
+    val updatedAt: Date,
 ) {
-    fun toDomain(): TodoSchedule = TodoSchedule(
+    fun toDomain(): TodoScheduleForSync = TodoScheduleForSync(
         id = id,
         infoId = infoId,
         date = date.toLocalDate(),
@@ -27,25 +26,19 @@ data class TodoScheduleDto(
         priority = priority,
         isDone = isDone,
         createdAt = createdAt.toLocalDate(),
-        title = title,
-        tagId = tagId,
-        name = name,
-        color = color,
-        infoCreatedAt = infoCreatedAt.toLocalDate(),
+        isDeleted = isDeleted,
+        updatedAt = updatedAt.toLocalDateTime(),
     )
 }
 
-fun TodoSchedule.toDto(): TodoScheduleDto = TodoScheduleDto(
+fun TodoScheduleForSync.toDto(): TodoScheduleDto = TodoScheduleDto(
     id = id,
     infoId = infoId,
-    title = title,
-    tagId = tagId,
-    name = name,
-    color = color,
     date = date.toDate(),
     memo = memo,
     priority = priority,
     isDone = isDone,
     createdAt = createdAt.toDate(),
-    infoCreatedAt = infoCreatedAt.toDate()
+    isDeleted = isDeleted,
+    updatedAt = updatedAt.toDate(),
 )

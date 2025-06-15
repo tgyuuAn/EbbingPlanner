@@ -9,6 +9,10 @@ import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.domain.model.sync.RepeatCycleForSync
+import com.tgyuu.domain.model.sync.TodoInfoForSync
+import com.tgyuu.domain.model.sync.TodoScheduleForSync
+import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -95,6 +99,9 @@ class TodoRepositoryImpl @Inject constructor(
 
     override suspend fun loadTag(id: Int): TodoTag = localTagDataSource.getTag(id).toDomain()
 
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
+        localTodoDataSource.updateTodoInfo(todoSchedule)
+
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =
         localTodoDataSource.updateTodo(todoSchedule)
 
@@ -103,4 +110,20 @@ class TodoRepositoryImpl @Inject constructor(
 
     override suspend fun updateTag(todoTag: TodoTag) = localTagDataSource.updateTag(todoTag)
     override suspend fun deleteTag(todoTag: TodoTag) = localTagDataSource.softDeleteTag(todoTag)
+
+    override suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun loadTagsForSync(): List<TodoTagForSync> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun loadRepeatCyclesForSync(): List<RepeatCycleForSync> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun loadTodoInfosForSync(): List<TodoInfoForSync> {
+        TODO("Not yet implemented")
+    }
 }

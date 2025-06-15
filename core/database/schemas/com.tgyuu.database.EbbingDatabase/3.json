@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "ca17bdb085c259848d7f03ebd3167c5b",
+    "identityHash": "fb47eb9b70a22c74836696f6ab394f6d",
     "entities": [
       {
         "tableName": "todo_tag",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL, `createdAt` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL, `createdAt` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `updatedAt` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -39,9 +39,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "isSynced",
-            "columnName": "isSynced",
-            "affinity": "INTEGER",
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -54,7 +54,7 @@
       },
       {
         "tableName": "schedule",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `infoId` INTEGER NOT NULL, `date` TEXT NOT NULL, `memo` TEXT NOT NULL, `priority` INTEGER NOT NULL, `isDone` INTEGER NOT NULL, `createdAt` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, FOREIGN KEY(`infoId`) REFERENCES `todo_info`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `infoId` INTEGER NOT NULL, `date` TEXT NOT NULL, `memo` TEXT NOT NULL, `priority` INTEGER NOT NULL, `isDone` INTEGER NOT NULL, `createdAt` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `updatedAt` TEXT NOT NULL, FOREIGN KEY(`infoId`) REFERENCES `todo_info`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -105,9 +105,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "isSynced",
-            "columnName": "isSynced",
-            "affinity": "INTEGER",
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -145,7 +145,7 @@
       },
       {
         "tableName": "todo_info",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `tagId` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `createdAt` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, FOREIGN KEY(`tagId`) REFERENCES `todo_tag`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `tagId` INTEGER NOT NULL, `createdAt` TEXT NOT NULL, `updatedAt` TEXT NOT NULL, FOREIGN KEY(`tagId`) REFERENCES `todo_tag`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -166,27 +166,15 @@
             "notNull": true
           },
           {
-            "fieldPath": "priority",
-            "columnName": "priority",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "createdAt",
             "columnName": "createdAt",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "isDeleted",
-            "columnName": "isDeleted",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isSynced",
-            "columnName": "isSynced",
-            "affinity": "INTEGER",
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -223,7 +211,7 @@
       },
       {
         "tableName": "repeat_cycle",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `intervals` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `intervals` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `updatedAt` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -244,9 +232,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "isSynced",
-            "columnName": "isSynced",
-            "affinity": "INTEGER",
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -290,7 +278,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ca17bdb085c259848d7f03ebd3167c5b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fb47eb9b70a22c74836696f6ab394f6d')"
     ]
   }
 }

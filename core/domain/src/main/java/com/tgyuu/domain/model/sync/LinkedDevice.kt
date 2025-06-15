@@ -1,4 +1,4 @@
-package com.tgyuu.domain.model
+package com.tgyuu.domain.model.sync
 
 import java.time.LocalDate
 

@@ -5,6 +5,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Date
@@ -19,6 +20,9 @@ fun Timestamp?.toZonedDateTimeOrNull(): ZonedDateTime? {
 
 fun LocalDate.toDate(): Date = Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
 fun Date.toLocalDate(): LocalDate = this.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+fun LocalDateTime.toDate(): Date = Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
+fun Date.toLocalDateTime(): LocalDateTime =
+    this.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
 
 // FireStore CallBack을 SuspendCancellableCoroutine으로 감싼 뒤, Result<T>로 래핑
 suspend inline fun <reified T> Task<DocumentSnapshot>.toResult(): Result<T> =

@@ -6,6 +6,7 @@ import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoSchedule
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class LocalTodoDataSourceImpl @Inject constructor(
@@ -43,7 +44,20 @@ class LocalTodoDataSourceImpl @Inject constructor(
     )
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =
-        todoWithSchedulesDao.updateTodoSchedules(todoSchedule)
+        todoWithSchedulesDao.updateSchedule(
+            id = todoSchedule.id,
+            date = todoSchedule.date,
+            memo = todoSchedule.memo,
+            priority = todoSchedule.priority,
+            isDone = todoSchedule.isDone,
+        )
+
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
+        todoWithSchedulesDao.updateInfo(
+            id = todoSchedule.infoId,
+            title = todoSchedule.title,
+            tagId = todoSchedule.tagId,
+        )
 
     override suspend fun softDeleteTodo(todoSchedule: TodoSchedule) =
         schedulesDao.softDeleteSchedule(todoSchedule.toEntity().id)

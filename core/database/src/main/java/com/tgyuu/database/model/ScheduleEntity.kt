@@ -5,7 +5,9 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity(
     tableName = "schedule",
@@ -28,7 +30,7 @@ data class ScheduleEntity(
     val isDone: Boolean = false,
     val createdAt: LocalDate = LocalDate.now(),
     val isDeleted: Boolean = false,
-    val isSynced: Boolean = false,
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
 )
 
 fun TodoSchedule.toEntity() = ScheduleEntity(
@@ -39,4 +41,16 @@ fun TodoSchedule.toEntity() = ScheduleEntity(
     priority = this.priority,
     isDone = this.isDone,
     createdAt = this.createdAt,
+)
+
+fun ScheduleEntity.toSyncModel(): TodoScheduleForSync = TodoScheduleForSync(
+    id = this.id,
+    infoId = this.infoId,
+    date = this.date,
+    memo = this.memo,
+    priority = this.priority,
+    isDone = this.isDone,
+    createdAt = this.createdAt,
+    isDeleted = this.isDeleted,
+    updatedAt = this.updatedAt,
 )

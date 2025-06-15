@@ -19,6 +19,7 @@ interface LocalTodoDataSource {
         priority: Int?,
     )
 
+    suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)
     suspend fun hardDeleteTodo(todoSchedule: TodoSchedule)

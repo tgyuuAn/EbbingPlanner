@@ -6,14 +6,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.tgyuu.database.model.RepeatCycleEntity
+import java.time.LocalDateTime
 
 @Dao
 interface RepeatCyclesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertRepeatCycle(repeatCycle: RepeatCycleEntity): Long
 
-    @Query("UPDATE repeat_cycle SET isDeleted = 1, isSynced = 0 WHERE id = :id")
-    suspend fun softDeleteRepeatCycle(id: Int)
+    @Query("UPDATE repeat_cycle SET isDeleted = 1, updatedAt = :updatedAt WHERE id = :id")
+    suspend fun softDeleteRepeatCycle(id: Int, updatedAt: LocalDateTime = LocalDateTime.now())
 
     @Delete
     suspend fun hardDeleteRepeatCycle(repeatCycle: RepeatCycleEntity)
@@ -21,11 +22,11 @@ interface RepeatCyclesDao {
     @Query(
         """
         UPDATE repeat_cycle 
-        SET intervals = :intervalsJson, isSynced = 0 
+        SET intervals = :intervalsJson, updatedAt = :updatedAt
         WHERE id = :id AND isDeleted = 0
     """
     )
-    suspend fun updateRepeatCycle(id: Int, intervalsJson: String)
+    suspend fun updateRepeatCycle(id: Int, intervalsJson: String, updatedAt: LocalDateTime = LocalDateTime.now())
 
     @Query(value = "SELECT * FROM repeat_cycle WHERE isDeleted = 0")
     suspend fun getRepeatCycles(): List<RepeatCycleEntity>
