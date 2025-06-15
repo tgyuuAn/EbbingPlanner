@@ -3,10 +3,6 @@ package com.tgyuu.domain.repository
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
-import com.tgyuu.domain.model.sync.RepeatCycleForSync
-import com.tgyuu.domain.model.sync.TodoInfoForSync
-import com.tgyuu.domain.model.sync.TodoScheduleForSync
-import com.tgyuu.domain.model.sync.TodoTagForSync
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -50,9 +46,4 @@ interface TodoRepository {
 
     suspend fun updateTag(todoTag: TodoTag)
     suspend fun deleteTag(todoTag: TodoTag)
-
-    suspend fun loadSchedulesForSync(): List<TodoScheduleForSync>
-    suspend fun loadTagsForSync(): List<TodoTagForSync>
-    suspend fun loadRepeatCyclesForSync(): List<RepeatCycleForSync>
-    suspend fun loadTodoInfosForSync(): List<TodoInfoForSync>
 }

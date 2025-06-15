@@ -5,6 +5,7 @@ import com.tgyuu.database.dao.RepeatCyclesDao
 import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -28,9 +29,14 @@ class LocalRepeatCycleDataSourceImpl @Inject constructor(
     override suspend fun hardDeleteRepeatCycle(repeatCycle: RepeatCycle) =
         repeatCyclesDao.hardDeleteRepeatCycle(repeatCycle.toEntity())
 
+    override suspend fun hardDeleteAllRepeatCycles() = repeatCyclesDao.hardDeleteAllRepeatCycles()
+
     override suspend fun getRepeatCycles(): List<RepeatCycleEntity> =
         repeatCyclesDao.getRepeatCycles()
 
     override suspend fun getRepeatCycle(id: Int): RepeatCycleEntity =
         repeatCyclesDao.getRepeatCycle(id)
+
+    override suspend fun getRepeatCyclesForSync(lastSyncTime: LocalDateTime): List<RepeatCycleForSync> =
+        repeatCyclesDao.getRepeatCyclesForSync(lastSyncTime)
 }

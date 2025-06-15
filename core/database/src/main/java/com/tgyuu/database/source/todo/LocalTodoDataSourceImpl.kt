@@ -4,6 +4,8 @@ import com.tgyuu.database.dao.SchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.model.sync.TodoInfoForSync
+import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -64,4 +66,12 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun hardDeleteTodo(todoSchedule: TodoSchedule) =
         schedulesDao.hardDeleteSchedule(todoSchedule.toEntity())
+
+    override suspend fun hardDeleteAllTodos() = schedulesDao.hardDeleteAllSchedule()
+
+    override suspend fun getSchedulesForSync(lastSyncTime: LocalDateTime): List<TodoScheduleForSync> =
+        schedulesDao.loadAllSchedulesForSync(lastSyncTime)
+
+    override suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync> =
+        schedulesDao.loadAllTodoInfosForSync(lastSyncTime)
 }

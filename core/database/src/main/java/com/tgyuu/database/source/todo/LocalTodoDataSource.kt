@@ -1,8 +1,11 @@
 package com.tgyuu.database.source.todo
 
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.model.sync.TodoInfoForSync
+import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface LocalTodoDataSource {
     suspend fun getSchedules(): List<TodoSchedule>
@@ -23,4 +26,8 @@ interface LocalTodoDataSource {
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)
     suspend fun hardDeleteTodo(todoSchedule: TodoSchedule)
+    suspend fun hardDeleteAllTodos()
+
+    suspend fun getSchedulesForSync(lastSyncTime: LocalDateTime): List<TodoScheduleForSync>
+    suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync>
 }

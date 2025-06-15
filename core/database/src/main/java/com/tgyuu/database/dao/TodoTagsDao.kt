@@ -6,8 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.tgyuu.database.model.TodoTagEntity
+import com.tgyuu.domain.model.sync.TodoTagForSync
 import java.time.LocalDateTime
 
 @Dao
@@ -23,6 +23,9 @@ interface TodoTagsDao {
 
     @Delete
     suspend fun hardDeleteTag(tag: TodoTagEntity)
+
+    @Query("DELETE FROM todo_tag WHERE isDeleted = 1")
+    suspend fun hardDeleteAllTags()
 
     @Transaction
     suspend fun softDeleteTagWithReset(todoTag: TodoTagEntity) {
@@ -50,4 +53,7 @@ interface TodoTagsDao {
 
     @Query(value = "SELECT * FROM todo_tag WHERE id = :id AND isDeleted = 0")
     suspend fun getTag(id: Int): TodoTagEntity
+
+    @Query(value = "SELECT * FROM todo_tag WHERE updatedAt > :lastSyncTime")
+    suspend fun getTagsForSync(lastSyncTime: LocalDateTime): List<TodoTagForSync>
 }

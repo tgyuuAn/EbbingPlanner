@@ -17,7 +17,7 @@ class LocalSyncDataSourceImpl @Inject constructor(
         get() = dataStore.data
             .map { prefs -> prefs[UUID] ?: "INVALID" }
 
-    override val syncedAt: Flow<ZonedDateTime?>
+    override val lastSyncTime: Flow<ZonedDateTime?>
         get() = dataStore.data
             .map { prefs -> prefs[SYNCEDED_AT]?.let { ZonedDateTime.parse(it) } }
 
