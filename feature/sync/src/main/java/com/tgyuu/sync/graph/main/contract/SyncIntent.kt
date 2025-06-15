@@ -4,7 +4,6 @@ import com.tgyuu.common.base.UiIntent
 
 sealed interface SyncIntent : UiIntent {
     data object OnBackClick : SyncIntent
-    data object OnUploadClick : SyncIntent
-    data object OnDownloadClick : SyncIntent
+    data object OnSyncUpClick : SyncIntent
     data object OnLinkClick : SyncIntent
 }

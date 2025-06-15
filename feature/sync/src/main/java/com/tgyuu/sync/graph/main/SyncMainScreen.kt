@@ -36,8 +36,7 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
-import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncDialog
-import com.tgyuu.sync.graph.main.ui.dialog.DialogType
+import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncUpDialog
 import java.time.ZonedDateTime
 
 @Composable
@@ -53,8 +52,7 @@ internal fun SyncMainRoute(
     SyncMainScreen(
         state = state,
         onBackClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
-        onUploadClick = { viewModel.onIntent(SyncIntent.OnUploadClick) },
-        onDownloadClick = { viewModel.onIntent(SyncIntent.OnDownloadClick) },
+        onSyncUpClick = { viewModel.onIntent(SyncIntent.OnSyncUpClick) },
         onLinkClick = { viewModel.onIntent(SyncIntent.OnLinkClick) },
     )
 }
@@ -63,23 +61,17 @@ internal fun SyncMainRoute(
 internal fun SyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
-    onUploadClick: () -> Unit,
-    onDownloadClick: () -> Unit,
+    onSyncUpClick: () -> Unit,
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDialog by remember { mutableStateOf(false) }
-    var dialogType by remember { mutableStateOf(DialogType.UPLOAD) }
 
     if (isShowDialog) {
-        ConfirmSyncDialog(
-            dialogType = dialogType,
+        ConfirmSyncUpDialog(
             onDismissRequest = { isShowDialog = false },
             onAcceptClick = {
-                when (dialogType) {
-                    DialogType.UPLOAD -> onUploadClick()
-                    DialogType.DOWNLOAD -> onDownloadClick()
-                }
+                onSyncUpClick()
                 isShowDialog = false
             },
         )
@@ -90,14 +82,7 @@ internal fun SyncMainScreen(
         PhoneSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
-            onUploadClick = {
-                dialogType = DialogType.UPLOAD
-                isShowDialog = true
-            },
-            onDownloadClick = {
-                dialogType = DialogType.DOWNLOAD
-                isShowDialog = true
-            },
+            onSyncUpClick = { isShowDialog = true },
             onLinkClick = onLinkClick,
             modifier = modifier,
         )
@@ -105,14 +90,7 @@ internal fun SyncMainScreen(
         TabletSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
-            onUploadClick = {
-                dialogType = DialogType.UPLOAD
-                isShowDialog = true
-            },
-            onDownloadClick = {
-                dialogType = DialogType.DOWNLOAD
-                isShowDialog = true
-            },
+            onSyncUpClick = { isShowDialog = true },
             onLinkClick = onLinkClick,
             modifier = modifier,
         )
@@ -123,8 +101,7 @@ internal fun SyncMainScreen(
 private fun PhoneSyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
-    onUploadClick: () -> Unit,
-    onDownloadClick: () -> Unit,
+    onSyncUpClick: () -> Unit,
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -149,10 +126,7 @@ private fun PhoneSyncMainScreen(
                 lastUpdatedAt = state.serverLastUpdatedAt,
             )
 
-            UpDownLoadBody(
-                onUploadClick = onUploadClick,
-                onDownloadClick = onDownloadClick,
-            )
+            SyncUpBody(onSyncUpClick = onSyncUpClick)
 
             RegisterBody(onRegisterClick = onLinkClick)
 
@@ -165,8 +139,7 @@ private fun PhoneSyncMainScreen(
 private fun TabletSyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
-    onUploadClick: () -> Unit,
-    onDownloadClick: () -> Unit,
+    onSyncUpClick: () -> Unit,
     onLinkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -186,10 +159,7 @@ private fun TabletSyncMainScreen(
 }
 
 @Composable
-private fun UpDownLoadBody(
-    onUploadClick: () -> Unit,
-    onDownloadClick: () -> Unit,
-) {
+private fun SyncUpBody(onSyncUpClick: () -> Unit) {
     Text(
         text = "데이터 가져오기 / 보내기",
         style = EbbingTheme.typography.bodySM,
@@ -202,31 +172,10 @@ private fun UpDownLoadBody(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 17.dp)
-            .clickable { onUploadClick() },
+            .clickable { onSyncUpClick() },
     ) {
         Text(
-            text = "현재 기기 데이터를 서버에 저장",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
-            modifier = Modifier.weight(1f),
-        )
-
-        Image(
-            painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
-            modifier = Modifier.padding(start = 4.dp),
-        )
-    }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 17.dp)
-            .clickable { onDownloadClick() },
-    ) {
-        Text(
-            text = "서버 데이터를 이 기기로 불러오기",
+            text = "데이터 보내기 및 데이터 불러오기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -352,17 +301,18 @@ private fun RegisterBody(onRegisterClick: () -> Unit) {
 internal fun DescriptionBody() {
     Text(
         text = buildAnnotatedString {
-            append("- 업로드와 다운로드는 ")
+            append("- 동기화는 기기의 변경 사항을 서버에 반영하고, 서버의 최신 데이터를 가져오는  양방향 동기화 방식입니다.\n")
+            append("- ")
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("기존 데이터를 덮어쓰는")
+                append("오프라인에서 수정한 데이터")
             }
-            append(" 방식입니다. 신중히 진행해주세요.\n")
-            append("- 특히, ")
+            append("는 이 과정을 거쳐야 다른 기기와 공유됩니다.\n")
+            append("- 동기화 시 서로 다른 기기에서 수정한 내용이 있는 경우 ")
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("오프라인 중 수정한 데이터")
+                append("최근 수정된 데이터로 반영")
             }
-            append("는 업로드하지 않으면 서버에 반영되지 않습니다.\n")
-            append("- 동기화 전 최신 데이터를 어디에 보관 중인지 확인해주세요.")
+            append("됩니다.\n")
+            append("- 동기화 전 반드시 중요한 데이터를 백업하거나 최신 상태를 확인해주세요.")
         },
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.bodyMM,

@@ -31,6 +31,7 @@ class SyncRepositoryImpl @Inject constructor(
 ) : SyncRepository {
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
     override suspend fun getUUID(): String = localSyncDataSource.uuid.first()
+    override suspend fun getLinkedUUID(): String = localSyncDataSource.linkedUuid.first()
     override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> =
         syncDataSource.getSyncInfo(getUUID())
             .map(GetSyncInfoResponse::toDomain)
@@ -38,7 +39,7 @@ class SyncRepositoryImpl @Inject constructor(
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
         localSyncDataSource.lastSyncTime.first()
 
-    override suspend fun syncData(): Result<ZonedDateTime> = suspendRunCatching {
+    override suspend fun syncUpData(): Result<ZonedDateTime> = suspendRunCatching {
         downloadData().getOrThrow()
         uploadData().getOrThrow()
     }

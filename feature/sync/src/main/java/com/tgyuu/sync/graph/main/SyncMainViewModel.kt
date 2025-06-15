@@ -30,6 +30,11 @@ class SyncMainViewModel @Inject constructor(
             setState { copy(uuid = uuid) }
         }
 
+        val linkedUuidJob = launch {
+            val linkedUuid = syncRepository.getLinkedUUID()
+            setState { copy(linkedUuid = linkedUuid) }
+        }
+
         val localLastSyncedAtJob = launch {
             val lastSyncedAt = syncRepository.getLocalSyncedAt()
             setState { copy(localLastSyncedAt = lastSyncedAt) }
@@ -48,20 +53,19 @@ class SyncMainViewModel @Inject constructor(
     override suspend fun processIntent(intent: SyncIntent) {
         when (intent) {
             SyncIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            SyncIntent.OnUploadClick -> processUpload()
-            SyncIntent.OnDownloadClick -> processDownload()
+            SyncIntent.OnSyncUpClick -> syncUpData()
             SyncIntent.OnLinkClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.LinkRoute))
         }
     }
 
-    private fun processUpload() = viewModelScope.launch {
+    private fun syncUpData() = viewModelScope.launch {
         if (networkMonitor.networkState.value != NetworkState.Connected) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
             return@launch
         }
 
         setState { copy(isNetworkLoading = true) }
-        syncRepository.uploadData()
+        syncRepository.syncUpData()
             .onSuccess {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
                 setState {
@@ -73,24 +77,6 @@ class SyncMainViewModel @Inject constructor(
             }
             .onFailure {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
-            }.also {
-                setState { copy(isNetworkLoading = false) }
-            }
-    }
-
-    private fun processDownload() = viewModelScope.launch {
-        if (networkMonitor.networkState.value != NetworkState.Connected) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
-            return@launch
-        }
-
-        setState { copy(isNetworkLoading = true) }
-        syncRepository.downloadData()
-            .onSuccess {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 다운로드 하였습니다."))
-            }
-            .onFailure {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("다운로드에 실패하였습니다."))
             }.also {
                 setState { copy(isNetworkLoading = false) }
             }

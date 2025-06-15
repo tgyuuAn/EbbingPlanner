@@ -17,9 +17,14 @@ class LocalSyncDataSourceImpl @Inject constructor(
         get() = dataStore.data
             .map { prefs -> prefs[UUID] ?: "INVALID" }
 
+    override val linkedUuid: Flow<String>
+        get() = dataStore.data
+            .map { prefs -> prefs[LINKED_UUID] ?: "INVALID" }
+
+
     override val lastSyncTime: Flow<ZonedDateTime?>
         get() = dataStore.data
-            .map { prefs -> prefs[SYNCEDED_AT]?.let { ZonedDateTime.parse(it) } }
+            .map { prefs -> prefs[SYNCED_AT]?.let { ZonedDateTime.parse(it) } }
 
     override suspend fun ensureUUIDExists() {
         dataStore.edit { prefs ->
@@ -34,14 +39,19 @@ class LocalSyncDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[UUID] = uuid }
     }
 
+    override suspend fun setLinkedUuid(uuid: String) {
+        dataStore.edit { prefs -> prefs[LINKED_UUID] = uuid }
+    }
+
     override suspend fun setSyncedAt(time: ZonedDateTime?) {
         time?.let {
-            dataStore.edit { prefs -> prefs[SYNCEDED_AT] = time.toString() }
+            dataStore.edit { prefs -> prefs[SYNCED_AT] = time.toString() }
         }
     }
 
     companion object {
         private val UUID = stringPreferencesKey("UUID")
-        private val SYNCEDED_AT = stringPreferencesKey("UPLOADED_AT")
+        private val LINKED_UUID = stringPreferencesKey("LINKED_UUID")
+        private val SYNCED_AT = stringPreferencesKey("SYNCED_AT")
     }
 }

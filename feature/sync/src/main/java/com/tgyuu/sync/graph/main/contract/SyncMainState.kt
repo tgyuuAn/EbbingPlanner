@@ -5,6 +5,7 @@ import java.time.ZonedDateTime
 
 data class SyncMainState(
     val uuid: String = "",
+    val linkedUuid: String? = null,
     val localLastSyncedAt: ZonedDateTime? = null,
     val serverLastUpdatedAt: ZonedDateTime? = null,
     val isNetworkLoading: Boolean = true,
