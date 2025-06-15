@@ -1,5 +1,6 @@
 package com.tgyuu.network.model.sync
 
+import com.google.firebase.firestore.ServerTimestamp
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.network.toDate
 import com.tgyuu.network.toLocalDate
@@ -12,6 +13,7 @@ data class TodoInfoDto(
     val tagId: Int,
     val createdAt: Date,
     val updatedAt: Date,
+    @ServerTimestamp var uploadedAt: Date? = null,
 ) {
     fun toDomain() = TodoInfoForSync(
         id = id,

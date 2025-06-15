@@ -22,6 +22,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.time.ZonedDateTime
+import java.util.Date
 import javax.inject.Inject
 
 class SyncDataSource @Inject constructor(
@@ -100,7 +101,10 @@ class SyncDataSource @Inject constructor(
         }
     }
 
-    suspend fun downloadData(uuid: String): Result<GetDownloadDataResponse> = coroutineScope {
+    suspend fun downloadData(
+        uuid: String,
+        lastSyncTime: Date,
+    ): Result<GetDownloadDataResponse> = coroutineScope {
         suspendRunCatching {
             val userDoc = firestore.collection("users").document(uuid)
 

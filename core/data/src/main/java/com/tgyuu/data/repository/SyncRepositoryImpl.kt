@@ -12,6 +12,7 @@ import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.network.model.sync.GetSyncInfoResponse
 import com.tgyuu.network.source.SyncDataSource
+import com.tgyuu.network.toDate
 import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -37,7 +38,12 @@ class SyncRepositoryImpl @Inject constructor(
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
         localSyncDataSource.lastSyncTime.first()
 
-    override suspend fun uploadData(): Result<ZonedDateTime> = coroutineScope {
+    override suspend fun syncData(): Result<ZonedDateTime> = suspendRunCatching {
+        downloadData().getOrThrow()
+        uploadData().getOrThrow()
+    }
+
+    private suspend fun uploadData(): Result<ZonedDateTime> = coroutineScope {
         val uuid = getUUID()
         val schedules = async { loadSchedulesForSync() }
         val infos = async { loadTodoInfosForSync() }
@@ -53,7 +59,8 @@ class SyncRepositoryImpl @Inject constructor(
         ).onSuccess {
             // 업로드 이후 로컬에 softDelete 데이터 제거
             val schedulesDeleteJob = launch { localTodoDataSource.hardDeleteAllTodos() }
-            val repeatCyclesDeleteJob = launch { localRepeatCycleDataSource.hardDeleteAllRepeatCycles() }
+            val repeatCyclesDeleteJob =
+                launch { localRepeatCycleDataSource.hardDeleteAllRepeatCycles() }
             val tagsDeleteJob = launch { localTagDataSource.hardDeleteAllTags() }
 
             schedulesDeleteJob.join()
@@ -65,34 +72,43 @@ class SyncRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun downloadData(): Result<ZonedDateTime?> = suspendRunCatching {
+    private suspend fun downloadData(): Result<ZonedDateTime?> = suspendRunCatching {
         val uuid = getUUID()
-        val response = syncDataSource.downloadData(uuid)
-            .getOrThrow()
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+            ?.toLocalDateTime() ?: LocalDateTime.MIN
 
-//        다운 받은 데이터
+        val response = syncDataSource.downloadData(uuid, lastSyncTime.toDate())
+            .getOrThrow()
 
         response.syncedAt.toZonedDateTimeOrNull()
     }
 
 
     private suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()?.toLocalDateTime()
-        return localTodoDataSource.getSchedulesForSync(lastSyncTime ?: LocalDateTime.MIN)
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+            ?.toLocalDateTime() ?: LocalDateTime.MIN
+
+        return localTodoDataSource.getSchedulesForSync(lastSyncTime)
     }
 
     private suspend fun loadTagsForSync(): List<TodoTagForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()?.toLocalDateTime()
-        return localTagDataSource.getTagsForSync(lastSyncTime ?: LocalDateTime.MIN)
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+            ?.toLocalDateTime() ?: LocalDateTime.MIN
+
+        return localTagDataSource.getTagsForSync(lastSyncTime)
     }
 
     private suspend fun loadRepeatCyclesForSync(): List<RepeatCycleForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()?.toLocalDateTime()
-        return localRepeatCycleDataSource.getRepeatCyclesForSync(lastSyncTime ?: LocalDateTime.MIN)
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+            ?.toLocalDateTime() ?: LocalDateTime.MIN
+
+        return localRepeatCycleDataSource.getRepeatCyclesForSync(lastSyncTime)
     }
 
     private suspend fun loadTodoInfosForSync(): List<TodoInfoForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()?.toLocalDateTime()
-        return localTodoDataSource.getTodoInfosForSync(lastSyncTime ?: LocalDateTime.MIN)
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+            ?.toLocalDateTime() ?: LocalDateTime.MIN
+
+        return localTodoDataSource.getTodoInfosForSync(lastSyncTime)
     }
 }
