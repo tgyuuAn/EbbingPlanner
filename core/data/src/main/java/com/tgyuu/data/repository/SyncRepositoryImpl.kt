@@ -10,6 +10,7 @@ import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.SyncRepository
+import com.tgyuu.network.defaultDate
 import com.tgyuu.network.model.sync.GetSyncInfoResponse
 import com.tgyuu.network.source.SyncDataSource
 import com.tgyuu.network.toDate
@@ -76,10 +77,12 @@ class SyncRepositoryImpl @Inject constructor(
     private suspend fun downloadData(): Result<ZonedDateTime?> = suspendRunCatching {
         coroutineScope {
             val uuid = getUUID()
-            val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-                ?.toLocalDateTime() ?: LocalDateTime.MIN
+            val lastSyncTime = localSyncDataSource.lastSyncTime
+                .first()
+                ?.toLocalDateTime()
+                ?.toDate() ?: defaultDate
 
-            val response = syncDataSource.downloadData(uuid, lastSyncTime.toDate())
+            val response = syncDataSource.downloadData(uuid, lastSyncTime)
                 .getOrThrow()
 
             // 각 항목에 대해서 updatedAt을 비교하여, 로컬보다 더 이후에 변경된 항목만 반영
