@@ -421,7 +421,7 @@ internal fun DescriptionBody() {
             append("- 동기화는 기기의 변경 사항을 서버에 반영하고, 서버의 최신 데이터를 가져오는  양방향 동기화 방식입니다.\n")
             append("- ")
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("오프라인에서 수정한 데이터")
+                append("수정한 데이터")
             }
             append("는 이 과정을 거쳐야 다른 기기와 공유됩니다.\n")
             append("- 동기화 시 서로 다른 기기에서 수정한 내용이 있는 경우 ")

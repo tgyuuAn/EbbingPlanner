@@ -17,17 +17,17 @@ fun ConfirmSyncUpDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "데이터를 업데이트 할까요?",
+                title = "데이터를 동기화 할까요?",
                 subText = buildAnnotatedString {
-                    append("서버에 저장된 기존 데이터는 ")
+                    append("서로 다른 기기에서 수정된 데이터가 있을 경우, ")
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
-                        append("모두 삭제되고")
+                        append("더 늦게 업데이트된 쪽으로 반영")
                     }
-                    append(" 이 기기의 데이터로 ")
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
-                        append("덮어쓰기")
+                    append("됩니다. 중요한 데이터는 ")
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
+                        append("동기화 전에 반드시 확인")
                     }
-                    append("됩니다.\n이 작업은 되돌릴 수 없습니다.")
+                    append("해주세요.")
                 },
             )
         },
