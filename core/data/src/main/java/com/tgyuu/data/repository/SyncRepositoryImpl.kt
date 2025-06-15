@@ -1,5 +1,6 @@
 package com.tgyuu.data.repository
 
+import android.util.Log
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
@@ -40,8 +41,8 @@ class SyncRepositoryImpl @Inject constructor(
         localSyncDataSource.lastSyncTime.first()
 
     override suspend fun syncUpData(): Result<ZonedDateTime> = suspendRunCatching {
-        downloadData().getOrThrow()
-        uploadData().getOrThrow()
+//        uploadData().getOrThrow()
+        downloadData().getOrThrow()!!
     }
 
     private suspend fun uploadData(): Result<ZonedDateTime> = coroutineScope {
@@ -80,6 +81,8 @@ class SyncRepositoryImpl @Inject constructor(
 
         val response = syncDataSource.downloadData(uuid, lastSyncTime.toDate())
             .getOrThrow()
+
+        Log.d("test", response.toString())
 
         response.syncedAt.toZonedDateTimeOrNull()
     }

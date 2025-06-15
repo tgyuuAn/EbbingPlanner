@@ -11,6 +11,8 @@ import java.time.ZonedDateTime
 import java.util.Date
 import kotlin.coroutines.resume
 
+internal val defaultDate = LocalDateTime.of(1970, 1, 1, 0, 0).toDate()
+
 // FireStore timeStamp? -> ZonedDateTime? 로 변환해주는 확장함수
 fun Timestamp?.toZonedDateTimeOrNull(): ZonedDateTime? {
     return this?.toDate()

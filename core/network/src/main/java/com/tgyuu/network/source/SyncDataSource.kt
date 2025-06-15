@@ -109,27 +109,46 @@ class SyncDataSource @Inject constructor(
             val userDoc = firestore.collection("users").document(uuid)
 
             val schedulesDeferred = async {
-                val snapshot = userDoc.collection("schedules").get().await()
+                val snapshot = userDoc.collection("schedules")
+                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                    .get()
+                    .await()
+
                 snapshot.documents.mapNotNull { it.toObject(TodoScheduleDto::class.java) }
             }
 
             val repeatCyclesDeferred = async {
-                val snapshot = userDoc.collection("repeatCycles").get().await()
+                val snapshot = userDoc.collection("repeatCycles")
+                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                    .get()
+                    .await()
+
                 snapshot.documents.mapNotNull { it.toObject(RepeatCycleDto::class.java) }
             }
 
             val tagsDeferred = async {
-                val snapshot = userDoc.collection("tags").get().await()
+                val snapshot = userDoc.collection("tags")
+                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                    .get()
+                    .await()
+
                 snapshot.documents.mapNotNull { it.toObject(TodoTagDto::class.java) }
             }
 
             val todoInfosDeferred = async {
-                val snapshot = userDoc.collection("todoInfos").get().await()
+                val snapshot = userDoc.collection("todoInfos")
+                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                    .get()
+                    .await()
+
                 snapshot.documents.mapNotNull { it.toObject(TodoInfoDto::class.java) }
             }
 
             val infoSnapshotDeferred = async {
-                userDoc.collection("info").document("0").get().await()
+                userDoc.collection("info")
+                    .document("0")
+                    .get()
+                    .await()
             }
 
             GetDownloadDataResponse(

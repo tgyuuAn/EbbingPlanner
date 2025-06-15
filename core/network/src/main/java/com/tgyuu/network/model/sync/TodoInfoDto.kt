@@ -2,17 +2,19 @@ package com.tgyuu.network.model.sync
 
 import com.google.firebase.firestore.ServerTimestamp
 import com.tgyuu.domain.model.sync.TodoInfoForSync
+import com.tgyuu.network.defaultDate
 import com.tgyuu.network.toDate
 import com.tgyuu.network.toLocalDate
 import com.tgyuu.network.toLocalDateTime
+import java.time.LocalDateTime
 import java.util.Date
 
 data class TodoInfoDto(
-    val id: Int,
-    val title: String,
-    val tagId: Int,
-    val createdAt: Date,
-    val updatedAt: Date,
+    val id: Int = -1,
+    val title: String = "",
+    val tagId: Int = -1,
+    val createdAt: Date = defaultDate,
+    val updatedAt: Date = defaultDate,
     @ServerTimestamp var uploadedAt: Date? = null,
 ) {
     fun toDomain() = TodoInfoForSync(
