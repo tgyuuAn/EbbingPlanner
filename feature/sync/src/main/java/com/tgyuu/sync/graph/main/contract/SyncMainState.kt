@@ -1,6 +1,7 @@
 package com.tgyuu.sync.graph.main.contract
 
 import com.tgyuu.common.base.UiState
+import java.time.Duration
 import java.time.ZonedDateTime
 
 data class SyncMainState(
@@ -9,4 +10,8 @@ data class SyncMainState(
     val localLastSyncedAt: ZonedDateTime? = null,
     val serverLastUpdatedAt: ZonedDateTime? = null,
     val isNetworkLoading: Boolean = true,
-) : UiState
+) : UiState {
+    val isSyncUpEnabled: Boolean
+        get() = serverLastUpdatedAt == null ||
+                Duration.between(serverLastUpdatedAt, ZonedDateTime.now()).toMinutes() >= 10
+}

@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
@@ -37,6 +39,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncUpDialog
+import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
 @Composable
@@ -44,6 +47,7 @@ internal fun SyncMainRoute(
     viewModel: SyncMainViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(viewModel) {
         viewModel.loadInitData()
@@ -53,6 +57,11 @@ internal fun SyncMainRoute(
         state = state,
         onBackClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
         onSyncUpClick = { viewModel.onIntent(SyncIntent.OnSyncUpClick) },
+        showSyncedAlreadySnackBar = {
+            scope.launch {
+                viewModel.eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 데이터가 최신상태 입니다."))
+            }
+        },
         onConnectClick = { viewModel.onIntent(SyncIntent.OnLinkClick) },
         onDisconnectClick = {},
     )
@@ -65,6 +74,7 @@ internal fun SyncMainScreen(
     onSyncUpClick: () -> Unit,
     onConnectClick: () -> Unit,
     onDisconnectClick: () -> Unit,
+    showSyncedAlreadySnackBar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowDialog by remember { mutableStateOf(false) }
@@ -84,7 +94,13 @@ internal fun SyncMainScreen(
         PhoneSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
-            onSyncUpClick = { isShowDialog = true },
+            onSyncUpClick = {
+                if (state.isSyncUpEnabled) {
+                    isShowDialog = true
+                } else {
+                    showSyncedAlreadySnackBar()
+                }
+            },
             onConnectClick = onConnectClick,
             onDisconnectClick = onDisconnectClick,
             modifier = modifier,
@@ -93,7 +109,13 @@ internal fun SyncMainScreen(
         TabletSyncMainScreen(
             state = state,
             onBackClick = onBackClick,
-            onSyncUpClick = { isShowDialog = true },
+            onSyncUpClick = {
+                if (state.isSyncUpEnabled) {
+                    isShowDialog = true
+                } else {
+                    showSyncedAlreadySnackBar()
+                }
+            },
             onLinkClick = onConnectClick,
             modifier = modifier,
         )
@@ -140,6 +162,7 @@ private fun PhoneSyncMainScreen(
 
             SyncUpBody(
                 isConnected = state.linkedUuid != null,
+                isSyncUpEnabled = state.isSyncUpEnabled,
                 onSyncUpClick = onSyncUpClick,
                 onConnectClick = onConnectClick,
                 onDisconnectClick = onDisconnectClick,
@@ -306,6 +329,7 @@ internal fun LinkedUuidBody(
 @Composable
 private fun SyncUpBody(
     isConnected: Boolean,
+    isSyncUpEnabled: Boolean,
     onSyncUpClick: () -> Unit,
     onConnectClick: () -> Unit,
     onDisconnectClick: () -> Unit,
@@ -327,7 +351,8 @@ private fun SyncUpBody(
         Text(
             text = "서버와 내 기기 동기화하기",
             style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            color = if (isSyncUpEnabled) EbbingTheme.colors.dark1
+            else EbbingTheme.colors.dark1.copy(alpha = 0.5f),
             modifier = Modifier.weight(1f),
         )
 

@@ -21,8 +21,8 @@ import javax.inject.Inject
 class SyncMainViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
     private val navigationBus: NavigationBus,
-    private val eventBus: EventBus,
     private val networkMonitor: NetworkMonitor,
+    internal val eventBus: EventBus,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
     internal fun loadInitData() = viewModelScope.launch {
