@@ -1,6 +1,5 @@
 package com.tgyuu.data.repository
 
-import android.util.Log
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
@@ -41,7 +40,7 @@ class SyncRepositoryImpl @Inject constructor(
         localSyncDataSource.lastSyncTime.first()
 
     override suspend fun syncUpData(): Result<ZonedDateTime> = suspendRunCatching {
-        downloadData().getOrThrow()!!
+        downloadData().getOrThrow()
         uploadData().getOrThrow()
     }
 
@@ -93,6 +92,7 @@ class SyncRepositoryImpl @Inject constructor(
                         localRepeatCycleDataSource.hardDeleteRepeatCycle(repeatCycle.id)
                     } else {
                         val local = localRepeatCycleDataSource.getRepeatCycle(repeatCycle.id)
+
                         if (local == null) {
                             localRepeatCycleDataSource.insertRepeatCycle(repeatCycle)
                         } else if (repeatCycle.updatedAt > local.updatedAt) {
@@ -123,6 +123,7 @@ class SyncRepositoryImpl @Inject constructor(
                         localTodoDataSource.hardDeleteTodo(schedule.id)
                     } else {
                         val local = localTodoDataSource.getTodoScheduleEntity(schedule.id)
+
                         if (local == null) {
                             localTodoDataSource.insertSchedule(schedule)
                         } else if (schedule.updatedAt > local.updatedAt) {
@@ -140,6 +141,7 @@ class SyncRepositoryImpl @Inject constructor(
                         localTagDataSource.hardDeleteTag(tag.id)
                     } else {
                         val local = localTagDataSource.getTag(tag.id)
+
                         if (local == null) {
                             localTagDataSource.insertTag(tag)
                         } else if (tag.updatedAt > local.updatedAt) {
@@ -154,7 +156,10 @@ class SyncRepositoryImpl @Inject constructor(
             tagsJob.join()
             schedulesJob.join()
 
-            response.syncedAt.toZonedDateTimeOrNull()
+            val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
+            localSyncDataSource.setSyncedAt(syncedAt)
+
+            syncedAt
         }
     }
 

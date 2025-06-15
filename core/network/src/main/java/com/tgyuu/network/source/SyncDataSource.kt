@@ -29,10 +29,10 @@ class SyncDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) {
     suspend fun getSyncInfo(uuid: String): Result<GetSyncInfoResponse> {
-        val userDoc = firestore.collection("users").document(uuid)
+        val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
-        return userDoc.collection("info")
-            .document("0")
+        return userDoc.collection(COLLECTION_INFO)
+            .document(INFO_DOCUMENT_ID)
             .get()
             .toResult<GetSyncInfoResponse>()
     }
@@ -45,11 +45,11 @@ class SyncDataSource @Inject constructor(
         tags: List<TodoTagForSync>,
     ): Result<ZonedDateTime> = coroutineScope {
         suspendRunCatching {
-            val userDoc = firestore.collection("users").document(uuid)
+            val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
             val schedulesJob = launch {
                 schedules.forEach { schedule ->
-                    userDoc.collection("schedules")
+                    userDoc.collection(COLLECTION_SCHEDULES)
                         .document(schedule.id.toString())
                         .set(schedule.toDto())
                         .await()
@@ -58,7 +58,7 @@ class SyncDataSource @Inject constructor(
 
             val todoInfosJob = launch {
                 infos.forEach { info ->
-                    userDoc.collection("todoInfos")
+                    userDoc.collection(COLLECTION_TODO_INFOS)
                         .document(info.id.toString())
                         .set(info.toDto())
                         .await()
@@ -67,7 +67,7 @@ class SyncDataSource @Inject constructor(
 
             val repeatCyclesJob = launch {
                 repeatCycles.forEach { repeat ->
-                    userDoc.collection("repeatCycles")
+                    userDoc.collection(COLLECTION_REPEAT_CYCLES)
                         .document(repeat.id.toString())
                         .set(repeat)
                         .await()
@@ -76,7 +76,7 @@ class SyncDataSource @Inject constructor(
 
             val tagsJob = launch {
                 tags.forEach { tag ->
-                    userDoc.collection("tags")
+                    userDoc.collection(COLLECTION_TAGS)
                         .document(tag.id.toString())
                         .set(tag.toDto())
                         .await()
@@ -88,14 +88,14 @@ class SyncDataSource @Inject constructor(
             todoInfosJob.join()
             schedulesJob.join()
 
-            val infoDocRef = userDoc.collection("info").document("0")
-            infoDocRef.set(mapOf("lastUpdatedAt" to serverTimestamp())).await()
+            val infoDocRef = userDoc.collection(COLLECTION_INFO).document(INFO_DOCUMENT_ID)
+            infoDocRef.set(mapOf(FIELD_LAST_UPDATED_AT to serverTimestamp())).await()
 
             val updatedSnapshot = infoDocRef.get().await()
             val updatedAt = updatedSnapshot
-                .getTimestamp("lastUpdatedAt")
+                .getTimestamp(FIELD_LAST_UPDATED_AT)
                 .toZonedDateTimeOrNull()
-                ?: throw IllegalStateException("lastUpdatedAt is null or invalid")
+                ?: throw IllegalStateException("lastUpdatedAt 가 비었습니다.")
 
             return@suspendRunCatching updatedAt
         }
@@ -106,11 +106,11 @@ class SyncDataSource @Inject constructor(
         lastSyncTime: Date,
     ): Result<GetDownloadDataResponse> = coroutineScope {
         suspendRunCatching {
-            val userDoc = firestore.collection("users").document(uuid)
+            val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
             val schedulesDeferred = async {
-                val snapshot = userDoc.collection("schedules")
-                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                val snapshot = userDoc.collection(COLLECTION_SCHEDULES)
+                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
                     .get()
                     .await()
 
@@ -118,8 +118,8 @@ class SyncDataSource @Inject constructor(
             }
 
             val repeatCyclesDeferred = async {
-                val snapshot = userDoc.collection("repeatCycles")
-                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                val snapshot = userDoc.collection(COLLECTION_REPEAT_CYCLES)
+                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
                     .get()
                     .await()
 
@@ -127,8 +127,8 @@ class SyncDataSource @Inject constructor(
             }
 
             val tagsDeferred = async {
-                val snapshot = userDoc.collection("tags")
-                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                val snapshot = userDoc.collection(COLLECTION_TAGS)
+                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
                     .get()
                     .await()
 
@@ -136,8 +136,8 @@ class SyncDataSource @Inject constructor(
             }
 
             val todoInfosDeferred = async {
-                val snapshot = userDoc.collection("todoInfos")
-                    .whereGreaterThan("uploadedAt", lastSyncTime)
+                val snapshot = userDoc.collection(COLLECTION_TODO_INFOS)
+                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
                     .get()
                     .await()
 
@@ -145,8 +145,8 @@ class SyncDataSource @Inject constructor(
             }
 
             val infoSnapshotDeferred = async {
-                userDoc.collection("info")
-                    .document("0")
+                userDoc.collection(COLLECTION_INFO)
+                    .document(INFO_DOCUMENT_ID)
                     .get()
                     .await()
             }
@@ -156,9 +156,26 @@ class SyncDataSource @Inject constructor(
                 todoInfos = todoInfosDeferred.await(),
                 repeatCycles = repeatCyclesDeferred.await(),
                 tags = tagsDeferred.await(),
-                syncedAt = infoSnapshotDeferred.await().getTimestamp("lastUpdatedAt")
+                syncedAt = infoSnapshotDeferred.await().getTimestamp(FIELD_LAST_UPDATED_AT)
                     ?: Timestamp.now()
             )
         }
+    }
+
+    private companion object {
+        // 컬렉션 상수
+        private const val COLLECTION_USERS = "users"
+        private const val COLLECTION_INFO = "info"
+        private const val COLLECTION_SCHEDULES = "schedules"
+        private const val COLLECTION_TODO_INFOS = "todoInfos"
+        private const val COLLECTION_REPEAT_CYCLES = "repeatCycles"
+        private const val COLLECTION_TAGS = "tags"
+
+        // 다큐먼트 상수
+        private const val INFO_DOCUMENT_ID = "0"
+
+        // 필드 상수
+        private const val FIELD_LAST_UPDATED_AT = "lastUpdatedAt"
+        private const val FIELD_UPLOADED_AT = "uploadedAt"
     }
 }
