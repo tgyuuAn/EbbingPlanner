@@ -15,6 +15,9 @@ class LocalRepeatCycleDataSourceImpl @Inject constructor(
     override suspend fun insertRepeatCycle(intervals: List<Int>): Long =
         repeatCyclesDao.insertRepeatCycle(RepeatCycleEntity(intervals = intervals))
 
+    override suspend fun insertRepeatCycle(repeatCycle: RepeatCycleForSync): Long =
+        repeatCyclesDao.insertRepeatCycle(repeatCycle.toEntity())
+
     override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) {
         val json = EbbingConverters().fromIntList(repeatCycle.intervals)
         repeatCyclesDao.updateRepeatCycle(
@@ -23,20 +26,23 @@ class LocalRepeatCycleDataSourceImpl @Inject constructor(
         )
     }
 
+    override suspend fun updateRepeatCycle(repeatCycle: RepeatCycleForSync) {
+        repeatCyclesDao.updateRepeatCycle(repeatCycle.toEntity())
+    }
+
     override suspend fun softDeleteRepeatCycle(repeatCycle: RepeatCycle) =
         repeatCyclesDao.softDeleteRepeatCycle(repeatCycle.toEntity().id)
 
-    override suspend fun hardDeleteRepeatCycle(repeatCycle: RepeatCycle) =
-        repeatCyclesDao.hardDeleteRepeatCycle(repeatCycle.toEntity())
+    override suspend fun hardDeleteRepeatCycle(id: Int) = repeatCyclesDao.hardDeleteRepeatCycle(id)
 
     override suspend fun hardDeleteAllRepeatCycles() = repeatCyclesDao.hardDeleteAllRepeatCycles()
 
     override suspend fun getRepeatCycles(): List<RepeatCycleEntity> =
         repeatCyclesDao.getRepeatCycles()
 
-    override suspend fun getRepeatCycle(id: Int): RepeatCycleEntity =
+    override suspend fun getRepeatCycle(id: Int): RepeatCycleEntity? =
         repeatCyclesDao.getRepeatCycle(id)
 
     override suspend fun getRepeatCyclesForSync(lastSyncTime: LocalDateTime): List<RepeatCycleForSync> =
-        repeatCyclesDao.getRepeatCyclesForSync(lastSyncTime)
+        repeatCyclesDao.getRepeatCyclesForSync(lastSyncTime).map { it.toSyncModel() }
 }

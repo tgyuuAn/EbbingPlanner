@@ -11,7 +11,10 @@ import javax.inject.Inject
 class LocalTagDataSourceImpl @Inject constructor(
     private val todoTagsDao: TodoTagsDao,
 ) : LocalTagDataSource {
-    override suspend fun insertTag(todoTag: TodoTag) = todoTagsDao.insertTag(todoTag.toEntity())
+    override suspend fun insertTag(tag: TodoTag) = todoTagsDao.insertTag(tag.toEntity())
+    override suspend fun insertTag(tag: TodoTagForSync): Long =
+        todoTagsDao.insertTag(tag.toEntity())
+
     override suspend fun insertTag(
         name: String,
         color: Int,
@@ -24,14 +27,16 @@ class LocalTagDataSourceImpl @Inject constructor(
         updatedAt = LocalDateTime.now(),
     )
 
+    override suspend fun updateTag(tag: TodoTagForSync) = todoTagsDao.updateTag(tag.toEntity())
+
     override suspend fun softDeleteTag(tag: TodoTag) =
         todoTagsDao.softDeleteTagWithReset(tag.toEntity())
 
-    override suspend fun hardDeleteTag(tag: TodoTag) = todoTagsDao.hardDeleteTag(tag.toEntity())
+    override suspend fun hardDeleteTag(id: Int) = todoTagsDao.hardDeleteTag(id)
     override suspend fun hardDeleteAllTags() = todoTagsDao.hardDeleteAllTags()
 
     override suspend fun getTags(): List<TodoTagEntity> = todoTagsDao.getTags()
-    override suspend fun getTag(id: Int): TodoTagEntity = todoTagsDao.getTag(id)
+    override suspend fun getTag(id: Int): TodoTagEntity? = todoTagsDao.getTag(id)
 
     override suspend fun getTagsForSync(lastSyncTime: LocalDateTime): List<TodoTagForSync> =
         todoTagsDao.getTagsForSync(lastSyncTime)

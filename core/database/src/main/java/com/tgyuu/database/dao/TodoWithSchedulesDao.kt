@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.tgyuu.database.model.ScheduleEntity
+import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.database.model.TodoInfoEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,7 +16,7 @@ interface TodoWithSchedulesDao {
     suspend fun insertInfo(entity: TodoInfoEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertSchedules(schedules: List<ScheduleEntity>)
+    suspend fun insertSchedules(schedules: List<TodoScheduleEntity>)
 
     @Transaction
     suspend fun insertTodoWithSchedules(
@@ -34,7 +34,7 @@ interface TodoWithSchedulesDao {
 
         insertSchedules(
             dates.map { date ->
-                ScheduleEntity(
+                TodoScheduleEntity(
                     infoId = infoId,
                     date = date,
                     memo = "",

@@ -1,11 +1,11 @@
 package com.tgyuu.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import java.time.LocalDateTime
@@ -21,8 +21,8 @@ interface TodoTagsDao {
     @Query("UPDATE todo_tag SET isDeleted = 1, updatedAt = :updatedAt WHERE id = :tagId")
     suspend fun softDeleteTag(tagId: Int, updatedAt: LocalDateTime)
 
-    @Delete
-    suspend fun hardDeleteTag(tag: TodoTagEntity)
+    @Query("DELETE FROM todo_tag WHERE id = :id")
+    suspend fun hardDeleteTag(id: Int)
 
     @Query("DELETE FROM todo_tag WHERE isDeleted = 1")
     suspend fun hardDeleteAllTags()
@@ -48,11 +48,14 @@ interface TodoTagsDao {
         updatedAt: LocalDateTime,
     )
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateTag(tagEntity: TodoTagEntity)
+
     @Query(value = "SELECT * FROM todo_tag WHERE isDeleted = 0")
     suspend fun getTags(): List<TodoTagEntity>
 
     @Query(value = "SELECT * FROM todo_tag WHERE id = :id AND isDeleted = 0")
-    suspend fun getTag(id: Int): TodoTagEntity
+    suspend fun getTag(id: Int): TodoTagEntity?
 
     @Query(value = "SELECT * FROM todo_tag WHERE updatedAt > :lastSyncTime")
     suspend fun getTagsForSync(lastSyncTime: LocalDateTime): List<TodoTagForSync>

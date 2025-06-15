@@ -1,9 +1,12 @@
 package com.tgyuu.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.tgyuu.database.model.ScheduleEntity
+import androidx.room.Update
+import com.tgyuu.database.model.TodoInfoEntity
+import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
@@ -12,7 +15,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Dao
-interface SchedulesDao {
+interface TodoSchedulesDao {
     @Query(
         """
         SELECT 
@@ -35,7 +38,7 @@ interface SchedulesDao {
         ORDER BY s.date
         """
     )
-    suspend fun loadAllSchedulesWithInfoAndTag(): List<TodoSchedule>
+    suspend fun loadAllTodoSchedulesWithInfoAndTag(): List<TodoSchedule>
 
     @Query(
         """
@@ -59,7 +62,7 @@ interface SchedulesDao {
           AND s.isDeleted = 0 AND t.isDeleted = 0
         """
     )
-    suspend fun loadScheduleWithInfoAndTag(id: Int): TodoSchedule
+    suspend fun loadTodoScheduleWithInfoAndTag(id: Int): TodoSchedule?
 
     @Query(
         """
@@ -84,7 +87,7 @@ interface SchedulesDao {
         ORDER BY s.date
         """
     )
-    suspend fun loadScheduleWithInfoAndTagByInfoId(id: Int): List<TodoSchedule>
+    suspend fun loadTodoScheduleWithInfoAndTagByInfoId(id: Int): List<TodoSchedule>
 
     @Query(
         """
@@ -109,7 +112,7 @@ interface SchedulesDao {
         ORDER BY s.date
         """
     )
-    suspend fun loadScheduleWithInfoAndTagByDate(date: LocalDate): List<TodoSchedule>
+    suspend fun loadTodoScheduleWithInfoAndTagByDate(date: LocalDate): List<TodoSchedule>
 
     @Query(
         """
@@ -134,13 +137,16 @@ interface SchedulesDao {
         ORDER BY s.date               
         """
     )
-    suspend fun loadUpcomingSchedules(date: LocalDate): List<TodoSchedule>
+    suspend fun loadUpcomingTodoSchedules(date: LocalDate): List<TodoSchedule>
+
+    @Query("SELECT * FROM schedule WHERE id = :id")
+    suspend fun loadTodoScheduleEntity(id: Int): TodoScheduleEntity?
 
     @Query("UPDATE schedule SET isDeleted = 1, updatedAt = :updatedAt WHERE id = :id")
     suspend fun softDeleteSchedule(id: Int, updatedAt: LocalDateTime = LocalDateTime.now())
 
-    @Delete
-    suspend fun hardDeleteSchedule(schedule: ScheduleEntity)
+    @Query("DELETE FROM schedule WHERE id = :id")
+    suspend fun hardDeleteSchedule(id: Int)
 
     @Query("DELETE FROM schedule WHERE isDeleted = 1")
     suspend fun hardDeleteAllSchedule()
@@ -168,7 +174,7 @@ interface SchedulesDao {
         ORDER BY s.date
         """
     )
-    fun subscribeScheduleWithInfoAndTagByDate(date: LocalDate): Flow<List<TodoSchedule>>
+    fun subscribeTodoScheduleWithInfoAndTagByDate(date: LocalDate): Flow<List<TodoSchedule>>
 
     @Query(
         """
@@ -204,4 +210,17 @@ interface SchedulesDao {
         """
     )
     suspend fun loadAllTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTodoSchedule(todoScheduleEntity: TodoScheduleEntity)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertTodoInfo(todoInfoEntity: TodoInfoEntity)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateTodoSchedule(todoScheduleEntity: TodoScheduleEntity)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateTodoInfo(todoInfoEntity: TodoInfoEntity)
+
 }

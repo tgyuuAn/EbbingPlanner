@@ -6,7 +6,6 @@ import com.tgyuu.network.defaultDate
 import com.tgyuu.network.toDate
 import com.tgyuu.network.toLocalDate
 import com.tgyuu.network.toLocalDateTime
-import java.time.LocalDateTime
 import java.util.Date
 
 data class TodoInfoDto(

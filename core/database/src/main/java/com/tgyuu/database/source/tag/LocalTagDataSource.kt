@@ -6,19 +6,18 @@ import com.tgyuu.domain.model.sync.TodoTagForSync
 import java.time.LocalDateTime
 
 interface LocalTagDataSource {
-    suspend fun insertTag(todoTag: TodoTag): Long
-    suspend fun insertTag(
-        name: String,
-        color: Int,
-    ): Long
+    suspend fun insertTag(tag: TodoTag): Long
+    suspend fun insertTag(tag: TodoTagForSync): Long
+    suspend fun insertTag(name: String, color: Int): Long
 
     suspend fun updateTag(tag: TodoTag)
+    suspend fun updateTag(tag: TodoTagForSync)
+
     suspend fun softDeleteTag(tag: TodoTag)
-    suspend fun hardDeleteTag(tag: TodoTag)
+    suspend fun hardDeleteTag(id: Int)
     suspend fun hardDeleteAllTags()
 
     suspend fun getTags(): List<TodoTagEntity>
-    suspend fun getTag(id: Int): TodoTagEntity
-
+    suspend fun getTag(id: Int): TodoTagEntity?
     suspend fun getTagsForSync(lastSyncTime: LocalDateTime): List<TodoTagForSync>
 }

@@ -17,6 +17,13 @@ data class RepeatCycleEntity(
         id = this.id,
         intervals = this.intervals,
     )
+
+    fun toSyncModel() = RepeatCycleForSync(
+        id = this.id,
+        intervals = this.intervals,
+        isDeleted = isDeleted,
+        updatedAt = this.updatedAt,
+    )
 }
 
 fun RepeatCycle.toEntity() = RepeatCycleEntity(
@@ -24,7 +31,7 @@ fun RepeatCycle.toEntity() = RepeatCycleEntity(
     intervals = this.intervals,
 )
 
-fun RepeatCycleEntity.toSyncModel() = RepeatCycleForSync(
+fun RepeatCycleForSync.toEntity() = RepeatCycleEntity(
     id = this.id,
     intervals = this.intervals,
     isDeleted = isDeleted,

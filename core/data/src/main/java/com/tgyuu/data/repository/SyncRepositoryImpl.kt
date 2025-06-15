@@ -41,8 +41,8 @@ class SyncRepositoryImpl @Inject constructor(
         localSyncDataSource.lastSyncTime.first()
 
     override suspend fun syncUpData(): Result<ZonedDateTime> = suspendRunCatching {
-//        uploadData().getOrThrow()
         downloadData().getOrThrow()!!
+        uploadData().getOrThrow()
     }
 
     private suspend fun uploadData(): Result<ZonedDateTime> = coroutineScope {
@@ -75,16 +75,87 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     private suspend fun downloadData(): Result<ZonedDateTime?> = suspendRunCatching {
-        val uuid = getUUID()
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: LocalDateTime.MIN
+        coroutineScope {
+            val uuid = getUUID()
+            val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+                ?.toLocalDateTime() ?: LocalDateTime.MIN
 
-        val response = syncDataSource.downloadData(uuid, lastSyncTime.toDate())
-            .getOrThrow()
+            val response = syncDataSource.downloadData(uuid, lastSyncTime.toDate())
+                .getOrThrow()
 
-        Log.d("test", response.toString())
+            // 각 항목에 대해서 updatedAt을 비교하여, 로컬보다 더 이후에 변경된 항목만 반영
+            // 만약 softDeleted 된 항이라면 제거, id가 없다면 새로 생성, 그 외는 수정
+            val repeatCyclesJob = launch {
+                response.repeatCycles.forEach { dto ->
+                    val repeatCycle = dto.toDomain()
 
-        response.syncedAt.toZonedDateTimeOrNull()
+                    if (repeatCycle.isDeleted) {
+                        localRepeatCycleDataSource.hardDeleteRepeatCycle(repeatCycle.id)
+                    } else {
+                        val local = localRepeatCycleDataSource.getRepeatCycle(repeatCycle.id)
+                        if (local == null) {
+                            localRepeatCycleDataSource.insertRepeatCycle(repeatCycle)
+                        } else if (repeatCycle.updatedAt > local.updatedAt) {
+                            localRepeatCycleDataSource.updateRepeatCycle(repeatCycle)
+                        }
+                    }
+                }
+            }
+
+            val todoInfosJob = launch {
+                response.todoInfos.forEach { dto ->
+                    val todoInfo = dto.toDomain()
+                    val local = localTodoDataSource.getTodoScheduleEntity(todoInfo.id)
+
+                    if (local == null) {
+                        localTodoDataSource.insertTodoInfo(todoInfo)
+                    } else if (todoInfo.updatedAt > local.updatedAt) {
+                        localTodoDataSource.updateTodoInfo(todoInfo)
+                    }
+                }
+            }
+
+            val schedulesJob = launch {
+                response.schedules.forEach { dto ->
+                    val schedule = dto.toDomain()
+
+                    if (schedule.isDeleted) {
+                        localTodoDataSource.hardDeleteTodo(schedule.id)
+                    } else {
+                        val local = localTodoDataSource.getTodoScheduleEntity(schedule.id)
+                        if (local == null) {
+                            localTodoDataSource.insertSchedule(schedule)
+                        } else if (schedule.updatedAt > local.updatedAt) {
+                            localTodoDataSource.updateSchedule(schedule)
+                        }
+                    }
+                }
+            }
+
+            val tagsJob = launch {
+                response.tags.forEach { dto ->
+                    val tag = dto.toDomain()
+
+                    if (tag.isDeleted) {
+                        localTagDataSource.hardDeleteTag(tag.id)
+                    } else {
+                        val local = localTagDataSource.getTag(tag.id)
+                        if (local == null) {
+                            localTagDataSource.insertTag(tag)
+                        } else if (tag.updatedAt > local.updatedAt) {
+                            localTagDataSource.updateTag(tag)
+                        }
+                    }
+                }
+            }
+
+            repeatCyclesJob.join()
+            todoInfosJob.join()
+            tagsJob.join()
+            schedulesJob.join()
+
+            response.syncedAt.toZonedDateTimeOrNull()
+        }
     }
 
 

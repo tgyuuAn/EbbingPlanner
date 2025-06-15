@@ -21,7 +21,7 @@ import java.time.LocalDateTime
     ],
     indices = [Index(value = ["infoId", "date"])],
 )
-data class ScheduleEntity(
+data class TodoScheduleEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val infoId: Int,
     val date: LocalDate,
@@ -33,7 +33,7 @@ data class ScheduleEntity(
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 )
 
-fun TodoSchedule.toEntity() = ScheduleEntity(
+fun TodoSchedule.toEntity() = TodoScheduleEntity(
     id = this.id,
     infoId = this.infoId,
     date = this.date,
@@ -43,7 +43,7 @@ fun TodoSchedule.toEntity() = ScheduleEntity(
     createdAt = this.createdAt,
 )
 
-fun ScheduleEntity.toSyncModel(): TodoScheduleForSync = TodoScheduleForSync(
+fun TodoScheduleForSync.toEntity(): TodoScheduleEntity = TodoScheduleEntity(
     id = this.id,
     infoId = this.infoId,
     date = this.date,

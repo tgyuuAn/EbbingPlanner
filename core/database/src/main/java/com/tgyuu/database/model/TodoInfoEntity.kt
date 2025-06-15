@@ -28,14 +28,7 @@ data class TodoInfoEntity(
     val updatedAt: LocalDateTime = LocalDateTime.now(),
 )
 
-fun TodoSchedule.toInfoEntity() = TodoInfoEntity(
-    id = this.infoId,
-    title = this.title,
-    tagId = this.tagId,
-    createdAt = this.infoCreatedAt,
-)
-
-fun TodoInfoEntity.toSyncModel() = TodoInfoForSync(
+fun TodoInfoForSync.toEntity() = TodoInfoEntity(
     id = this.id,
     title = this.title,
     tagId = this.tagId,

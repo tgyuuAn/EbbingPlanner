@@ -31,7 +31,7 @@ fun TodoTag.toEntity() = TodoTagEntity(
     createdAt = this.createdAt,
 )
 
-fun TodoTagEntity.toSyncModel() = TodoTagForSync(
+fun TodoTagForSync.toEntity() = TodoTagEntity(
     id = this.id,
     name = this.name,
     color = this.color,
