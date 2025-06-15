@@ -1,33 +1,48 @@
 package com.tgyuu.database.source.repeatcycle
 
+import com.tgyuu.database.converter.EbbingConverters
 import com.tgyuu.database.dao.RepeatCyclesDao
 import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.domain.model.sync.RepeatCycleForSync
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class LocalRepeatCycleDataSourceImpl @Inject constructor(
     private val repeatCyclesDao: RepeatCyclesDao,
 ) : LocalRepeatCycleDataSource {
-    override suspend fun insertTag(repeatCycle: RepeatCycle): Long =
+    override suspend fun insertRepeatCycle(intervals: List<Int>): Long =
+        repeatCyclesDao.insertRepeatCycle(RepeatCycleEntity(intervals = intervals))
+
+    override suspend fun insertRepeatCycle(repeatCycle: RepeatCycleForSync): Long =
         repeatCyclesDao.insertRepeatCycle(repeatCycle.toEntity())
 
-    override suspend fun insertRepeatCycle(intervals: List<Int>): Long =
-        repeatCyclesDao.insertRepeatCycle(
-            RepeatCycleEntity(
-                intervals = intervals,
-            )
+    override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) {
+        val json = EbbingConverters().fromIntList(repeatCycle.intervals)
+        repeatCyclesDao.updateRepeatCycle(
+            id = repeatCycle.id,
+            intervalsJson = json!!,
         )
+    }
 
-    override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) =
+    override suspend fun updateRepeatCycle(repeatCycle: RepeatCycleForSync) {
         repeatCyclesDao.updateRepeatCycle(repeatCycle.toEntity())
+    }
 
-    override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) =
-        repeatCyclesDao.deleteRepeatCycle(repeatCycle.toEntity())
+    override suspend fun softDeleteRepeatCycle(repeatCycle: RepeatCycle) =
+        repeatCyclesDao.softDeleteRepeatCycle(repeatCycle.toEntity().id)
+
+    override suspend fun hardDeleteRepeatCycle(id: Int) = repeatCyclesDao.hardDeleteRepeatCycle(id)
+
+    override suspend fun hardDeleteAllRepeatCycles() = repeatCyclesDao.hardDeleteAllRepeatCycles()
 
     override suspend fun getRepeatCycles(): List<RepeatCycleEntity> =
         repeatCyclesDao.getRepeatCycles()
 
-    override suspend fun getRepeatCycle(id: Int): RepeatCycleEntity =
+    override suspend fun getRepeatCycle(id: Int): RepeatCycleEntity? =
         repeatCyclesDao.getRepeatCycle(id)
+
+    override suspend fun getRepeatCyclesForSync(lastSyncTime: LocalDateTime): List<RepeatCycleForSync> =
+        repeatCyclesDao.getRepeatCyclesForSync(lastSyncTime).map { it.toSyncModel() }
 }

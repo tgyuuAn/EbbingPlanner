@@ -81,6 +81,7 @@ internal fun SettingRoute(
         },
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
+        onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
@@ -95,6 +96,7 @@ private fun SettingScreen(
     onAlarmTimeClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
+    onSyncClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -103,22 +105,121 @@ private fun SettingScreen(
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            EbbingMainTopBar(
-                title = "설정",
-                modifier = Modifier.padding(horizontal = 20.dp),
+        PhoneSettingScreen(
+            state = state,
+            onNoticeClick = onNoticeClick,
+            onAlarmTimeClick = onAlarmTimeClick,
+            onTagManageClick = onTagManageClick,
+            onRepeatCycleManageClick = onRepeatCycleManageClick,
+            onSyncClick = onSyncClick,
+            onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
+            onTermsOfUseClick = onTermsOfUseClick,
+            onInquiryClick = onInquiryClick,
+            onNotificationToggleClick = onNotificationToggleClick,
+        )
+    } else {
+        TabletSettingScreen(
+            state = state,
+            onNoticeClick = onNoticeClick,
+            onAlarmTimeClick = onAlarmTimeClick,
+            onTagManageClick = onTagManageClick,
+            onRepeatCycleManageClick = onRepeatCycleManageClick,
+            onSyncClick = onSyncClick,
+            onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
+            onTermsOfUseClick = onTermsOfUseClick,
+            onInquiryClick = onInquiryClick,
+            onNotificationToggleClick = onNotificationToggleClick,
+        )
+    }
+}
+
+@Composable
+private fun PhoneSettingScreen(
+    state: SettingState,
+    onNoticeClick: () -> Unit,
+    onAlarmTimeClick: () -> Unit,
+    onTagManageClick: () -> Unit,
+    onRepeatCycleManageClick: () -> Unit,
+    onSyncClick: () -> Unit,
+    onPrivacyAndPolicyClick: () -> Unit,
+    onTermsOfUseClick: () -> Unit,
+    onInquiryClick: () -> Unit,
+    onNotificationToggleClick: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        EbbingMainTopBar(
+            title = "설정",
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        HorizontalDivider(
+            color = EbbingTheme.colors.light2,
+            thickness = 1.dp,
+            modifier = Modifier.padding(bottom = 16.dp),
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp),
+        ) {
+            NotificationBody(
+                notificationEnabled = state.notificationEnabled,
+                alarmTime = "${state.alarmHour}:${state.alarmMinute}",
+                onNotificationToggleClick = onNotificationToggleClick,
+                onAlarmTimeClick = onAlarmTimeClick,
             )
 
-            HorizontalDivider(
-                color = EbbingTheme.colors.light2,
-                thickness = 1.dp,
-                modifier = Modifier.padding(bottom = 16.dp),
+            TagRepeatCycleBody(
+                onTagManageClick = onTagManageClick,
+                onRepeatCycleManageClick = onRepeatCycleManageClick,
             )
 
+            SyncBody(onSyncClick = onSyncClick)
+
+            InquiryBody(onContactUsClick = onInquiryClick)
+
+            AnnouncementBody(
+                onNoticeClick = onNoticeClick,
+                onPrivacyPolicy = onPrivacyAndPolicyClick,
+                onTermsClick = onTermsOfUseClick,
+            )
+
+            UpdateBody(
+                updateInfo = state.updateInfo,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 17.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun TabletSettingScreen(
+    state: SettingState,
+    onNoticeClick: () -> Unit,
+    onAlarmTimeClick: () -> Unit,
+    onTagManageClick: () -> Unit,
+    onRepeatCycleManageClick: () -> Unit,
+    onSyncClick: () -> Unit,
+    onPrivacyAndPolicyClick: () -> Unit,
+    onTermsOfUseClick: () -> Unit,
+    onInquiryClick: () -> Unit,
+    onNotificationToggleClick: () -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        EbbingMainTopBar(
+            title = "설정",
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        Row(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxHeight()
+                    .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
                 NotificationBody(
@@ -128,11 +229,20 @@ private fun SettingScreen(
                     onAlarmTimeClick = onAlarmTimeClick,
                 )
 
-                UserConfigBody(
+                TagRepeatCycleBody(
                     onTagManageClick = onTagManageClick,
                     onRepeatCycleManageClick = onRepeatCycleManageClick,
                 )
 
+                SyncBody(onSyncClick = onSyncClick)
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+            ) {
                 InquiryBody(onContactUsClick = onInquiryClick)
 
                 AnnouncementBody(
@@ -147,56 +257,6 @@ private fun SettingScreen(
                         .fillMaxWidth()
                         .padding(vertical = 17.dp),
                 )
-            }
-        }
-    } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            EbbingMainTopBar(
-                title = "설정",
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
-                ) {
-                    NotificationBody(
-                        notificationEnabled = state.notificationEnabled,
-                        alarmTime = "${state.alarmHour}:${state.alarmMinute}",
-                        onNotificationToggleClick = onNotificationToggleClick,
-                        onAlarmTimeClick = onAlarmTimeClick,
-                    )
-
-                    UserConfigBody(
-                        onTagManageClick = onTagManageClick,
-                        onRepeatCycleManageClick = onRepeatCycleManageClick,
-                    )
-
-                    InquiryBody(onContactUsClick = onInquiryClick)
-
-                    AnnouncementBody(
-                        onNoticeClick = onNoticeClick,
-                        onPrivacyPolicy = onPrivacyAndPolicyClick,
-                        onTermsClick = onTermsOfUseClick,
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
-                ) {
-                    UpdateBody(
-                        updateInfo = state.updateInfo,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 17.dp),
-                    )
-                }
             }
         }
     }
@@ -303,34 +363,8 @@ private fun NotificationBody(
     )
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
-internal fun handlePermission(
-    context: Context,
-    permission: PermissionState?,
-    onNotificationToggleClick: () -> Unit,
-) {
-    permission?.let { state ->
-        when (state.status) {
-            PermissionStatus.Granted -> onNotificationToggleClick()
-
-            is PermissionStatus.Denied -> {
-                if (state.status.shouldShowRationale) {
-                    // 한 번 거부한 상태 → (선택) 설명 다이얼로그를 띄우거나,
-                    // 사용자가 다시 권한을 허용할 수 있도록 설정 화면으로 보냅니다.
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        .apply { data = Uri.fromParts("package", context.packageName, null) }
-                    context.startActivity(intent)
-                } else {
-                    // 최초 요청 혹은 '다시 묻지 않음' 상태 → 권한 요청 다이얼로그
-                    state.launchPermissionRequest()
-                }
-            }
-        }
-    }
-}
-
 @Composable
-private fun UserConfigBody(
+private fun TagRepeatCycleBody(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
 ) {
@@ -371,6 +405,43 @@ private fun UserConfigBody(
     ) {
         Text(
             text = "반복 주기 관리",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+private fun SyncBody(onSyncClick: () -> Unit) {
+    Text(
+        text = "동기화",
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onSyncClick() },
+    ) {
+        Text(
+            text = "다른 기기와 동기화 하기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -549,6 +620,32 @@ private fun UpdateBody(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
+internal fun handlePermission(
+    context: Context,
+    permission: PermissionState?,
+    onNotificationToggleClick: () -> Unit,
+) {
+    permission?.let { state ->
+        when (state.status) {
+            PermissionStatus.Granted -> onNotificationToggleClick()
+
+            is PermissionStatus.Denied -> {
+                if (state.status.shouldShowRationale) {
+                    // 한 번 거부한 상태 → (선택) 설명 다이얼로그를 띄우거나,
+                    // 사용자가 다시 권한을 허용할 수 있도록 설정 화면으로 보냅니다.
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .apply { data = Uri.fromParts("package", context.packageName, null) }
+                    context.startActivity(intent)
+                } else {
+                    // 최초 요청 혹은 '다시 묻지 않음' 상태 → 권한 요청 다이얼로그
+                    state.launchPermissionRequest()
+                }
+            }
+        }
+    }
+}
+
 private fun getVersionInfo(
     context: Context,
     onError: (Exception) -> Unit,
@@ -583,7 +680,6 @@ private fun normalizeVersion(version: String): List<Int> = version.split('.')
     .map { it.toIntOrNull() ?: 0 }
     .let { if (it.size == 2) it + 0 else it }
 
-
 @EbbingPreview
 @Composable
 private fun PreviewSettingScreen() {
@@ -594,6 +690,7 @@ private fun PreviewSettingScreen() {
             onAlarmTimeClick = {},
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
+            onSyncClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},

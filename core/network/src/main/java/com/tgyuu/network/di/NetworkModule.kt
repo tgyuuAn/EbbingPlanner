@@ -1,6 +1,8 @@
 package com.tgyuu.network.di
 
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -28,6 +30,10 @@ object NetworkProvidesModule {
         val configSettings = remoteConfigSettings { minimumFetchIntervalInSeconds = 3600 }
         setConfigSettingsAsync(configSettings)
     }
+
+    @Singleton
+    @Provides
+    fun provideFirebaseFireStore(): FirebaseFirestore = Firebase.firestore
 }
 
 @Qualifier

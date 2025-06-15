@@ -1,36 +1,49 @@
 package com.tgyuu.database.source.todo
 
-import com.tgyuu.database.dao.SchedulesDao
+import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
+import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.model.sync.TodoInfoForSync
+import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class LocalTodoDataSourceImpl @Inject constructor(
-    private val schedulesDao: SchedulesDao,
+    private val todoSchedulesDao: TodoSchedulesDao,
     private val todoWithSchedulesDao: TodoWithSchedulesDao,
 ) : LocalTodoDataSource {
-    override suspend fun getSchedules(): List<TodoSchedule> =
-        schedulesDao.loadAllSchedulesWithInfoAndTag()
+    override suspend fun getTodoSchedules(): List<TodoSchedule> =
+        todoSchedulesDao.loadAllTodoSchedulesWithInfoAndTag()
 
-    override suspend fun getSchedule(id: Int): TodoSchedule =
-        schedulesDao.loadScheduleWithInfoAndTag(id)
+    override suspend fun getTodoSchedule(id: Int): TodoSchedule? =
+        todoSchedulesDao.loadTodoScheduleWithInfoAndTag(id)
 
-    override suspend fun getScheduleByTodoInfo(id: Int): List<TodoSchedule> =
-        schedulesDao.loadScheduleWithInfoAndTagByInfoId(id)
+    override suspend fun getTodoScheduleByTodoInfo(id: Int): List<TodoSchedule> =
+        todoSchedulesDao.loadTodoScheduleWithInfoAndTagByInfoId(id)
 
-    override suspend fun getSchedulesByDate(date: LocalDate): List<TodoSchedule> =
-        schedulesDao.loadScheduleWithInfoAndTagByDate(date)
+    override suspend fun getTodoSchedulesByDate(date: LocalDate): List<TodoSchedule> =
+        todoSchedulesDao.loadTodoScheduleWithInfoAndTagByDate(date)
 
-    override suspend fun getUpcomingSchedules(date: LocalDate): List<TodoSchedule> =
-        schedulesDao.loadUpcomingSchedules(date)
+    override suspend fun getUpcomingTodoSchedules(date: LocalDate): List<TodoSchedule> =
+        todoSchedulesDao.loadUpcomingTodoSchedules(date)
 
-    override fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
-        schedulesDao.subscribeScheduleWithInfoAndTagByDate(date)
+    override fun subscribeTodoSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
+        todoSchedulesDao.subscribeTodoScheduleWithInfoAndTagByDate(date)
 
-    override suspend fun addTodo(
+    override suspend fun getTodoScheduleEntity(id: Int): TodoScheduleEntity? =
+        todoSchedulesDao.loadTodoScheduleEntity(id)
+
+    override suspend fun insertSchedule(scheduleForSync: TodoScheduleForSync) =
+        todoSchedulesDao.insertTodoSchedule(scheduleForSync.toEntity())
+
+    override suspend fun insertTodoInfo(todoInfoForSync: TodoInfoForSync) =
+        todoSchedulesDao.insertTodoInfo(todoInfoForSync.toEntity())
+
+    override suspend fun insertTodos(
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
@@ -42,9 +55,38 @@ class LocalTodoDataSourceImpl @Inject constructor(
         priority = priority,
     )
 
-    override suspend fun updateTodo(todoSchedule: TodoSchedule) =
-        todoWithSchedulesDao.updateTodoSchedules(todoSchedule)
+    override suspend fun updateSchedule(todoSchedule: TodoSchedule) =
+        todoWithSchedulesDao.updateSchedule(
+            id = todoSchedule.id,
+            date = todoSchedule.date,
+            memo = todoSchedule.memo,
+            priority = todoSchedule.priority,
+            isDone = todoSchedule.isDone,
+        )
 
-    override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
-        schedulesDao.deleteSchedules(todoSchedule.toEntity())
+    override suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync) =
+        todoSchedulesDao.updateTodoSchedule(todoScheduleForSync.toEntity())
+
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
+        todoWithSchedulesDao.updateInfo(
+            id = todoSchedule.infoId,
+            title = todoSchedule.title,
+            tagId = todoSchedule.tagId,
+        )
+
+    override suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync) =
+        todoSchedulesDao.updateTodoInfo(todoInfoForSync.toEntity())
+
+    override suspend fun softDeleteTodo(todoSchedule: TodoSchedule) =
+        todoSchedulesDao.softDeleteSchedule(todoSchedule.toEntity().id)
+
+    override suspend fun hardDeleteTodo(id: Int) = todoSchedulesDao.hardDeleteSchedule(id)
+
+    override suspend fun hardDeleteAllTodos() = todoSchedulesDao.hardDeleteAllSchedule()
+
+    override suspend fun getSchedulesForSync(lastSyncTime: LocalDateTime): List<TodoScheduleForSync> =
+        todoSchedulesDao.loadAllSchedulesForSync(lastSyncTime)
+
+    override suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync> =
+        todoSchedulesDao.loadAllTodoInfosForSync(lastSyncTime)
 }

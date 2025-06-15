@@ -1,8 +1,9 @@
 package com.tgyuu.database.di
 
 import com.tgyuu.database.EbbingDatabase
+import com.tgyuu.database.dao.LinkedDevicesDao
 import com.tgyuu.database.dao.RepeatCyclesDao
-import com.tgyuu.database.dao.SchedulesDao
+import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoTagsDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
 import dagger.Module
@@ -19,9 +20,9 @@ internal object DaosModule {
     ): TodoTagsDao = database.todoTagsDao()
 
     @Provides
-    fun providesSchedulesDao(
+    fun providesTodoSchedulesDao(
         database: EbbingDatabase,
-    ): SchedulesDao = database.schedulesDao()
+    ): TodoSchedulesDao = database.schedulesDao()
 
     @Provides
     fun providesTodoWithSchedulesDao(
@@ -29,7 +30,12 @@ internal object DaosModule {
     ): TodoWithSchedulesDao = database.todoWithSchedulesDao()
 
     @Provides
-    fun providesRepeatCycleDao(
+    fun providesRepeatCyclesDao(
         database: EbbingDatabase,
     ): RepeatCyclesDao = database.repeatCyclesDao()
+
+    @Provides
+    fun providesLinkedDevicesDao(
+        database: EbbingDatabase,
+    ): LinkedDevicesDao = database.linkedDevicesDao()
 }	

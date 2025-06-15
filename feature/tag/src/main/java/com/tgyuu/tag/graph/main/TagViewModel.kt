@@ -33,7 +33,7 @@ class TagViewModel @Inject constructor(
     }
 
     internal fun loadTags() = viewModelScope.launch {
-        val tagList = todoRepository.loadTagList()
+        val tagList = todoRepository.loadTags()
         setState { copy(tagList = tagList) }
     }
 

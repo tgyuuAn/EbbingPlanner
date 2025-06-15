@@ -73,3 +73,15 @@ sealed interface RepeatCycleGraph : Route {
     @Serializable
     data class EditRepeatCycleRoute(val repeatCycleId: Int? = null) : Route
 }
+
+@Serializable
+data object SyncBaseRoute : Route
+
+sealed interface SyncGraph : Route {
+
+    @Serializable
+    data object SyncMainRoute : SyncGraph
+
+    @Serializable
+    data object LinkRoute : SyncGraph
+}

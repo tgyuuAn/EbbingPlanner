@@ -64,7 +64,7 @@ class EditTodoViewModel @Inject constructor(
     }
 
     internal fun loadTags() = viewModelScope.launch {
-        val loadedTagList = todoRepository.loadTagList()
+        val loadedTagList = todoRepository.loadTags()
         setState { copy(tagList = loadedTagList) }
     }
 
@@ -160,6 +160,7 @@ class EditTodoViewModel @Inject constructor(
         )
 
         todoRepository.updateTodo(newSchedule)
+        todoRepository.updateTodoInfo(newSchedule)
         val (hour, minute) = configRepository.getAlarmTime()
 
         currentState.originSchedule?.date?.let { originDate ->

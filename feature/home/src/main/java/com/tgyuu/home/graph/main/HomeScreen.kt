@@ -123,6 +123,7 @@ internal fun HomeRoute(
         state = state,
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
         onCheckedChange = { viewModel.onIntent(OnCheckedChange(it)) },
+        onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
         onSortTypeClick = {
             viewModel.onIntent(OnSortTypeClick({
                 SortTypeBottomSheet(
@@ -200,6 +201,7 @@ private fun HomeScreen(
     onCheckedChange: (TodoSchedule) -> Unit,
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
+    onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -212,6 +214,7 @@ private fun HomeScreen(
             onCheckedChange = onCheckedChange,
             onSortTypeClick = onSortTypeClick,
             onEditScheduleClick = onEditScheduleClick,
+            onSyncClick = onSyncClick,
             modifier = modifier
         )
     } else {
@@ -222,6 +225,7 @@ private fun HomeScreen(
             onCheckedChange = onCheckedChange,
             onSortTypeClick = onSortTypeClick,
             onEditScheduleClick = onEditScheduleClick,
+            onSyncClick = onSyncClick,
             modifier = modifier
         )
     }
@@ -235,6 +239,7 @@ private fun PhoneHomeScreen(
     onCheckedChange: (TodoSchedule) -> Unit,
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
+    onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val localDensity = LocalDensity.current
@@ -243,7 +248,7 @@ private fun PhoneHomeScreen(
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
     var isExpanded by remember { mutableStateOf(false) }
-    var calendarHeight by remember { mutableStateOf(0.dp) }
+    var calendarHeight by remember { mutableStateOf(1000.dp) }
     val animatedTopPadding by animateDpAsState(targetValue = if (isExpanded) 0.dp else calendarHeight)
 
     LaunchedEffect(workedDate) {
@@ -272,6 +277,7 @@ private fun PhoneHomeScreen(
                         }
                     }
                 },
+                onSyncClick = onSyncClick,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -346,6 +352,7 @@ private fun TabletHomeScreen(
     onCheckedChange: (TodoSchedule) -> Unit,
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
+    onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -369,6 +376,7 @@ private fun TabletHomeScreen(
                     }
                 }
             },
+            onSyncClick = onSyncClick,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(0.8f)
@@ -426,6 +434,7 @@ private fun Preview1() {
             onCheckedChange = {},
             onEditScheduleClick = {},
             onSortTypeClick = {},
+            onSyncClick = {},
         )
     }
 }

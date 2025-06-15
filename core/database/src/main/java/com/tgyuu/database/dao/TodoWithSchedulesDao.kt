@@ -5,13 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
-import com.tgyuu.database.model.ScheduleEntity
+import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.database.model.TodoInfoEntity
-import com.tgyuu.database.model.toEntity
-import com.tgyuu.database.model.toInfoEntity
-import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Dao
 interface TodoWithSchedulesDao {
@@ -19,7 +16,7 @@ interface TodoWithSchedulesDao {
     suspend fun insertInfo(entity: TodoInfoEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertSchedules(schedules: List<ScheduleEntity>)
+    suspend fun insertSchedules(schedules: List<TodoScheduleEntity>)
 
     @Transaction
     suspend fun insertTodoWithSchedules(
@@ -32,13 +29,12 @@ interface TodoWithSchedulesDao {
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
-                priority = priority ?: 0,
             )
         ).toInt()
 
         insertSchedules(
             dates.map { date ->
-                ScheduleEntity(
+                TodoScheduleEntity(
                     infoId = infoId,
                     date = date,
                     memo = "",
@@ -48,15 +44,33 @@ interface TodoWithSchedulesDao {
         )
     }
 
-    @Update
-    fun updateInfo(info: TodoInfoEntity)
+    @Query(
+        """
+        UPDATE todo_info
+        SET title = :title, tagId = :tagId, updatedAt = :updatedAt
+        WHERE id = :id
+        """
+    )
+    suspend fun updateInfo(
+        id: Int,
+        title: String,
+        tagId: Int,
+        updatedAt: LocalDateTime = LocalDateTime.now(),
+    )
 
-    @Update
-    fun updateSchedule(schedule: ScheduleEntity)
-
-    @Transaction
-    suspend fun updateTodoSchedules(todo: TodoSchedule) {
-        updateInfo(todo.toInfoEntity())
-        updateSchedule(todo.toEntity())
-    }
+    @Query(
+        """ 
+        UPDATE schedule
+        SET date = :date, memo = :memo, priority = :priority, isDone = :isDone, updatedAt = :updatedAt
+        WHERE id = :id AND isDeleted = 0
+        """
+    )
+    suspend fun updateSchedule(
+        id: Int,
+        date: LocalDate,
+        memo: String,
+        priority: Int,
+        isDone: Boolean,
+        updatedAt: LocalDateTime = LocalDateTime.now(),
+    )
 }
