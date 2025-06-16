@@ -56,7 +56,7 @@ class SyncMainViewModel @Inject constructor(
         when (intent) {
             SyncIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             SyncIntent.OnSyncUpClick -> syncUpData()
-            SyncIntent.OnLinkClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.LinkRoute))
+            SyncIntent.OnLinkClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
         }
     }
 

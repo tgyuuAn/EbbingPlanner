@@ -1,4 +1,4 @@
-package com.tgyuu.sync.graph.link
+package com.tgyuu.sync.graph.connect
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,28 +38,26 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.sync.graph.link.contract.LinkIntent
-import com.tgyuu.sync.graph.link.contract.LinkState
+import com.tgyuu.sync.graph.connect.contract.ConnectIntent
+import com.tgyuu.sync.graph.connect.contract.ConnectState
 
 @Composable
-internal fun LinkRoute(
-    viewModel: LinkViewModel = hiltViewModel(),
-) {
+internal fun ConnectRoute(viewModel: ConnectViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LinkScreen(
+    ConnectScreen(
         state = state,
-        onBackClick = { viewModel.onIntent(LinkIntent.OnBackClick) },
-        onMyCodeChange = { viewModel.onIntent(LinkIntent.OnMyCodeChange(it)) },
-        onAnotherCodeChange = { viewModel.onIntent(LinkIntent.OnAnotherCodeChange(it)) },
-        onClickConnectAnother = { viewModel.onIntent(LinkIntent.OnClickConnectAnother) },
-        onClickGenerateCode = { viewModel.onIntent(LinkIntent.OnClickGenerateCode) },
+        onBackClick = { viewModel.onIntent(ConnectIntent.OnBackClick) },
+        onMyCodeChange = { viewModel.onIntent(ConnectIntent.OnMyCodeChange(it)) },
+        onAnotherCodeChange = { viewModel.onIntent(ConnectIntent.OnAnotherCodeChange(it)) },
+        onClickConnectAnother = { viewModel.onIntent(ConnectIntent.OnClickConnectAnother) },
+        onClickGenerateCode = { viewModel.onIntent(ConnectIntent.OnClickGenerateCode) },
     )
 }
 
 @Composable
-internal fun LinkScreen(
-    state: LinkState,
+internal fun ConnectScreen(
+    state: ConnectState,
     onBackClick: () -> Unit,
     onMyCodeChange: (String) -> Unit,
     onAnotherCodeChange: (String) -> Unit,
@@ -94,7 +92,7 @@ internal fun LinkScreen(
 
 @Composable
 private fun PhoneLinkScreen(
-    state: LinkState,
+    state: ConnectState,
     onBackClick: () -> Unit,
     onMyCodeChange: (String) -> Unit,
     onAnotherCodeChange: (String) -> Unit,
@@ -131,7 +129,7 @@ private fun PhoneLinkScreen(
 
 @Composable
 private fun TabletLinkScreen(
-    state: LinkState,
+    state: ConnectState,
     onBackClick: () -> Unit,
     onMyCodeChange: (String) -> Unit,
     onAnotherCodeChange: (String) -> Unit,

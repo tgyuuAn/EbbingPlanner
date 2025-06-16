@@ -1,4 +1,4 @@
-package com.tgyuu.sync.graph.link
+package com.tgyuu.sync.graph.connect
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
@@ -7,20 +7,20 @@ import com.tgyuu.domain.model.Timer
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
-import com.tgyuu.sync.graph.link.contract.LinkIntent
-import com.tgyuu.sync.graph.link.contract.LinkState
+import com.tgyuu.sync.graph.connect.contract.ConnectIntent
+import com.tgyuu.sync.graph.connect.contract.ConnectState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LinkViewModel @Inject constructor(
+class ConnectViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val timer: Timer,
-) : BaseViewModel<LinkState, LinkIntent>(LinkState()) {
+) : BaseViewModel<ConnectState, ConnectIntent>(ConnectState()) {
     private var timerJob: Job? = null
 
     init {
@@ -30,13 +30,13 @@ class LinkViewModel @Inject constructor(
         }
     }
 
-    override suspend fun processIntent(intent: LinkIntent) {
+    override suspend fun processIntent(intent: ConnectIntent) {
         when (intent) {
-            LinkIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            LinkIntent.OnClickConnectAnother -> connectAnother()
-            LinkIntent.OnClickGenerateCode -> generateCode()
-            is LinkIntent.OnMyCodeChange -> setMyCode(intent.code)
-            is LinkIntent.OnAnotherCodeChange -> setAnotherCode(intent.code)
+            ConnectIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            ConnectIntent.OnClickConnectAnother -> connectAnother()
+            ConnectIntent.OnClickGenerateCode -> generateCode()
+            is ConnectIntent.OnMyCodeChange -> setMyCode(intent.code)
+            is ConnectIntent.OnAnotherCodeChange -> setAnotherCode(intent.code)
         }
     }
 

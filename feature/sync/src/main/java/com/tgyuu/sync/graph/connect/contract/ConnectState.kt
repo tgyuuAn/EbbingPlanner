@@ -1,10 +1,10 @@
-package com.tgyuu.sync.graph.link.contract
+package com.tgyuu.sync.graph.connect.contract
 
 import com.tgyuu.common.base.UiState
 import com.tgyuu.domain.model.Timer
 import java.util.Locale
 
-data class LinkState(
+data class ConnectState(
     val uuid: String = "",
     val myCode: String = "",
     val isGenerateButtonEnabled: Boolean = true,

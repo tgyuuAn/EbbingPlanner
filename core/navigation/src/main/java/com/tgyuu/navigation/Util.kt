@@ -19,7 +19,7 @@ private val BOTTOM_BAR_HIDDEN_ROUTES = setOf(
     MemoGraph.AddMemoRoute::class,
     MemoGraph.EditMemoRoute::class,
     SyncGraph.SyncMainRoute::class,
-    SyncGraph.LinkRoute::class,
+    SyncGraph.ConnectRoute::class,
 )
 
 private val ROOT_ROUTES = setOf(
@@ -29,7 +29,7 @@ private val ROOT_ROUTES = setOf(
 
 private val NETWORK_REQUIRED_ROUTES = setOf(
     SyncGraph.SyncMainRoute::class,
-    SyncGraph.LinkRoute::class,
+    SyncGraph.ConnectRoute::class,
 )
 
 fun NavDestination?.shouldHideBottomBar(): Boolean = this?.hierarchy?.any { destination ->
