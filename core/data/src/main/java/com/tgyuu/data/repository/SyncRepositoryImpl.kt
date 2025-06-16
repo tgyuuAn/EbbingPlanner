@@ -37,9 +37,19 @@ class SyncRepositoryImpl @Inject constructor(
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
     override suspend fun getUuid(): String = localSyncDataSource.uuid.first()
     override suspend fun getConnectedUuid(): String? = localSyncDataSource.connectedUuid.first()
-    override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> =
-        syncDataSource.getSyncInfo(getUuid())
-            .map(SyncInfoDto::toDomain)
+    override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> = suspendRunCatching {
+        coroutineScope {
+            val uuidDeferred = async { getUuid() }
+            val connectedUuidDeferred = async { getConnectedUuid() }
+
+            val uuid = uuidDeferred.await()
+            val connectedUuid = connectedUuidDeferred.await()
+
+            syncDataSource.getSyncInfo(connectedUuid ?: uuid)
+                .map(SyncInfoDto::toDomain)
+                .getOrThrow()
+        }
+    }
 
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
         localSyncDataSource.lastSyncTime.first()
@@ -85,20 +95,20 @@ class SyncRepositoryImpl @Inject constructor(
         suspendRunCatching {
             val dto = syncDataSource.connectAnother(connectCode)
                 .getOrThrow()
-
-            Log.d("test", "dto : $dto")
             if (dto == null) return@suspendRunCatching null
 
             val info = dto.toDomain()
-            Log.d("test", "info : $info")
             if (!info.isValid()) return@suspendRunCatching null
 
             val myUuid = getUuid()
-            Log.d("test", "uuid == myUuid : ${myUuid == info.uuid}")
             if (info.uuid == myUuid) return@suspendRunCatching info
 
             localSyncDataSource.setConnectedUuid(info.uuid)
-            replaceData().getOrThrow()
+            replaceData().getOrElse {
+                localSyncDataSource.setConnectedUuid(null)
+                localSyncDataSource.setLastSyncTime(null)
+                throw it
+            }
             info
         }
 
@@ -278,8 +288,6 @@ class SyncRepositoryImpl @Inject constructor(
             val uuid = uuidDeferred.await()
             val connectedUuid = connectedUuidDeferred.await()
 
-            Log.d("test", "connectedUuid : $connectedUuid")
-
             val lastSyncTime = localSyncDataSource.lastSyncTime
                 .first()
                 ?.toLocalDateTime()
@@ -287,8 +295,6 @@ class SyncRepositoryImpl @Inject constructor(
 
             val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
                 .getOrThrow()
-
-            Log.d("test", "response : $response")
 
             val infos = response.todoInfos.map { it.toDomain() }
             val repeatCycles = response.repeatCycles.map { it.toDomain() }
