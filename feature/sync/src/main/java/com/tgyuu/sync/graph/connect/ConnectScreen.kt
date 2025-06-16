@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.connect.contract.ConnectIntent
 import com.tgyuu.sync.graph.connect.contract.ConnectState
+import com.tgyuu.sync.graph.connect.ui.dialog.ConfirmConnectDialog
 
 @Composable
 internal fun ConnectRoute(viewModel: ConnectViewModel = hiltViewModel()) {
@@ -70,8 +72,19 @@ internal fun ConnectScreen(
     onClickConnectAnother: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    var isShowConnectDialog by remember { mutableStateOf(false) }
 
+    if (isShowConnectDialog) {
+        ConfirmConnectDialog(
+            onDismissRequest = { isShowConnectDialog = false },
+            onAcceptClick = {
+                onClickConnectAnother()
+                isShowConnectDialog = false
+            },
+        )
+    }
+
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         PhoneLinkScreen(
             state = state,
@@ -79,7 +92,7 @@ internal fun ConnectScreen(
             onMyCodeChange = onMyCodeChange,
             onAnotherCodeChange = onAnotherCodeChange,
             onClickGenerateCode = onClickGenerateCode,
-            onClickConnectAnother = onClickConnectAnother,
+            onClickConnectAnother = { isShowConnectDialog = true },
             modifier = modifier,
         )
     } else {
@@ -89,7 +102,7 @@ internal fun ConnectScreen(
             onMyCodeChange = onMyCodeChange,
             onAnotherCodeChange = onAnotherCodeChange,
             onClickGenerateCode = onClickGenerateCode,
-            onClickConnectAnother = onClickConnectAnother,
+            onClickConnectAnother = { isShowConnectDialog = true },
             modifier = modifier,
         )
     }

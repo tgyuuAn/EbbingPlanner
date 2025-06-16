@@ -23,7 +23,7 @@ fun ConfirmSyncUpDialog(
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
                         append("더 늦게 업데이트된 쪽으로 반영")
                     }
-                    append("됩니다. 중요한 데이터는 ")
+                    append("됩니다.\n중요한 데이터는 ")
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
                         append("동기화 전에 반드시 확인")
                     }

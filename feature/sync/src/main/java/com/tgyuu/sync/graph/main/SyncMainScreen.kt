@@ -284,7 +284,7 @@ internal fun LinkedUuidBody(
 ) {
     Text(
         text = "연동 되어있는 ID :",
-        style = EbbingTheme.typography.bodySR,
+        style = EbbingTheme.typography.bodySSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(bottom = 8.dp),
     )
