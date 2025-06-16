@@ -251,7 +251,6 @@ class SyncRepositoryImpl @Inject constructor(
         }
     }
 
-
     private suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
             ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()

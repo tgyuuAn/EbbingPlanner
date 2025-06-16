@@ -17,7 +17,7 @@ fun ConfirmDisconnectDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "연동된 ID를 연동 해제 할까요?",
+                title = "연동된 ID를 해제 할까요?",
                 subText = "저장되어 있는 데이터는 그대로 보존됩니다. \n 언제든지 다시 연동할 수 있습니다.",
             )
         },

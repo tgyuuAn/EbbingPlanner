@@ -95,6 +95,14 @@ class SyncMainViewModel @Inject constructor(
         syncRepository.disconnectAnother()
             .onSuccess {
                 loadInitData()
+
+                setState {
+                    copy(
+                        localLastSyncedAt = null,
+                        serverLastUpdatedAt = null,
+                    )
+                }
+
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 성공하였습니다."))
             }.onFailure {
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 실패하였습니다."))
