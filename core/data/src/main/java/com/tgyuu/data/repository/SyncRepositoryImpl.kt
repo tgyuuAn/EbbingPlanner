@@ -32,7 +32,7 @@ class SyncRepositoryImpl @Inject constructor(
 ) : SyncRepository {
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
     override suspend fun getUUID(): String = localSyncDataSource.uuid.first()
-    override suspend fun getLinkedUUID(): String? = localSyncDataSource.linkedUuid.first()
+    override suspend fun getLinkedUUID(): String? = localSyncDataSource.connectedUuid.first()
     override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> =
         syncDataSource.getSyncInfo(getUUID())
             .map(GetSyncInfoResponse::toDomain)
@@ -70,7 +70,7 @@ class SyncRepositoryImpl @Inject constructor(
             tagsDeleteJob.join()
 
             // 클라이언트 동기화 시간 갱신
-            localSyncDataSource.setSyncedAt(it)
+            localSyncDataSource.setLastSyncTime(it)
         }
     }
 
@@ -160,7 +160,7 @@ class SyncRepositoryImpl @Inject constructor(
             schedulesJob.join()
 
             val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
-            localSyncDataSource.setSyncedAt(syncedAt)
+            localSyncDataSource.setLastSyncTime(syncedAt)
 
             syncedAt
         }

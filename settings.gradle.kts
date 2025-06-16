@@ -42,6 +42,6 @@ include(":feature:onboarding")
 include(":feature:memo")
 include(":feature:repeatcycle")
 include(":feature:alarm")
+include(":feature:sync")
 
 include(":baselineprofile")
-include(":feature:sync")

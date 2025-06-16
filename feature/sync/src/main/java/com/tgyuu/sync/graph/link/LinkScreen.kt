@@ -1,33 +1,42 @@
 package com.tgyuu.sync.graph.link
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.link.contract.LinkIntent
 import com.tgyuu.sync.graph.link.contract.LinkState
@@ -41,7 +50,10 @@ internal fun LinkRoute(
     LinkScreen(
         state = state,
         onBackClick = { viewModel.onIntent(LinkIntent.OnBackClick) },
-        onLinkClick = { viewModel.onIntent(LinkIntent.OnLinkClick) },
+        onMyCodeChange = { viewModel.onIntent(LinkIntent.OnMyCodeChange(it)) },
+        onAnotherCodeChange = { viewModel.onIntent(LinkIntent.OnAnotherCodeChange(it)) },
+        onClickConnectAnother = { viewModel.onIntent(LinkIntent.OnClickConnectAnother) },
+        onClickGenerateCode = { viewModel.onIntent(LinkIntent.OnClickGenerateCode) },
     )
 }
 
@@ -49,7 +61,10 @@ internal fun LinkRoute(
 internal fun LinkScreen(
     state: LinkState,
     onBackClick: () -> Unit,
-    onLinkClick: () -> Unit,
+    onMyCodeChange: (String) -> Unit,
+    onAnotherCodeChange: (String) -> Unit,
+    onClickGenerateCode: () -> Unit,
+    onClickConnectAnother: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -58,14 +73,20 @@ internal fun LinkScreen(
         PhoneLinkScreen(
             state = state,
             onBackClick = onBackClick,
-            onLinkClick = onLinkClick,
+            onMyCodeChange = onMyCodeChange,
+            onAnotherCodeChange = onAnotherCodeChange,
+            onClickGenerateCode = onClickGenerateCode,
+            onClickConnectAnother = onClickConnectAnother,
             modifier = modifier,
         )
     } else {
         TabletLinkScreen(
             state = state,
             onBackClick = onBackClick,
-            onLinkClick = onLinkClick,
+            onMyCodeChange = onMyCodeChange,
+            onAnotherCodeChange = onAnotherCodeChange,
+            onClickGenerateCode = onClickGenerateCode,
+            onClickConnectAnother = onClickConnectAnother,
             modifier = modifier,
         )
     }
@@ -75,7 +96,10 @@ internal fun LinkScreen(
 private fun PhoneLinkScreen(
     state: LinkState,
     onBackClick: () -> Unit,
-    onLinkClick: () -> Unit,
+    onMyCodeChange: (String) -> Unit,
+    onAnotherCodeChange: (String) -> Unit,
+    onClickGenerateCode: () -> Unit,
+    onClickConnectAnother: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -90,10 +114,15 @@ private fun PhoneLinkScreen(
         )
 
         LinkBody(
-            code = state.code,
+            myCode = state.myCode,
+            anotherCode = state.anotherCode,
+            remainingTimeInSec = state.formattedRemainingTimeInSec,
             isGenerateButtonEnabled = state.isGenerateButtonEnabled,
-            onCodeChange = {},
-            onClickCodeGenerate = {},
+            isConnectButtonEnabled = state.isConnectButtonEnabled,
+            onMyCodeChange = onMyCodeChange,
+            onAnotherCodeChange = onAnotherCodeChange,
+            onClickGenerateCode = onClickGenerateCode,
+            onClickConnectAnother = onClickConnectAnother,
         )
 
         DescriptionBody()
@@ -104,12 +133,18 @@ private fun PhoneLinkScreen(
 private fun TabletLinkScreen(
     state: LinkState,
     onBackClick: () -> Unit,
-    onLinkClick: () -> Unit,
+    onMyCodeChange: (String) -> Unit,
+    onAnotherCodeChange: (String) -> Unit,
+    onClickGenerateCode: () -> Unit,
+    onClickConnectAnother: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(horizontal = 20.dp)
     ) {
         EbbingSubTopBar(
@@ -119,116 +154,175 @@ private fun TabletLinkScreen(
         )
 
         LinkBody(
-            code = state.code,
+            myCode = state.myCode,
+            anotherCode = state.anotherCode,
+            remainingTimeInSec = state.formattedRemainingTimeInSec,
             isGenerateButtonEnabled = state.isGenerateButtonEnabled,
-            onCodeChange = {},
-            onClickCodeGenerate = {},
+            isConnectButtonEnabled = state.isConnectButtonEnabled,
+            onMyCodeChange = onMyCodeChange,
+            onAnotherCodeChange = onAnotherCodeChange,
+            onClickGenerateCode = onClickGenerateCode,
+            onClickConnectAnother = onClickConnectAnother,
         )
+
+        DescriptionBody()
     }
 }
 
 @Composable
 private fun LinkBody(
-    code: String,
+    myCode: String,
+    anotherCode: String,
+    remainingTimeInSec: String,
     isGenerateButtonEnabled: Boolean,
-    onCodeChange: (String) -> Unit,
-    onClickCodeGenerate: () -> Unit,
+    isConnectButtonEnabled: Boolean,
+    onMyCodeChange: (String) -> Unit,
+    onAnotherCodeChange: (String) -> Unit,
+    onClickGenerateCode: () -> Unit,
+    onClickConnectAnother: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = "내 기기 데이터로 연동시키기",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
+    var lastDoneTime by remember { mutableLongStateOf(0L) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp),
-    ) {
-        EbbingTextInputDefault(
-            value = code,
-            hint = "내 연동 코드를 생성하세요.",
-            keyboardType = KeyboardType.Text,
-            onValueChange = onCodeChange,
-            limit = 100,
-            rightComponent = {
-                if (code.isNotEmpty()) {
-                    Image(
-                        painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_delete_circle),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .size(20.dp)
-                            .clickable { onCodeChange("") },
-                    )
-                }
-            },
-            modifier = Modifier.weight(1f),
+    Column(modifier = modifier) {
+        Text(
+            text = "내 기기 데이터로 연동시키기",
+            style = EbbingTheme.typography.bodySM,
+            color = EbbingTheme.colors.black,
+            modifier = Modifier.padding(bottom = 8.dp),
         )
 
-        EbbingSolidButton(
-            label = "생성",
-            onClick = onClickCodeGenerate,
-            enabled = isGenerateButtonEnabled,
-            modifier = Modifier.padding(start = 8.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+        ) {
+            BasicTextField(
+                value = myCode,
+                onValueChange = onMyCodeChange,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                readOnly = !isGenerateButtonEnabled,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastDoneTime >= 1000L) {
+                            keyboardController?.hide()
+                            onClickGenerateCode()
+                            lastDoneTime = currentTime
+                        }
+                    }
+                ),
+                textStyle = EbbingTheme.typography.bodyMM.copy(
+                    color = if (isGenerateButtonEnabled) EbbingTheme.colors.black
+                    else EbbingTheme.colors.primaryDefault
+                ),
+                decorationBox = { innerTextField ->
+                    Box {
+                        innerTextField()
+
+                        if (!isGenerateButtonEnabled) {
+                            Text(
+                                text = remainingTimeInSec,
+                                style = EbbingTheme.typography.bodySM,
+                                color = EbbingTheme.colors.primaryDefault,
+                                modifier = Modifier.align(Alignment.CenterEnd),
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .height(52.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(EbbingTheme.colors.light3)
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .weight(1f),
+            )
+
+            EbbingSolidButton(
+                label = "생성",
+                onClick = onClickGenerateCode,
+                enabled = myCode.isNotEmpty() && isGenerateButtonEnabled,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        Text(
+            text = "내 데이터로 연동할 수 있는 코드를 생성하세요.",
+            style = EbbingTheme.typography.bodySM,
+            color = EbbingTheme.colors.dark3,
+        )
+
+        HorizontalDivider(
+            color = EbbingTheme.colors.light2,
+            thickness = 1.dp,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+
+        Text(
+            text = "다른 기기 데이터로 연동하기",
+            style = EbbingTheme.typography.bodySM,
+            color = EbbingTheme.colors.black,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+        ) {
+            BasicTextField(
+                value = anotherCode,
+                onValueChange = onAnotherCodeChange,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                readOnly = !isConnectButtonEnabled,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastDoneTime >= 1000L) {
+                            keyboardController?.hide()
+                            onClickConnectAnother()
+                            lastDoneTime = currentTime
+                        }
+                    }
+                ),
+                textStyle = EbbingTheme.typography.bodyMM.copy(
+                    color = if (isConnectButtonEnabled) EbbingTheme.colors.black
+                    else EbbingTheme.colors.primaryDefault
+                ),
+                decorationBox = { innerTextField -> innerTextField() },
+                modifier = Modifier
+                    .height(52.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(EbbingTheme.colors.light3)
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .weight(1f),
+            )
+
+            EbbingSolidButton(
+                label = "연결",
+                onClick = onClickGenerateCode,
+                enabled = anotherCode.isNotEmpty() && isConnectButtonEnabled,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        Text(
+            text = "사용할 데이터를 가진 기기의 연동 코드를 입력하세요.",
+            style = EbbingTheme.typography.bodySM,
+            color = EbbingTheme.colors.dark3,
+        )
+
+        HorizontalDivider(
+            color = EbbingTheme.colors.light2,
+            thickness = 1.dp,
+            modifier = Modifier.padding(vertical = 16.dp)
         )
     }
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.light2,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
-
-    Text(
-        text = "다른 기기 데이터로 연동하기",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp),
-    ) {
-        EbbingTextInputDefault(
-            value = code,
-            hint = "다른 연동 코드를 입력하세요.",
-            keyboardType = KeyboardType.Text,
-            onValueChange = onCodeChange,
-            limit = 100,
-            rightComponent = {
-                if (code.isNotEmpty()) {
-                    Image(
-                        painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_delete_circle),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .size(20.dp)
-                            .clickable { onCodeChange("") },
-                    )
-                }
-            },
-            modifier = Modifier.weight(1f),
-        )
-
-        EbbingSolidButton(
-            label = "입력",
-            onClick = onClickCodeGenerate,
-            enabled = isGenerateButtonEnabled,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.light2,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
 }
 
 @Composable
@@ -257,3 +351,4 @@ private fun DescriptionBody() {
         color = EbbingTheme.colors.dark3,
     )
 }
+
