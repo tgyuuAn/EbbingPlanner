@@ -1,0 +1,1 @@
+-keep class com.tgyuu.network.model.** { *; }
