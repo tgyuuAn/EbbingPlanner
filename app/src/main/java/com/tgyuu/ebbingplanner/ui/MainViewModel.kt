@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.ui
 
 import androidx.lifecycle.ViewModel
 import com.tgyuu.domain.model.UpdateInfo
+import com.tgyuu.domain.model.error.ErrorBus
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
@@ -19,6 +20,7 @@ class MainViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
+    private val errorBus: ErrorBus,
 ) : ViewModel() {
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     val updateInfo = _updateInfo.asStateFlow()
@@ -41,5 +43,9 @@ class MainViewModel @Inject constructor(
 
     internal suspend fun ensureUUIDExists() {
         syncRepository.ensureUUIDExists()
+    }
+
+    internal suspend fun setUserId() {
+        errorBus.setUserId(syncRepository.getUuid())
     }
 }
