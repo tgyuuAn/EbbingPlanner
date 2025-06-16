@@ -5,6 +5,7 @@ import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
 import com.tgyuu.datastore.datasource.sync.LocalSyncDataSource
+import com.tgyuu.domain.model.sync.ConnectInfo
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
@@ -67,6 +68,19 @@ class SyncRepositoryImpl @Inject constructor(
     override suspend fun getConnectCodeExpiration(): ZonedDateTime? =
         localSyncDataSource.connectCodeExpirationTime.first()
 
+    override suspend fun connectAnother(connectCode: String): Result<ConnectInfo?> =
+        suspendRunCatching {
+            val dto = syncDataSource.connectAnother(connectCode)
+                .getOrThrow()
+
+            if (dto == null) return@suspendRunCatching null
+
+            val info = dto.toDomain()
+            if (!info.isValid()) return@suspendRunCatching null
+
+            localSyncDataSource.setConnectedUuid(info.uuid)
+            info
+        }
 
     private suspend fun uploadData(): Result<ZonedDateTime> = coroutineScope {
         val uuid = async { getUuid() }

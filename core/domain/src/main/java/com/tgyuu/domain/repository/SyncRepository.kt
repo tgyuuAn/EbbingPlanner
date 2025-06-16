@@ -1,5 +1,6 @@
 package com.tgyuu.domain.repository
 
+import com.tgyuu.domain.model.sync.ConnectInfo
 import java.time.ZonedDateTime
 
 interface SyncRepository {
@@ -12,5 +13,5 @@ interface SyncRepository {
     suspend fun generateConnectCode(connectCode: String): Result<ZonedDateTime>
     suspend fun getMyConnectCode(): String?
     suspend fun getConnectCodeExpiration(): ZonedDateTime?
-    suspend fun connectAnother(connectCode: String): Result<Unit>
+    suspend fun connectAnother(connectCode: String): Result<ConnectInfo?>
 }

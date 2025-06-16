@@ -8,7 +8,7 @@ import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import com.tgyuu.network.model.sync.ConnectCodeDto
+import com.tgyuu.network.model.sync.ConnectDto
 import com.tgyuu.network.model.sync.RepeatCycleDto
 import com.tgyuu.network.model.sync.SyncDataDto
 import com.tgyuu.network.model.sync.SyncInfoDto
@@ -175,18 +175,32 @@ class SyncDataSource @Inject constructor(
                 .plusMinutes(10L)
                 .toDate()
 
-            val connectCodeDto = ConnectCodeDto(
+            val connectDto = ConnectDto(
                 uuid = uuid,
                 connectCode = connectCode,
                 connectCodeExpirationTime = connectCodeExpirationTime,
             )
 
-            connectCodeDoc.set(connectCodeDto)
+            connectCodeDoc.set(connectDto)
                 .await()
 
             connectCodeExpirationTime.toInstant()
                 .atZone(ZoneId.systemDefault())
         }
+
+    suspend fun connectAnother(connectCode: String): Result<ConnectDto?> = suspendRunCatching {
+        val docRef = firestore
+            .collection(COLLECTION_CONNECT_CODES)
+            .document(connectCode)
+
+        val snapshot = docRef.get().await()
+
+        if (snapshot.exists()) {
+            snapshot.toObject(ConnectDto::class.java)
+        } else {
+            null
+        }
+    }
 
     private companion object {
         // 컬렉션 상수

@@ -121,12 +121,15 @@ class ConnectViewModel @Inject constructor(
         }
 
         syncRepository.connectAnother(connectCode = currentState.anotherCode)
-            .onSuccess {
-                setState {
-                    copy(
-                        isGenerateButtonEnabled = false,
-                        isConnectButtonEnabled = false,
-                    )
+            .onSuccess { connectInfo ->
+                if (connectInfo == null) {
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나 코드 유효시간이 만료되었습니다."))
+                    return@onSuccess
+                }
+
+                if (connectInfo.uuid == currentState.uuid) {
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("나와 연동할 수 없습니다."))
+                    return@onSuccess
                 }
 
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
