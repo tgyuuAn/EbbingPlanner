@@ -206,6 +206,9 @@ class MainActivity : ComponentActivity() {
         insertDefaultTagJob.join()
         checkOnboardingJob.join()
         ensureUUIDExistsJob.join()
+
+        // UUID가 없을경우, 생성 이후 호출해야 하므로 동기적으로 호출
+        viewModel.setUserId()
     }
 
     private fun handleDestinationIntent(intent: Intent) {

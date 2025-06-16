@@ -5,6 +5,7 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.model.Timer
+import com.tgyuu.domain.model.error.ErrorBus
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -24,6 +25,7 @@ class ConnectViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
     private val networkMonitor: NetworkMonitor,
     private val navigationBus: NavigationBus,
+    private val errorBus: ErrorBus,
     private val eventBus: EventBus,
     private val timer: Timer,
 ) : BaseViewModel<ConnectState, ConnectIntent>(ConnectState()) {
@@ -116,7 +118,8 @@ class ConnectViewModel @Inject constructor(
                 }
 
                 startTimer()
-            }.onFailure {
+            }.onFailure { error ->
+                errorBus.sendError(error)
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("유효하지 않은 코드이거나, 네트워크가 불안정합니다."))
             }
     }
@@ -146,7 +149,8 @@ class ConnectViewModel @Inject constructor(
 
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
                 navigationBus.navigate(NavigationEvent.Up)
-            }.onFailure {
+            }.onFailure { error ->
+                errorBus.sendError(error)
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 네트워크가 불안정합니다."))
             }
     }
