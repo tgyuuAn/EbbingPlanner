@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.domain.model.error.ErrorBus
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -20,8 +21,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SyncMainViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
-    private val navigationBus: NavigationBus,
     private val networkMonitor: NetworkMonitor,
+    private val navigationBus: NavigationBus,
+    private val errorBus: ErrorBus,
     internal val eventBus: EventBus,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
@@ -78,7 +80,8 @@ class SyncMainViewModel @Inject constructor(
                     )
                 }
             }
-            .onFailure {
+            .onFailure { error ->
+                errorBus.sendError(error)
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
             }.also {
                 setState { copy(isNetworkLoading = false) }
@@ -104,7 +107,8 @@ class SyncMainViewModel @Inject constructor(
                 }
 
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 성공하였습니다."))
-            }.onFailure {
+            }.onFailure { error ->
+                errorBus.sendError(error)
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 실패하였습니다."))
             }.also {
                 setState { copy(isNetworkLoading = false) }

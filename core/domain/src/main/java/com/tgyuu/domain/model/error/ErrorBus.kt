@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ErrorHelper @Inject constructor(
+class ErrorBus @Inject constructor(
     private val errorRepository: ErrorRepository,
 ) {
     private val _errorEvent = Channel<Throwable>(DEFAULT_BUFFER_SIZE)
