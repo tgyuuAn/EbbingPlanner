@@ -8,19 +8,23 @@ import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import com.tgyuu.network.model.sync.GetDownloadDataResponse
-import com.tgyuu.network.model.sync.GetSyncInfoResponse
+import com.tgyuu.network.model.sync.ConnectCodeDto
 import com.tgyuu.network.model.sync.RepeatCycleDto
+import com.tgyuu.network.model.sync.SyncDataDto
+import com.tgyuu.network.model.sync.SyncInfoDto
 import com.tgyuu.network.model.sync.TodoInfoDto
 import com.tgyuu.network.model.sync.TodoScheduleDto
 import com.tgyuu.network.model.sync.TodoTagDto
 import com.tgyuu.network.model.sync.toDto
+import com.tgyuu.network.toDate
 import com.tgyuu.network.toResult
 import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Date
 import javax.inject.Inject
@@ -28,13 +32,13 @@ import javax.inject.Inject
 class SyncDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) {
-    suspend fun getSyncInfo(uuid: String): Result<GetSyncInfoResponse> {
+    suspend fun getSyncInfo(uuid: String): Result<SyncInfoDto> {
         val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
         return userDoc.collection(COLLECTION_INFO)
             .document(INFO_DOCUMENT_ID)
             .get()
-            .toResult<GetSyncInfoResponse>()
+            .toResult<SyncInfoDto>()
     }
 
     suspend fun uploadData(
@@ -104,7 +108,7 @@ class SyncDataSource @Inject constructor(
     suspend fun downloadData(
         uuid: String,
         lastSyncTime: Date,
-    ): Result<GetDownloadDataResponse> = coroutineScope {
+    ): Result<SyncDataDto> = coroutineScope {
         suspendRunCatching {
             val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
@@ -151,7 +155,7 @@ class SyncDataSource @Inject constructor(
                     .await()
             }
 
-            GetDownloadDataResponse(
+            SyncDataDto(
                 schedules = schedulesDeferred.await(),
                 todoInfos = todoInfosDeferred.await(),
                 repeatCycles = repeatCyclesDeferred.await(),
@@ -162,6 +166,28 @@ class SyncDataSource @Inject constructor(
         }
     }
 
+    suspend fun generateConnectCode(uuid: String, connectCode: String): Result<ZonedDateTime> =
+        suspendRunCatching {
+            val connectCodeDoc = firestore.collection(COLLECTION_CONNECT_CODES)
+                .document(connectCode)
+
+            val connectCodeExpirationTime = LocalDateTime.now()
+                .plusMinutes(10L)
+                .toDate()
+
+            val connectCodeDto = ConnectCodeDto(
+                uuid = uuid,
+                connectCode = connectCode,
+                connectCodeExpirationTime = connectCodeExpirationTime,
+            )
+
+            connectCodeDoc.set(connectCodeDto)
+                .await()
+
+            connectCodeExpirationTime.toInstant()
+                .atZone(ZoneId.systemDefault())
+        }
+
     private companion object {
         // 컬렉션 상수
         private const val COLLECTION_USERS = "users"
@@ -170,6 +196,7 @@ class SyncDataSource @Inject constructor(
         private const val COLLECTION_TODO_INFOS = "todoInfos"
         private const val COLLECTION_REPEAT_CYCLES = "repeatCycles"
         private const val COLLECTION_TAGS = "tags"
+        private const val COLLECTION_CONNECT_CODES = "connectCodes"
 
         // 다큐먼트 상수
         private const val INFO_DOCUMENT_ID = "0"

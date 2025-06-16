@@ -1,6 +1,5 @@
 package com.tgyuu.sync.graph.main
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -27,7 +26,7 @@ class SyncMainViewModel @Inject constructor(
 
     internal fun loadInitData() = viewModelScope.launch {
         val uuidJob = launch {
-            val uuid = syncRepository.getUUID()
+            val uuid = syncRepository.getUuid()
             setState { copy(uuid = uuid) }
         }
 
@@ -78,8 +77,6 @@ class SyncMainViewModel @Inject constructor(
                 }
             }
             .onFailure {
-                Log.d("test", it.stackTraceToString())
-
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
             }.also {
                 setState { copy(isNetworkLoading = false) }

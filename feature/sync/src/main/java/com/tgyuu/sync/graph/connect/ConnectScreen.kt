@@ -18,6 +18,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,10 @@ import com.tgyuu.sync.graph.connect.contract.ConnectState
 @Composable
 internal fun ConnectRoute(viewModel: ConnectViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.getMyConnectInfo()
+    }
 
     ConnectScreen(
         state = state,
@@ -205,11 +210,13 @@ private fun LinkBody(
                 readOnly = !isGenerateButtonEnabled,
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        val currentTime = System.currentTimeMillis()
-                        if (currentTime - lastDoneTime >= 1000L) {
-                            keyboardController?.hide()
-                            onClickGenerateCode()
-                            lastDoneTime = currentTime
+                        if (myCode.isNotEmpty() && isGenerateButtonEnabled) {
+                            val currentTime = System.currentTimeMillis()
+                            if (currentTime - lastDoneTime >= 1000L) {
+                                keyboardController?.hide()
+                                onClickGenerateCode()
+                                lastDoneTime = currentTime
+                            }
                         }
                     }
                 ),
@@ -280,11 +287,13 @@ private fun LinkBody(
                 readOnly = !isConnectButtonEnabled,
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        val currentTime = System.currentTimeMillis()
-                        if (currentTime - lastDoneTime >= 1000L) {
-                            keyboardController?.hide()
-                            onClickConnectAnother()
-                            lastDoneTime = currentTime
+                        if (anotherCode.isNotEmpty() && isConnectButtonEnabled) {
+                            val currentTime = System.currentTimeMillis()
+                            if (currentTime - lastDoneTime >= 1000L) {
+                                keyboardController?.hide()
+                                onClickConnectAnother()
+                                lastDoneTime = currentTime
+                            }
                         }
                     }
                 ),

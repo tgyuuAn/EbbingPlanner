@@ -11,7 +11,7 @@ import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.network.defaultDate
-import com.tgyuu.network.model.sync.GetSyncInfoResponse
+import com.tgyuu.network.model.sync.SyncInfoDto
 import com.tgyuu.network.source.SyncDataSource
 import com.tgyuu.network.toDate
 import com.tgyuu.network.toZonedDateTimeOrNull
@@ -31,11 +31,11 @@ class SyncRepositoryImpl @Inject constructor(
     private val localSyncDataSource: LocalSyncDataSource,
 ) : SyncRepository {
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
-    override suspend fun getUUID(): String = localSyncDataSource.uuid.first()
+    override suspend fun getUuid(): String = localSyncDataSource.uuid.first()
     override suspend fun getLinkedUUID(): String? = localSyncDataSource.connectedUuid.first()
     override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> =
-        syncDataSource.getSyncInfo(getUUID())
-            .map(GetSyncInfoResponse::toDomain)
+        syncDataSource.getSyncInfo(getUuid())
+            .map(SyncInfoDto::toDomain)
 
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
         localSyncDataSource.lastSyncTime.first()
@@ -45,15 +45,38 @@ class SyncRepositoryImpl @Inject constructor(
         uploadData().getOrThrow()
     }
 
+    override suspend fun generateConnectCode(connectCode: String): Result<ZonedDateTime> =
+        syncDataSource.generateConnectCode(
+            uuid = getUuid(),
+            connectCode = connectCode,
+        ).onSuccess {
+            coroutineScope {
+                val codeExpirationJob = launch {
+                    localSyncDataSource.setConnectCodeExpirationTime(it)
+                }
+                val connectCodeJob = launch {
+                    localSyncDataSource.setConnectCode(connectCode)
+                }
+
+                codeExpirationJob.join()
+                connectCodeJob.join()
+            }
+        }
+
+    override suspend fun getMyConnectCode(): String? = localSyncDataSource.connectCode.first()
+    override suspend fun getConnectCodeExpiration(): ZonedDateTime? =
+        localSyncDataSource.connectCodeExpirationTime.first()
+
+
     private suspend fun uploadData(): Result<ZonedDateTime> = coroutineScope {
-        val uuid = getUUID()
+        val uuid = async { getUuid() }
         val schedules = async { loadSchedulesForSync() }
         val infos = async { loadTodoInfosForSync() }
         val repeatCycles = async { loadRepeatCyclesForSync() }
         val tags = async { loadTagsForSync() }
 
         syncDataSource.uploadData(
-            uuid = uuid,
+            uuid = uuid.await(),
             schedules = schedules.await(),
             infos = infos.await(),
             repeatCycles = repeatCycles.await(),
@@ -76,7 +99,7 @@ class SyncRepositoryImpl @Inject constructor(
 
     private suspend fun downloadData(): Result<ZonedDateTime?> = suspendRunCatching {
         coroutineScope {
-            val uuid = getUUID()
+            val uuid = getUuid()
             val lastSyncTime = localSyncDataSource.lastSyncTime
                 .first()
                 ?.toLocalDateTime()

@@ -2,6 +2,7 @@ package com.tgyuu.sync.graph.connect
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
+import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.model.Timer
 import com.tgyuu.domain.repository.SyncRepository
@@ -9,14 +10,19 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.sync.graph.connect.contract.ConnectIntent
 import com.tgyuu.sync.graph.connect.contract.ConnectState
+import com.tgyuu.sync.network.NetworkMonitor
+import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class ConnectViewModel @Inject constructor(
     private val syncRepository: SyncRepository,
+    private val networkMonitor: NetworkMonitor,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val timer: Timer,
@@ -25,8 +31,31 @@ class ConnectViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val uuid = syncRepository.getUUID()
+            val uuid = syncRepository.getUuid()
             setState { copy(uuid = uuid) }
+        }
+    }
+
+    internal suspend fun getMyConnectInfo() {
+        val myConnectCode = syncRepository.getMyConnectCode()
+        val expiration = syncRepository.getConnectCodeExpiration()
+
+        if (myConnectCode != null && expiration != null) {
+            val now = ZonedDateTime.now()
+            if (expiration.isAfter(now)) {
+                val remainingSec = Duration.between(now, expiration).seconds
+
+                setState {
+                    copy(
+                        myCode = myConnectCode,
+                        isGenerateButtonEnabled = false,
+                        isConnectButtonEnabled = false,
+                        remainingTimeInSec = remainingSec
+                    )
+                }
+
+                startTimer(fromSec = remainingSec)
+            }
         }
     }
 
@@ -52,33 +81,81 @@ class ConnectViewModel @Inject constructor(
         setState { copy(anotherCode = filtered) }
     }
 
-
     private suspend fun generateCode() {
-        setState { copy(isGenerateButtonEnabled = false) }
-        startTimer()
+        if (currentState.myCode.isEmpty()) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드는 비어있을 수 없습니다."))
+            return
+        }
+
+        if (networkMonitor.networkState.value != NetworkState.Connected) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            return
+        }
+
+        syncRepository.generateConnectCode(connectCode = currentState.myCode)
+            .onSuccess {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드 생성에 성공하였습니다."))
+
+                setState {
+                    copy(
+                        isConnectButtonEnabled = false,
+                        isGenerateButtonEnabled = false,
+                    )
+                }
+
+                startTimer()
+            }.onFailure {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("유효하지 않은 코드이거나 네트워크가 안정적이지 않습니다."))
+            }
     }
 
     private suspend fun connectAnother() {
+        if (currentState.anotherCode.isEmpty()) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드는 비어있을 수 없습니다."))
+            return
+        }
 
+        if (networkMonitor.networkState.value != NetworkState.Connected) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            return
+        }
+
+        syncRepository.connectAnother(connectCode = currentState.anotherCode)
+            .onSuccess {
+                setState {
+                    copy(
+                        isGenerateButtonEnabled = false,
+                        isConnectButtonEnabled = false,
+                    )
+                }
+
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
+                navigationBus.navigate(NavigationEvent.Up)
+            }.onFailure {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나 네트워크가 안정적이지 않습니다."))
+            }
     }
 
-    private fun startTimer() {
+    private fun startTimer(fromSec: Long = Timer.DEFAULT_DURATION_IN_SEC) {
         timerJob?.cancel()
 
         timerJob = viewModelScope.launch {
-            timer.startTimer()
+            timer.startTimer(durationInSec = fromSec)
                 .collect { remaining ->
                     setState { copy(remainingTimeInSec = remaining) }
-
-                    if (remaining == 0L) {
-                        setState { copy(isGenerateButtonEnabled = true) }
+                    if (remaining <= 0L) {
+                        setState {
+                            copy(
+                                myCode = "",
+                                isGenerateButtonEnabled = true,
+                                isConnectButtonEnabled = true,
+                            )
+                        }
                         timerJob?.cancel()
                     }
                 }
         }
     }
-
-    internal fun stopTimer() = timerJob?.cancel()
 
     override fun onCleared() {
         super.onCleared()
