@@ -1,5 +1,6 @@
 package com.tgyuu.sync.graph.connect
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -72,13 +73,25 @@ class ConnectViewModel @Inject constructor(
     private fun setMyCode(code: String) {
         val filtered = code.replace("\\s+".toRegex(), "")
         if (code.length > 20) return
-        setState { copy(myCode = filtered) }
+
+        setState {
+            copy(
+                myCode = filtered,
+                anotherCode = "",
+            )
+        }
     }
 
     private fun setAnotherCode(code: String) {
         val filtered = code.replace("\\s+".toRegex(), "")
         if (code.length > 20) return
-        setState { copy(anotherCode = filtered) }
+
+        setState {
+            copy(
+                myCode = "",
+                anotherCode = filtered,
+            )
+        }
     }
 
     private suspend fun generateCode() {
@@ -105,7 +118,7 @@ class ConnectViewModel @Inject constructor(
 
                 startTimer()
             }.onFailure {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("유효하지 않은 코드이거나 네트워크가 안정적이지 않습니다."))
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("유효하지 않은 코드이거나, 네트워크가 불안정합니다."))
             }
     }
 
@@ -123,19 +136,20 @@ class ConnectViewModel @Inject constructor(
         syncRepository.connectAnother(connectCode = currentState.anotherCode)
             .onSuccess { connectInfo ->
                 if (connectInfo == null) {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나 코드 유효시간이 만료되었습니다."))
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 유효시간이 만료되었습니다."))
                     return@onSuccess
                 }
 
                 if (connectInfo.uuid == currentState.uuid) {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("나와 연동할 수 없습니다."))
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("나와는 연동할 수 없습니다."))
                     return@onSuccess
                 }
 
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
                 navigationBus.navigate(NavigationEvent.Up)
             }.onFailure {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나 네트워크가 안정적이지 않습니다."))
+                Log.d("test", it.stackTraceToString())
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 네트워크가 불안정합니다."))
             }
     }
 

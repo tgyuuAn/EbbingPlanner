@@ -23,7 +23,7 @@ interface RepeatCyclesDao {
     suspend fun hardDeleteAllRepeatCycles()
 
     @Query(
-        """
+    """
         UPDATE repeat_cycle 
         SET intervals = :intervalsJson, updatedAt = :updatedAt
         WHERE id = :id AND isDeleted = 0
@@ -38,12 +38,12 @@ interface RepeatCyclesDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateRepeatCycle(repeatCycle: RepeatCycleEntity)
 
-    @Query(value = "SELECT * FROM repeat_cycle WHERE isDeleted = 0")
+    @Query("SELECT * FROM repeat_cycle WHERE isDeleted = 0")
     suspend fun getRepeatCycles(): List<RepeatCycleEntity>
 
-    @Query(value = "SELECT * FROM repeat_cycle WHERE id = :id AND isDeleted = 0")
+    @Query("SELECT * FROM repeat_cycle WHERE id = :id AND isDeleted = 0")
     suspend fun getRepeatCycle(id: Int): RepeatCycleEntity?
 
-    @Query(value = "SELECT * FROM repeat_cycle WHERE updatedAt > :lastSyncTime")
+    @Query("SELECT * FROM repeat_cycle WHERE updatedAt > :lastSyncTime")
     suspend fun getRepeatCyclesForSync(lastSyncTime: LocalDateTime): List<RepeatCycleEntity>
 }

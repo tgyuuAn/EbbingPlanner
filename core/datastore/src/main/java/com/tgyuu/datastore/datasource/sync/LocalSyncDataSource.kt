@@ -11,8 +11,8 @@ interface LocalSyncDataSource {
     val connectCodeExpirationTime: Flow<ZonedDateTime?>
     suspend fun ensureUUIDExists()
     suspend fun setUuid(uuid: String)
-    suspend fun setConnectedUuid(uuid: String)
-    suspend fun setConnectCode(linkCode: String)
+    suspend fun setConnectedUuid(uuid: String?)
+    suspend fun setConnectCode(linkCode: String?)
     suspend fun setLastSyncTime(time: ZonedDateTime?)
     suspend fun setConnectCodeExpirationTime(time: ZonedDateTime?)
 }

@@ -210,13 +210,13 @@ private fun LinkBody(
                 readOnly = !isGenerateButtonEnabled,
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (myCode.isNotEmpty() && isGenerateButtonEnabled) {
-                            val currentTime = System.currentTimeMillis()
-                            if (currentTime - lastDoneTime >= 1000L) {
-                                keyboardController?.hide()
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastDoneTime >= 1000L) {
+                            keyboardController?.hide()
+                            if (myCode.isNotEmpty() && isGenerateButtonEnabled) {
                                 onClickGenerateCode()
-                                lastDoneTime = currentTime
                             }
+                            lastDoneTime = currentTime
                         }
                     }
                 ),
@@ -248,7 +248,14 @@ private fun LinkBody(
 
             EbbingSolidButton(
                 label = "생성",
-                onClick = onClickGenerateCode,
+                onClick = {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastDoneTime >= 1000L) {
+                        keyboardController?.hide()
+                        onClickGenerateCode()
+                        lastDoneTime = currentTime
+                    }
+                },
                 enabled = myCode.isNotEmpty() && isGenerateButtonEnabled,
                 modifier = Modifier.padding(start = 8.dp)
             )
@@ -287,13 +294,13 @@ private fun LinkBody(
                 readOnly = !isConnectButtonEnabled,
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (anotherCode.isNotEmpty() && isConnectButtonEnabled) {
-                            val currentTime = System.currentTimeMillis()
-                            if (currentTime - lastDoneTime >= 1000L) {
-                                keyboardController?.hide()
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastDoneTime >= 1000L) {
+                            keyboardController?.hide()
+                            if (anotherCode.isNotEmpty() && isConnectButtonEnabled) {
                                 onClickConnectAnother()
-                                lastDoneTime = currentTime
                             }
+                            lastDoneTime = currentTime
                         }
                     }
                 ),
@@ -312,7 +319,14 @@ private fun LinkBody(
 
             EbbingSolidButton(
                 label = "연결",
-                onClick = onClickGenerateCode,
+                onClick = {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastDoneTime >= 1000L) {
+                        keyboardController?.hide()
+                        onClickConnectAnother()
+                        lastDoneTime = currentTime
+                    }
+                },
                 enabled = anotherCode.isNotEmpty() && isConnectButtonEnabled,
                 modifier = Modifier.padding(start = 8.dp)
             )

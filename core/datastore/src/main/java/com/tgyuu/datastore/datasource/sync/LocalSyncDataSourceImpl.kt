@@ -36,28 +36,54 @@ class LocalSyncDataSourceImpl @Inject constructor(
     override suspend fun ensureUUIDExists() {
         dataStore.edit { prefs ->
             val savedUuid = prefs[UUID]
-            if (savedUuid == null) { prefs[UUID] = java.util.UUID.randomUUID().toString() }
+            if (savedUuid == null) {
+                prefs[UUID] = java.util.UUID.randomUUID().toString()
+            }
         }
     }
 
     override suspend fun setUuid(uuid: String) {
         dataStore.edit { prefs -> prefs[UUID] = uuid }
     }
-
-    override suspend fun setConnectedUuid(uuid: String) {
-        dataStore.edit { prefs -> prefs[CONNECTED_UUID] = uuid }
+    override suspend fun setConnectedUuid(uuid: String?) {
+        dataStore.edit { prefs ->
+            if (uuid == null) {
+                // 키를 아예 삭제
+                prefs.remove(CONNECTED_UUID)
+            } else {
+                prefs[CONNECTED_UUID] = uuid
+            }
+        }
     }
 
-    override suspend fun setConnectCode(linkCode: String) {
-        dataStore.edit { prefs -> prefs[CONNECT_CODE] = linkCode }
+    override suspend fun setConnectCode(linkCode: String?) {
+        dataStore.edit { prefs ->
+            if (linkCode == null) {
+                prefs.remove(CONNECT_CODE)
+            } else {
+                prefs[CONNECT_CODE] = linkCode
+            }
+        }
     }
 
     override suspend fun setLastSyncTime(time: ZonedDateTime?) {
-        time?.let { dataStore.edit { prefs -> prefs[LAST_SYNC_TIME] = time.toString() } }
+        dataStore.edit { prefs ->
+            if (time == null) {
+                prefs.remove(LAST_SYNC_TIME)
+            } else {
+                prefs[LAST_SYNC_TIME] = time.toString()
+            }
+        }
     }
 
     override suspend fun setConnectCodeExpirationTime(time: ZonedDateTime?) {
-        time?.let { dataStore.edit { prefs -> prefs[CONNECT_CODE_EXPIRATION_TIME] = time.toString() } }
+        dataStore.edit { prefs ->
+            if (time == null) {
+                prefs.remove(CONNECT_CODE_EXPIRATION_TIME)
+            } else {
+                prefs[CONNECT_CODE_EXPIRATION_TIME] = time.toString()
+            }
+        }
     }
 
     companion object {

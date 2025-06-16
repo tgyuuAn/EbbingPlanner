@@ -6,6 +6,8 @@ import com.tgyuu.database.DatabaseMigrations
 import com.tgyuu.database.EbbingDatabase
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSourceImpl
+import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
+import com.tgyuu.database.source.sync.LocalSyncTransactionDataSourceImpl
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSourceImpl
 import com.tgyuu.database.source.todo.LocalTodoDataSource
@@ -56,4 +58,10 @@ abstract class DatabaseBindsModule {
     abstract fun bindsLocalRepeatCycleDataSource(
         localRepeatCycleDataSourceImpl: LocalRepeatCycleDataSourceImpl
     ): LocalRepeatCycleDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindsLocalSyncTransactionDataSource(
+        localSyncTransactionDataSourceImpl: LocalSyncTransactionDataSourceImpl
+    ): LocalSyncTransactionDataSource
 }

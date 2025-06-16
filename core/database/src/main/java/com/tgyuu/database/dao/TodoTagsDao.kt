@@ -51,12 +51,12 @@ interface TodoTagsDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateTag(tagEntity: TodoTagEntity)
 
-    @Query(value = "SELECT * FROM todo_tag WHERE isDeleted = 0")
+    @Query("SELECT * FROM todo_tag WHERE isDeleted = 0")
     suspend fun getTags(): List<TodoTagEntity>
 
-    @Query(value = "SELECT * FROM todo_tag WHERE id = :id AND isDeleted = 0")
+    @Query("SELECT * FROM todo_tag WHERE id = :id AND isDeleted = 0")
     suspend fun getTag(id: Int): TodoTagEntity?
 
-    @Query(value = "SELECT * FROM todo_tag WHERE updatedAt > :lastSyncTime")
+    @Query("SELECT * FROM todo_tag WHERE updatedAt > :lastSyncTime")
     suspend fun getTagsForSync(lastSyncTime: LocalDateTime): List<TodoTagForSync>
 }

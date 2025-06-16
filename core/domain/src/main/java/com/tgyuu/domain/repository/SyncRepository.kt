@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 interface SyncRepository {
     suspend fun ensureUUIDExists()
     suspend fun getUuid(): String
-    suspend fun getLinkedUUID(): String?
+    suspend fun getConnectedUuid(): String?
     suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?>
     suspend fun getLocalSyncedAt(): ZonedDateTime?
     suspend fun syncUpData(): Result<ZonedDateTime>
@@ -14,4 +14,5 @@ interface SyncRepository {
     suspend fun getMyConnectCode(): String?
     suspend fun getConnectCodeExpiration(): ZonedDateTime?
     suspend fun connectAnother(connectCode: String): Result<ConnectInfo?>
+    suspend fun disconnectAnother(): Result<Unit>
 }

@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.tgyuu.database.converter.EbbingConverters
 import com.tgyuu.database.dao.RepeatCyclesDao
+import com.tgyuu.database.dao.SyncDao
 import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoTagsDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
@@ -28,6 +29,7 @@ internal abstract class EbbingDatabase : RoomDatabase() {
     abstract fun schedulesDao(): TodoSchedulesDao
     abstract fun todoWithSchedulesDao(): TodoWithSchedulesDao
     abstract fun repeatCyclesDao(): RepeatCyclesDao
+    abstract fun syncDao(): SyncDao
 
     companion object {
         internal const val NAME = "ebbing-database"

@@ -2,6 +2,7 @@ package com.tgyuu.database.di
 
 import com.tgyuu.database.EbbingDatabase
 import com.tgyuu.database.dao.RepeatCyclesDao
+import com.tgyuu.database.dao.SyncDao
 import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoTagsDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
@@ -32,4 +33,9 @@ internal object DaosModule {
     fun providesRepeatCyclesDao(
         database: EbbingDatabase,
     ): RepeatCyclesDao = database.repeatCyclesDao()
+
+    @Provides
+    fun providesSyncDao(
+        database: EbbingDatabase,
+    ): SyncDao = database.syncDao()
 }	

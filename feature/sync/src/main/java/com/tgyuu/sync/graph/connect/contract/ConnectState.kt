@@ -21,7 +21,6 @@ data class ConnectState(
     }
 
     companion object {
-        private const val HOUR_IN_SECOND = 3600
         private const val MINUTE_IN_SECOND = 60
     }
 }
