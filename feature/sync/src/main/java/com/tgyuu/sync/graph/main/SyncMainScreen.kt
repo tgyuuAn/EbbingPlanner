@@ -1,9 +1,9 @@
 package com.tgyuu.sync.graph.main
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -145,45 +145,43 @@ private fun PhoneSyncMainScreen(
     onDisconnectClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(horizontal = 20.dp)
-        ) {
-            EbbingSubTopBar(
-                title = "동기화",
-                onNavigationClick = onBackClick,
-                modifier = Modifier.padding(bottom = 20.dp),
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(horizontal = 20.dp)
+    ) {
+        EbbingSubTopBar(
+            title = "동기화",
+            onNavigationClick = onBackClick,
+            modifier = Modifier.padding(bottom = 20.dp),
+        )
+
+        if (state.linkedUuid != null) {
+            LinkedUuidBody(
+                linkedUuid = state.linkedUuid,
+                lastSyncedAt = state.localLastSyncedAt,
+                lastUpdatedAt = state.serverLastUpdatedAt,
             )
-
-            if (state.linkedUuid != null) {
-                LinkedUuidBody(
-                    linkedUuid = state.linkedUuid,
-                    lastSyncedAt = state.localLastSyncedAt,
-                    lastUpdatedAt = state.serverLastUpdatedAt,
-                )
-            } else {
-                UuidBody(
-                    uuid = state.uuid,
-                    lastSyncedAt = state.localLastSyncedAt,
-                    lastUpdatedAt = state.serverLastUpdatedAt,
-                )
-            }
-
-            SyncUpBody(
-                isConnected = state.linkedUuid != null,
-                isSyncUpEnabled = state.isSyncUpEnabled,
-                onSyncUpClick = onSyncUpClick,
-                onConnectClick = onConnectClick,
-                onDisconnectClick = onDisconnectClick,
+        } else {
+            UuidBody(
+                uuid = state.uuid,
+                lastSyncedAt = state.localLastSyncedAt,
+                lastUpdatedAt = state.serverLastUpdatedAt,
             )
-
-            DescriptionBody()
         }
+
+        SyncUpBody(
+            isConnected = state.linkedUuid != null,
+            isSyncUpEnabled = state.isSyncUpEnabled,
+            onSyncUpClick = onSyncUpClick,
+            onConnectClick = onConnectClick,
+            onDisconnectClick = onDisconnectClick,
+        )
+
+        DescriptionBody()
     }
 }
 
@@ -196,17 +194,55 @@ private fun TabletSyncMainScreen(
     onDisconnectClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp)
-        ) {
-            EbbingSubTopBar(
-                title = "동기화",
-                onNavigationClick = onBackClick,
-                modifier = Modifier.padding(bottom = 20.dp),
-            )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp)
+    ) {
+        EbbingSubTopBar(
+            title = "동기화",
+            onNavigationClick = onBackClick,
+            modifier = Modifier.padding(bottom = 20.dp),
+        )
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+            ) {
+                if (state.linkedUuid != null) {
+                    LinkedUuidBody(
+                        linkedUuid = state.linkedUuid,
+                        lastSyncedAt = state.localLastSyncedAt,
+                        lastUpdatedAt = state.serverLastUpdatedAt,
+                    )
+                } else {
+                    UuidBody(
+                        uuid = state.uuid,
+                        lastSyncedAt = state.localLastSyncedAt,
+                        lastUpdatedAt = state.serverLastUpdatedAt,
+                    )
+                }
+
+                SyncUpBody(
+                    isConnected = state.linkedUuid != null,
+                    isSyncUpEnabled = state.isSyncUpEnabled,
+                    onSyncUpClick = onSyncUpClick,
+                    onConnectClick = onConnectClick,
+                    onDisconnectClick = onDisconnectClick,
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+            ) {
+                DescriptionBody()
+            }
         }
     }
 }

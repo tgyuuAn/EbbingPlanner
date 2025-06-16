@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -169,19 +170,35 @@ private fun TabletLinkScreen(
             modifier = Modifier.padding(bottom = 20.dp),
         )
 
-        LinkBody(
-            myCode = state.myCode,
-            anotherCode = state.anotherCode,
-            remainingTimeInSec = state.formattedRemainingTimeInSec,
-            isGenerateButtonEnabled = state.isGenerateButtonEnabled,
-            isConnectButtonEnabled = state.isConnectButtonEnabled,
-            onMyCodeChange = onMyCodeChange,
-            onAnotherCodeChange = onAnotherCodeChange,
-            onClickGenerateCode = onClickGenerateCode,
-            onClickConnectAnother = onClickConnectAnother,
-        )
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+            ) {
+                LinkBody(
+                    myCode = state.myCode,
+                    anotherCode = state.anotherCode,
+                    remainingTimeInSec = state.formattedRemainingTimeInSec,
+                    isGenerateButtonEnabled = state.isGenerateButtonEnabled,
+                    isConnectButtonEnabled = state.isConnectButtonEnabled,
+                    onMyCodeChange = onMyCodeChange,
+                    onAnotherCodeChange = onAnotherCodeChange,
+                    onClickGenerateCode = onClickGenerateCode,
+                    onClickConnectAnother = onClickConnectAnother,
+                )
+            }
 
-        DescriptionBody()
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+            ) {
+                DescriptionBody()
+            }
+        }
     }
 }
 
