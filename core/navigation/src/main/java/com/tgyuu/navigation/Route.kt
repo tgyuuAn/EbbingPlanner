@@ -83,5 +83,5 @@ sealed interface SyncGraph : Route {
     data object SyncMainRoute : SyncGraph
 
     @Serializable
-    data object LinkRoute : SyncGraph
+    data object ConnectRoute : SyncGraph
 }

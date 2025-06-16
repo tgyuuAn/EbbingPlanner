@@ -38,6 +38,7 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
+import com.tgyuu.sync.graph.main.ui.dialog.ConfirmDisconnectDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncUpDialog
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
@@ -62,8 +63,8 @@ internal fun SyncMainRoute(
                 viewModel.eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 데이터가 최신상태 입니다."))
             }
         },
-        onConnectClick = { viewModel.onIntent(SyncIntent.OnLinkClick) },
-        onDisconnectClick = {},
+        onConnectClick = { viewModel.onIntent(SyncIntent.OnConnectClick) },
+        onDisconnectClick = { viewModel.onIntent(SyncIntent.OnDisconnectClick) },
     )
 }
 
@@ -77,17 +78,29 @@ internal fun SyncMainScreen(
     showSyncedAlreadySnackBar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var isShowDialog by remember { mutableStateOf(false) }
+    var isShowSyncDialog by remember { mutableStateOf(false) }
+    var isShowDisconnectDialog by remember { mutableStateOf(false) }
 
-    if (isShowDialog) {
+    if (isShowSyncDialog) {
         ConfirmSyncUpDialog(
-            onDismissRequest = { isShowDialog = false },
+            onDismissRequest = { isShowSyncDialog = false },
             onAcceptClick = {
                 onSyncUpClick()
-                isShowDialog = false
+                isShowSyncDialog = false
             },
         )
     }
+
+    if (isShowDisconnectDialog) {
+        ConfirmDisconnectDialog(
+            onDismissRequest = { isShowDisconnectDialog = false },
+            onAcceptClick = {
+                onDisconnectClick()
+                isShowDisconnectDialog = false
+            },
+        )
+    }
+
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
@@ -96,13 +109,13 @@ internal fun SyncMainScreen(
             onBackClick = onBackClick,
             onSyncUpClick = {
                 if (state.isSyncUpEnabled) {
-                    isShowDialog = true
+                    isShowSyncDialog = true
                 } else {
                     showSyncedAlreadySnackBar()
                 }
             },
             onConnectClick = onConnectClick,
-            onDisconnectClick = onDisconnectClick,
+            onDisconnectClick = { isShowDisconnectDialog = true },
             modifier = modifier,
         )
     } else {
@@ -111,12 +124,13 @@ internal fun SyncMainScreen(
             onBackClick = onBackClick,
             onSyncUpClick = {
                 if (state.isSyncUpEnabled) {
-                    isShowDialog = true
+                    isShowSyncDialog = true
                 } else {
                     showSyncedAlreadySnackBar()
                 }
             },
-            onLinkClick = onConnectClick,
+            onConnectClick = onConnectClick,
+            onDisconnectClick = { isShowDisconnectDialog = true },
             modifier = modifier,
         )
     }
@@ -178,7 +192,8 @@ private fun TabletSyncMainScreen(
     state: SyncMainState,
     onBackClick: () -> Unit,
     onSyncUpClick: () -> Unit,
-    onLinkClick: () -> Unit,
+    onConnectClick: () -> Unit,
+    onDisconnectClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -269,7 +284,7 @@ internal fun LinkedUuidBody(
 ) {
     Text(
         text = "연동 되어있는 ID :",
-        style = EbbingTheme.typography.bodySR,
+        style = EbbingTheme.typography.bodySSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(bottom = 8.dp),
     )
@@ -415,7 +430,7 @@ private fun SyncUpBody(
 }
 
 @Composable
-internal fun DescriptionBody() {
+private fun DescriptionBody() {
     Text(
         text = buildAnnotatedString {
             append("- 동기화는 기기의 변경 사항을 서버에 반영하고, 서버의 최신 데이터를 가져오는  양방향 동기화 방식입니다.\n")

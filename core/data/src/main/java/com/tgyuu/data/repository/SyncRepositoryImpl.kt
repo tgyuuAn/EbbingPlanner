@@ -2,23 +2,26 @@ package com.tgyuu.data.repository
 
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
+import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
 import com.tgyuu.datastore.datasource.sync.LocalSyncDataSource
+import com.tgyuu.domain.model.sync.ConnectInfo
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.SyncRepository
-import com.tgyuu.network.model.sync.GetSyncInfoResponse
+import com.tgyuu.network.defaultDate
+import com.tgyuu.network.model.sync.SyncInfoDto
 import com.tgyuu.network.source.SyncDataSource
 import com.tgyuu.network.toDate
+import com.tgyuu.network.toLocalDateTime
 import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
@@ -28,13 +31,24 @@ class SyncRepositoryImpl @Inject constructor(
     private val localTodoDataSource: LocalTodoDataSource,
     private val localRepeatCycleDataSource: LocalRepeatCycleDataSource,
     private val localSyncDataSource: LocalSyncDataSource,
+    private val localSyncTransactionDataSource: LocalSyncTransactionDataSource,
 ) : SyncRepository {
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
-    override suspend fun getUUID(): String = localSyncDataSource.uuid.first()
-    override suspend fun getLinkedUUID(): String? = localSyncDataSource.linkedUuid.first()
-    override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> =
-        syncDataSource.getSyncInfo(getUUID())
-            .map(GetSyncInfoResponse::toDomain)
+    override suspend fun getUuid(): String = localSyncDataSource.uuid.first()
+    override suspend fun getConnectedUuid(): String? = localSyncDataSource.connectedUuid.first()
+    override suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?> = suspendRunCatching {
+        coroutineScope {
+            val uuidDeferred = async { getUuid() }
+            val connectedUuidDeferred = async { getConnectedUuid() }
+
+            val uuid = uuidDeferred.await()
+            val connectedUuid = connectedUuidDeferred.await()
+
+            syncDataSource.getSyncInfo(connectedUuid ?: uuid)
+                .map(SyncInfoDto::toDomain)
+                .getOrThrow()
+        }
+    }
 
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
         localSyncDataSource.lastSyncTime.first()
@@ -44,15 +58,78 @@ class SyncRepositoryImpl @Inject constructor(
         uploadData().getOrThrow()
     }
 
+    override suspend fun generateConnectCode(connectCode: String): Result<ZonedDateTime> =
+        coroutineScope {
+            syncDataSource.generateConnectCode(
+                uuid = getUuid(),
+                connectCode = connectCode,
+            ).onSuccess {
+                coroutineScope {
+                    val codeExpirationJob = launch {
+                        localSyncDataSource.setConnectCodeExpirationTime(it)
+                    }
+                    val connectCodeJob = launch {
+                        localSyncDataSource.setConnectCode(connectCode)
+                    }
+
+                    codeExpirationJob.join()
+                    connectCodeJob.join()
+                }
+            }
+        }
+
+    override suspend fun getMyConnectCode(): String? = localSyncDataSource.connectCode.first()
+    override suspend fun getConnectCodeExpiration(): ZonedDateTime? {
+        val expiration = localSyncDataSource.connectCodeExpirationTime.first() ?: return null
+        val now = ZonedDateTime.now()
+        if (expiration.isAfter(now)) return expiration
+
+        // 만료된 시간이라면 저장된 데이터를 비워줌
+        localSyncDataSource.setConnectCodeExpirationTime(null)
+        localSyncDataSource.setConnectCode(null)
+        return null
+    }
+
+    override suspend fun connectAnother(connectCode: String): Result<ConnectInfo?> =
+        suspendRunCatching {
+            val dto = syncDataSource.connectAnother(connectCode)
+                .getOrThrow()
+            if (dto == null) return@suspendRunCatching null
+
+            val info = dto.toDomain()
+            if (!info.isValid()) return@suspendRunCatching null
+
+            val myUuid = getUuid()
+            if (info.uuid == myUuid) return@suspendRunCatching info
+
+            localSyncDataSource.setConnectedUuid(info.uuid)
+            replaceData().getOrElse {
+                localSyncDataSource.setConnectedUuid(null)
+                localSyncDataSource.setLastSyncTime(null)
+                throw it
+            }
+            info
+        }
+
+    override suspend fun disconnectAnother(): Result<Unit> = suspendRunCatching {
+        localSyncDataSource.setConnectedUuid(null)
+        localSyncDataSource.setLastSyncTime(null)
+    }
+
     private suspend fun uploadData(): Result<ZonedDateTime> = coroutineScope {
-        val uuid = getUUID()
+        val uuidDeferred = async { getUuid() }
+        val linkedUuidDeferred = async { getConnectedUuid() }
+
         val schedules = async { loadSchedulesForSync() }
         val infos = async { loadTodoInfosForSync() }
         val repeatCycles = async { loadRepeatCyclesForSync() }
         val tags = async { loadTagsForSync() }
 
+        val uuid = uuidDeferred.await()
+        val linkedUuid = linkedUuidDeferred.await()
+
         syncDataSource.uploadData(
-            uuid = uuid,
+            uuid = linkedUuid ?: uuid,
             schedules = schedules.await(),
             infos = infos.await(),
             repeatCycles = repeatCycles.await(),
@@ -69,17 +146,24 @@ class SyncRepositoryImpl @Inject constructor(
             tagsDeleteJob.join()
 
             // 클라이언트 동기화 시간 갱신
-            localSyncDataSource.setSyncedAt(it)
+            localSyncDataSource.setLastSyncTime(it)
         }
     }
 
     private suspend fun downloadData(): Result<ZonedDateTime?> = suspendRunCatching {
         coroutineScope {
-            val uuid = getUUID()
-            val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-                ?.toLocalDateTime() ?: LocalDateTime.MIN
+            val uuidDeferred = async { getUuid() }
+            val connectedUuidDeferred = async { getConnectedUuid() }
 
-            val response = syncDataSource.downloadData(uuid, lastSyncTime.toDate())
+            val uuid = uuidDeferred.await()
+            val connectedUuid = connectedUuidDeferred.await()
+
+            val lastSyncTime = localSyncDataSource.lastSyncTime
+                .first()
+                ?.toLocalDateTime()
+                ?.toDate() ?: defaultDate
+
+            val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
                 .getOrThrow()
 
             // 각 항목에 대해서 updatedAt을 비교하여, 로컬보다 더 이후에 변경된 항목만 반영
@@ -97,6 +181,24 @@ class SyncRepositoryImpl @Inject constructor(
                             localRepeatCycleDataSource.insertRepeatCycle(repeatCycle)
                         } else if (repeatCycle.updatedAt > local.updatedAt) {
                             localRepeatCycleDataSource.updateRepeatCycle(repeatCycle)
+                        }
+                    }
+                }
+            }
+
+            val tagsJob = launch {
+                response.tags.forEach { dto ->
+                    val tag = dto.toDomain()
+
+                    if (tag.isDeleted) {
+                        localTagDataSource.hardDeleteTag(tag.id)
+                    } else {
+                        val local = localTagDataSource.getTag(tag.id)
+
+                        if (local == null) {
+                            localTagDataSource.insertTag(tag)
+                        } else if (tag.updatedAt > local.updatedAt) {
+                            localTagDataSource.updateTag(tag)
                         }
                     }
                 }
@@ -133,62 +235,76 @@ class SyncRepositoryImpl @Inject constructor(
                 }
             }
 
-            val tagsJob = launch {
-                response.tags.forEach { dto ->
-                    val tag = dto.toDomain()
-
-                    if (tag.isDeleted) {
-                        localTagDataSource.hardDeleteTag(tag.id)
-                    } else {
-                        val local = localTagDataSource.getTag(tag.id)
-
-                        if (local == null) {
-                            localTagDataSource.insertTag(tag)
-                        } else if (tag.updatedAt > local.updatedAt) {
-                            localTagDataSource.updateTag(tag)
-                        }
-                    }
-                }
-            }
-
             repeatCyclesJob.join()
             todoInfosJob.join()
             tagsJob.join()
             schedulesJob.join()
 
             val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
-            localSyncDataSource.setSyncedAt(syncedAt)
-
+            localSyncDataSource.setLastSyncTime(syncedAt)
             syncedAt
         }
     }
 
-
     private suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: LocalDateTime.MIN
+            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
 
         return localTodoDataSource.getSchedulesForSync(lastSyncTime)
     }
 
     private suspend fun loadTagsForSync(): List<TodoTagForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: LocalDateTime.MIN
+            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
 
         return localTagDataSource.getTagsForSync(lastSyncTime)
     }
 
     private suspend fun loadRepeatCyclesForSync(): List<RepeatCycleForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: LocalDateTime.MIN
+            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
 
         return localRepeatCycleDataSource.getRepeatCyclesForSync(lastSyncTime)
     }
 
     private suspend fun loadTodoInfosForSync(): List<TodoInfoForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: LocalDateTime.MIN
+            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
 
         return localTodoDataSource.getTodoInfosForSync(lastSyncTime)
+    }
+
+    private suspend fun replaceData(): Result<ZonedDateTime?> = suspendRunCatching {
+        coroutineScope {
+            val uuidDeferred = async { getUuid() }
+            val connectedUuidDeferred = async { getConnectedUuid() }
+
+            val uuid = uuidDeferred.await()
+            val connectedUuid = connectedUuidDeferred.await()
+
+            val lastSyncTime = localSyncDataSource.lastSyncTime
+                .first()
+                ?.toLocalDateTime()
+                ?.toDate() ?: defaultDate
+
+            val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
+                .getOrThrow()
+
+            val infos = response.todoInfos.map { it.toDomain() }
+            val repeatCycles = response.repeatCycles.map { it.toDomain() }
+            val tags = response.tags.map { it.toDomain() }
+            val schedules = response.schedules.map { it.toDomain() }
+
+            localSyncTransactionDataSource.replaceAllData(
+                infos = infos,
+                repeatCycles = repeatCycles,
+                tags = tags,
+                schedules = schedules
+            )
+
+            val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
+            localSyncDataSource.setLastSyncTime(syncedAt)
+            syncedAt
+        }
     }
 }

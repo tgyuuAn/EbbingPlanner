@@ -222,5 +222,4 @@ interface TodoSchedulesDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateTodoInfo(todoInfoEntity: TodoInfoEntity)
-
 }

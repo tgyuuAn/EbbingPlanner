@@ -1,6 +1,5 @@
 package com.tgyuu.sync.graph.main
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -14,6 +13,7 @@ import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,14 +25,14 @@ class SyncMainViewModel @Inject constructor(
     internal val eventBus: EventBus,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
-    internal fun loadInitData() = viewModelScope.launch {
+    internal suspend fun loadInitData() = coroutineScope {
         val uuidJob = launch {
-            val uuid = syncRepository.getUUID()
+            val uuid = syncRepository.getUuid()
             setState { copy(uuid = uuid) }
         }
 
         val linkedUuidJob = launch {
-            val linkedUuid = syncRepository.getLinkedUUID()
+            val linkedUuid = syncRepository.getConnectedUuid()
             setState { copy(linkedUuid = linkedUuid) }
         }
 
@@ -56,7 +56,8 @@ class SyncMainViewModel @Inject constructor(
         when (intent) {
             SyncIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             SyncIntent.OnSyncUpClick -> syncUpData()
-            SyncIntent.OnLinkClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.LinkRoute))
+            SyncIntent.OnConnectClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
+            SyncIntent.OnDisconnectClick -> disconnectAnother()
         }
     }
 
@@ -78,9 +79,33 @@ class SyncMainViewModel @Inject constructor(
                 }
             }
             .onFailure {
-                Log.d("test", it.stackTraceToString())
-
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
+            }.also {
+                setState { copy(isNetworkLoading = false) }
+            }
+    }
+
+    private fun disconnectAnother() = viewModelScope.launch {
+        if (networkMonitor.networkState.value != NetworkState.Connected) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            return@launch
+        }
+
+        setState { copy(isNetworkLoading = true) }
+        syncRepository.disconnectAnother()
+            .onSuccess {
+                loadInitData()
+
+                setState {
+                    copy(
+                        localLastSyncedAt = null,
+                        serverLastUpdatedAt = null,
+                    )
+                }
+
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 성공하였습니다."))
+            }.onFailure {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 실패하였습니다."))
             }.also {
                 setState { copy(isNetworkLoading = false) }
             }

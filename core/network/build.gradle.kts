@@ -12,6 +12,8 @@ android {
     val localProperties = Properties()
     localProperties.load(project.rootProject.file("local.properties").bufferedReader())
 
+    buildTypes { release { consumerProguardFiles("consumer-rules.pro") } }
+
     buildFeatures {
         buildConfig = true
     }
