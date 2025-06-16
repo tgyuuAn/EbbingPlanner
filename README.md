@@ -19,9 +19,9 @@
 
 <table>
   <tr>
-    <td align="center"><img width="266" alt="4" src="https://github.com/user-attachments/assets/0928722d-5744-4920-aaad-773cd1255928"></td>
-    <td align="center"><img width="266" alt="5" src="https://github.com/user-attachments/assets/7e0dec94-dada-4a95-9678-87db45e7a351"></td>
-    <td align="center"><img width="266" alt="5" src="https://github.com/user-attachments/assets/a8d4aa5e-f988-4fe1-b2fd-9947c1cb6e9a"></td>
+    <td align="center"><img width="266" alt="4" src="https://github.com/user-attachments/assets/68dc495f-62b4-4b17-af16-0ebd031f2342"></td>
+    <td align="center"><img width="266" alt="5" src="https://github.com/user-attachments/assets/17ebf8d3-c84f-40d7-8ae6-eb07a58169cf"></td>
+    <td align="center"><img width="266" alt="6" src="https://github.com/user-attachments/assets/b53c5090-9313-45dd-a44e-26dd24fcf8e1"></td>
   </tr>
 </table>
 
@@ -38,8 +38,15 @@
 
 <table>
   <tr>
-    <td align="center"><img width="400" alt="1" src="https://github.com/user-attachments/assets/070b2e24-d52d-47cc-9462-56f82ab29364"></td>
-    <td align="center"><img width="400" alt="2" src="https://github.com/user-attachments/assets/8e0560ae-e9c7-4f81-a3c2-6db0cfae5012"></td>
+    <td align="center"><img width="400" alt="3" src="https://github.com/user-attachments/assets/070b2e24-d52d-47cc-9462-56f82ab29364"></td>
+    <td align="center"><img width="400" alt="4" src="https://github.com/user-attachments/assets/8e0560ae-e9c7-4f81-a3c2-6db0cfae5012"></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td align="center"><img width="400" alt="5" src="https://github.com/user-attachments/assets/e3dce86d-49ed-4b7a-916e-89bb918a4ab0"></td>
+    <td align="center"><img width="400" alt="6" src="https://github.com/user-attachments/assets/78a87894-a3ee-4732-b49f-960b720391dd"></td>
   </tr>
 </table>
 <br><br>
@@ -50,14 +57,14 @@
 
 <table>
   <tr>
-    <td align="center"><b>온보딩</b></td>
     <td align="center"><b>홈화면 및 일정추가</b></td>
     <td align="center"><b>일정 수정, 일정 완료</b></td>
+    <td align="center"><b>일정 삭제, 미루기</b></td>
   </tr>
     <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/24214073-480a-4b44-8bfd-ebeb1a24c8e8" width=200/></td>
     <td align="center"><img src="https://github.com/user-attachments/assets/48aaf198-dc4a-44f3-80c3-4fad9a2915e7" width=200/></td>
     <td align="center"><img src="https://github.com/user-attachments/assets/813f77a8-cb6f-4bc3-93aa-c915ef640503" width=200/></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/3ab41c83-50cf-4fee-8687-211e924c7bd6" width=200/></td>
   </tr>
 </table>
 
@@ -65,12 +72,12 @@
 
 <table>
   <tr>
-    <td align="center"><b>일정 삭제, 미루기</b></td>
+    <td align="center"><b>데이터 동기화</b></td>
     <td align="center"><b>알림 설정, 태그 관리</b></td>
     <td align="center"><b>다크 모드</b></td>
   </tr>
     <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/3ab41c83-50cf-4fee-8687-211e924c7bd6" width=200/></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/253e483a-9339-4d99-9f19-be6f800886da" width=200/></td>
     <td align="center"><img src="https://github.com/user-attachments/assets/320cca4b-7279-4f52-adf6-e84b2498cb8e" width=200/></td>
     <td align="center"><img src="https://github.com/user-attachments/assets/cfc0e890-2790-431d-8b79-9854b3fe9d28" width=200/></td>
   </tr>
@@ -113,6 +120,7 @@
 - Gson
 - Datastore
 - Room
+- FireStore
 
 ### Logging
 
@@ -132,6 +140,6 @@
 
 ## 🏗️ Module Dependency Graph
 
-![project dot](https://github.com/user-attachments/assets/fc80bb3e-b1fc-4d73-8336-5c9e97d2f720)
+![project dot](https://github.com/user-attachments/assets/23de7d0c-c457-4edb-b949-1d10dedc1586)
 
 <br><br>
