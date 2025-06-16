@@ -1,6 +1,7 @@
 package com.tgyuu.network.di
 
 import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -38,6 +39,10 @@ object NetworkProvidesModule {
     @Singleton
     @Provides
     fun provideFirebaseFireStore(): FirebaseFirestore = Firebase.firestore
+
+    @Singleton
+    @Provides
+    fun provideFirebaseCrashlytics(): FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
 
     @Provides
     @Singleton
