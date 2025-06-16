@@ -41,12 +41,17 @@ class ConnectViewModel @Inject constructor(
     }
 
     private fun setMyCode(code: String) {
-        setState { copy(myCode = code) }
+        val filtered = code.replace("\\s+".toRegex(), "")
+        if (code.length > 20) return
+        setState { copy(myCode = filtered) }
     }
 
     private fun setAnotherCode(code: String) {
-        setState { copy(myCode = code) }
+        val filtered = code.replace("\\s+".toRegex(), "")
+        if (code.length > 20) return
+        setState { copy(anotherCode = filtered) }
     }
+
 
     private suspend fun generateCode() {
         setState { copy(isGenerateButtonEnabled = false) }
