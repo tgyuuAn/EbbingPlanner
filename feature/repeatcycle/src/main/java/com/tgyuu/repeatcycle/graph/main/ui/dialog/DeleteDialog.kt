@@ -8,7 +8,6 @@ import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.RepeatCycle
 
 @Composable
 internal fun DeleteDialog(

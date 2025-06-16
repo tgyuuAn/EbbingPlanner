@@ -1,6 +1,5 @@
 package com.tgyuu.sync.graph.connect
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -148,7 +147,6 @@ class ConnectViewModel @Inject constructor(
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
                 navigationBus.navigate(NavigationEvent.Up)
             }.onFailure {
-                Log.d("test", it.stackTraceToString())
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 네트워크가 불안정합니다."))
             }
     }

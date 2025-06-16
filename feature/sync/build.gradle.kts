@@ -2,7 +2,6 @@ import java.util.Properties
 
 plugins {
     id("ebbing.android.feature")
-    kotlin("android")
 }
 
 android {

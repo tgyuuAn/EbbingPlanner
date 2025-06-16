@@ -1,6 +1,5 @@
 package com.tgyuu.data.repository
 
-import android.util.Log
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
@@ -164,12 +163,8 @@ class SyncRepositoryImpl @Inject constructor(
                 ?.toLocalDateTime()
                 ?.toDate() ?: defaultDate
 
-            Log.d("test", "lastSyncTime : $lastSyncTime")
-
             val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
                 .getOrThrow()
-
-            Log.d("test", response.toString())
 
             // 각 항목에 대해서 updatedAt을 비교하여, 로컬보다 더 이후에 변경된 항목만 반영
             // 만약 softDeleted 된 항이라면 제거, id가 없다면 새로 생성, 그 외는 수정
