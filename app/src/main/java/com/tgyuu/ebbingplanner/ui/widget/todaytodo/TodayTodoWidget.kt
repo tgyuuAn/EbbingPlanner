@@ -194,11 +194,10 @@ internal fun TodoItemRow(
                 color = ColorProvider(DarkBackground, LightBackground),
                 textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
             ),
-            maxLines = 1,
-            modifier = GlanceModifier.padding(start = 12.dp)
+            maxLines = 2,
+            modifier = GlanceModifier.padding(horizontal = 12.dp)
+                .defaultWeight(),
         )
-
-        Spacer(modifier = GlanceModifier.defaultWeight())
 
         EbbingWidgetCheck(
             checked = todo.isDone,

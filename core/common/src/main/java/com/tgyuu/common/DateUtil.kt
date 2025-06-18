@@ -28,9 +28,9 @@ fun LocalDateTime.toFormattedString(): String {
 
 fun String.toLocalDateTimeOrThrow(): LocalDateTime {
     return try {
-        LocalDateTime.parse(this, dateTimeFormatter)
+        LocalDateTime.parse(this, dateTimeFormatter)  // 공백 포맷
     } catch (e: DateTimeParseException) {
-        throw IllegalArgumentException("날짜·시간 형식이 올바르지 않습니다: $this", e)
+        LocalDateTime.parse(this, DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // T 포맷
     }
 }
 

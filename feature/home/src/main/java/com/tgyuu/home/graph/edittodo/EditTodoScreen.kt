@@ -225,7 +225,7 @@ private fun TitleContent(
         hint = "무엇을 학습하실건가요?",
         keyboardType = KeyboardType.Text,
         onValueChange = onTitleChange,
-        limit = 20,
+        limit = 100,
         rightComponent = {
             if (title.isNotEmpty()) {
                 Image(

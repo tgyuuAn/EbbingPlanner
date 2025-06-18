@@ -243,7 +243,7 @@ private fun TodoListCard(
                             text = todo.title,
                             style = EbbingTheme.typography.bodyMSB,
                             color = EbbingTheme.colors.black,
-                            maxLines = 1,
+                            maxLines = 3,
                             overflow = TextOverflow.Ellipsis,
                         )
 
