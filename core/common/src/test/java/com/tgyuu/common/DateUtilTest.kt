@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeParseException
 
 class LocalDateFormatTest {
 
@@ -95,11 +96,11 @@ class LocalDateFormatTest {
             "2023-12-31 23:60:00"  // 60분은 허용 안 됨
         ]
     )
-    fun `잘못된 형식의 문자열을 LocalDateTime으로 변환하려고 하면 IllegalArgumentException이 발생한다`(
+    fun `잘못된 형식의 문자열을 LocalDateTime으로 변환하려고 하면 DateTimeParseException이 발생한다`(
         input: String
     ) {
         // expect
-        assertThrows<IllegalArgumentException> {
+        assertThrows<DateTimeParseException> {
             input.toLocalDateTimeOrThrow()
         }
     }
