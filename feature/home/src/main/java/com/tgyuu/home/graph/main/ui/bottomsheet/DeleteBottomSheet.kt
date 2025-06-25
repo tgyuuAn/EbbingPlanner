@@ -17,8 +17,8 @@ import com.tgyuu.domain.model.TodoSchedule
 @Composable
 internal fun DeleteBottomSheet(
     selectedSchedule: TodoSchedule,
-    onDeleteRemainingClick: (TodoSchedule) -> Unit,
-    onDeleteSingleClick: (TodoSchedule) -> Unit,
+    onClickDeleteRemaining: (TodoSchedule) -> Unit,
+    onClickDeleteSingle: (TodoSchedule) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -40,7 +40,7 @@ internal fun DeleteBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onDeleteSingleClick(selectedSchedule) }
+                    .clickable { onClickDeleteSingle(selectedSchedule) }
                     .height(62.dp),
             )
 
@@ -52,7 +52,7 @@ internal fun DeleteBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onDeleteRemainingClick(selectedSchedule) }
+                    .clickable { onClickDeleteRemaining(selectedSchedule) }
                     .height(62.dp),
             )
         }

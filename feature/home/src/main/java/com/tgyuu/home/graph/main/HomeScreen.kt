@@ -43,14 +43,15 @@ import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.graph.main.contract.HomeIntent
-import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
-import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckedChange
-import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
+import com.tgyuu.home.graph.main.contract.HomeIntent.OnClickAddTodo
+import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckChanged
+import com.tgyuu.home.graph.main.contract.HomeIntent.OnClickSortType
 import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.home.graph.main.ui.EbbingTodoList
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
-import com.tgyuu.home.graph.main.ui.bottomsheet.EditScheduleBottomSheet
+import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
+import com.tgyuu.home.graph.main.ui.bottomsheet.UpdateBottomSheet
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteMemoDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteRemainingDialog
@@ -83,7 +84,7 @@ internal fun HomeRoute(
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
                     isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteSingleClick(dt.schedule))
+                    viewModel.onIntent(HomeIntent.OnClickDeleteSingle(dt.schedule))
                 },
             )
 
@@ -92,7 +93,7 @@ internal fun HomeRoute(
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
                     isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteRemainingClick(dt.schedule))
+                    viewModel.onIntent(HomeIntent.OnClickDeleteRemaining(dt.schedule))
                 },
             )
 
@@ -101,7 +102,7 @@ internal fun HomeRoute(
                 onDismissRequest = { isShowDialog = false },
                 onDelayClick = {
                     isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDelayScheduleClick(dt.schedule))
+                    viewModel.onIntent(HomeIntent.OnClickDelaySchedule(dt.schedule))
                 },
             )
 
@@ -110,7 +111,7 @@ internal fun HomeRoute(
                 onDismissRequest = { isShowDialog = false },
                 onDeleteClick = {
                     isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteMemoClick(dt.schedule))
+                    viewModel.onIntent(HomeIntent.OnClickDeleteMemo(dt.schedule))
                 },
             )
 
@@ -121,38 +122,38 @@ internal fun HomeRoute(
     HomeScreen(
         workedDate = workedDate,
         state = state,
-        onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
-        onCheckedChange = { viewModel.onIntent(OnCheckedChange(it)) },
-        onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
+        onAddTodoClick = { viewModel.onIntent(OnClickAddTodo(it)) },
+        onCheckedChange = { viewModel.onIntent(OnCheckChanged(it)) },
+        onSyncClick = { viewModel.onIntent(HomeIntent.OnClickSync) },
         onSortTypeClick = {
-            viewModel.onIntent(OnSortTypeClick({
+            viewModel.onIntent(OnClickSortType({
                 SortTypeBottomSheet(
                     originSortType = state.sortType,
-                    onUpdateClick = { viewModel.onIntent(HomeIntent.OnUpdateSortType(it)) },
+                    onClickUpdate = { viewModel.onIntent(HomeIntent.OnUpdateSortType(it)) },
                 )
             }))
         },
         onEditScheduleClick = { schedule ->
             viewModel.onIntent(
-                HomeIntent.OnEditScheduleClick {
-                    EditScheduleBottomSheet(
+                HomeIntent.OnClickEditSchedule {
+                    OptionsBottomSheet(
                         selectedSchedule = schedule,
-                        onDelayClick = { delayedSchedule ->
+                        onClickDelay = { delayedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                 dialogType = DialogType.ConfirmDelay(delayedSchedule)
                                 isShowDialog = true
                             }
                         },
-                        onDeleteClick = { deletedSchedule ->
+                        onClickDelete = { deletedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                 delay(200L)
                                 viewModel.onIntent(
-                                    HomeIntent.OnDeleteScheduleClick {
+                                    HomeIntent.OnClickDeleteSchedule {
                                         DeleteBottomSheet(
                                             selectedSchedule = deletedSchedule,
-                                            onDeleteSingleClick = {
+                                            onClickDeleteSingle = {
                                                 scope.launch {
                                                     viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                                     dialogType =
@@ -160,7 +161,7 @@ internal fun HomeRoute(
                                                     isShowDialog = true
                                                 }
                                             },
-                                            onDeleteRemainingClick = {
+                                            onClickDeleteRemaining = {
                                                 scope.launch {
                                                     viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                                     dialogType =
@@ -173,13 +174,13 @@ internal fun HomeRoute(
                                 )
                             }
                         },
-                        onUpdateClick = { updatedSchedule ->
-                            viewModel.onIntent(HomeIntent.OnUpdateScheduleClick(updatedSchedule))
+                        onClickUpdate = { updatedSchedule ->
+                            viewModel.onIntent(HomeIntent.OnClickUpdate(updatedSchedule))
                         },
-                        onMemoClick = { selectedSchedule ->
-                            viewModel.onIntent(HomeIntent.OnMemoClick(selectedSchedule))
+                        onClickMemo = { selectedSchedule ->
+                            viewModel.onIntent(HomeIntent.OnClickMemo(selectedSchedule))
                         },
-                        onDeleteMemoClick = { selectedSchedule ->
+                        onClickDeleteMemo = { selectedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                 dialogType = DialogType.ConfirmDeleteMemo(selectedSchedule)

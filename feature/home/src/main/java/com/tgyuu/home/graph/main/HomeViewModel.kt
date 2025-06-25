@@ -60,25 +60,25 @@ class HomeViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
+            is HomeIntent.OnClickAddTodo -> navigationBus.navigate(
                 To(AddTodoRoute(intent.selectedDate.toFormattedString()))
             )
 
-            is HomeIntent.OnCheckedChange -> onCheckedChange(intent.schedule)
-            is HomeIntent.OnEditScheduleClick -> eventBus.sendEvent(
+            is HomeIntent.OnCheckChanged -> onCheckedChange(intent.schedule)
+            is HomeIntent.OnClickEditSchedule -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
-            is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
-            is HomeIntent.OnUpdateScheduleClick -> onUpdateScheduleClick(intent.schedule.id)
-            is HomeIntent.OnMemoClick -> onMemoClick(intent.schedule)
-            is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnClickDelaySchedule -> onDelaySchedule(intent.schedule)
+            is HomeIntent.OnClickUpdate -> navigateToUpdate(intent.schedule.id)
+            is HomeIntent.OnClickMemo -> onClickMemo(intent.schedule)
+            is HomeIntent.OnClickSortType -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
-            is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule)
-            is HomeIntent.OnDeleteScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
-            is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)
-            is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule)
-            HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            is HomeIntent.OnClickDeleteMemo -> deleteMemo(intent.schedule)
+            is HomeIntent.OnClickDeleteSchedule -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnClickDeleteSingle -> onDeleteSingleSchedule(intent.schedule)
+            is HomeIntent.OnClickDeleteRemaining -> onDeleteRemainingSchedule(intent.schedule)
+            HomeIntent.OnClickSync -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
         }
     }
 
@@ -186,12 +186,17 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
     }
 
-    private suspend fun onUpdateScheduleClick(scheduleId: Int) {
+    private suspend fun navigateToUpdateSingle(scheduleId: Int) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         navigationBus.navigate(To(EditTodoRoute(scheduleId)))
     }
 
-    private suspend fun onMemoClick(schedule: TodoSchedule) {
+    private suspend fun navigateToUpdate(infoId: Int) {
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(EditTodoRoute(infoId)))
+    }
+
+    private suspend fun onClickMemo(schedule: TodoSchedule) {
         val destination = if (schedule.memo.isEmpty()) MemoGraph.AddMemoRoute(schedule.id)
         else MemoGraph.EditMemoRoute(schedule.id)
 

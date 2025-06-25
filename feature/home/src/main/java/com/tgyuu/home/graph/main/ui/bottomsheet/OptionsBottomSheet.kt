@@ -15,13 +15,13 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 
 @Composable
-internal fun EditScheduleBottomSheet(
+internal fun OptionsBottomSheet(
     selectedSchedule: TodoSchedule,
-    onUpdateClick: (TodoSchedule) -> Unit,
-    onDeleteClick: (TodoSchedule) -> Unit,
-    onDelayClick: (TodoSchedule) -> Unit,
-    onMemoClick: (TodoSchedule) -> Unit,
-    onDeleteMemoClick: (TodoSchedule) -> Unit,
+    onClickUpdate: (TodoSchedule) -> Unit,
+    onClickDelete: (TodoSchedule) -> Unit,
+    onClickDelay: (TodoSchedule) -> Unit,
+    onClickMemo: (TodoSchedule) -> Unit,
+    onClickDeleteMemo: (TodoSchedule) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -46,7 +46,7 @@ internal fun EditScheduleBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onUpdateClick(selectedSchedule) }
+                    .clickable { onClickUpdate(selectedSchedule) }
                     .height(62.dp),
             )
 
@@ -58,7 +58,7 @@ internal fun EditScheduleBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onDeleteClick(selectedSchedule) }
+                    .clickable { onClickDelete(selectedSchedule) }
                     .height(62.dp),
             )
 
@@ -70,7 +70,7 @@ internal fun EditScheduleBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onDelayClick(selectedSchedule) }
+                    .clickable { onClickDelay(selectedSchedule) }
                     .height(62.dp),
             )
 
@@ -82,7 +82,7 @@ internal fun EditScheduleBottomSheet(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onMemoClick(selectedSchedule) }
+                    .clickable { onClickMemo(selectedSchedule) }
                     .height(62.dp),
             )
 
@@ -95,7 +95,7 @@ internal fun EditScheduleBottomSheet(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onDeleteMemoClick(selectedSchedule) }
+                        .clickable { onClickDeleteMemo(selectedSchedule) }
                         .height(62.dp),
                 )
             }

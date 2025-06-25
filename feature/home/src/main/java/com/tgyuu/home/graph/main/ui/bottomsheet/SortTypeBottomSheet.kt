@@ -18,7 +18,7 @@ import com.tgyuu.domain.model.SortType
 @Composable
 internal fun SortTypeBottomSheet(
     originSortType: SortType,
-    onUpdateClick: (SortType) -> Unit,
+    onClickUpdate: (SortType) -> Unit,
 ) {
     var newSortType by remember(originSortType) { mutableStateOf(originSortType) }
 
@@ -44,7 +44,7 @@ internal fun SortTypeBottomSheet(
 
             EbbingSolidButton(
                 label = "적용하기",
-                onClick = { onUpdateClick(newSortType) },
+                onClick = { onClickUpdate(newSortType) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)

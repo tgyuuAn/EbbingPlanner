@@ -106,11 +106,10 @@ class EditTodoViewModel @Inject constructor(
     private suspend fun onSelectedDateChange(date: LocalDate) {
         if (date == currentState.selectedDate) return
 
-        val scheduledDates: Set<LocalDate> =
-            currentState.schedulesByDateMap[date]
-                ?.map { it.date }
-                ?.toSet()
-                ?: emptySet()
+        val scheduledDates: Set<LocalDate> = currentState.schedulesByDateMap[date]
+            ?.map { it.date }
+            ?.toSet()
+            ?: emptySet()
 
         if (date in scheduledDates) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 해당 날짜에 일정이 있습니다."))

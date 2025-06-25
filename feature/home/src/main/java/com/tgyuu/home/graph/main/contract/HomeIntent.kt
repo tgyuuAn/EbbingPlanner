@@ -7,17 +7,17 @@ import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 sealed interface HomeIntent : UiIntent {
-    data class OnAddTodoClick(val selectedDate: LocalDate) : HomeIntent
-    data class OnCheckedChange(val schedule: TodoSchedule) : HomeIntent
-    data class OnSortTypeClick(val content: BottomSheetContent) : HomeIntent
+    data class OnClickAddTodo(val selectedDate: LocalDate) : HomeIntent
+    data class OnCheckChanged(val schedule: TodoSchedule) : HomeIntent
+    data class OnClickSortType(val content: BottomSheetContent) : HomeIntent
     data class OnUpdateSortType(val sortType: SortType) : HomeIntent
-    data class OnEditScheduleClick(val content: BottomSheetContent) : HomeIntent
-    data class OnDeleteScheduleClick(val content: BottomSheetContent) : HomeIntent
-    data class OnDeleteSingleClick(val schedule: TodoSchedule) : HomeIntent
-    data class OnDeleteRemainingClick(val schedule: TodoSchedule) : HomeIntent
-    data class OnUpdateScheduleClick(val schedule: TodoSchedule) : HomeIntent
-    data class OnDelayScheduleClick(val schedule: TodoSchedule) : HomeIntent
-    data class OnMemoClick(val schedule: TodoSchedule) : HomeIntent
-    data class OnDeleteMemoClick(val schedule: TodoSchedule) : HomeIntent
-    data object OnSyncClick : HomeIntent
+    data class OnClickEditSchedule(val content: BottomSheetContent) : HomeIntent
+    data class OnClickDeleteSchedule(val content: BottomSheetContent) : HomeIntent
+    data class OnClickDeleteSingle(val schedule: TodoSchedule) : HomeIntent
+    data class OnClickDeleteRemaining(val schedule: TodoSchedule) : HomeIntent
+    data class OnClickUpdate(val schedule: TodoSchedule) : HomeIntent
+    data class OnClickDelaySchedule(val schedule: TodoSchedule) : HomeIntent
+    data class OnClickMemo(val schedule: TodoSchedule) : HomeIntent
+    data class OnClickDeleteMemo(val schedule: TodoSchedule) : HomeIntent
+    data object OnClickSync : HomeIntent
 }
