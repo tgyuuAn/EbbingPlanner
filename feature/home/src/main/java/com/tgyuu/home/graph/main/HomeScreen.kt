@@ -51,6 +51,7 @@ import com.tgyuu.home.graph.main.ui.EbbingTodoList
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
+import com.tgyuu.home.graph.main.ui.bottomsheet.UpdateBottomSheet
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteMemoDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteRemainingDialog
@@ -174,7 +175,23 @@ internal fun HomeRoute(
                             }
                         },
                         onClickUpdate = { updatedSchedule ->
-                            viewModel.onIntent(HomeIntent.OnUpdateClick(updatedSchedule))
+                            scope.launch {
+                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                delay(200L)
+                                viewModel.onIntent(
+                                    HomeIntent.OnUpdateScheduleClick {
+                                        UpdateBottomSheet(
+                                            selectedSchedule = updatedSchedule,
+                                            onClickUpdateDate = {
+                                                viewModel.onIntent(HomeIntent.OnUpdateDateClick(updatedSchedule))
+                                            },
+                                            onClickUpdateInfo = {
+                                                viewModel.onIntent(HomeIntent.OnUpdateInfoClick(updatedSchedule))
+                                            },
+                                        )
+                                    }
+                                )
+                            }
                         },
                         onClickMemo = { selectedSchedule ->
                             viewModel.onIntent(HomeIntent.OnMemoClick(selectedSchedule))

@@ -1,7 +1,6 @@
 package com.tgyuu.home.graph.editdate
 
 import android.util.Log
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
@@ -10,10 +9,9 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.editdate.contract.EditDateIntent
@@ -22,7 +20,6 @@ import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
-import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -40,12 +37,16 @@ class EditDateViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
+    private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
-        val dateStr = savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
+        viewModelScope.launch {
+            val infoId = savedStateHandle.get<Int>("infoId")
+                ?: throw IllegalArgumentException("해당 일정의 정보가 없습니다.")
 
-        setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
+            originSchedules = todoRepository.loadSchedulesByTodoInfo(infoId)
+            originSchedules.firstOrNull()?.let { setState { copy(selectedDate = it.date) } }
+        }
     }
 
     internal fun loadNewRepeatCycle() {
