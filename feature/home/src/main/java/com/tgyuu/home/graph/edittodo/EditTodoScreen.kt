@@ -1,7 +1,5 @@
 package com.tgyuu.home.graph.edittodo
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -20,38 +17,33 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
-import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.designsystem.component.EbbingTextInputDefault
-import com.tgyuu.designsystem.component.EbbingTextInputDropDown
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
+import com.tgyuu.home.graph.ui.PriorityContent
+import com.tgyuu.home.graph.ui.RepeatCycleContent
+import com.tgyuu.home.graph.ui.RestDayContent
+import com.tgyuu.home.graph.ui.ScheduleContent
+import com.tgyuu.home.graph.ui.TagContent
+import com.tgyuu.home.graph.ui.TitleContent
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @Composable
@@ -101,6 +93,8 @@ internal fun EditTodoRoute(
                 )
             )
         },
+        onRestDayChange = {},
+        onRepeatCycleDropDownClick = {},
         onSaveClick = { viewModel.onIntent(EditTodoIntent.OnSaveClick) },
     )
 }
@@ -113,6 +107,8 @@ private fun EditTodoScreen(
     onTitleChange: (String) -> Unit,
     onPriorityChange: (String) -> Unit,
     onTagDropDownClick: () -> Unit,
+    onRestDayChange: (DayOfWeek) -> Unit,
+    onRepeatCycleDropDownClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -180,6 +176,18 @@ private fun EditTodoScreen(
                     onPriorityChange = onPriorityChange,
                 )
 
+                RepeatCycleContent(
+                    repeatCycle = state.repeatCycle,
+                    onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+                )
+
+                RestDayContent(
+                    restDays = state.restDays,
+                    onRestDayChange = onRestDayChange,
+                )
+
+                ScheduleContent(schedules = state.schedules)
+
                 Spacer(modifier = Modifier.height(60.dp))
             } else {
                 Row(
@@ -203,103 +211,6 @@ private fun EditTodoScreen(
     }
 }
 
-@Composable
-private fun TitleContent(
-    scrollState: ScrollState,
-    title: String,
-    onTitleChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val density = LocalDensity.current
-    var isInputFocused by remember { mutableStateOf(false) }
-
-    Text(
-        text = "제목",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-
-    EbbingTextInputDefault(
-        value = title,
-        hint = "무엇을 학습하실건가요?",
-        keyboardType = KeyboardType.Text,
-        onValueChange = onTitleChange,
-        limit = 100,
-        rightComponent = {
-            if (title.isNotEmpty()) {
-                Image(
-                    painter = painterResource(R.drawable.ic_delete_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(20.dp)
-                        .clickable { onTitleChange("") },
-                )
-            }
-        },
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth()
-            .onFocusChanged { isInputFocused = it.isFocused }
-            .animateScrollWhenFocus(
-                scrollState = scrollState,
-                verticalWeightPx = with(density) { -200.dp.roundToPx() },
-            ),
-    )
-}
-
-@Composable
-private fun TagContent(
-    tag: TodoTag?,
-    onTagDropDownClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        Text(
-            text = "태그",
-            style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(top = 32.dp),
-        )
-
-        EbbingTextInputDropDown(
-            value = tag?.name ?: "",
-            color = tag?.color,
-            onDropDownClick = onTagDropDownClick,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
-}
-
-@Composable
-private fun PriorityContent(
-    priority: String?,
-    onPriorityChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        Text(
-            text = "우선순위",
-            style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(top = 32.dp),
-        )
-
-        EbbingTextInputDefault(
-            value = priority ?: "",
-            onValueChange = onPriorityChange,
-            hint = "얼마나 중요한 일정인가요?",
-            keyboardType = KeyboardType.Number,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-        )
-    }
-}
-
 @EbbingPreview
 @Composable
 private fun PreviewAddTodo() {
@@ -316,6 +227,8 @@ private fun PreviewAddTodo() {
             onTitleChange = {},
             onPriorityChange = {},
             onTagDropDownClick = {},
+            onRestDayChange = {},
+            onRepeatCycleDropDownClick = {},
         )
     }
 }

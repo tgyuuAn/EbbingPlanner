@@ -66,6 +66,12 @@ import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.dialog.ConfirmExitDialog
+import com.tgyuu.home.graph.ui.PriorityContent
+import com.tgyuu.home.graph.ui.RepeatCycleContent
+import com.tgyuu.home.graph.ui.RestDayContent
+import com.tgyuu.home.graph.ui.ScheduleContent
+import com.tgyuu.home.graph.ui.TagContent
+import com.tgyuu.home.graph.ui.TitleContent
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -156,13 +162,11 @@ private fun AddTodoScreen(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val focusManager = LocalFocusManager.current
-    val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     var isShowExitDialog by remember { mutableStateOf(false) }
 
     BackHandler(enabled = state.isModified) {
-        isShowExitDialog = !isShowExitDialog
+        isShowExitDialog = true
     }
 
     if (isShowExitDialog) {
@@ -176,392 +180,221 @@ private fun AddTodoScreen(
     }
 
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-        Column(modifier = modifier.fillMaxSize()) {
-            EbbingSubTopBar(
-                title = "일정 추가",
-                onNavigationClick = {
-                    if (state.isModified) {
-                        isShowExitDialog = true
-                    } else {
-                        isShowExitDialog = false
-                        onBackClick()
-                    }
-                },
-                rightComponent = {
-                    Text(
-                        text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                },
-                modifier = Modifier.padding(horizontal = 20.dp),
+        AddTodoScreenPhone(
+            state = state,
+            onBackClick = {
+                if (state.isModified) isShowExitDialog = true
+                else onBackClick()
+            },
+            onSelectedDateChangeClick = onSelectedDateChangeClick,
+            onTitleChange = onTitleChange,
+            onPriorityChange = onPriorityChange,
+            onTagDropDownClick = onTagDropDownClick,
+            onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+            onRestDayChange = onRestDayChange,
+            onSaveClick = onSaveClick,
+            modifier = modifier,
+        )
+    } else {
+        AddTodoScreenTablet(
+            state = state,
+            onBackClick = {
+                if (state.isModified) isShowExitDialog = true
+                else onBackClick()
+            },
+            onSelectedDateChangeClick = onSelectedDateChangeClick,
+            onTitleChange = onTitleChange,
+            onPriorityChange = onPriorityChange,
+            onTagDropDownClick = onTagDropDownClick,
+            onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+            onRestDayChange = onRestDayChange,
+            onSaveClick = onSaveClick,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun AddTodoScreenPhone(
+    state: AddTodoState,
+    onBackClick: () -> Unit,
+    onSelectedDateChangeClick: () -> Unit,
+    onTitleChange: (String) -> Unit,
+    onPriorityChange: (String) -> Unit,
+    onTagDropDownClick: () -> Unit,
+    onRepeatCycleDropDownClick: () -> Unit,
+    onRestDayChange: (DayOfWeek) -> Unit,
+    onSaveClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val focusManager = LocalFocusManager.current
+    val scrollState = rememberScrollState()
+
+    Column(modifier = modifier.fillMaxSize()) {
+        EbbingSubTopBar(
+            title = "일정 추가",
+            onNavigationClick = onBackClick,
+            rightComponent = {
+                Text(
+                    text = "저장",
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .throttledClickable(throttleTime = 1500L, enabled = state.isSaveEnabled) {
+                            onSaveClick()
+                            focusManager.clearFocus()
+                        },
+                )
+            },
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(20.dp)
+                .imePadding(),
+        ) {
+            TodoMainFormContent(
+                state = state,
+                scrollState = scrollState,
+                onSelectedDateChangeClick = onSelectedDateChangeClick,
+                onTitleChange = onTitleChange,
+                onTagDropDownClick = onTagDropDownClick,
+                onPriorityChange = onPriorityChange,
+                onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+                onRestDayChange = onRestDayChange,
             )
 
+            ScheduleContent(schedules = state.schedules)
+            Spacer(modifier = Modifier.height(60.dp))
+        }
+    }
+}
+
+@Composable
+private fun AddTodoScreenTablet(
+    state: AddTodoState,
+    onBackClick: () -> Unit,
+    onSelectedDateChangeClick: () -> Unit,
+    onTitleChange: (String) -> Unit,
+    onPriorityChange: (String) -> Unit,
+    onTagDropDownClick: () -> Unit,
+    onRepeatCycleDropDownClick: () -> Unit,
+    onRestDayChange: (DayOfWeek) -> Unit,
+    onSaveClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val focusManager = LocalFocusManager.current
+    val scrollState = rememberScrollState()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        EbbingSubTopBar(
+            title = "일정 추가",
+            onNavigationClick = onBackClick,
+            rightComponent = {
+                Text(
+                    text = "저장",
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .throttledClickable(throttleTime = 1500L, enabled = state.isSaveEnabled) {
+                            onSaveClick()
+                            focusManager.clearFocus()
+                        },
+                )
+            },
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        Row(
+            modifier = modifier
+                .fillMaxSize()
+                .imePadding(),
+        ) {
             Column(
                 modifier = Modifier
+                    .weight(1f)
                     .verticalScroll(scrollState)
                     .padding(20.dp)
-                    .imePadding(),
+                    .padding(horizontal = 20.dp),
             ) {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
-                        }
-                        append(" 부터\n시작하는 일정을 만들어요")
-                    },
-                    style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
-                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
-                )
-
-                TitleContent(
+                TodoMainFormContent(
+                    state = state,
                     scrollState = scrollState,
-                    title = state.title,
+                    onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onTitleChange = onTitleChange,
-                )
-
-                TagContent(
-                    tag = state.tag,
                     onTagDropDownClick = onTagDropDownClick,
-                )
-
-                PriorityContent(
-                    priority = state.priority,
                     onPriorityChange = onPriorityChange,
-                )
-
-                RepeatCycleContent(
-                    repeatCycle = state.repeatCycle,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
-                )
-
-                RestDayContent(
-                    restDays = state.restDays,
                     onRestDayChange = onRestDayChange,
                 )
 
-                ScheduleContent(schedules = state.schedules)
-
                 Spacer(modifier = Modifier.height(60.dp))
             }
-        }
-    } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            EbbingSubTopBar(
-                title = "일정 추가",
-                onNavigationClick = onBackClick,
-                rightComponent = {
-                    Text(
-                        text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                },
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-
-            Row(
-                modifier = modifier
-                    .fillMaxSize()
-                    .imePadding(),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .verticalScroll(scrollState)
-                        .padding(20.dp)
-                        .padding(horizontal = 20.dp),
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                                append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
-                            }
-                            append(" 부터\n시작하는 일정을 만들어요")
-                        },
-                        style = EbbingTheme.typography.headingLSB,
-                        color = EbbingTheme.colors.black,
-                        modifier = Modifier.clickable { onSelectedDateChangeClick() },
-                    )
-
-                    TitleContent(
-                        scrollState = scrollState,
-                        title = state.title,
-                        onTitleChange = onTitleChange,
-                    )
-
-                    TagContent(
-                        tag = state.tag,
-                        onTagDropDownClick = onTagDropDownClick,
-                    )
-
-                    PriorityContent(
-                        priority = state.priority,
-                        onPriorityChange = onPriorityChange,
-                    )
-
-                    RepeatCycleContent(
-                        repeatCycle = state.repeatCycle,
-                        onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
-                    )
-
-                    RestDayContent(
-                        restDays = state.restDays,
-                        onRestDayChange = onRestDayChange,
-                    )
-
-                    Spacer(modifier = Modifier.height(60.dp))
-                }
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(20.dp)
-                        .padding(horizontal = 20.dp),
-                ) {
-                    ScheduleContent(schedules = state.schedules)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TitleContent(
-    scrollState: ScrollState,
-    title: String,
-    onTitleChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val density = LocalDensity.current
-    var isInputFocused by remember { mutableStateOf(false) }
-
-    Text(
-        text = "제목",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-
-    EbbingTextInputDefault(
-        value = title,
-        hint = "무엇을 학습하실건가요?",
-        keyboardType = KeyboardType.Text,
-        onValueChange = onTitleChange,
-        limit = 100,
-        rightComponent = {
-            if (title.isNotEmpty()) {
-                Image(
-                    painter = painterResource(R.drawable.ic_delete_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(20.dp)
-                        .clickable { onTitleChange("") },
-                )
-            }
-        },
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth()
-            .onFocusChanged { isInputFocused = it.isFocused }
-            .animateScrollWhenFocus(
-                scrollState = scrollState,
-                verticalWeightPx = with(density) { -200.dp.roundToPx() },
-            ),
-    )
-}
-
-@Composable
-private fun TagContent(
-    tag: TodoTag?,
-    onTagDropDownClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "태그",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-
-    EbbingTextInputDropDown(
-        value = tag?.name ?: "",
-        color = tag?.color,
-        onDropDownClick = onTagDropDownClick,
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-    )
-}
-
-@Composable
-private fun PriorityContent(
-    priority: String?,
-    onPriorityChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "우선순위",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-
-    EbbingTextInputDefault(
-        value = priority ?: "",
-        onValueChange = onPriorityChange,
-        hint = "얼마나 중요한 일정인가요?",
-        keyboardType = KeyboardType.Number,
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-    )
-}
-
-
-@Composable
-private fun RepeatCycleContent(
-    repeatCycle: RepeatCycle,
-    onRepeatCycleDropDownClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "반복 주기",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-
-    EbbingTextInputDropDown(
-        value = repeatCycle.toDisplayName(),
-        onDropDownClick = onRepeatCycleDropDownClick,
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-    )
-}
-
-@Composable
-private fun RestDayContent(
-    restDays: Set<DayOfWeek>,
-    onRestDayChange: (DayOfWeek) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "쉬는 날",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp),
-    ) {
-        DayOfWeek.entries.forEach {
-            EbbingChip(
-                label = it.toKorean(),
-                selected = it in restDays,
-                onChipClicked = { onRestDayChange(it) },
-                modifier = Modifier.weight(1f),
-            )
-        }
-    }
-}
-
-@Composable
-private fun ScheduleContent(
-    schedules: List<LocalDate>,
-    modifier: Modifier = Modifier,
-) {
-    EbbingVisibleAnimation(schedules.isNotEmpty()) {
-        Column {
-            Text(
-                text = "${schedules.size} 개의 학습 일정",
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.padding(top = 32.dp),
-            )
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(EbbingTheme.colors.light3)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(20.dp)
+                    .padding(horizontal = 20.dp),
             ) {
-                schedules.forEachIndexed { idx, item ->
-                    ScheduleCard(
-                        idx = idx + 1,
-                        schedule = item,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = 20.dp,
-                                vertical = 16.dp,
-                            )
-                    )
-                }
+                ScheduleContent(schedules = state.schedules)
             }
         }
     }
 }
 
 @Composable
-private fun ScheduleCard(
-    idx: Int,
-    schedule: LocalDate,
-    modifier: Modifier = Modifier,
+private fun TodoMainFormContent(
+    state: AddTodoState,
+    scrollState: ScrollState,
+    onSelectedDateChangeClick: () -> Unit,
+    onTitleChange: (String) -> Unit,
+    onTagDropDownClick: () -> Unit,
+    onPriorityChange: (String) -> Unit,
+    onRepeatCycleDropDownClick: () -> Unit,
+    onRestDayChange: (DayOfWeek) -> Unit,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
-    ) {
-        Text(
-            text = idx.toString(),
-            style = EbbingTheme.typography.bodyMSB,
-            textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
-        )
+    Text(
+        text = buildAnnotatedString {
+            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+            }
+            append(" 부터\n시작하는 일정을 만들어요")
+        },
+        style = EbbingTheme.typography.headingLSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.clickable { onSelectedDateChangeClick() },
+    )
 
-        Text(
-            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
-            style = EbbingTheme.typography.bodyMSB,
-            textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
-        )
+    TitleContent(
+        scrollState = scrollState,
+        title = state.title,
+        onTitleChange = onTitleChange,
+    )
 
-        Text(
-            text = schedule.toRelativeDayDescription(),
-            style = EbbingTheme.typography.bodyMSB,
-            textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
-        )
-    }
+    TagContent(
+        tag = state.tag,
+        onTagDropDownClick = onTagDropDownClick,
+    )
+
+    PriorityContent(
+        priority = state.priority,
+        onPriorityChange = onPriorityChange,
+    )
+
+    RepeatCycleContent(
+        repeatCycle = state.repeatCycle,
+        onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+    )
+
+    RestDayContent(
+        restDays = state.restDays,
+        onRestDayChange = onRestDayChange,
+    )
 }
 
 @EbbingPreview

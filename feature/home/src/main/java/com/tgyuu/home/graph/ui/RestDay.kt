@@ -1,0 +1,44 @@
+package com.tgyuu.home.graph.ui
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.component.EbbingChip
+import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.foundation.EbbingTheme
+import java.time.DayOfWeek
+
+@Composable
+internal fun RestDayContent(
+    restDays: Set<DayOfWeek>,
+    onRestDayChange: (DayOfWeek) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = "쉬는 날",
+        style = EbbingTheme.typography.bodyMSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(top = 32.dp),
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+    ) {
+        DayOfWeek.entries.forEach {
+            EbbingChip(
+                label = it.toKorean(),
+                selected = it in restDays,
+                onChipClicked = { onRestDayChange(it) },
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}

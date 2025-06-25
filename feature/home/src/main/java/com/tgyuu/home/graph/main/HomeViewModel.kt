@@ -60,25 +60,25 @@ class HomeViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.OnClickAddTodo -> navigationBus.navigate(
+            is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
                 To(AddTodoRoute(intent.selectedDate.toFormattedString()))
             )
 
             is HomeIntent.OnCheckChanged -> onCheckedChange(intent.schedule)
-            is HomeIntent.OnClickEditSchedule -> eventBus.sendEvent(
+            is HomeIntent.OnEditScheduleClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
-            is HomeIntent.OnClickDelaySchedule -> onDelaySchedule(intent.schedule)
-            is HomeIntent.OnClickUpdate -> navigateToUpdate(intent.schedule.id)
-            is HomeIntent.OnClickMemo -> onClickMemo(intent.schedule)
-            is HomeIntent.OnClickSortType -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
+            is HomeIntent.OnUpdateClick -> navigateToUpdate(intent.schedule.id)
+            is HomeIntent.OnMemoClick -> onClickMemo(intent.schedule)
+            is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
-            is HomeIntent.OnClickDeleteMemo -> deleteMemo(intent.schedule)
-            is HomeIntent.OnClickDeleteSchedule -> eventBus.sendEvent(ShowBottomSheet(intent.content))
-            is HomeIntent.OnClickDeleteSingle -> onDeleteSingleSchedule(intent.schedule)
-            is HomeIntent.OnClickDeleteRemaining -> onDeleteRemainingSchedule(intent.schedule)
-            HomeIntent.OnClickSync -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule)
+            is HomeIntent.OnDeleteScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)
+            is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule)
+            HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
         }
     }
 
