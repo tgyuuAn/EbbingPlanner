@@ -68,9 +68,7 @@ internal fun EditTodoRoute(
                             originSelectedDate = state.selectedDate,
                             schedulesByDateMap = state.schedulesByDateMap,
                             updateSelectedDate = {
-                                viewModel.onIntent(
-                                    EditTodoIntent.OnSelectedDateChange(it)
-                                )
+                                viewModel.onIntent(EditTodoIntent.OnSelectedDateChange(it))
                             },
                         )
                     }
@@ -93,8 +91,6 @@ internal fun EditTodoRoute(
                 )
             )
         },
-        onRestDayChange = {},
-        onRepeatCycleDropDownClick = {},
         onSaveClick = { viewModel.onIntent(EditTodoIntent.OnSaveClick) },
     )
 }
@@ -107,8 +103,6 @@ private fun EditTodoScreen(
     onTitleChange: (String) -> Unit,
     onPriorityChange: (String) -> Unit,
     onTagDropDownClick: () -> Unit,
-    onRestDayChange: (DayOfWeek) -> Unit,
-    onRepeatCycleDropDownClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -176,18 +170,6 @@ private fun EditTodoScreen(
                     onPriorityChange = onPriorityChange,
                 )
 
-                RepeatCycleContent(
-                    repeatCycle = state.repeatCycle,
-                    onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
-                )
-
-                RestDayContent(
-                    restDays = state.restDays,
-                    onRestDayChange = onRestDayChange,
-                )
-
-                ScheduleContent(schedules = state.schedules)
-
                 Spacer(modifier = Modifier.height(60.dp))
             } else {
                 Row(
@@ -227,8 +209,6 @@ private fun PreviewAddTodo() {
             onTitleChange = {},
             onPriorityChange = {},
             onTagDropDownClick = {},
-            onRestDayChange = {},
-            onRepeatCycleDropDownClick = {},
         )
     }
 }

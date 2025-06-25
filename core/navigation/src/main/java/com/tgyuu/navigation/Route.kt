@@ -18,6 +18,9 @@ sealed interface HomeGraph : Route {
     data class AddTodoRoute(val selectedDate: String) : HomeGraph
 
     @Serializable
+    data class EditDateRoute(val scheduleId: Int) : HomeGraph
+
+    @Serializable
     data class EditTodoRoute(val scheduleId: Int) : HomeGraph
 }
 
