@@ -44,8 +44,18 @@ class EditDateViewModel @Inject constructor(
             val infoId = savedStateHandle.get<Int>("infoId")
                 ?: throw IllegalArgumentException("해당 일정의 정보가 없습니다.")
 
-            originSchedules = todoRepository.loadSchedulesByTodoInfo(infoId)
-            originSchedules.firstOrNull()?.let { setState { copy(selectedDate = it.date) } }
+            val result = todoRepository.loadSchedulesByTodoInfo(infoId)
+            result.firstOrNull()?.let {
+                setState {
+                    copy(
+                        title = it.title,
+                        originTagColor = it.color,
+                        selectedDate = it.date,
+                    )
+                }
+            }
+
+            originSchedules = result
         }
     }
 
@@ -82,7 +92,7 @@ class EditDateViewModel @Inject constructor(
 
             is EditDateIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
             is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
-            EditDateIntent.OnSaveClick -> onSaveClick()
+            is EditDateIntent.OnSaveClick -> onSaveClick(intent.isDoneSchedule)
             EditDateIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
         }
     }
@@ -121,17 +131,27 @@ class EditDateViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
-    private suspend fun onSaveClick() {
+    private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
+        if (currentState.schedules.isEmpty()) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장할 일정이 없습니다"))
+            return
+        }
 
-//        todoRepository.addTodo(
-//            title = currentState.title,
-//            dates = currentState.schedules,
-//            tagId = currentState.tag.id,
-//            priority = currentState.priority?.toIntOrNull(),
-//        )
+        originSchedules.forEach { alarmScheduler.cancelDailyExact(it.date) }
+
+        originSchedules.firstOrNull()
+            ?.infoId
+            ?.let { todoRepository.deleteTodoByTodoInfo(it) }
+
+        todoRepository.addTodo(
+            title = currentState.title,
+            dates = currentState.schedules,
+            isDoneSchedules = isDoneSchedules,
+            tagId = originSchedules.firstOrNull()?.tagId ?: 0,
+            priority = originSchedules.firstOrNull()?.priority,
+        )
 
         val (hour, minute) = configRepository.getAlarmTime()
-
         currentState.schedules.forEach { schedule ->
             try {
                 val triggerAtMillis = schedule
@@ -151,7 +171,7 @@ class EditDateViewModel @Inject constructor(
             }
         }
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정의 날짜 및 반복 주기를 변경하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(currentState.selectedDate.toFormattedString()),

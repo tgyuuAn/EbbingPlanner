@@ -11,6 +11,7 @@ data object OnboardingRoute : Route
 data object HomeBaseRoute : Route
 
 sealed interface HomeGraph : Route {
+
     @Serializable
     data class HomeRoute(val workedDate: String? = null) : HomeGraph
 

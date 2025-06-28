@@ -5,8 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.database.model.TodoInfoEntity
+import com.tgyuu.database.model.TodoScheduleEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -37,6 +37,34 @@ interface TodoWithSchedulesDao {
                 TodoScheduleEntity(
                     infoId = infoId,
                     date = date,
+                    memo = "",
+                    priority = priority ?: 0,
+                )
+            }
+        )
+    }
+
+    @Transaction
+    suspend fun insertTodoWithSchedules(
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+    ) {
+        val infoId = insertInfo(
+            TodoInfoEntity(
+                title = title,
+                tagId = tagId,
+            )
+        ).toInt()
+
+        insertSchedules(
+            dates.zip(isDoneSchedules) { date, isDone ->
+                TodoScheduleEntity(
+                    infoId = infoId,
+                    date = date,
+                    isDone = isDone,
                     memo = "",
                     priority = priority ?: 0,
                 )

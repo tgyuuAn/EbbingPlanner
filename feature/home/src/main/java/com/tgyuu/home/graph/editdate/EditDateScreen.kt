@@ -1,6 +1,5 @@
 package com.tgyuu.home.graph.editdate
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,17 +10,20 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -34,15 +36,13 @@ import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.DefaultRepeatCycles
-import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
-import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.editdate.contract.EditDateIntent
 import com.tgyuu.home.graph.editdate.contract.EditDateState
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
-import com.tgyuu.home.graph.ui.ScheduleContent
+import com.tgyuu.home.graph.ui.ScheduleCheckContent
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -52,7 +52,7 @@ internal fun EditDateRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel) {
         viewModel.loadNewRepeatCycle()
         viewModel.loadRepeatCycles()
     }
@@ -96,7 +96,7 @@ internal fun EditDateRoute(
             )
         },
         onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
-        onSaveClick = { viewModel.onIntent(EditDateIntent.OnSaveClick) },
+        onSaveClick = { viewModel.onIntent(EditDateIntent.OnSaveClick(it)) },
     )
 }
 
@@ -107,7 +107,7 @@ private fun EditDateScreen(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
-    onSaveClick: () -> Unit,
+    onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -142,11 +142,14 @@ private fun EditDateScreenPhone(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
-    onSaveClick: () -> Unit,
+    onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
+    val isDoneSchedules = remember(state.schedules.size) {
+        mutableStateListOf(*List(state.schedules.size) { false }.toTypedArray())
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
@@ -160,7 +163,7 @@ private fun EditDateScreenPhone(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(throttleTime = 1500L) {
-                            onSaveClick()
+                            onSaveClick(isDoneSchedules)
                             focusManager.clearFocus()
                         },
                 )
@@ -176,13 +179,26 @@ private fun EditDateScreenPhone(
         ) {
             EditDateMainFormContent(
                 state = state,
-                scrollState = scrollState,
                 onSelectedDateChangeClick = onSelectedDateChangeClick,
                 onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                 onRestDayChange = onRestDayChange,
             )
 
-            ScheduleContent(schedules = state.schedules)
+            ScheduleCheckContent(
+                schedules = state.schedules,
+                isDoneSchedules = isDoneSchedules,
+                colorValue = state.originTagColor,
+                onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
+            )
+
+            HorizontalDivider(
+                color = EbbingTheme.colors.light2,
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
+            DescriptionBody()
+
             Spacer(modifier = Modifier.height(60.dp))
         }
     }
@@ -195,11 +211,14 @@ private fun EditDateScreenTablet(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
-    onSaveClick: () -> Unit,
+    onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
+    val isDoneSchedules = remember(state.schedules.size) {
+        mutableStateListOf(*List(state.schedules.size) { false }.toTypedArray())
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
@@ -213,7 +232,7 @@ private fun EditDateScreenTablet(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(throttleTime = 1500L) {
-                            onSaveClick()
+                            onSaveClick(isDoneSchedules)
                             focusManager.clearFocus()
                         },
                 )
@@ -235,7 +254,6 @@ private fun EditDateScreenTablet(
             ) {
                 EditDateMainFormContent(
                     state = state,
-                    scrollState = scrollState,
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     onRestDayChange = onRestDayChange,
@@ -250,7 +268,20 @@ private fun EditDateScreenTablet(
                     .padding(20.dp)
                     .padding(horizontal = 20.dp),
             ) {
-                ScheduleContent(schedules = state.schedules)
+                ScheduleCheckContent(
+                    schedules = state.schedules,
+                    isDoneSchedules = isDoneSchedules,
+                    colorValue = state.originTagColor,
+                    onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
+                )
+
+                HorizontalDivider(
+                    color = EbbingTheme.colors.light2,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+
+                DescriptionBody()
             }
         }
     }
@@ -259,7 +290,6 @@ private fun EditDateScreenTablet(
 @Composable
 private fun EditDateMainFormContent(
     state: EditDateState,
-    scrollState: ScrollState,
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -286,6 +316,19 @@ private fun EditDateMainFormContent(
         onRestDayChange = onRestDayChange,
     )
 }
+
+@Composable
+private fun DescriptionBody() {
+    Text(
+        text = "- 일정이 변경되면 기존 일정의 완료 여부는 초기화 됩니다.\n" +
+                "- 위 체크 박스에서 새로운 일정에 완료 여부를 설정할 수 있습니다.\n" +
+                "- 일정을 변경하게 되면 기존 일정에 있던 메모들이 제거됩니다.",
+        textAlign = TextAlign.Start,
+        style = EbbingTheme.typography.bodyMM,
+        color = EbbingTheme.colors.dark3,
+    )
+}
+
 
 @EbbingPreview
 @Composable

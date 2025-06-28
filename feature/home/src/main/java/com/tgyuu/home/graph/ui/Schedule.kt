@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.common.ui.EbbingVisibleAnimation
+import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.LocalDate
@@ -90,6 +91,100 @@ private fun ScheduleCard(
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.black,
+        )
+    }
+}
+
+@Composable
+internal fun ScheduleCheckContent(
+    schedules: List<LocalDate>,
+    isDoneSchedules: List<Boolean>,
+    colorValue: Int,
+    onCheckSchedule: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    EbbingVisibleAnimation(schedules.isNotEmpty()) {
+        Column {
+            Text(
+                text = "${schedules.size} 개의 학습 일정",
+                style = EbbingTheme.typography.headingMSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.padding(top = 32.dp),
+            )
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(EbbingTheme.colors.light3)
+            ) {
+                schedules.forEachIndexed { idx, item ->
+                    ScheduleCheckCard(
+                        idx = idx + 1,
+                        isChecked = isDoneSchedules[idx],
+                        colorValue = colorValue,
+                        schedule = item,
+                        onCheckSchedule = { onCheckSchedule(idx) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 20.dp,
+                                vertical = 16.dp,
+                            )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScheduleCheckCard(
+    idx: Int,
+    colorValue: Int,
+    isChecked: Boolean,
+    schedule: LocalDate,
+    modifier: Modifier = Modifier,
+    onCheckSchedule: (Int) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(
+                text = idx.toString(),
+                style = EbbingTheme.typography.bodyMSB,
+                textAlign = TextAlign.Center,
+                color = EbbingTheme.colors.black,
+            )
+
+            Text(
+                text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
+                style = EbbingTheme.typography.bodyMSB,
+                textAlign = TextAlign.Center,
+                color = EbbingTheme.colors.black,
+            )
+
+            Text(
+                text = schedule.toRelativeDayDescription(),
+                style = EbbingTheme.typography.bodyMSB,
+                textAlign = TextAlign.Center,
+                color = EbbingTheme.colors.black,
+            )
+        }
+
+        EbbingCheck(
+            checked = isChecked,
+            colorValue = colorValue,
+            onCheckedChange = { onCheckSchedule(idx) },
+            modifier = Modifier.padding(start = 12.dp),
         )
     }
 }

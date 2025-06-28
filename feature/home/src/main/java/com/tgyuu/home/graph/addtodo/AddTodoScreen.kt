@@ -1,22 +1,16 @@
 package com.tgyuu.home.graph.addtodo
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -28,38 +22,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toRelativeDayDescription
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.animateScrollWhenFocus
 import com.tgyuu.common.ui.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
-import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.EbbingChip
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.designsystem.component.EbbingTextInputDefault
-import com.tgyuu.designsystem.component.EbbingTextInputDropDown
-import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.DefaultRepeatCycles
-import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
@@ -81,7 +58,7 @@ internal fun AddTodoRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel) {
         viewModel.loadNewTag()
         viewModel.loadNewRepeatCycle()
         viewModel.loadTags()
@@ -268,6 +245,7 @@ private fun AddTodoScreenPhone(
             )
 
             ScheduleContent(schedules = state.schedules)
+
             Spacer(modifier = Modifier.height(60.dp))
         }
     }

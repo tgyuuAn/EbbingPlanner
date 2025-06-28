@@ -27,12 +27,21 @@ interface LocalTodoDataSource {
         priority: Int?,
     )
 
+    suspend fun insertTodos(
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+    )
+
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
     suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync)
     suspend fun updateSchedule(todoSchedule: TodoSchedule)
     suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync)
 
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)
+    suspend fun softDeleteTodoByTodoInfo(id: Int)
     suspend fun hardDeleteTodo(id: Int)
     suspend fun hardDeleteAllTodos()
 

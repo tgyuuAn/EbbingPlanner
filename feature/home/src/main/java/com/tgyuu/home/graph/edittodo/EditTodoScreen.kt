@@ -52,7 +52,7 @@ internal fun EditTodoRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel) {
         viewModel.loadNewTag()
         viewModel.loadTags()
     }

@@ -32,6 +32,14 @@ interface TodoRepository {
         priority: Int?,
     )
 
+    suspend fun addTodo(
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+    )
+
     suspend fun addRepeatCycle(intervals: List<Int>): Long
 
     suspend fun updateRepeatCycle(repeatCycle: RepeatCycle)
@@ -43,6 +51,7 @@ interface TodoRepository {
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun deleteTodo(todoSchedule: TodoSchedule)
+    suspend fun deleteTodoByTodoInfo(id: Int)
 
     suspend fun updateTag(todoTag: TodoTag)
     suspend fun deleteTag(todoTag: TodoTag)

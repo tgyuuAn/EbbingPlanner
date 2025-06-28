@@ -2,13 +2,13 @@ package com.tgyuu.home.graph.editdate.contract
 
 import com.tgyuu.common.base.UiState
 import com.tgyuu.domain.model.DefaultRepeatCycles
-import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoTag
 import java.time.DayOfWeek
 import java.time.LocalDate
 
 data class EditDateState(
+    val title: String = "",
+    val originTagColor: Int = 0XFFBBE1FA.toInt(),
     val selectedDate: LocalDate = LocalDate.now(),
     val repeatCycleList: List<RepeatCycle> = DefaultRepeatCycles,
     val repeatCycle: RepeatCycle = DefaultRepeatCycles.first(),

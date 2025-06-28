@@ -80,6 +80,20 @@ class TodoRepositoryImpl @Inject constructor(
         priority = priority,
     )
 
+    override suspend fun addTodo(
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?
+    ) = localTodoDataSource.insertTodos(
+        title = title,
+        tagId = tagId,
+        dates = dates,
+        isDoneSchedules = isDoneSchedules,
+        priority = priority,
+    )
+
     override suspend fun addRepeatCycle(intervals: List<Int>): Long {
         val newId = localRepeatCycleDataSource.insertRepeatCycle(intervals = intervals)
 
@@ -106,6 +120,9 @@ class TodoRepositoryImpl @Inject constructor(
 
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
         localTodoDataSource.softDeleteTodo(todoSchedule)
+
+    override suspend fun deleteTodoByTodoInfo(id: Int) =
+        localTodoDataSource.softDeleteTodoByTodoInfo(id)
 
     override suspend fun updateTag(todoTag: TodoTag) = localTagDataSource.updateTag(todoTag)
     override suspend fun deleteTag(todoTag: TodoTag) = localTagDataSource.softDeleteTag(todoTag)

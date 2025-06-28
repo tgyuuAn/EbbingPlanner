@@ -180,7 +180,6 @@ class AddTodoViewModel @Inject constructor(
         )
 
         val (hour, minute) = configRepository.getAlarmTime()
-
         currentState.schedules.forEach { schedule ->
             try {
                 val triggerAtMillis = schedule
