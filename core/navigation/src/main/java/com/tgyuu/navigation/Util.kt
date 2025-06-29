@@ -9,6 +9,7 @@ private val BOTTOM_BAR_HIDDEN_ROUTES = setOf(
     OnboardingRoute::class,
     HomeGraph.AddTodoRoute::class,
     HomeGraph.EditTodoRoute::class,
+    HomeGraph.EditDateRoute::class,
     TagGraph.TagRoute::class,
     TagGraph.AddTagRoute::class,
     TagGraph.EditTagRoute::class,
