@@ -1,4 +1,4 @@
-package com.tgyuu.designsystem.component
+package com.tgyuu.designsystem.component.bottomsheet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,15 +28,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Composable
 fun EbbingModalBottomSheet(
-    sheetState: ModalBottomSheetState,
+    bottomSheetState: EbbingBottomSheetState,
     modifier: Modifier = Modifier,
-    sheetContent: @Composable (() -> Unit)?,
+    sheetContent: BottomSheetContent?,
     content: @Composable () -> Unit,
 ) {
     ModalBottomSheetLayout(
@@ -45,7 +45,7 @@ fun EbbingModalBottomSheet(
         sheetContentColor = EbbingTheme.colors.background,
         sheetBackgroundColor = EbbingTheme.colors.background,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        sheetState = sheetState,
+        sheetState = bottomSheetState.state,
         sheetContent = {
             Column(modifier = Modifier.navigationBarsPadding()) {
                 Spacer(

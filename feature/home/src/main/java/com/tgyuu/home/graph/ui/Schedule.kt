@@ -28,7 +28,7 @@ internal fun ScheduleContent(
     modifier: Modifier = Modifier,
 ) {
     EbbingVisibleAnimation(schedules.isNotEmpty()) {
-        Column {
+        Column(modifier = modifier) {
             Text(
                 text = "${schedules.size} 개의 학습 일정",
                 style = EbbingTheme.typography.headingMSB,
@@ -38,7 +38,7 @@ internal fun ScheduleContent(
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(8.dp))
@@ -104,17 +104,18 @@ internal fun ScheduleCheckContent(
     modifier: Modifier = Modifier,
 ) {
     EbbingVisibleAnimation(schedules.isNotEmpty()) {
-        Column {
+        Column(modifier = modifier) {
             Text(
                 text = "${schedules.size} 개의 학습 일정",
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
-                modifier = Modifier.padding(top = 32.dp),
+                modifier = Modifier.padding(top = 32.dp)
+
             )
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(8.dp))

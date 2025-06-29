@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.tgyuu.ebbingplanner.ui.EbbingAppState
 import com.tgyuu.home.navigation.homeGraph
 import com.tgyuu.memo.navigation.memoGraph
 import com.tgyuu.navigation.HomeBaseRoute
@@ -15,11 +16,11 @@ import com.tgyuu.tag.navigation.tagGraph
 
 @Composable
 fun AppNavHost(
-    navController: NavHostController,
+    appState: EbbingAppState,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
-        navController = navController,
+        navController = appState.navController,
         startDestination = HomeBaseRoute,
         modifier = modifier,
     ) {

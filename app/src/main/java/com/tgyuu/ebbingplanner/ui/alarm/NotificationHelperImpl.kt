@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.ui.MainActivity
+import com.tgyuu.ebbingplanner.MainActivity
 import java.time.LocalDate
 import javax.inject.Inject
 

@@ -23,12 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.tgyuu.common.ui.NoRippleInteractionSource
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.ebbingplanner.isRouteInHierarchy
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.HOME
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.SETTING
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingGraph.SettingRoute
-import com.tgyuu.navigation.hasRouteInHierarchy
 
 @Composable
 internal fun AppBottomBar(
@@ -85,7 +85,7 @@ internal fun AppBottomBar(
                         }
                     },
                     alwaysShowLabel = false,
-                    selected = currentDestination.hasRouteInHierarchy(topLevelRoute.route),
+                    selected = currentDestination.isRouteInHierarchy(topLevelRoute.route),
                     colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
                         selectedIconColor = EbbingTheme.colors.black,
                         unselectedIconColor = EbbingTheme.colors.dark3,

@@ -2,9 +2,7 @@ package com.tgyuu.home.graph.edittodo.contract
 
 import com.tgyuu.common.base.UiIntent
 import com.tgyuu.common.event.BottomSheetContent
-import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
-import java.time.DayOfWeek
 import java.time.LocalDate
 
 sealed class EditTodoIntent : UiIntent {

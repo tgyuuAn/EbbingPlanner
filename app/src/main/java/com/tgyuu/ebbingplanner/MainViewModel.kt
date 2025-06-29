@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui
+package com.tgyuu.ebbingplanner
 
 import androidx.lifecycle.ViewModel
 import com.tgyuu.domain.model.UpdateInfo
