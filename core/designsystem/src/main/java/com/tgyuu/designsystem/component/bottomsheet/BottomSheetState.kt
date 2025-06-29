@@ -5,8 +5,9 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.tgyuu.common.event.BottomSheetContent
 
 @Composable
@@ -20,16 +21,11 @@ fun rememberEbbingBottomSheetState(
 }
 
 class EbbingBottomSheetState(val state: ModalBottomSheetState) {
-    init {
-        Log.d("test", "ebbingBOttomSheetState 재생성")
-    }
+    var content by mutableStateOf<BottomSheetContent?>(null)
+        private set
 
-    private val _content = mutableStateOf<BottomSheetContent?>(null)
-    val content: State<BottomSheetContent?> get() = _content
-
-    fun setBottomSheetContent(content: BottomSheetContent) {
-        _content.value = content
-        Log.d("test", "Contet 갱신 ${this.content}")
+    fun setBottomSheetContent(sheetContent: BottomSheetContent) {
+        this.content = sheetContent
     }
 
     suspend fun hide() {

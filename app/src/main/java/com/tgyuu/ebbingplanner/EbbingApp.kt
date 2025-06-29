@@ -44,7 +44,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.ui.EbbingBottomBarAnimation
 import com.tgyuu.common.ui.addFocusCleaner
 import com.tgyuu.designsystem.component.EbbingSnackBar
@@ -69,12 +68,10 @@ internal fun EbbingApp(
     appState: EbbingAppState,
     bottomSheetState: EbbingBottomSheetState,
     snackBarHostState: SnackbarHostState,
-    bottomSheetContent: BottomSheetContent?,
     modifier: Modifier = Modifier,
 ) {
     EbbingModalBottomSheet(
-        bottomSheetState = bottomSheetState,
-        sheetContent = bottomSheetContent,
+        sheetState = bottomSheetState,
         modifier = modifier,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {

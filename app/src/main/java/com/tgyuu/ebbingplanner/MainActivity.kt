@@ -79,7 +79,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val bottomSheetState = rememberEbbingBottomSheetState()
-            var bottomSheetContent by remember { mutableStateOf<BottomSheetContent?>(null) }
             val snackBarHostState = remember { SnackbarHostState() }
             val appState = rememberEbbingAppState(
                 navController = navController,
@@ -91,7 +90,6 @@ class MainActivity : ComponentActivity() {
                 EbbingApp(
                     appState = appState,
                     bottomSheetState = bottomSheetState,
-                    bottomSheetContent = bottomSheetContent,
                     snackBarHostState = snackBarHostState,
                 )
             }
@@ -100,7 +98,6 @@ class MainActivity : ComponentActivity() {
                 navController = navController,
                 bottomSheetState = bottomSheetState,
                 snackBarHostState = snackBarHostState,
-                setBottomSheetContent = { bottomSheetContent = it },
             )
         }
     }
@@ -164,7 +161,6 @@ class MainActivity : ComponentActivity() {
         navController: NavHostController,
         bottomSheetState: EbbingBottomSheetState,
         snackBarHostState: SnackbarHostState,
-        setBottomSheetContent: (BottomSheetContent?) -> Unit,
     ) {
         val focusManager = LocalFocusManager.current
         val scope = rememberCoroutineScope()
@@ -228,7 +224,7 @@ class MainActivity : ComponentActivity() {
                     eventBus.eventFlow.collect { event ->
                         when (event) {
                             is EbbingEvent.ShowBottomSheet -> scope.launch {
-                                setBottomSheetContent(event.content)
+                                bottomSheetState.setBottomSheetContent(event.content)
                                 focusManager.clearFocus()
                                 bottomSheetState.show()
                             }
