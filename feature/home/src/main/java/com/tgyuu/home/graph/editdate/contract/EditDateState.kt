@@ -1,28 +1,19 @@
-package com.tgyuu.home.graph.edittodo.contract
+package com.tgyuu.home.graph.editdate.contract
 
 import com.tgyuu.common.base.UiState
 import com.tgyuu.domain.model.DefaultRepeatCycles
-import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.domain.model.TodoTag
 import java.time.DayOfWeek
 import java.time.LocalDate
 
-data class EditTodoState(
-    val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> = emptyMap(),
-    val originSchedule: TodoSchedule? = null,
-    val selectedDate: LocalDate = LocalDate.now(),
+data class EditDateState(
     val title: String = "",
-    val priority: String? = null,
-    val tag: TodoTag = DefaultTodoTag,
-    val tagList: List<TodoTag> = emptyList(),
+    val originTagColor: Int = 0XFFBBE1FA.toInt(),
+    val selectedDate: LocalDate = LocalDate.now(),
     val repeatCycleList: List<RepeatCycle> = DefaultRepeatCycles,
     val repeatCycle: RepeatCycle = DefaultRepeatCycles.first(),
     val restDays: Set<DayOfWeek> = emptySet(),
 ) : UiState {
-    val isSaveEnabled = title.isNotEmpty()
-
     val schedules: List<LocalDate>
         get() = repeatCycle.intervals.fold(mutableListOf()) { acc, interval ->
             val base = acc.lastOrNull() ?: selectedDate

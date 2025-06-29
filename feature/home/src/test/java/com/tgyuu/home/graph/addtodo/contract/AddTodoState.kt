@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 
-class AddTodoStateTest {
+class EditDateStateTest {
     @Test
     fun `제목을 입력하였을 경우 작성상태이다`(){
         // given

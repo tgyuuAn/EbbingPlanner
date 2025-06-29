@@ -15,17 +15,17 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 
 @Composable
-internal fun DeleteBottomSheet(
+internal fun UpdateBottomSheet(
     selectedSchedule: TodoSchedule,
-    onClickDeleteRemaining: (TodoSchedule) -> Unit,
-    onClickDeleteSingle: (TodoSchedule) -> Unit,
+    onClickUpdateDate: (TodoSchedule) -> Unit,
+    onClickUpdateInfo: (TodoSchedule) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "삭제 방법")
+        EbbingBottomSheetHeader(title = "수정 방법")
 
         Column(
             modifier = Modifier
@@ -33,26 +33,26 @@ internal fun DeleteBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = "해당 일정만 삭제하기",
+                text = "일정 정보 수정하기",
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClickDeleteSingle(selectedSchedule) }
+                    .clickable { onClickUpdateInfo(selectedSchedule) }
                     .height(62.dp),
             )
 
             Text(
-                text = "연계된 이후 일정 전부 삭제",
+                text = "연관된 일정 반복 주기 재설정하기",
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClickDeleteRemaining(selectedSchedule) }
+                    .clickable { onClickUpdateDate(selectedSchedule) }
                     .height(62.dp),
             )
         }

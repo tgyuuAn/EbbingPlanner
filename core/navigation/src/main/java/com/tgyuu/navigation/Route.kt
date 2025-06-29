@@ -11,11 +11,15 @@ data object OnboardingRoute : Route
 data object HomeBaseRoute : Route
 
 sealed interface HomeGraph : Route {
+
     @Serializable
     data class HomeRoute(val workedDate: String? = null) : HomeGraph
 
     @Serializable
     data class AddTodoRoute(val selectedDate: String) : HomeGraph
+
+    @Serializable
+    data class EditDateRoute(val infoId: Int) : HomeGraph
 
     @Serializable
     data class EditTodoRoute(val scheduleId: Int) : HomeGraph

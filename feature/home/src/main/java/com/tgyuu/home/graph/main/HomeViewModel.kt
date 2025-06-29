@@ -13,6 +13,7 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
+import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.EditTodoRoute
 import com.tgyuu.navigation.MemoGraph
@@ -64,16 +65,18 @@ class HomeViewModel @Inject constructor(
                 To(AddTodoRoute(intent.selectedDate.toFormattedString()))
             )
 
-            is HomeIntent.OnCheckedChange -> onCheckedChange(intent.schedule)
+            is HomeIntent.OnCheckChanged -> onCheckedChange(intent.schedule)
             is HomeIntent.OnEditScheduleClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
             is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
-            is HomeIntent.OnUpdateScheduleClick -> onUpdateScheduleClick(intent.schedule.id)
-            is HomeIntent.OnMemoClick -> onMemoClick(intent.schedule)
+            is HomeIntent.OnMemoClick -> onClickMemo(intent.schedule)
             is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
+            is HomeIntent.OnUpdateScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnUpdateInfoClick -> navigateToUpdateInfo(intent.schedule.id)
+            is HomeIntent.OnUpdateDateClick -> navigateToUpdateDate(intent.schedule.infoId)
             is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule)
             is HomeIntent.OnDeleteScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)
@@ -186,12 +189,17 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
     }
 
-    private suspend fun onUpdateScheduleClick(scheduleId: Int) {
+    private suspend fun navigateToUpdateInfo(infoId: Int) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(To(EditTodoRoute(scheduleId)))
+        navigationBus.navigate(To(EditTodoRoute(infoId)))
     }
 
-    private suspend fun onMemoClick(schedule: TodoSchedule) {
+    private suspend fun navigateToUpdateDate(infoId: Int) {
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(HomeGraph.EditDateRoute(infoId)))
+    }
+
+    private suspend fun onClickMemo(schedule: TodoSchedule) {
         val destination = if (schedule.memo.isEmpty()) MemoGraph.AddMemoRoute(schedule.id)
         else MemoGraph.EditMemoRoute(schedule.id)
 

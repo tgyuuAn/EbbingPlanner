@@ -51,11 +51,9 @@ class AlarmScheduler @Inject constructor(
         scheduleDailyExact(date, newTriggerMs) // 새 알람 등록
     }
 
-    private fun cancelDailyExact(date: LocalDate) {
+    fun cancelDailyExact(date: LocalDate) {
         alarmManager.cancel(buildPendingIntent(date))
     }
-
-    private fun requestCodeFor(date: LocalDate): Int = date.hashCode()
 
     private fun buildPendingIntent(date: LocalDate): PendingIntent =
         Intent(context, TodoAlarmReceiver::class.java).apply {
@@ -68,4 +66,6 @@ class AlarmScheduler @Inject constructor(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         }
+
+    private fun requestCodeFor(date: LocalDate): Int = date.hashCode()
 }

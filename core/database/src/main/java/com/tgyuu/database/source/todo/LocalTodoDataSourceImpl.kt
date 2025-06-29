@@ -55,6 +55,20 @@ class LocalTodoDataSourceImpl @Inject constructor(
         priority = priority,
     )
 
+    override suspend fun insertTodos(
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?
+    ) = todoWithSchedulesDao.insertTodoWithSchedules(
+        title = title,
+        tagId = tagId,
+        dates = dates,
+        isDoneSchedules = isDoneSchedules,
+        priority = priority,
+    )
+
     override suspend fun updateSchedule(todoSchedule: TodoSchedule) =
         todoWithSchedulesDao.updateSchedule(
             id = todoSchedule.id,
@@ -79,6 +93,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun softDeleteTodo(todoSchedule: TodoSchedule) =
         todoSchedulesDao.softDeleteSchedule(todoSchedule.toEntity().id)
+
+    override suspend fun softDeleteTodoByTodoInfo(id: Int) =
+        todoSchedulesDao.softDeleteScheduleByTodoInfo(id)
 
     override suspend fun hardDeleteTodo(id: Int) = todoSchedulesDao.hardDeleteSchedule(id)
 

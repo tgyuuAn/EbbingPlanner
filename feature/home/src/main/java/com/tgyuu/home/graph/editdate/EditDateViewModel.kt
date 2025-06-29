@@ -1,7 +1,6 @@
-package com.tgyuu.home.graph.addtodo
+package com.tgyuu.home.graph.editdate
 
 import android.util.Log
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
@@ -10,19 +9,17 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
-import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.graph.editdate.contract.EditDateIntent
+import com.tgyuu.home.graph.editdate.contract.EditDateState
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
-import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -32,28 +29,33 @@ import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
-class AddTodoViewModel @Inject constructor(
+class EditDateViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
+) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
+    private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
-        val dateStr = savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
+        viewModelScope.launch {
+            val infoId = savedStateHandle.get<Int>("infoId")
+                ?: throw IllegalArgumentException("해당 일정의 정보가 없습니다.")
 
-        setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
-    }
-
-    internal fun loadNewTag() {
-        todoRepository.recentAddedTagId?.let {
-            viewModelScope.launch {
-                val newTag = todoRepository.loadTag(it.toInt())
-                setState { copy(tag = newTag) }
+            val result = todoRepository.loadSchedulesByTodoInfo(infoId)
+            result.firstOrNull()?.let {
+                setState {
+                    copy(
+                        title = it.title,
+                        originTagColor = it.color,
+                        selectedDate = it.date,
+                    )
+                }
             }
+
+            originSchedules = result
         }
     }
 
@@ -66,47 +68,32 @@ class AddTodoViewModel @Inject constructor(
         }
     }
 
-    internal fun loadTags() = viewModelScope.launch {
-        val loadedTagList = todoRepository.loadTags()
-        setState { copy(tagList = loadedTagList) }
-    }
-
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
 
         setState { copy(repeatCycleList = DefaultRepeatCycles + loadedRepeatCycleList) }
     }
 
-    override suspend fun processIntent(intent: AddTodoIntent) {
+    override suspend fun processIntent(intent: EditDateIntent) {
         when (intent) {
-            AddTodoIntent.OnBackClick -> navigationBus.navigate(
+            EditDateIntent.OnBackClick -> navigationBus.navigate(
                 NavigationEvent.To(
                     route = HomeRoute(currentState.selectedDate.toFormattedString()),
                     popUpTo = true,
                 )
             )
 
-            is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
-                ShowBottomSheet(intent.content)
-            )
+            is EditDateIntent.OnSelectedDataChangeClick ->
+                eventBus.sendEvent(ShowBottomSheet(intent.content))
 
-            is AddTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
-            is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is AddTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
-            is AddTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
-                ShowBottomSheet(intent.content)
-            )
+            is EditDateIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
+            is EditDateIntent.OnRepeatCycleDropDownClick ->
+                eventBus.sendEvent(ShowBottomSheet(intent.content))
 
-            is AddTodoIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            is AddTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
-            is AddTodoIntent.OnTagDropDownClick -> eventBus.sendEvent(
-                ShowBottomSheet(intent.content)
-            )
-
-            is AddTodoIntent.OnTagChange -> onTagChange(intent.tag)
-            AddTodoIntent.OnAddTagClick -> onAddTagClick()
-            AddTodoIntent.OnSaveClick -> onSaveClick()
-            AddTodoIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
+            is EditDateIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
+            is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
+            is EditDateIntent.OnSaveClick -> onSaveClick(intent.isDoneSchedule)
+            EditDateIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
         }
     }
 
@@ -114,23 +101,6 @@ class AddTodoViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
 
         setState { copy(selectedDate = date) }
-    }
-
-    private fun onTitleChange(title: String) {
-        setState { copy(title = title) }
-    }
-
-    private fun onPriorityChange(priority: String) {
-        if (!priority.isDigitsOnly()) return
-        if (priority.length >= 4) return
-
-        setState { copy(priority = priority) }
-    }
-
-    private suspend fun onTagChange(todoTag: TodoTag) {
-        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-
-        setState { copy(tag = todoTag) }
     }
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycle) {
@@ -156,27 +126,29 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(restDays = newRestDays) }
     }
 
-    private suspend fun onAddTagClick() {
-        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(NavigationEvent.To(TagGraph.AddTagRoute))
-    }
-
     private suspend fun onAddRepeatCycleClick() {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
-    private suspend fun onSaveClick() {
-        if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+    private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
+        if (currentState.schedules.isEmpty()) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장할 일정이 없습니다"))
             return
         }
+
+        originSchedules.forEach { alarmScheduler.cancelDailyExact(it.date) }
+
+        originSchedules.firstOrNull()
+            ?.infoId
+            ?.let { todoRepository.deleteTodoByTodoInfo(it) }
 
         todoRepository.addTodo(
             title = currentState.title,
             dates = currentState.schedules,
-            tagId = currentState.tag.id,
-            priority = currentState.priority?.toIntOrNull(),
+            isDoneSchedules = isDoneSchedules,
+            tagId = originSchedules.firstOrNull()?.tagId ?: 0,
+            priority = originSchedules.firstOrNull()?.priority,
         )
 
         val (hour, minute) = configRepository.getAlarmTime()
@@ -199,7 +171,7 @@ class AddTodoViewModel @Inject constructor(
             }
         }
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정의 날짜 및 반복 주기를 변경하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(currentState.selectedDate.toFormattedString()),

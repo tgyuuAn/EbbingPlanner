@@ -21,6 +21,7 @@ import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -106,11 +107,10 @@ class EditTodoViewModel @Inject constructor(
     private suspend fun onSelectedDateChange(date: LocalDate) {
         if (date == currentState.selectedDate) return
 
-        val scheduledDates: Set<LocalDate> =
-            currentState.schedulesByDateMap[date]
-                ?.map { it.date }
-                ?.toSet()
-                ?: emptySet()
+        val scheduledDates: Set<LocalDate> = currentState.schedulesByDateMap[date]
+            ?.map { it.date }
+            ?.toSet()
+            ?: emptySet()
 
         if (date in scheduledDates) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 해당 날짜에 일정이 있습니다."))
