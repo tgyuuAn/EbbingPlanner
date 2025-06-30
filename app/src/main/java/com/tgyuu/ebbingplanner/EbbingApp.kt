@@ -112,6 +112,7 @@ fun PhoneContent(
     appState: EbbingAppState,
     snackBarHostState: SnackbarHostState,
     sheetState: ModalBottomSheetState,
+    modifier: Modifier = Modifier,
 ) {
     val currentDestination = appState.currentDestination
     val focusManager = LocalFocusManager.current
@@ -135,7 +136,8 @@ fun PhoneContent(
                     navigateToBottomBarDestination = { appState.navigate(it) },
                 )
             }
-        }
+        },
+        modifier = modifier,
     ) { innerPadding ->
         AppNavHost(
             appState = appState,
@@ -160,6 +162,7 @@ fun TabletContent(
     appState: EbbingAppState,
     snackBarHostState: SnackbarHostState,
     sheetState: ModalBottomSheetState,
+    modifier: Modifier = Modifier,
 ) {
     val currentDestination = appState.currentDestination
     val focusManager = LocalFocusManager.current
@@ -186,7 +189,8 @@ fun TabletContent(
                 hostState = snackBarHostState,
                 snackbar = { EbbingSnackBar(it) },
             )
-        }
+        },
+        modifier = modifier,
     ) { innerPadding ->
         Row(
             Modifier
