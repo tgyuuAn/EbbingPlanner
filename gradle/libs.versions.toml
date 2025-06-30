@@ -73,15 +73,16 @@ uiautomator = "2.3.0"
 googleServices = "4.4.2"
 firebaseBom = "33.10.0"
 crashlytics = "3.0.3"
+metricsPerformance = "1.0.0-beta02"
+firebaseFirestoreKtx = "25.1.4"
 
-# https://coil-kt.github.io/coil/#jetpack-compose
-coil = "3.1.0"
+## Amplitude
+# https://amplitude.com/docs/sdks/analytics/android
+amplitude = "1.16.8"
 
 ## Accompanist
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
-metricsPerformance = "1.0.0-beta02"
-firebaseFirestoreKtx = "25.1.4"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -158,6 +159,8 @@ firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" 
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
 androidx-metrics-performance = { group = "androidx.metrics", name = "metrics-performance", version.ref = "metricsPerformance" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+
+amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
 
 [bundles]
 

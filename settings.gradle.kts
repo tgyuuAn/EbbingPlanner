@@ -34,6 +34,7 @@ include(":core:navigation")
 include(":core:database")
 include(":core:datastore")
 include(":core:alarm")
+include(":core:analytics")
 
 include(":feature:home")
 include(":feature:dashboard")
@@ -45,3 +46,4 @@ include(":feature:repeatcycle")
 include(":feature:sync")
 
 include(":baselineprofile")
+include(":core:analytics")
