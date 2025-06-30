@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner
+package com.tgyuu.ebbingplanner.ui
 
 import android.content.Intent
 import androidx.activity.compose.BackHandler
@@ -27,7 +27,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -48,11 +47,9 @@ import com.tgyuu.common.ui.EbbingBottomBarAnimation
 import com.tgyuu.common.ui.addFocusCleaner
 import com.tgyuu.designsystem.component.EbbingSnackBar
 import com.tgyuu.designsystem.component.EbbingSnackBarHost
-import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.EbbingModalBottomSheet
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.ebbingplanner.ui.EbbingAppState
 import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
@@ -66,27 +63,29 @@ import kotlin.reflect.KClass
 @Composable
 internal fun EbbingApp(
     appState: EbbingAppState,
-    bottomSheetState: EbbingBottomSheetState,
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     EbbingModalBottomSheet(
-        sheetState = bottomSheetState,
+        sheetState = appState.bottomSheetState,
         modifier = modifier,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            val windowSize = currentWindowAdaptiveInfo().windowSizeClass
-            when (windowSize.windowWidthSizeClass) {
+            val windowWidthSize = currentWindowAdaptiveInfo()
+                .windowSizeClass
+                .windowWidthSizeClass
+
+            when (windowWidthSize) {
                 WindowWidthSizeClass.COMPACT -> PhoneContent(
                     appState = appState,
                     snackBarHostState = snackBarHostState,
-                    sheetState = bottomSheetState.state,
+                    sheetState = appState.bottomSheetState.state,
                 )
 
                 else -> TabletContent(
                     appState = appState,
                     snackBarHostState = snackBarHostState,
-                    sheetState = bottomSheetState.state,
+                    sheetState = appState.bottomSheetState.state,
                 )
             }
 
@@ -97,18 +96,10 @@ internal fun EbbingApp(
             )
         }
     }
-
-    var isDialogVisible by remember(appState.shouldUpdate) { mutableStateOf(appState.shouldUpdate) }
-    UpdateDialogHost(
-        shouldShow = isDialogVisible,
-        updateInfo = appState.updateInfo,
-        onDismissRequest = { isDialogVisible = false }
-    )
 }
 
-
 @Composable
-fun PhoneContent(
+private fun PhoneContent(
     appState: EbbingAppState,
     snackBarHostState: SnackbarHostState,
     sheetState: ModalBottomSheetState,
@@ -158,7 +149,7 @@ fun PhoneContent(
 }
 
 @Composable
-fun TabletContent(
+private fun TabletContent(
     appState: EbbingAppState,
     snackBarHostState: SnackbarHostState,
     sheetState: ModalBottomSheetState,
@@ -278,7 +269,7 @@ fun TabletContent(
 }
 
 @Composable
-private fun UpdateDialogHost(
+internal fun SoftUpdateDialog(
     shouldShow: Boolean,
     updateInfo: UpdateInfo?,
     onDismissRequest: () -> Unit,

@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget.calendar
+package com.tgyuu.ebbingplanner.widget.calendar
 
 import android.content.Context
 import androidx.compose.runtime.Composable
@@ -57,13 +57,13 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
-import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
-import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodoItemRow
-import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.ui.widget.util.SelectDateAction
-import com.tgyuu.ebbingplanner.ui.widget.util.SelectDateAction.Companion.SELECTED_DATE
-import com.tgyuu.ebbingplanner.ui.widget.util.destinationKey
-import com.tgyuu.ebbingplanner.ui.widget.util.selectedDateKey
+import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
+import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
+import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.SelectDateAction
+import com.tgyuu.ebbingplanner.widget.SelectDateAction.Companion.SELECTED_DATE
+import com.tgyuu.ebbingplanner.widget.destinationKey
+import com.tgyuu.ebbingplanner.widget.selectedDateKey
 import java.time.LocalDate
 
 class CalendarWidget : GlanceAppWidget() {

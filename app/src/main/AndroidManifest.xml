@@ -36,7 +36,7 @@
         </activity>
 
         <receiver
-            android:name=".ui.widget.todaytodo.TodayTodoWidgetReceiver"
+            android:name=".widget.todaytodo.TodayTodoWidgetReceiver"
             android:label="오늘 일정 위젯"
             android:exported="true">
             <intent-filter>
@@ -48,7 +48,7 @@
         </receiver>
 
         <receiver
-            android:name=".ui.widget.calendar.CalendarWidgetReceiver"
+            android:name=".widget.calendar.CalendarWidgetReceiver"
             android:label="이번 달 달력 위젯"
             android:exported="true">
             <intent-filter>

@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget.todaytodo
+package com.tgyuu.ebbingplanner.widget.calendar
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -9,11 +9,14 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.domain.model.SortType
+import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction
-import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction.Companion.TODO_ID
-import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.ui.widget.util.RefreshAction
+import com.tgyuu.ebbingplanner.widget.CheckTodoAction
+import com.tgyuu.ebbingplanner.widget.CheckTodoAction.Companion.TODO_ID
+import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -21,11 +24,14 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
+class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
     @Inject
     lateinit var todoRepository: TodoRepository
 
-    override val glanceAppWidget: GlanceAppWidget = TodayTodoWidget()
+    @Inject
+    lateinit var configRepository: ConfigRepository
+
+    override val glanceAppWidget: GlanceAppWidget = CalendarWidget()
 
     private val scope = MainScope()
 
@@ -60,20 +66,19 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     private fun updateData(context: Context) = scope.launch {
         val gson = GsonProvider.gson
-        val todoLists = todoRepository
-            .loadSchedulesByDate(LocalDate.now())
-            .sortedWith(compareBy({ it.isDone }, { it.title }))
+        val sortType = configRepository.getSortType()
+        val allSchedules = todoRepository.loadSchedules()
+        val byDate = buildByDateMap(allSchedules, sortType)
 
         val glanceId = GlanceAppWidgetManager(context)
-            .getGlanceIds(TodayTodoWidget::class.java)
+            .getGlanceIds(CalendarWidget::class.java)
             .firstOrNull()
 
-        val json = gson.toJson(todoLists)
-
+        val json = gson.toJson(byDate)
         glanceId?.let {
             updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) { pref ->
                 pref.toMutablePreferences().apply {
-                    this[TODO_LISTS] = json
+                    this[SCHEDULES_BY_DATE_MAP] = json
                 }
             }
 
@@ -81,7 +86,22 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         }
     }
 
+    private fun buildByDateMap(
+        schedules: List<TodoSchedule>,
+        sortType: SortType,
+    ): Map<LocalDate, List<TodoSchedule>> {
+        val grouped = schedules.groupBy { it.date }
+
+        return grouped.mapValues { (_, list) ->
+            when (sortType) {
+                SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
+                SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
+                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { it.priority }))
+            }
+        }
+    }
+
     companion object {
-        val TODO_LISTS = stringPreferencesKey("todoLists")
+        val SCHEDULES_BY_DATE_MAP = stringPreferencesKey("schedulesByDateMap")
     }
 }

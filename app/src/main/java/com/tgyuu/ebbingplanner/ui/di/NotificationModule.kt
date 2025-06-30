@@ -1,7 +1,7 @@
 package com.tgyuu.ebbingplanner.ui.di
 
 import com.tgyuu.alarm.NotificationHelper
-import com.tgyuu.ebbingplanner.ui.alarm.NotificationHelperImpl
+import com.tgyuu.ebbingplanner.alarm.NotificationHelperImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

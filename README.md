@@ -116,7 +116,7 @@
 
 ### Data
 
-- KotlinxSerilization
+- KotlinxSerialization
 - Gson
 - Datastore
 - Room

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.tgyuu.common.ui.NoRippleInteractionSource
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.ebbingplanner.isRouteInHierarchy
+import com.tgyuu.ebbingplanner.ui.isRouteInHierarchy
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.HOME
 import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.SETTING
 import com.tgyuu.navigation.HomeGraph.HomeRoute

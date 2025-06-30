@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget.ui
+package com.tgyuu.ebbingplanner.widget.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
