@@ -10,10 +10,10 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
-import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
+import com.tgyuu.ebbingplanner.widget.CheckTodoAction
+import com.tgyuu.ebbingplanner.widget.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.widget.util.RefreshAction
+import com.tgyuu.ebbingplanner.widget.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

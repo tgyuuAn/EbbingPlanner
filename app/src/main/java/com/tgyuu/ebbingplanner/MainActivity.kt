@@ -34,7 +34,7 @@ import com.tgyuu.ebbingplanner.ui.SoftUpdateDialog
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
-import com.tgyuu.ebbingplanner.widget.util.RefreshAction
+import com.tgyuu.ebbingplanner.widget.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
