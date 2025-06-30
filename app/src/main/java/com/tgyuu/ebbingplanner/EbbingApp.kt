@@ -298,7 +298,7 @@ private fun UpdateDialogHost(
 }
 
 @Composable
-fun HandleDoubleBackToExit(
+private fun HandleDoubleBackToExit(
     appState: EbbingAppState,
     snackBarHostState: SnackbarHostState,
 ) {

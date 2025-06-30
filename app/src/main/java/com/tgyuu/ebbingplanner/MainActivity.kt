@@ -9,11 +9,8 @@ import androidx.activity.viewModels
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -21,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
@@ -86,6 +82,12 @@ class MainActivity : ComponentActivity() {
                 configRepository = configRepository,
             )
 
+            HandleSideEffects(
+                navController = navController,
+                bottomSheetState = bottomSheetState,
+                snackBarHostState = snackBarHostState,
+            )
+
             EbbingTheme {
                 EbbingApp(
                     appState = appState,
@@ -93,12 +95,6 @@ class MainActivity : ComponentActivity() {
                     snackBarHostState = snackBarHostState,
                 )
             }
-
-            CollectEventFlows(
-                navController = navController,
-                bottomSheetState = bottomSheetState,
-                snackBarHostState = snackBarHostState,
-            )
         }
     }
 
@@ -157,7 +153,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun CollectEventFlows(
+    private fun HandleSideEffects(
         navController: NavHostController,
         bottomSheetState: EbbingBottomSheetState,
         snackBarHostState: SnackbarHostState,
