@@ -140,6 +140,6 @@
 
 ## 🏗️ Module Dependency Graph
 
-![project dot](https://github.com/user-attachments/assets/23de7d0c-c457-4edb-b949-1d10dedc1586)
+![project dot](https://github.com/user-attachments/assets/699b2e0c-8f7a-40b2-9394-755c200003d1)
 
 <br><br>
