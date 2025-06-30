@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.tgyuu.analytics.AnalyticsHelper
+import com.tgyuu.analytics.LocalAnalyticsHelper
+import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
@@ -32,9 +36,9 @@ import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.SoftUpdateDialog
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
+import com.tgyuu.ebbingplanner.widget.RefreshAction
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
-import com.tgyuu.ebbingplanner.widget.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
@@ -58,6 +62,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var networkMonitor: NetworkMonitor
+
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -93,16 +100,20 @@ class MainActivity : ComponentActivity() {
             )
 
             EbbingTheme {
-                EbbingApp(
-                    appState = appState,
-                    snackBarHostState = snackBarHostState,
-                )
+                CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
+                    EbbingApp(
+                        appState = appState,
+                        snackBarHostState = snackBarHostState,
+                    )
 
-                SoftUpdateDialog(
-                    shouldShow = isDialogVisible,
-                    updateInfo = updateInfo,
-                    onDismissRequest = { isDialogVisible = false }
-                )
+                    SoftUpdateDialog(
+                        shouldShow = isDialogVisible,
+                        updateInfo = updateInfo,
+                        onDismissRequest = { isDialogVisible = false }
+                    )
+
+                    TrackNavigationDestination(navController)
+                }
             }
         }
     }

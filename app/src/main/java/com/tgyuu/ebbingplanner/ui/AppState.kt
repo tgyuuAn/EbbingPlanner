@@ -3,11 +3,16 @@ package com.tgyuu.ebbingplanner.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.LocalAnalyticsHelper
+import com.tgyuu.analytics.extractScreenName
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.navigation.Route
 import com.tgyuu.sync.network.NetworkMonitor
