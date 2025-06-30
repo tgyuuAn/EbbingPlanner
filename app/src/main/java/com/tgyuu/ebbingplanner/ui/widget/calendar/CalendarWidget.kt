@@ -55,8 +55,8 @@ import com.tgyuu.designsystem.foundation.PrimaryDefault
 import com.tgyuu.designsystem.foundation.PrimaryLight
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.R
-import com.tgyuu.ebbingplanner.ui.MainActivity
-import com.tgyuu.ebbingplanner.ui.MainActivity.Companion.ADD_TODO
+import com.tgyuu.ebbingplanner.MainActivity
+import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
 import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider

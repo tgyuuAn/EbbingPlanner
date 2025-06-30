@@ -8,7 +8,7 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.tgyuu.ebbingplanner.ui.MainActivity
+import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidget
 import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver

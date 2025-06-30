@@ -37,7 +37,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.ui.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
-import com.tgyuu.designsystem.component.EbbingBottomSheetListItemDefault
+import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
