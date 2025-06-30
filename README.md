@@ -125,6 +125,7 @@
 ### Logging
 
 - Firebase (Crashlytics, Analytics)
+- Amplitude
 
 ### Test
 
