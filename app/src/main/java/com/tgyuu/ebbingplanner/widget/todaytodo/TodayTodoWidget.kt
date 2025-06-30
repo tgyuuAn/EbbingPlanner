@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget.todaytodo
+package com.tgyuu.ebbingplanner.widget.todaytodo
 
 import android.content.Context
 import androidx.compose.runtime.Composable
@@ -48,14 +48,14 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
-import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
-import com.tgyuu.ebbingplanner.ui.widget.ui.EbbingWidgetCheck
-import com.tgyuu.ebbingplanner.ui.widget.util.BaseWidgetPreview
-import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction
-import com.tgyuu.ebbingplanner.ui.widget.util.EbbingWidgetPreview
-import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.ui.widget.util.destinationKey
-import com.tgyuu.ebbingplanner.ui.widget.util.todoIdKey
+import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.widget.ui.EbbingWidgetCheck
+import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
+import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
+import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.destinationKey
+import com.tgyuu.ebbingplanner.widget.util.todoIdKey
 import java.time.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {

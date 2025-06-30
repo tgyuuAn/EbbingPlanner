@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.alarm
+package com.tgyuu.ebbingplanner.alarm
 
 import android.Manifest
 import android.app.PendingIntent

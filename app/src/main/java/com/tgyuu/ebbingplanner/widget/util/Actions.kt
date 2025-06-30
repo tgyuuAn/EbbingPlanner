@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget.util
+package com.tgyuu.ebbingplanner.widget.util
 
 import android.content.Context
 import android.content.Intent
@@ -9,10 +9,10 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tgyuu.ebbingplanner.MainActivity
-import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidget
-import com.tgyuu.ebbingplanner.ui.widget.calendar.CalendarWidgetReceiver
-import com.tgyuu.ebbingplanner.ui.widget.todaytodo.TodayTodoWidgetReceiver
-import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction.Companion.TODO_ID
+import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
+import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
+import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import java.time.LocalDate
 
 internal val destinationKey = ActionParameters.Key<String>(MainActivity.KEY_DESTINATION)

@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget.calendar
+package com.tgyuu.ebbingplanner.widget.calendar
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -13,10 +13,10 @@ import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction
-import com.tgyuu.ebbingplanner.ui.widget.util.CheckTodoAction.Companion.TODO_ID
-import com.tgyuu.ebbingplanner.ui.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.ui.widget.util.RefreshAction
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
+import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch

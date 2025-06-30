@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.widget.util
+package com.tgyuu.ebbingplanner.widget.util
 
 import androidx.compose.runtime.Composable
 import androidx.glance.GlanceModifier
