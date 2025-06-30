@@ -1,6 +1,7 @@
 package com.tgyuu.ebbingplanner
 
 import androidx.lifecycle.ViewModel
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.model.error.ErrorBus
 import com.tgyuu.domain.repository.ConfigRepository
@@ -23,6 +24,7 @@ class MainViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val errorBus: ErrorBus,
+    private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
     private val _isInitialized = MutableStateFlow<Boolean>(true)
     val isInitialized = _isInitialized.asStateFlow()
@@ -67,6 +69,8 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun setUserId() {
-        errorBus.setUserId(syncRepository.getUuid())
+        val uuid = syncRepository.getUuid()
+        errorBus.setUserId(uuid)
+        analyticsHelper.setUserId(uuid)
     }
 }
