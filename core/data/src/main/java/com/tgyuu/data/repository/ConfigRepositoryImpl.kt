@@ -2,6 +2,7 @@ package com.tgyuu.data.repository
 
 import com.tgyuu.datastore.datasource.user.LocalUserConfigDataSource
 import com.tgyuu.domain.model.SortType
+import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.network.model.GetUpdateInfoResponse
@@ -27,6 +28,8 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun setNotificationEnabled(enabled: Boolean) =
         localUserConfigDataSource.setNotificationEnabled(enabled)
 
+    override suspend fun setTheme(theme: Theme) = localUserConfigDataSource.setTheme(theme)
+
     override suspend fun updateAlarmTime(hour: String, minute: String) =
         localUserConfigDataSource.setAlarmTime(hour, minute)
 
@@ -39,4 +42,6 @@ class ConfigRepositoryImpl @Inject constructor(
             defaultValue = GetUpdateInfoResponse(),
         ).toDomain()
     }
+
+    override fun getTheme(): Flow<Theme> = localUserConfigDataSource.theme
 }

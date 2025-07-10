@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tgyuu.domain.model.SortType
+import com.tgyuu.domain.model.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -39,6 +40,13 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
                 } ?: default
         }
 
+    override val theme: Flow<Theme>
+        get() = dataStore.data
+            .map { prefs ->
+                val name = prefs[THEME] ?: Theme.NORMAL.name
+                Theme.create(name)
+            }
+
     override suspend fun consumeIsFirstAppOpen(): Boolean {
         var firstRun = false
         dataStore.edit { prefs ->
@@ -60,10 +68,15 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[ALARM_TIME] = "$hour:$minute" }
     }
 
+    override suspend fun setTheme(theme: Theme) {
+        dataStore.edit { prefs -> prefs[THEME] = theme.name }
+    }
+
     companion object {
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
+        private val THEME = stringPreferencesKey("THEME")
     }
 }

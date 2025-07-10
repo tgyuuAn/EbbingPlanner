@@ -1,7 +1,9 @@
 package com.tgyuu.ebbingplanner
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tgyuu.analytics.AnalyticsHelper
+import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.model.error.ErrorBus
 import com.tgyuu.domain.repository.ConfigRepository
@@ -13,7 +15,10 @@ import com.tgyuu.navigation.OnboardingRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,11 +31,15 @@ class MainViewModel @Inject constructor(
     private val errorBus: ErrorBus,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
-    private val _isInitialized = MutableStateFlow<Boolean>(true)
-    val isInitialized = _isInitialized.asStateFlow()
-
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     val updateInfo = _updateInfo.asStateFlow()
+
+    val theme: StateFlow<Theme> = configRepository.getTheme()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = Theme.NORMAL
+        )
 
     suspend fun initAppState() = coroutineScope {
         val getUpdateInfoJob = launch { getUpdateInfo() }
@@ -45,7 +54,6 @@ class MainViewModel @Inject constructor(
 
         // UUID가 없을경우, 생성 이후 호출해야 하므로 동기적으로 호출
         setUserId()
-        _isInitialized.value = false
     }
 
     private suspend fun isFirstAppOpen() {

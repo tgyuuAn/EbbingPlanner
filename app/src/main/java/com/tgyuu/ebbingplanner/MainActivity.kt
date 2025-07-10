@@ -66,16 +66,19 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
+    private var isInitialized = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        splashScreen.setKeepOnScreenCondition { viewModel.isInitialized.value }
+        splashScreen.setKeepOnScreenCondition { isInitialized }
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         handleWidgetIntent(intent)
         lifecycleScope.launch {
             viewModel.initAppState()
+            isInitialized = false
         }
 
         setContent {
@@ -93,13 +96,15 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(shouldShowUpdateDialog(updateInfo))
             }
 
+            val theme by viewModel.theme.collectAsStateWithLifecycle()
+
             HandleSideEffects(
                 navController = navController,
                 bottomSheetState = bottomSheetState,
                 snackBarHostState = snackBarHostState,
             )
 
-            EbbingTheme {
+            EbbingTheme(customTheme = theme) {
                 CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                     EbbingApp(
                         appState = appState,
