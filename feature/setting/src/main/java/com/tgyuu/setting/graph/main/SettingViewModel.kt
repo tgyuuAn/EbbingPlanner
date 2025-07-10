@@ -5,6 +5,7 @@ import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
@@ -45,8 +46,9 @@ class SettingViewModel @Inject constructor(
             }
 
             launch {
-                configRepository.getUpdateInfo()
-                    .onSuccess { setState { copy(updateInfo = it) } }
+                suspendRunCatching {
+                    configRepository.getUpdateInfo()
+                }.onSuccess { setState { copy(updateInfo = it) } }
             }
 
             configRepository.getNotificationEnabled()
@@ -86,6 +88,7 @@ class SettingViewModel @Inject constructor(
                 navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
 
             SettingIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            SettingIntent.OnThemeManageClick -> navigationBus.navigate(To(SettingGraph.ThemeRoute))
         }
     }
 

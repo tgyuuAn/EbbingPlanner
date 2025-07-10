@@ -21,6 +21,7 @@ object AppUiPolicy {
         RepeatCycleGraph.AddRepeatCycleRoute::class,
         RepeatCycleGraph.EditRepeatCycleRoute::class,
         SettingGraph.WebViewRoute::class,
+        SettingGraph.ThemeRoute::class,
         MemoGraph.AddMemoRoute::class,
         MemoGraph.EditMemoRoute::class,
         SyncGraph.SyncMainRoute::class,

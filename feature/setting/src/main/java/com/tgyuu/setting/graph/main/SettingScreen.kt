@@ -82,6 +82,7 @@ internal fun SettingRoute(
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
         onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
+        onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
@@ -97,6 +98,7 @@ private fun SettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onThemeManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -112,6 +114,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onThemeManageClick = onThemeManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -125,6 +128,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onThemeManageClick = onThemeManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -141,6 +145,7 @@ private fun PhoneSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onThemeManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -178,6 +183,8 @@ private fun PhoneSettingScreen(
 
             SyncBody(onSyncClick = onSyncClick)
 
+            ThemeBody(onThemeManageClick = onThemeManageClick)
+
             InquiryBody(onContactUsClick = onInquiryClick)
 
             AnnouncementBody(
@@ -204,6 +211,7 @@ private fun TabletSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onThemeManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -243,6 +251,8 @@ private fun TabletSettingScreen(
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
+                ThemeBody(onThemeManageClick = onThemeManageClick)
+
                 InquiryBody(onContactUsClick = onInquiryClick)
 
                 AnnouncementBody(
@@ -582,6 +592,45 @@ private fun AnnouncementBody(
 }
 
 @Composable
+private fun ThemeBody(
+    onThemeManageClick: () -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.setting_theme),
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onThemeManageClick() },
+    ) {
+        Text(
+            text = stringResource(R.string.setting_theme_color_change),
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
 private fun UpdateBody(
     updateInfo: UpdateInfo?,
     modifier: Modifier = Modifier,
@@ -691,6 +740,7 @@ private fun PreviewSettingScreen() {
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
             onSyncClick = {},
+            onThemeManageClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},

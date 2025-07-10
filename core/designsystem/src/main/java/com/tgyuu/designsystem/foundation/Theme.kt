@@ -6,21 +6,31 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import com.tgyuu.domain.model.Theme
 
-private val LocalColors = staticCompositionLocalOf {
-    lightModeColorScheme
+val LocalColors = staticCompositionLocalOf {
+    normalLightColorScheme
 }
-private val LocalTypography = staticCompositionLocalOf {
+val LocalTypography = staticCompositionLocalOf {
     EbbingTypography()
 }
 
 @Composable
 fun EbbingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    customTheme: Theme = Theme.NORMAL,
+    content: @Composable () -> Unit,
 ) {
+    val colors = when (customTheme) {
+        Theme.NORMAL -> if (darkTheme) normalDarkColorScheme else normalLightColorScheme
+        Theme.FOREST -> if (darkTheme) forestDarkColorScheme else forestLightColorScheme
+        Theme.SUNSET -> if (darkTheme) sunsetDarkColorScheme else sunsetLightColorScheme
+        Theme.MARINE -> if (darkTheme) marineDarkColorScheme else marineLightColorScheme
+        Theme.LILAC -> if (darkTheme) lilacDarkColorScheme else lilacLightColorScheme
+    }
+
     CompositionLocalProvider(
-        LocalColors provides if (darkTheme) darkModeColorScheme else lightModeColorScheme,
+        LocalColors provides colors,
         LocalDensity provides Density(LocalDensity.current.density, 1f)
     ) {
         CompositionLocalProvider(content = content)

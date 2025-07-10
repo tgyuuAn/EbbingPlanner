@@ -47,6 +47,9 @@ sealed interface SettingGraph : Route {
     data object SettingRoute : SettingGraph
 
     @Serializable
+    data object ThemeRoute : SettingGraph
+
+    @Serializable
     data class WebViewRoute(val title: String, val url: String) : SettingGraph
 }
 
