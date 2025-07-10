@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.di
+package com.tgyuu.ebbingplanner.di
 
 import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.ebbingplanner.alarm.NotificationHelperImpl

@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.navigation
+package com.tgyuu.ebbingplanner.navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,8 +24,8 @@ import androidx.navigation.NavDestination
 import com.tgyuu.common.ui.NoRippleInteractionSource
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.ui.isRouteInHierarchy
-import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.HOME
-import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination.SETTING
+import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.HOME
+import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.SETTING
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingGraph.SettingRoute

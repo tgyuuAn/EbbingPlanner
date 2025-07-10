@@ -78,6 +78,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
+            .clickable(onClick = actionStartActivity<MainActivity>())
             .background(imageProvider = ImageProvider(R.drawable.shape_widget_background))
             .padding(12.dp)
     ) {

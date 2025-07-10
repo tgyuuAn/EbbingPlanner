@@ -50,9 +50,9 @@ import com.tgyuu.designsystem.component.EbbingSnackBarHost
 import com.tgyuu.designsystem.component.bottomsheet.EbbingModalBottomSheet
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.ebbingplanner.ui.navigation.AppBottomBar
-import com.tgyuu.ebbingplanner.ui.navigation.AppNavHost
-import com.tgyuu.ebbingplanner.ui.navigation.TopLevelDestination
+import com.tgyuu.ebbingplanner.navigation.AppBottomBar
+import com.tgyuu.ebbingplanner.navigation.AppNavHost
+import com.tgyuu.ebbingplanner.navigation.TopLevelDestination
 import com.tgyuu.ebbingplanner.ui.update.UpdateDialog
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.SettingGraph
