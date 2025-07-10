@@ -1,4 +1,4 @@
-package com.tgyuu.ebbingplanner.ui.navigation
+package com.tgyuu.ebbingplanner.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

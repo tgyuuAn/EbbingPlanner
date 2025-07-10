@@ -54,16 +54,16 @@ import com.tgyuu.designsystem.foundation.LightBackground
 import com.tgyuu.designsystem.foundation.PrimaryDefault
 import com.tgyuu.designsystem.foundation.PrimaryLight
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
-import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
-import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
-import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.SelectDateAction.Companion.SELECTED_DATE
+import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
 import com.tgyuu.ebbingplanner.widget.destinationKey
 import com.tgyuu.ebbingplanner.widget.selectedDateKey
+import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
+import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import java.time.LocalDate
 
 class CalendarWidget : GlanceAppWidget() {
@@ -105,6 +105,7 @@ private fun CalendarWidgetContent(
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
+            .clickable(onClick = actionStartActivity<MainActivity>())
             .background(imageProvider = ImageProvider(R.drawable.shape_widget_background))
             .padding(4.dp)
     ) {
