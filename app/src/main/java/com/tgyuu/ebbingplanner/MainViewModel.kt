@@ -3,6 +3,7 @@ package com.tgyuu.ebbingplanner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.analytics.AnalyticsHelper
+import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.model.error.ErrorBus
@@ -64,8 +65,9 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun getUpdateInfo() {
-        configRepository.getUpdateInfo()
-            .onSuccess { _updateInfo.value = it }
+        suspendRunCatching {
+            configRepository.getUpdateInfo()
+        }.onSuccess { _updateInfo.value = it }
     }
 
     private suspend fun insertDefaultTag() {

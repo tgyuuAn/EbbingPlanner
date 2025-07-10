@@ -14,6 +14,6 @@ interface ConfigRepository {
     suspend fun setTheme(theme: Theme)
     suspend fun updateAlarmTime(hour: String, minute: String)
     suspend fun getAlarmTime(): Pair<Int, Int>
-    suspend fun getUpdateInfo(): Result<UpdateInfo>
+    suspend fun getUpdateInfo(): UpdateInfo
     fun getTheme(): Flow<Theme>
 }

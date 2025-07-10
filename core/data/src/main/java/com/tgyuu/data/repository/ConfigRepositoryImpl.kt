@@ -36,12 +36,10 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun getAlarmTime(): Pair<Int, Int> =
         localUserConfigDataSource.alarmTime.first()
 
-    override suspend fun getUpdateInfo(): Result<UpdateInfo> = runCatching {
-        configDataSource.getReferenceType(
-            key = ConfigDataSource.Key.getKey(ConfigDataSource.UPDATE),
-            defaultValue = GetUpdateInfoResponse(),
-        ).toDomain()
-    }
+    override suspend fun getUpdateInfo(): UpdateInfo = configDataSource.getReferenceType(
+        key = ConfigDataSource.Key.getKey(ConfigDataSource.UPDATE),
+        defaultValue = GetUpdateInfoResponse(),
+    ).toDomain()
 
     override fun getTheme(): Flow<Theme> = localUserConfigDataSource.theme
 }
