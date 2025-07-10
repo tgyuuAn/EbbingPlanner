@@ -138,19 +138,19 @@ val marineDarkColorScheme = normalDarkColorScheme.copy(
 )
 
 val lilacLightColorScheme = normalLightColorScheme.copy(
-    background = Color(0xFFF2F0FF),  // 1. 약간 진해진 연보라
-    light1 = Color(0xFFE9E3FF),  // 2. 연보라
-    light2 = Color(0xFFDDD0FF),  // 3. 미디엄 라벤더
-    light3 = Color(0xFFEBE6FF),  // 4. 이전보다 더 연하게 조정
+    background = Color(0xFFF2F0FF),
+    light1 = Color(0xFFE9E3FF),
+    light2 = Color(0xFFDDD0FF),
+    light3 = Color(0xFFEBE6FF),
     primaryLight = Color(0xFF7F6CD1),
     primaryMiddle = Color(0xFF5D4BA3),
     primaryDefault = Color(0xFF3B2A75),
 )
 val lilacDarkColorScheme = normalDarkColorScheme.copy(
-    background = Color(0xFF1F1D2E),  // 1. 훨씬 진해진 다크 네이비퍼플
-    light1 = Color(0xFF7F6CD1),  // 2. 어두운 연보라
-    light2 = Color(0xFF5D4BA3),  // 3. 어두운 라벤더
-    light3 = Color(0xFF3B2A75),  // 4. 가장 어두운 퍼플
+    background = Color(0xFF1F1D2E),
+    light1 = Color(0xFF7F6CD1),
+    light2 = Color(0xFF5D4BA3),
+    light3 = Color(0xFF3B2A75),
     primaryLight = Color(0xFFE9E3FF),
     primaryMiddle = Color(0xFFDDD0FF),
     primaryDefault = Color(0xFFEBE6FF),
