@@ -484,6 +484,6 @@ private fun DescriptionBody() {
         },
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.dark3,
+        color = EbbingTheme.colors.dark1,
     )
 }

@@ -123,37 +123,37 @@ val marineLightColorScheme = normalLightColorScheme.copy(
     light1 = Color(0xFFD3E7F2),
     light2 = Color(0xFFCAE4F3),
     light3 = Color(0xFFC1E1F5),
-    primaryLight = Color(0xFFD3E7F2),
-    primaryMiddle = Color(0xFFA7CDEF),
-    primaryDefault = Color(0xFF5EB4E1)
-)
-val marineDarkColorScheme = normalDarkColorScheme.copy(
-    background = Color(0xFF263444),
     primaryDefault = Color(0xFFA4C2E1),
     primaryMiddle = Color(0xFF5B7A9C),
     primaryLight = Color(0xFF2E4B64),
+)
+val marineDarkColorScheme = normalDarkColorScheme.copy(
+    background = Color(0xFF263444),
+    primaryLight = Color(0xFFD3E7F2),
+    primaryMiddle = Color(0xFFA7CDEF),
+    primaryDefault = Color(0xFF5EB4E1),
     light1 = Color(0xFFA4C2E1),
     light2 = Color(0xFF5B7A9C),
     light3 = Color(0xFF2E4B64),
 )
 
 val lilacLightColorScheme = normalLightColorScheme.copy(
-    background     = Color(0xFFF2F0FF),  // 1. 약간 진해진 연보라
-    light1         = Color(0xFFE9E3FF),  // 2. 연보라
-    light2         = Color(0xFFDDD0FF),  // 3. 미디엄 라벤더
-    light3         = Color(0xFFEBE6FF),  // 4. 이전보다 더 연하게 조정
-    primaryLight   = Color(0xFFE9E3FF),
-    primaryMiddle  = Color(0xFFDDD0FF),
-    primaryDefault = Color(0xFFEBE6FF),
+    background = Color(0xFFF2F0FF),  // 1. 약간 진해진 연보라
+    light1 = Color(0xFFE9E3FF),  // 2. 연보라
+    light2 = Color(0xFFDDD0FF),  // 3. 미디엄 라벤더
+    light3 = Color(0xFFEBE6FF),  // 4. 이전보다 더 연하게 조정
+    primaryLight = Color(0xFF7F6CD1),
+    primaryMiddle = Color(0xFF5D4BA3),
+    primaryDefault = Color(0xFF3B2A75),
 )
 val lilacDarkColorScheme = normalDarkColorScheme.copy(
-    background     = Color(0xFF1F1D2E),  // 1. 훨씬 진해진 다크 네이비퍼플
-    light1         = Color(0xFF7F6CD1),  // 2. 어두운 연보라
-    light2         = Color(0xFF5D4BA3),  // 3. 어두운 라벤더
-    light3         = Color(0xFF3B2A75),  // 4. 가장 어두운 퍼플
-    primaryLight   = Color(0xFF7F6CD1),
-    primaryMiddle  = Color(0xFF5D4BA3),
-    primaryDefault = Color(0xFF3B2A75),
+    background = Color(0xFF1F1D2E),  // 1. 훨씬 진해진 다크 네이비퍼플
+    light1 = Color(0xFF7F6CD1),  // 2. 어두운 연보라
+    light2 = Color(0xFF5D4BA3),  // 3. 어두운 라벤더
+    light3 = Color(0xFF3B2A75),  // 4. 가장 어두운 퍼플
+    primaryLight = Color(0xFFE9E3FF),
+    primaryMiddle = Color(0xFFDDD0FF),
+    primaryDefault = Color(0xFFEBE6FF),
 )
 
 @Immutable
