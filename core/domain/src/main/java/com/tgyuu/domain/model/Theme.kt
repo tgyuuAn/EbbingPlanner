@@ -1,16 +1,15 @@
 package com.tgyuu.domain.model
 
-enum class Theme(val representativeColor: Int) {
-    NORMAL(0xFF0F4C75.toInt()),
-    DARK(0xFFBBE1FA.toInt()),
-    FOREST(0xFF2E7D32.toInt()),
-    FOREST_DARK(0xFF81C784.toInt()),
-    SUNSET(0xFFF4511E.toInt()),
-    SUNSET_DARK(0xFFFFAB91.toInt()),
-    PASTEL(0xFF80DEEA.toInt()),
-    PASTEL_DARK(0xFFB2EBF2.toInt());
+enum class Theme(val lightBg: Int, val darkBg: Int) {
+    NORMAL(0xFFFFFFFF.toInt(), 0xFF262729.toInt()),
+    FOREST(0xFFE8F5E9.toInt(), 0xFF1B5E20.toInt()),
+    SUNSET(0xFFFFF3E0.toInt(), 0xFF4E342E.toInt()),
+    MARINE(0xFFEAF3F8.toInt(), 0xFF263444.toInt()),
+    LILAC(0xFFF2F0FF.toInt(), 0xFF1F1D2E.toInt());
 
     companion object {
-        fun create(value: String): Theme = entries.firstOrNull { it.name == value } ?: NORMAL
+        fun create(value: String): Theme = entries.firstOrNull {
+            it.name.equals(value, ignoreCase = true)
+        } ?: NORMAL
     }
 }

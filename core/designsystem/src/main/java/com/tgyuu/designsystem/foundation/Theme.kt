@@ -8,10 +8,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import com.tgyuu.domain.model.Theme
 
-private val LocalColors = staticCompositionLocalOf {
+val LocalColors = staticCompositionLocalOf {
     normalLightColorScheme
 }
-private val LocalTypography = staticCompositionLocalOf {
+val LocalTypography = staticCompositionLocalOf {
     EbbingTypography()
 }
 
@@ -23,16 +23,10 @@ fun EbbingTheme(
 ) {
     val colors = when (customTheme) {
         Theme.NORMAL -> if (darkTheme) normalDarkColorScheme else normalLightColorScheme
-        Theme.DARK -> normalDarkColorScheme
-
         Theme.FOREST -> if (darkTheme) forestDarkColorScheme else forestLightColorScheme
-        Theme.FOREST_DARK -> forestDarkColorScheme
-
         Theme.SUNSET -> if (darkTheme) sunsetDarkColorScheme else sunsetLightColorScheme
-        Theme.SUNSET_DARK -> sunsetDarkColorScheme
-
-        Theme.PASTEL -> if (darkTheme) pastelDarkColorScheme else pastelLightColorScheme
-        Theme.PASTEL_DARK -> pastelDarkColorScheme
+        Theme.MARINE -> if (darkTheme) marineDarkColorScheme else marineLightColorScheme
+        Theme.LILAC -> if (darkTheme) lilacDarkColorScheme else lilacLightColorScheme
     }
 
     CompositionLocalProvider(

@@ -2,6 +2,7 @@ package com.tgyuu.setting.graph.theme
 
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -30,9 +31,13 @@ class ThemeViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: ThemeIntent) {
         when (intent) {
-            is ThemeIntent.OnThemeChange -> Unit
+            is ThemeIntent.OnThemeChange -> updateTheme(intent.theme)
             ThemeIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             ThemeIntent.OnUpdateClick -> Unit
         }
+    }
+
+    private fun updateTheme(new: Theme) {
+        setState { copy(selectTheme = new) }
     }
 }
