@@ -178,6 +178,8 @@ private fun PhoneSettingScreen(
 
             SyncBody(onSyncClick = onSyncClick)
 
+            ThemeBody(onColorChangeClick = {})
+
             InquiryBody(onContactUsClick = onInquiryClick)
 
             AnnouncementBody(
@@ -243,6 +245,8 @@ private fun TabletSettingScreen(
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
+                ThemeBody(onColorChangeClick = {})
+
                 InquiryBody(onContactUsClick = onInquiryClick)
 
                 AnnouncementBody(
@@ -562,6 +566,45 @@ private fun AnnouncementBody(
     ) {
         Text(
             text = stringResource(R.string.setting_term),
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+private fun ThemeBody(
+    onColorChangeClick: () -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.setting_theme),
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onColorChangeClick() },
+    ) {
+        Text(
+            text = stringResource(R.string.setting_theme_color_change),
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),

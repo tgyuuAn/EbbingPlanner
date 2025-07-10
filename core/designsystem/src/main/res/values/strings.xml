@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="setting_theme">테마</string>
+    <string name="setting_theme_color_change">색상 변경</string>
+
     <string name="setting_guidance">안내</string>
     <string name="setting_announcement">공지사항</string>
     <string name="setting_privacy_policy">개인정보처리방침</string>
