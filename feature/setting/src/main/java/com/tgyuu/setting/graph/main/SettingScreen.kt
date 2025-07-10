@@ -82,6 +82,7 @@ internal fun SettingRoute(
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
         onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
+        onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
@@ -97,6 +98,7 @@ private fun SettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onThemeManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -112,6 +114,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onThemeManageClick = onThemeManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -125,6 +128,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onThemeManageClick = onThemeManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -141,6 +145,7 @@ private fun PhoneSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onThemeManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -178,7 +183,7 @@ private fun PhoneSettingScreen(
 
             SyncBody(onSyncClick = onSyncClick)
 
-            ThemeBody(onColorChangeClick = {})
+            ThemeBody(onThemeManageClick = onThemeManageClick)
 
             InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -206,6 +211,7 @@ private fun TabletSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onThemeManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -245,7 +251,7 @@ private fun TabletSettingScreen(
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
-                ThemeBody(onColorChangeClick = {})
+                ThemeBody(onThemeManageClick = onThemeManageClick)
 
                 InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -587,7 +593,7 @@ private fun AnnouncementBody(
 
 @Composable
 private fun ThemeBody(
-    onColorChangeClick: () -> Unit,
+    onThemeManageClick: () -> Unit,
 ) {
     Text(
         text = stringResource(R.string.setting_theme),
@@ -601,7 +607,7 @@ private fun ThemeBody(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 17.dp)
-            .clickable { onColorChangeClick() },
+            .clickable { onThemeManageClick() },
     ) {
         Text(
             text = stringResource(R.string.setting_theme_color_change),
@@ -734,6 +740,7 @@ private fun PreviewSettingScreen() {
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
             onSyncClick = {},
+            onThemeManageClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},
