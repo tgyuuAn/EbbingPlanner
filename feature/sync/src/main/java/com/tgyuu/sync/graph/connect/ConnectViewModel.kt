@@ -5,7 +5,7 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.model.Timer
-import com.tgyuu.domain.model.error.ErrorBus
+import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent

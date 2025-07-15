@@ -38,7 +38,7 @@ ksp = "2.1.0-1.0.29"
 # https://github.com/google/dagger/releases
 hilt = "2.55"
 # https://developer.android.com/jetpack/androidx/releases/hilt
-hiltNavigationCompose = "1.2.0"
+hiltCommon = "1.2.0"
 
 ## Kotlin
 # https://github.com/JetBrains/kotlin
@@ -74,7 +74,6 @@ googleServices = "4.4.2"
 firebaseBom = "33.10.0"
 crashlytics = "3.0.3"
 metricsPerformance = "1.0.0-beta02"
-firebaseFirestoreKtx = "25.1.4"
 
 ## Amplitude
 # https://amplitude.com/docs/sdks/analytics/android
@@ -135,7 +134,9 @@ hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hi
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltCommon" }
+hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
+hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltCommon" }
 
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -151,14 +152,14 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "a
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 
 accompanist-permission = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+androidx-metrics-performance = { group = "androidx.metrics", name = "metrics-performance", version.ref = "metricsPerformance" }
 
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
-androidx-metrics-performance = { group = "androidx.metrics", name = "metrics-performance", version.ref = "metricsPerformance" }
-firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
 
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
 

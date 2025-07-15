@@ -73,7 +73,6 @@ dependencies {
     implementation(projects.feature.sync)
     baselineProfile(projects.baselineprofile)
 
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.adaptive.navigation.suite)
@@ -81,5 +80,7 @@ dependencies {
     implementation(libs.androidx.glance.material3)
     implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.glance.appwidget.preview)
+    implementation("androidx.work:work-runtime-ktx:2.10.2")
+    implementation(libs.hilt.work)
     implementation(libs.gson)
 }

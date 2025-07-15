@@ -6,7 +6,7 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.domain.model.error.ErrorBus
+import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository

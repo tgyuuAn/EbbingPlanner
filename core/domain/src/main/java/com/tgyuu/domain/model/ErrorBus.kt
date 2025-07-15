@@ -1,4 +1,4 @@
-package com.tgyuu.domain.model.error
+package com.tgyuu.domain.model
 
 import com.tgyuu.domain.repository.ErrorRepository
 import kotlinx.coroutines.channels.Channel

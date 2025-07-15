@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class NotificationDi {
+abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindsNotificationHelper(

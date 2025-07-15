@@ -24,6 +24,10 @@ dependencies {
     implementation(projects.core.common)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation("androidx.work:work-runtime-ktx:2.10.2")
+    implementation(libs.hilt.common)
+    implementation(libs.hilt.work)
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
 }

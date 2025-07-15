@@ -28,13 +28,14 @@ import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.systemcallback.LocalAnimationsEnabled
+import com.tgyuu.common.systemcallback.MemoryAnimationController
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.common.systemcallback.LocalAnimationsEnabled
-import com.tgyuu.common.systemcallback.MemoryAnimationController
+import com.tgyuu.ebbingplanner.systemcallback.SystemCallbacksRegistrar
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.SoftUpdateDialog
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
@@ -68,6 +69,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
+    @Inject
+    lateinit var systemCallbacksRegistrar: SystemCallbacksRegistrar
+
     private var isInitialized = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +80,9 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition { isInitialized }
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // 메모리 Component Callback 등록
+        registerComponentCallbacks(systemCallbacksRegistrar)
 
         handleWidgetIntent(intent)
         lifecycleScope.launch {
@@ -140,6 +147,11 @@ class MainActivity : ComponentActivity() {
                 action = RefreshAction.UPDATE_ACTION
             }
         )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterComponentCallbacks(systemCallbacksRegistrar)
     }
 
     override fun onNewIntent(intent: Intent) {
