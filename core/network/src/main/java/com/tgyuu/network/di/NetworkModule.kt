@@ -37,14 +37,6 @@ object NetworkProvidesModule {
     fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
         WorkManager.getInstance(context)
 
-    @Provides
-    @Singleton
-    fun provideWorkManagerConfig(
-        workerFactory: HiltWorkerFactory
-    ): Configuration = Configuration.Builder()
-        .setWorkerFactory(workerFactory)
-        .build()
-
     @Singleton
     @Provides
     fun provideJson(): Json = Json {

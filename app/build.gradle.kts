@@ -80,7 +80,7 @@ dependencies {
     implementation(libs.androidx.glance.material3)
     implementation(libs.androidx.glance.preview)
     implementation(libs.androidx.glance.appwidget.preview)
-    implementation("androidx.work:work-runtime-ktx:2.10.2")
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.hilt.work)
     implementation(libs.gson)
 }

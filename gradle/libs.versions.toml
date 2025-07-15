@@ -25,6 +25,9 @@ androidxComposeNavigation = "2.8.8"
 androidxComposeFoundation = "1.8.2"
 # https://developer.android.com/training/data-storage/room
 androidxRoom = "2.7.1"
+# https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started
+androidxWork = "2.10.2"
+
 glanceAppwidget = "1.1.1"
 
 ## Material
@@ -117,6 +120,7 @@ androidx-datastore-core = { group = "androidx.datastore", name = "datastore-pref
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidxRoom" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
 androidx-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive-android" }
 androidx-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite-android" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }

@@ -20,7 +20,7 @@ class HeapDumpWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        // 시작 시간 파라미터 얻기 (WorkRequest의 InputData)
+        // WorkManager 파라미터 얻기
         val timestamp = inputData.getLong(KEY_START_TIME, System.currentTimeMillis())
         val fileName = "oom_$timestamp.hprof"
         val file = File(appContext.filesDir, fileName)

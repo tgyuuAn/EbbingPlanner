@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     id("ebbing.android.library")
     id("ebbing.android.hilt")
@@ -8,9 +6,6 @@ plugins {
 
 android {
     namespace = "com.tgyuu.network"
-
-    val localProperties = Properties()
-    localProperties.load(project.rootProject.file("local.properties").bufferedReader())
 
     buildTypes { release { consumerProguardFiles("consumer-rules.pro") } }
 
@@ -24,7 +19,7 @@ dependencies {
     implementation(projects.core.common)
 
     implementation(libs.kotlinx.serialization.json)
-    implementation("androidx.work:work-runtime-ktx:2.10.2")
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.hilt.common)
     implementation(libs.hilt.work)
     implementation(libs.firebase.config)
