@@ -1,4 +1,4 @@
-package com.tgyuu.common.ui
+package com.tgyuu.common.util
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource

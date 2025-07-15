@@ -1,9 +1,10 @@
-package com.tgyuu.common.ui
+package com.tgyuu.common.util
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,11 +13,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.tgyuu.common.systemcallback.LocalAnimationsEnabled
 
 private const val BOTTOM_BAR_ANIMATION_DURATION = 700
-
-fun ebbingExitTransitionAnimation() = fadeOut(tween(BOTTOM_BAR_ANIMATION_DURATION))
-fun ebbingEnterTransitionAnimation() = fadeIn(tween(BOTTOM_BAR_ANIMATION_DURATION))
 
 @Composable
 fun EbbingBottomBarAnimation(
@@ -60,3 +60,22 @@ fun EbbingVisibleAnimation(
     content = content,
     modifier = modifier,
 )
+
+@Composable
+fun ebbingAnimateColorAsState(
+    targetValue: Color,
+    label: String = "ColorAnimation",
+    finishedListener: ((Color) -> Unit)? = null,
+): Color {
+    val animationEnabled = LocalAnimationsEnabled.current
+
+    return if (animationEnabled) {
+        animateColorAsState(
+            targetValue = targetValue,
+            label = label,
+            finishedListener = finishedListener,
+        ).value
+    } else {
+        targetValue
+    }
+}

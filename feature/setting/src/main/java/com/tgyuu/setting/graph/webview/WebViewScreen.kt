@@ -10,7 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.tgyuu.common.ui.EbbingWebView
+import com.tgyuu.common.util.EbbingWebView
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.navigation.NavigationEvent
 import kotlinx.coroutines.launch

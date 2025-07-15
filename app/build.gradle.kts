@@ -73,6 +73,7 @@ dependencies {
     implementation(projects.feature.sync)
     baselineProfile(projects.baselineprofile)
 
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.adaptive.navigation.suite)

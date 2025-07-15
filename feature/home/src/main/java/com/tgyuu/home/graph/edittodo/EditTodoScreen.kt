@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.ui.throttledClickable
+import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSubTopBar
@@ -38,12 +38,8 @@ import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.home.graph.ui.PriorityContent
-import com.tgyuu.home.graph.ui.RepeatCycleContent
-import com.tgyuu.home.graph.ui.RestDayContent
-import com.tgyuu.home.graph.ui.ScheduleContent
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
-import java.time.DayOfWeek
 import java.time.LocalDate
 
 @Composable

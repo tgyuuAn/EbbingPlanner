@@ -1,4 +1,4 @@
-package com.tgyuu.common.ui
+package com.tgyuu.common.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity

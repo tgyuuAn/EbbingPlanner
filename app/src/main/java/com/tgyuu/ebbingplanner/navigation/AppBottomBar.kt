@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
-import com.tgyuu.common.ui.NoRippleInteractionSource
+import com.tgyuu.common.util.NoRippleInteractionSource
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.ui.isRouteInHierarchy
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.HOME

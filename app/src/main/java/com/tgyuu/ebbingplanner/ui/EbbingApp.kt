@@ -43,8 +43,8 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.ui.EbbingBottomBarAnimation
-import com.tgyuu.common.ui.addFocusCleaner
+import com.tgyuu.common.util.EbbingBottomBarAnimation
+import com.tgyuu.common.util.addFocusCleaner
 import com.tgyuu.designsystem.component.EbbingSnackBar
 import com.tgyuu.designsystem.component.EbbingSnackBarHost
 import com.tgyuu.designsystem.component.bottomsheet.EbbingModalBottomSheet

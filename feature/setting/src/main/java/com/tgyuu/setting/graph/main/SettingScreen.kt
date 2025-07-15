@@ -46,8 +46,8 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.clickable
+import com.tgyuu.common.util.EbbingVisibleAnimation
+import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R

@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toRelativeDayDescription
-import com.tgyuu.common.ui.EbbingVisibleAnimation
+import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme

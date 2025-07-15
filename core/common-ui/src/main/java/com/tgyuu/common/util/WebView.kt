@@ -1,4 +1,4 @@
-package com.tgyuu.common.ui
+package com.tgyuu.common.util
 
 import android.view.ViewGroup
 import android.webkit.WebView

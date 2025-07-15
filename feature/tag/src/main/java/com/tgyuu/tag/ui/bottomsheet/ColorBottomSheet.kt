@@ -1,6 +1,5 @@
 package com.tgyuu.tag.ui.bottomsheet
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,12 +28,13 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.clickable
-import com.tgyuu.common.ui.verticalScrollbar
+import com.tgyuu.common.util.EbbingVisibleAnimation
+import com.tgyuu.common.util.clickable
+import com.tgyuu.common.util.ebbingAnimateColorAsState
+import com.tgyuu.common.util.verticalScrollbar
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.EbbingSolidButton
+import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Composable
@@ -118,7 +118,7 @@ internal fun ColorBottomSheet(
             items(colorOptions) { colorValue ->
                 val baseColor = Color(colorValue)
 
-                val displayColor by animateColorAsState(
+                val displayColor = ebbingAnimateColorAsState(
                     targetValue = if (newColor == colorValue) lerp(baseColor, Color.Black, 0.2f)
                     else baseColor
                 )

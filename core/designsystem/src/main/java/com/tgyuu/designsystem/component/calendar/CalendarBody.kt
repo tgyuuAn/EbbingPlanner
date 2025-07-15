@@ -1,6 +1,5 @@
 package com.tgyuu.designsystem.component.calendar
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.util.ebbingAnimateColorAsState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
@@ -52,7 +52,10 @@ internal fun CalendarBody(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.semantics { contentDescription = "달력 바디" },
     ) {
-        items(items = getCalendarDates(currentDate)) {
+        items(
+            items = getCalendarDates(currentDate),
+            key = { it.date },
+        ) {
             CalendarDayItem(
                 calendarDate = it,
                 selectedDate = selectedDate,
@@ -71,8 +74,9 @@ private fun CalendarDayItem(
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val dayItemColor by animateColorAsState(
-        if (calendarDate.date == selectedDate) EbbingTheme.colors.black else Color.Transparent
+    val dayItemColor = ebbingAnimateColorAsState(
+        targetValue = if (calendarDate.date == selectedDate) EbbingTheme.colors.black
+        else Color.Transparent
     )
 
     Surface(
@@ -88,13 +92,11 @@ private fun CalendarDayItem(
             modifier = Modifier.padding(vertical = 4.dp),
         ) {
             var isOverflow by remember { mutableStateOf(false) }
-            val textColor by animateColorAsState(
-                when {
-                    !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
-                    calendarDate.date == selectedDate -> EbbingTheme.colors.white
-                    else -> EbbingTheme.colors.black
-                }
-            )
+            val textColor = when {
+                !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
+                calendarDate.date == selectedDate -> EbbingTheme.colors.white
+                else -> EbbingTheme.colors.black
+            }
 
             if (isOverflow) {
                 Icon(

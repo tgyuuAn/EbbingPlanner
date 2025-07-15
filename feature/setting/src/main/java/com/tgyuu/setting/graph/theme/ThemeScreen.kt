@@ -1,6 +1,5 @@
 package com.tgyuu.setting.graph.theme
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -49,9 +48,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.clickable
-import com.tgyuu.common.ui.throttledClickable
+import com.tgyuu.common.util.EbbingVisibleAnimation
+import com.tgyuu.common.util.clickable
+import com.tgyuu.common.util.ebbingAnimateColorAsState
+import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
@@ -489,20 +489,20 @@ private fun TodoListCard(
 @Composable
 private fun animateEbbingColors(target: EbbingColors): EbbingColors {
     return EbbingColors(
-        background = animateColorAsState(target.background).value,
-        primaryDefault = animateColorAsState(target.primaryDefault).value,
-        primaryMiddle = animateColorAsState(target.primaryMiddle).value,
-        primaryLight = animateColorAsState(target.primaryLight).value,
-        black = animateColorAsState(target.black).value,
-        dark1 = animateColorAsState(target.dark1).value,
-        dark2 = animateColorAsState(target.dark2).value,
-        dark3 = animateColorAsState(target.dark3).value,
-        light1 = animateColorAsState(target.light1).value,
-        light2 = animateColorAsState(target.light2).value,
-        light3 = animateColorAsState(target.light3).value,
-        white = animateColorAsState(target.white).value,
-        error = animateColorAsState(target.error).value,
-        success = animateColorAsState(target.success).value,
+        background = ebbingAnimateColorAsState(target.background),
+        primaryDefault = ebbingAnimateColorAsState(target.primaryDefault),
+        primaryMiddle = ebbingAnimateColorAsState(target.primaryMiddle),
+        primaryLight = ebbingAnimateColorAsState(target.primaryLight),
+        black = ebbingAnimateColorAsState(target.black),
+        dark1 = ebbingAnimateColorAsState(target.dark1),
+        dark2 = ebbingAnimateColorAsState(target.dark2),
+        dark3 = ebbingAnimateColorAsState(target.dark3),
+        light1 = ebbingAnimateColorAsState(target.light1),
+        light2 = ebbingAnimateColorAsState(target.light2),
+        light3 = ebbingAnimateColorAsState(target.light3),
+        white = ebbingAnimateColorAsState(target.white),
+        error = ebbingAnimateColorAsState(target.error),
+        success = ebbingAnimateColorAsState(target.success),
     )
 }
 

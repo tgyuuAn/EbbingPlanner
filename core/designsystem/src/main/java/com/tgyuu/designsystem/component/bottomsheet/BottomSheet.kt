@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tgyuu.common.ui.clickable
+import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 

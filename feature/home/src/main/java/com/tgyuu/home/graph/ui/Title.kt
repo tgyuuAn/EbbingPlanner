@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.tgyuu.common.ui.animateScrollWhenFocus
+import com.tgyuu.common.util.animateScrollWhenFocus
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme

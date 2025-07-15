@@ -16,3 +16,5 @@ fun DayOfWeek.toKorean(): String = when (this) {
 fun yearMonthDiff(from: LocalDate, to: LocalDate): Int {
     return (to.year - from.year) * 12 + (to.monthValue - from.monthValue)
 }
+
+internal const val COLOR_ANIM_THRESHOLD = 5L * 1024 * 1024

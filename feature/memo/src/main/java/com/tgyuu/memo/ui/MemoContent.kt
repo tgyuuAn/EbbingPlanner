@@ -30,8 +30,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.clickable
+import com.tgyuu.common.util.EbbingVisibleAnimation
+import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme

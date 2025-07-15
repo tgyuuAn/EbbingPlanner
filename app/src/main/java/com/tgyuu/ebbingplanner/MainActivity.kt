@@ -33,6 +33,8 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
+import com.tgyuu.common.systemcallback.LocalAnimationsEnabled
+import com.tgyuu.common.systemcallback.MemoryAnimationController
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.SoftUpdateDialog
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
@@ -82,6 +84,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val theme by viewModel.theme.collectAsStateWithLifecycle()
+            val updateInfo by viewModel.updateInfo.collectAsStateWithLifecycle()
+            var isDialogVisible by remember(updateInfo) {
+                mutableStateOf(shouldShowUpdateDialog(updateInfo))
+            }
+
             val navController = rememberNavController()
             val bottomSheetState = rememberEbbingBottomSheetState()
             val snackBarHostState = remember { SnackbarHostState() }
@@ -91,13 +99,6 @@ class MainActivity : ComponentActivity() {
                 bottomSheetState = bottomSheetState,
             )
 
-            val updateInfo by viewModel.updateInfo.collectAsStateWithLifecycle()
-            var isDialogVisible by remember(updateInfo) {
-                mutableStateOf(shouldShowUpdateDialog(updateInfo))
-            }
-
-            val theme by viewModel.theme.collectAsStateWithLifecycle()
-
             HandleSideEffects(
                 navController = navController,
                 bottomSheetState = bottomSheetState,
@@ -105,7 +106,10 @@ class MainActivity : ComponentActivity() {
             )
 
             EbbingTheme(customTheme = theme) {
-                CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
+                CompositionLocalProvider(
+                    LocalAnalyticsHelper provides analyticsHelper,
+                    LocalAnimationsEnabled provides MemoryAnimationController.animationsEnabled,
+                ) {
                     EbbingApp(
                         appState = appState,
                         snackBarHostState = snackBarHostState,

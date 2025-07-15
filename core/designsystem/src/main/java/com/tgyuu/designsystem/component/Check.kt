@@ -1,6 +1,5 @@
 package com.tgyuu.designsystem.component
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -11,13 +10,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.util.ebbingAnimateColorAsState
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
@@ -30,7 +28,9 @@ fun EbbingCheck(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val buttonColor by animateColorAsState(targetValue = if (checked) Color(colorValue) else EbbingTheme.colors.background)
+    val buttonColor = ebbingAnimateColorAsState(
+        targetValue = if (checked) Color(colorValue) else EbbingTheme.colors.background
+    )
 
     Surface(
         shape = RoundedCornerShape(8.dp),

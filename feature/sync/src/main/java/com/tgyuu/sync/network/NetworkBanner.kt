@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.tgyuu.common.ui.EbbingVisibleAnimation
-import com.tgyuu.common.ui.clickable
+import com.tgyuu.common.util.EbbingVisibleAnimation
+import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import kotlinx.coroutines.delay
 
