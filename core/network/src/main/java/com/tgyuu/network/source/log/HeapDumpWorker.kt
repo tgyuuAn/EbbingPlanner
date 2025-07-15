@@ -6,7 +6,8 @@ import androidx.core.net.toUri
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.tasks.await
@@ -16,10 +17,11 @@ import java.io.File
 class HeapDumpWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val hprofStorageRef: StorageReference,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
+        val hprofStorageRef = Firebase.storage.reference.child(HPROF_DIR)
+
         // WorkManager 파라미터 얻기
         val timestamp = inputData.getLong(KEY_START_TIME, System.currentTimeMillis())
         val fileName = "oom_$timestamp.hprof"

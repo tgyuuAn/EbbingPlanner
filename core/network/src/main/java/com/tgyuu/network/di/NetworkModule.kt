@@ -1,8 +1,6 @@
 package com.tgyuu.network.di
 
 import android.content.Context
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -11,14 +9,10 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.storage
 import com.tgyuu.network.BuildConfig
 import com.tgyuu.network.source.error.DebugErrorDataSourceImpl
 import com.tgyuu.network.source.error.ErrorDataSource
 import com.tgyuu.network.source.error.ErrorDataSourceImpl
-import com.tgyuu.network.source.log.HeapDumpWorker.Companion.HPROF_DIR
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -79,16 +73,6 @@ object NetworkProvidesModule {
         return if (BuildConfig.DEBUG) debugErrorDataSource
         else releaseErrorDataSource
     }
-
-    @Provides
-    @Singleton
-    fun provideFirebaseStorage(): FirebaseStorage = Firebase.storage
-
-    @Provides
-    @Singleton
-    fun provideHprofStorageRef(
-        storage: FirebaseStorage
-    ): StorageReference = storage.reference.child(HPROF_DIR)
 }
 
 @Qualifier
