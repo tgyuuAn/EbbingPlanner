@@ -20,7 +20,6 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.hilt.common)
     implementation(libs.hilt.work)
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)

@@ -1,8 +1,6 @@
 package com.tgyuu.network.di
 
 import android.content.Context
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -83,12 +81,6 @@ object NetworkProvidesModule {
     @Provides
     @Singleton
     fun provideFirebaseStorage(): FirebaseStorage = Firebase.storage
-
-    @Provides
-    @Singleton
-    fun provideHprofStorageRef(
-        storage: FirebaseStorage
-    ): StorageReference = storage.reference.child(HPROF_DIR)
 }
 
 @Qualifier
