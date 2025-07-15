@@ -40,16 +40,15 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
-import com.tgyuu.designsystem.foundation.DarkBackground
-import com.tgyuu.designsystem.foundation.LightBackground
-import com.tgyuu.designsystem.foundation.PrimaryDefault
-import com.tgyuu.designsystem.foundation.PrimaryLight
+import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.CheckTodoAction
-import com.tgyuu.ebbingplanner.widget.component.EbbingWidgetCheck
+import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.destinationKey
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
 import com.tgyuu.ebbingplanner.widget.todoIdKey
@@ -62,12 +61,16 @@ class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
-            val rawJson: String = prefs[TODO_LISTS] ?: "[]"
+            val rawTheme: String = prefs[THEME] ?: Theme.NORMAL.name
+            val theme = Theme.create(rawTheme)
 
+            val rawJson: String = prefs[TODO_LISTS] ?: "[]"
             val type = object : TypeToken<List<TodoSchedule>>() {}.type
             val todoLists: List<TodoSchedule> = GsonProvider.gson.fromJson(rawJson, type)
 
-            GlanceTheme { TodayTodoWidgetContent(todoLists) }
+            EbbingWidgetTheme(theme = theme) {
+                TodayTodoWidgetContent(todoLists)
+            }
         }
     }
 }
@@ -79,13 +82,19 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
         modifier = GlanceModifier
             .fillMaxSize()
             .clickable(onClick = actionStartActivity<MainActivity>())
-            .background(imageProvider = ImageProvider(R.drawable.shape_widget_background))
+            .background(
+                imageProvider = ImageProvider(R.drawable.shape_widget_background),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.background),
+            )
             .padding(12.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.fillMaxWidth()
-                .background(imageProvider = ImageProvider(R.drawable.shape_widget_header))
+                .background(
+                    imageProvider = ImageProvider(R.drawable.shape_widget_header),
+                    colorFilter = ColorFilter.tint(GlanceTheme.colors.primaryContainer),
+                )
                 .padding(horizontal = 12.dp, vertical = 4.dp),
         ) {
             Row(
@@ -101,7 +110,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
                         textAlign = TextAlign.Start,
-                        color = ColorProvider(DarkBackground, LightBackground),
+                        color = GlanceTheme.colors.surface,
                     ),
                 )
                 Text(
@@ -111,7 +120,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
                         textAlign = TextAlign.Start,
-                        color = ColorProvider(PrimaryDefault, PrimaryLight),
+                        color =GlanceTheme.colors.primary,
                     ),
                 )
                 Text(
@@ -121,7 +130,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
                         textAlign = TextAlign.Start,
-                        color = ColorProvider(DarkBackground, LightBackground),
+                        color = GlanceTheme.colors.surface,
                     ),
                 )
             }
@@ -129,7 +138,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
             Image(
                 provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(ColorProvider(DarkBackground, LightBackground)),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
                 modifier = GlanceModifier
                     .size(20.dp)
                     .clickable(
@@ -149,7 +158,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                     fontStyle = FontStyle.Normal,
                     textAlign = TextAlign.Center,
                     fontFamily = FontFamily.Cursive,
-                    color = ColorProvider(DarkBackground, LightBackground),
+                    color = GlanceTheme.colors.surface,
                 ),
                 modifier = GlanceModifier.fillMaxWidth()
                     .padding(horizontal = 12.dp, vertical = 30.dp),
@@ -192,7 +201,7 @@ internal fun TodoItemRow(
             style = TextStyle(
                 fontSize = 14.sp,
                 fontWeight = if (todo.isDone) FontWeight.Bold else FontWeight.Normal,
-                color = ColorProvider(DarkBackground, LightBackground),
+                color = GlanceTheme.colors.surface,
                 textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
             ),
             maxLines = 2,

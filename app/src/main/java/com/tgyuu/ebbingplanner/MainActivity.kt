@@ -83,7 +83,6 @@ class MainActivity : ComponentActivity() {
 
         // 메모리 Component Callback 등록
         registerComponentCallbacks(systemCallbacksRegistrar)
-
         handleWidgetIntent(intent)
         lifecycleScope.launch {
             viewModel.initAppState()
@@ -112,7 +111,7 @@ class MainActivity : ComponentActivity() {
                 snackBarHostState = snackBarHostState,
             )
 
-            EbbingTheme(customTheme = theme) {
+            EbbingTheme(theme = theme) {
                 CompositionLocalProvider(
                     LocalAnalyticsHelper provides analyticsHelper,
                     LocalAnimationsEnabled provides MemoryAnimationController.animationsEnabled,

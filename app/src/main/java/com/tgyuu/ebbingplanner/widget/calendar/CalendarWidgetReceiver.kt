@@ -10,15 +10,18 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tgyuu.domain.model.SortType
+import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.CheckTodoAction.Companion.TODO_ID
-import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.RefreshAction
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
+import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -66,6 +69,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
     private fun updateData(context: Context) = scope.launch {
         val gson = GsonProvider.gson
+        val theme = configRepository.getTheme().firstOrNull() ?: Theme.NORMAL
         val sortType = configRepository.getSortType()
         val allSchedules = todoRepository.loadSchedules()
         val byDate = buildByDateMap(allSchedules, sortType)
@@ -79,6 +83,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
             updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) { pref ->
                 pref.toMutablePreferences().apply {
                     this[SCHEDULES_BY_DATE_MAP] = json
+                    this[THEME] = theme.name
                 }
             }
 

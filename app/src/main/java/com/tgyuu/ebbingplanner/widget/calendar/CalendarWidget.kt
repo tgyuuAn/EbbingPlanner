@@ -3,8 +3,6 @@ package com.tgyuu.ebbingplanner.widget.calendar
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
@@ -49,10 +47,7 @@ import com.tgyuu.designsystem.component.calendar.CalendarDate
 import com.tgyuu.designsystem.component.calendar.EbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.getCalendarDates
 import com.tgyuu.designsystem.component.calendar.toKorean
-import com.tgyuu.designsystem.foundation.DarkBackground
-import com.tgyuu.designsystem.foundation.LightBackground
-import com.tgyuu.designsystem.foundation.PrimaryDefault
-import com.tgyuu.designsystem.foundation.PrimaryLight
+import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
@@ -60,6 +55,8 @@ import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.SelectDateAction.Companion.SELECTED_DATE
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.destinationKey
 import com.tgyuu.ebbingplanner.widget.selectedDateKey
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
@@ -70,8 +67,10 @@ class CalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
-            val rawJson: String = prefs[SCHEDULES_BY_DATE_MAP] ?: "[]"
+            val rawTheme: String = prefs[THEME] ?: Theme.NORMAL.name
+            val theme = Theme.create(rawTheme)
 
+            val rawJson: String = prefs[SCHEDULES_BY_DATE_MAP] ?: "[]"
             val type = object : TypeToken<Map<LocalDate, List<TodoSchedule>>>() {}.type
             val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> =
                 GsonProvider.gson.fromJson(rawJson, type)
@@ -82,7 +81,7 @@ class CalendarWidget : GlanceAppWidget() {
             val selectedDateString = prefs[SELECTED_DATE]
             val selectedDate = selectedDateString?.let { LocalDate.parse(it) } ?: today
 
-            GlanceTheme {
+            EbbingWidgetTheme(theme = theme) {
                 CalendarWidgetContent(
                     schedulesByDateMap = schedulesByDateMap,
                     selectedDate = selectedDate,
@@ -106,7 +105,10 @@ private fun CalendarWidgetContent(
         modifier = GlanceModifier
             .fillMaxSize()
             .clickable(onClick = actionStartActivity<MainActivity>())
-            .background(imageProvider = ImageProvider(R.drawable.shape_widget_background))
+            .background(
+                imageProvider = ImageProvider(R.drawable.shape_widget_background),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.background)
+            )
             .padding(4.dp)
     ) {
         CalendarWidgetHeader()
@@ -144,7 +146,7 @@ private fun CalendarWidgetHeader() {
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    color = ColorProvider(Color.Black, Color.White),
+                    color = GlanceTheme.colors.surface,
                 ),
                 modifier = GlanceModifier.defaultWeight()
             )
@@ -152,7 +154,7 @@ private fun CalendarWidgetHeader() {
             Image(
                 provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_return),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(ColorProvider(DarkBackground, LightBackground)),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
                 modifier = GlanceModifier
                     .size(14.dp)
                     .clickable(
@@ -171,7 +173,7 @@ private fun CalendarWidgetHeader() {
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        color = ColorProvider(Color.Black, Color.White),
+                        color = GlanceTheme.colors.surface,
                     ),
                     modifier = GlanceModifier.defaultWeight(),
                 )
@@ -223,10 +225,10 @@ private fun RowScope.CalendarDayCell(
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val isSelected = date.date == selectedDate
-    val dayItemColor = if (isSelected) ColorProvider(Color.Black, Color.White)
+    val dayItemColor = if (isSelected) GlanceTheme.colors.surface
     else ColorProvider(Color.Transparent, Color.Transparent)
-    val textColor = if (isSelected) ColorProvider(Color.White, Color.Black)
-    else ColorProvider(Color.Black, Color.White)
+    val textColor = if (isSelected) GlanceTheme.colors.inverseSurface
+    else GlanceTheme.colors.surface
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -244,8 +246,7 @@ private fun RowScope.CalendarDayCell(
             style = TextStyle(
                 fontSize = 12.sp,
                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                color = if (date.isCurrentMonth) textColor
-                else ColorProvider(Gray, LightGray),
+                color = if (date.isCurrentMonth) textColor else GlanceTheme.colors.secondary,
                 textAlign = TextAlign.Center
             )
         )
@@ -278,7 +279,10 @@ private fun ColumnScope.SelectedDateTodoList(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = GlanceModifier.fillMaxWidth()
-            .background(imageProvider = ImageProvider(R.drawable.shape_widget_header))
+            .background(
+                imageProvider = ImageProvider(R.drawable.shape_widget_header),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.secondary)
+            )
             .padding(horizontal = 12.dp, vertical = 4.dp),
     ) {
         Row(
@@ -291,7 +295,7 @@ private fun ColumnScope.SelectedDateTodoList(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = ColorProvider(DarkBackground, LightBackground),
+                    color = GlanceTheme.colors.surface,
                 ),
             )
             Text(
@@ -299,7 +303,7 @@ private fun ColumnScope.SelectedDateTodoList(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = ColorProvider(PrimaryDefault, PrimaryLight),
+                    color = GlanceTheme.colors.primary,
                 ),
             )
             Text(
@@ -307,7 +311,7 @@ private fun ColumnScope.SelectedDateTodoList(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = ColorProvider(DarkBackground, LightBackground),
+                    color = GlanceTheme.colors.surface
                 ),
             )
         }
@@ -315,7 +319,7 @@ private fun ColumnScope.SelectedDateTodoList(
         Image(
             provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(ColorProvider(DarkBackground, LightBackground)),
+            colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
             modifier = GlanceModifier
                 .size(20.dp)
                 .clickable(
@@ -342,7 +346,7 @@ private fun ColumnScope.SelectedDateTodoList(
                     fontStyle = FontStyle.Normal,
                     textAlign = TextAlign.Center,
                     fontFamily = FontFamily.Cursive,
-                    color = ColorProvider(DarkBackground, LightBackground),
+                    color = GlanceTheme.colors.surface
                 ),
             )
         } else {
