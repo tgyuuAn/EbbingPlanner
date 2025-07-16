@@ -101,7 +101,6 @@ internal fun SyncMainScreen(
         )
     }
 
-
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         PhoneSyncMainScreen(
