@@ -52,15 +52,16 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.R
-import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
-import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
-import com.tgyuu.ebbingplanner.widget.util.destinationKey
-import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
+import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
+import com.tgyuu.ebbingplanner.widget.util.destinationKey
+import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
 import java.time.LocalDate
 
 class CalendarWidget : GlanceAppWidget() {
@@ -69,6 +70,7 @@ class CalendarWidget : GlanceAppWidget() {
             val prefs = currentState<Preferences>()
             val rawTheme: String = prefs[THEME] ?: Theme.NORMAL.name
             val theme = Theme.create(rawTheme)
+            val alpha: Float = prefs[ALPHA] ?: 1f
 
             val rawJson: String = prefs[SCHEDULES_BY_DATE_MAP] ?: "[]"
             val type = object : TypeToken<Map<LocalDate, List<TodoSchedule>>>() {}.type
@@ -81,8 +83,12 @@ class CalendarWidget : GlanceAppWidget() {
             val selectedDateString = prefs[SELECTED_DATE]
             val selectedDate = selectedDateString?.let { LocalDate.parse(it) } ?: today
 
-            EbbingWidgetTheme(theme = theme) {
+            EbbingWidgetTheme(
+                theme = theme,
+                alpha = alpha,
+            ) {
                 CalendarWidgetContent(
+                    alpha = alpha,
                     schedulesByDateMap = schedulesByDateMap,
                     selectedDate = selectedDate,
                     calendarDates = calendarDates,
@@ -94,19 +100,26 @@ class CalendarWidget : GlanceAppWidget() {
 
 @Composable
 private fun CalendarWidgetContent(
+    alpha: Float,
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     calendarDates: List<CalendarDate>,
     selectedDate: LocalDate,
 ) {
     val selectedDateTodoLists = schedulesByDateMap[selectedDate] ?: emptyList()
     val todoListsDoneSize = selectedDateTodoLists.filter { it.isDone }.size
+    val image = when(alpha) {
+        0.25f -> R.drawable.shape_widget_background_25
+        0.5f -> R.drawable.shape_widget_background_25
+        0.75f -> R.drawable.shape_widget_background_75
+        else -> R.drawable.shape_widget_background_100
+    }
 
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
             .clickable(onClick = actionStartActivity<MainActivity>())
             .background(
-                imageProvider = ImageProvider(R.drawable.shape_widget_background),
+                imageProvider = ImageProvider(image),
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.background)
             )
             .padding(4.dp)
@@ -121,6 +134,7 @@ private fun CalendarWidgetContent(
         )
 
         SelectedDateTodoList(
+            alpha= alpha,
             selectedDate = selectedDate,
             todoLists = selectedDateTodoLists,
             doneSize = todoListsDoneSize
@@ -272,15 +286,23 @@ private fun RowScope.CalendarDayCell(
 
 @Composable
 private fun ColumnScope.SelectedDateTodoList(
+    alpha: Float,
     selectedDate: LocalDate,
     todoLists: List<TodoSchedule>,
     doneSize: Int,
 ) {
+    val image = when(alpha) {
+        0.25f -> R.drawable.shape_widget_header_25
+        0.5f -> R.drawable.shape_widget_header_50
+        0.75f -> R.drawable.shape_widget_header_75
+        else -> R.drawable.shape_widget_header_100
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = GlanceModifier.fillMaxWidth()
             .background(
-                imageProvider = ImageProvider(R.drawable.shape_widget_header),
+                imageProvider = ImageProvider(image),
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.surfaceVariant)
             )
             .padding(horizontal = 12.dp, vertical = 4.dp),

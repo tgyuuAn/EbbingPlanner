@@ -45,16 +45,17 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.R
-import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
-import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
-import com.tgyuu.ebbingplanner.widget.util.todoIdKey
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.destinationKey
+import com.tgyuu.ebbingplanner.widget.util.todoIdKey
 import java.time.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
@@ -63,36 +64,60 @@ class TodayTodoWidget : GlanceAppWidget() {
             val prefs = currentState<Preferences>()
             val rawTheme: String = prefs[THEME] ?: Theme.NORMAL.name
             val theme = Theme.create(rawTheme)
+            val alpha: Float = prefs[ALPHA] ?: 1f
 
             val rawJson: String = prefs[TODO_LISTS] ?: "[]"
             val type = object : TypeToken<List<TodoSchedule>>() {}.type
             val todoLists: List<TodoSchedule> = GsonProvider.gson.fromJson(rawJson, type)
 
-            EbbingWidgetTheme(theme = theme) {
-                TodayTodoWidgetContent(todoLists)
+            EbbingWidgetTheme(
+                theme = theme,
+                alpha = alpha,
+            ) {
+                TodayTodoWidgetContent(
+                    alpha = alpha,
+                    todoLists = todoLists,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
+private fun TodayTodoWidgetContent(
+    alpha: Float,
+    todoLists: List<TodoSchedule>,
+) {
+    val backgroundImage = when (alpha) {
+        0.25f -> R.drawable.shape_widget_background_25
+        0.5f -> R.drawable.shape_widget_background_25
+        0.75f -> R.drawable.shape_widget_background_75
+        else -> R.drawable.shape_widget_background_100
+    }
+
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
             .clickable(onClick = actionStartActivity<MainActivity>())
             .background(
-                imageProvider = ImageProvider(R.drawable.shape_widget_background),
+                imageProvider = ImageProvider(backgroundImage),
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.background),
             )
             .padding(12.dp)
     ) {
+        val headerImage = when(alpha) {
+            0.25f -> R.drawable.shape_widget_header_25
+            0.5f -> R.drawable.shape_widget_header_50
+            0.75f -> R.drawable.shape_widget_header_75
+            else -> R.drawable.shape_widget_header_100
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.fillMaxWidth()
                 .background(
-                    imageProvider = ImageProvider(R.drawable.shape_widget_header),
+                    imageProvider = ImageProvider(headerImage),
                     colorFilter = ColorFilter.tint(GlanceTheme.colors.surfaceVariant),
                 )
                 .padding(horizontal = 12.dp, vertical = 4.dp),
@@ -120,7 +145,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
                         textAlign = TextAlign.Start,
-                        color =GlanceTheme.colors.primary,
+                        color = GlanceTheme.colors.primary,
                     ),
                 )
                 Text(
@@ -224,6 +249,7 @@ internal fun TodoItemRow(
 private fun HomeWidgetPreview() {
     BaseWidgetPreview {
         TodayTodoWidgetContent(
+            alpha = 1f,
             todoLists = emptyList()
         )
     }
@@ -234,6 +260,7 @@ private fun HomeWidgetPreview() {
 private fun HomeWidgetPreview2() {
     BaseWidgetPreview {
         TodayTodoWidgetContent(
+            alpha = 1f,
             todoLists = listOf(
                 TodoSchedule(
                     id = 1,

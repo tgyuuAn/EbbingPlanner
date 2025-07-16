@@ -15,10 +15,16 @@ fun HorizontalSlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val allowedValues = listOf(0.25f, 0.5f, 0.75f, 1f)
+
     Slider(
         value = value,
-        valueRange = 0.1f..1f,
-        onValueChange = { onValueChange(it) },
+        valueRange = 0.25f..1f,
+        onValueChange = { userValue ->
+            val snapped = allowedValues.minByOrNull { kotlin.math.abs(it - userValue) } ?: userValue
+            onValueChange(snapped)
+        },
+        steps = 0,
         colors = SliderDefaults.colors(
             thumbColor = EbbingTheme.colors.primaryDefault,
             activeTrackColor = EbbingTheme.colors.primaryDefault,

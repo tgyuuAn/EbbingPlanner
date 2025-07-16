@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.widget.designsystem.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceTheme
 import androidx.glance.color.ColorProvider
@@ -21,6 +22,7 @@ import com.tgyuu.domain.model.Theme
 @Composable
 fun EbbingWidgetTheme(
     theme: Theme = Theme.NORMAL,
+    alpha: Float = 1f,
     content: @Composable () -> Unit,
 ) {
     val light = when (theme) {
@@ -39,16 +41,40 @@ fun EbbingWidgetTheme(
     }
 
     val providers = colorProviders(
-        background = ColorProvider(light.background, dark.background),
-        primary = ColorProvider(light.primaryDefault, dark.primaryDefault),
-        primaryContainer = ColorProvider(light.light2, dark.light2),
-        surface = ColorProvider(light.black, dark.black),
-        inverseSurface = ColorProvider(light.white, dark.white),
-        surfaceVariant = ColorProvider(light.light1, dark.light1),
-        secondary = ColorProvider(light.primaryLight, dark.primaryLight),
-        tertiary = ColorProvider(light.dark3, dark.dark3),
+        background = ColorProvider(
+            light.background.copy(alpha = alpha),
+            dark.background.copy(alpha = alpha)
+        ),
+        primary = ColorProvider(
+            light.primaryDefault.copy(alpha = alpha),
+            dark.primaryDefault.copy(alpha = alpha)
+        ),
+        primaryContainer = ColorProvider(
+            light.light2.copy(alpha = alpha),
+            dark.light2.copy(alpha = alpha)
+        ),
+        surface = ColorProvider(
+            light.black.copy(alpha = alpha),
+            dark.black.copy(alpha = alpha)
+        ),
+        inverseSurface = ColorProvider(
+            light.white.copy(alpha = alpha),
+            dark.white.copy(alpha = alpha)
+        ),
+        surfaceVariant = ColorProvider(
+            light.light1.copy(alpha = alpha),
+            dark.light1.copy(alpha = alpha)
+        ),
+        secondary = ColorProvider(
+            light.primaryLight.copy(alpha = alpha),
+            dark.primaryLight.copy(alpha = alpha)
+        ),
+        tertiary = ColorProvider(
+            light.dark3.copy(alpha = alpha),
+            dark.dark3.copy(alpha = alpha)
+        ),
 
-        // 아래로는 사용하지 않는 색상들
+        // 아래는 여전히 사용하지 않는 색상으로 유지
         onPrimary = ColorProvider(Color.Transparent, Color.Transparent),
         onPrimaryContainer = ColorProvider(Color.Transparent, Color.Transparent),
         onSecondary = ColorProvider(Color.Transparent, Color.Transparent),
@@ -77,3 +103,4 @@ fun EbbingWidgetTheme(
 }
 
 internal val THEME = stringPreferencesKey("theme")
+internal val ALPHA = floatPreferencesKey("alpha")
