@@ -321,18 +321,18 @@ internal fun PreviewBody(
         modifier = Modifier.padding(top = 32.dp),
     )
 
-    CompositionLocalProvider(LocalColors provides animatedDark) {
+    CompositionLocalProvider(LocalColors provides animatedLight) {
         TodoListCard(
-            isDarkMode = true,
+            isDarkMode = false,
             modifier = modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(),
         )
     }
 
-    CompositionLocalProvider(LocalColors provides animatedLight) {
+    CompositionLocalProvider(LocalColors provides animatedDark) {
         TodoListCard(
-            isDarkMode = false,
+            isDarkMode = true,
             modifier = modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(),

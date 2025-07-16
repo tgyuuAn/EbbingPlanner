@@ -2,6 +2,7 @@ package com.tgyuu.setting.graph.widget
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -29,6 +31,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -129,17 +135,22 @@ private fun WidgetScreen(
             )
 
             state.selectedTheme?.let {
-                ThemeBody(
-                    selectedTheme = state.selectedTheme,
-                    onThemeChange = onThemeChange,
-                )
-            }
+                state.selectedAlpha?.let {
+                    PreviewBody(
+                        theme = state.selectedTheme,
+                        alpha = state.selectedAlpha,
+                    )
 
-            state.selectedAlpha?.let {
-                AlphaBody(
-                    selectedAlpha = state.selectedAlpha,
-                    onAlphaChange = onAlphaChange,
-                )
+                    ThemeBody(
+                        selectedTheme = state.selectedTheme,
+                        onThemeChange = onThemeChange,
+                    )
+
+                    AlphaBody(
+                        selectedAlpha = state.selectedAlpha,
+                        onAlphaChange = onAlphaChange,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(60.dp))
@@ -230,6 +241,7 @@ internal fun AlphaBody(
 @Composable
 internal fun PreviewBody(
     theme: Theme,
+    alpha: Float,
     modifier: Modifier = Modifier,
 ) {
     val (darkColors, lightColors) = when (theme) {
@@ -250,18 +262,106 @@ internal fun PreviewBody(
         modifier = Modifier.padding(top = 32.dp),
     )
 
-    CompositionLocalProvider(LocalColors provides animatedDark) {
+    CompositionLocalProvider(LocalColors provides animatedLight) {
+        WidgetCard(
+            isDarkMode = false,
+            alpha = alpha,
+            modifier = modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
+        )
     }
 
-    CompositionLocalProvider(LocalColors provides animatedLight) {
-
+    CompositionLocalProvider(LocalColors provides animatedDark) {
+        WidgetCard(
+            isDarkMode = true,
+            alpha = alpha,
+            modifier = modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
+        )
     }
 }
 
+@Composable
+private fun WidgetCard(
+    isDarkMode: Boolean,
+    alpha: Float,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+                .fillMaxWidth()
+                .background(
+                    color = EbbingTheme.colors.background.copy(alpha = alpha),
+                    shape = RoundedCornerShape(16.dp),
+                )
+                .border(
+                    color = EbbingTheme.colors.black,
+                    width = 0.5.dp,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(12.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        EbbingTheme.colors.light1.copy(alpha = alpha),
+                        shape = RoundedCornerShape(12.dp),
+                    )
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append("오늘 할 일  ")
+
+                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryMiddle)) {
+                            append("0")
+                        }
+                        append(" /0")
+                    },
+                    style = EbbingTheme.typography.bodyMSB,
+                    color = EbbingTheme.colors.black.copy(alpha = alpha),
+                    modifier = Modifier.weight(1f),
+                )
+
+                Image(
+                    painter = painterResource(R.drawable.ic_plus),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black.copy(alpha = alpha)),
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+
+            Text(
+                text = "금일 스케줄이 없어요.",
+                style = EbbingTheme.typography.bodyMM,
+                color = EbbingTheme.colors.black.copy(alpha = alpha),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 30.dp),
+            )
+        }
+
+        Text(
+            text = if (isDarkMode) "다크" else "라이트",
+            style = EbbingTheme.typography.bodySSB,
+            color = EbbingTheme.colors.black,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 8.dp, end = 20.dp)
+        )
+    }
+}
 
 @EbbingPreview
 @Composable
-private fun PreviewAddTodo() {
+private fun PreviewWidget() {
     BasePreview {
         WidgetScreen(
             state = WidgetState(),
