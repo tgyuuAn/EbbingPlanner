@@ -43,13 +43,13 @@ import com.google.gson.reflect.TypeToken
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
-import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
@@ -106,7 +106,7 @@ private fun TodayTodoWidgetContent(
             )
             .padding(12.dp)
     ) {
-        val headerImage = when(alpha) {
+        val headerImage = when (alpha) {
             0.25f -> R.drawable.shape_widget_header_25
             0.5f -> R.drawable.shape_widget_header_50
             0.75f -> R.drawable.shape_widget_header_75

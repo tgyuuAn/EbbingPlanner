@@ -39,6 +39,7 @@ class ConfigDataSource @Inject constructor(
 
     companion object Key {
         const val UPDATE = "update"
+        const val HARD_UPDATE = "hard_update"
 
         fun getKey(key: String): String = "${key}_AN_${BuildConfig.BUILD_TYPE}"
     }

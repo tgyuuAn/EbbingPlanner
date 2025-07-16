@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.domain.model.ErrorBus
+import com.tgyuu.domain.model.UpdateState
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
@@ -18,7 +19,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,8 +33,19 @@ class MainViewModel @Inject constructor(
     private val errorBus: ErrorBus,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
-    private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
-    val updateInfo = _updateInfo.asStateFlow()
+    private val softUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
+    private val hardUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
+
+    val updateState: StateFlow<UpdateState> = combine(
+        softUpdateInfo,
+        hardUpdateInfo
+    ) { soft, hard ->
+        UpdateState(soft = soft, hard = hard)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UpdateState()
+    )
 
     val theme: StateFlow<Theme> = configRepository.getAppTheme()
         .stateIn(
@@ -43,12 +55,14 @@ class MainViewModel @Inject constructor(
         )
 
     suspend fun initAppState() = coroutineScope {
-        val getUpdateInfoJob = launch { getUpdateInfo() }
+        val getSoftUpdateInfoJob = launch { getSoftUpdateInfo() }
+        val getHardUpdateInfoJob = launch { getHardUpdateInfo() }
         val insertDefaultTagJob = launch { insertDefaultTag() }
         val checkOnboardingJob = launch { isFirstAppOpen() }
         val ensureUUIDExistsJob = launch { ensureUUIDExists() }
 
-        getUpdateInfoJob.join()
+        getSoftUpdateInfoJob.join()
+        getHardUpdateInfoJob.join()
         insertDefaultTagJob.join()
         checkOnboardingJob.join()
         ensureUUIDExistsJob.join()
@@ -64,10 +78,16 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getUpdateInfo() {
+    private suspend fun getSoftUpdateInfo() {
         suspendRunCatching {
-            configRepository.getUpdateInfo()
-        }.onSuccess { _updateInfo.value = it }
+            configRepository.getSoftUpdateInfo()
+        }.onSuccess { softUpdateInfo.value = it }
+    }
+
+    private suspend fun getHardUpdateInfo() {
+        suspendRunCatching {
+            configRepository.getHardUpdateInfo()
+        }.onSuccess { hardUpdateInfo.value = it }
     }
 
     private suspend fun insertDefaultTag() {

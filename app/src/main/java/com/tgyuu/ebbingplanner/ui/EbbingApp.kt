@@ -1,6 +1,5 @@
 package com.tgyuu.ebbingplanner.ui
 
-import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDp
@@ -38,7 +37,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -49,11 +47,9 @@ import com.tgyuu.designsystem.component.EbbingSnackBar
 import com.tgyuu.designsystem.component.EbbingSnackBarHost
 import com.tgyuu.designsystem.component.bottomsheet.EbbingModalBottomSheet
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.ebbingplanner.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination
-import com.tgyuu.ebbingplanner.ui.update.UpdateDialog
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.sync.network.NetworkBanner
@@ -265,30 +261,6 @@ private fun TabletContent(
                 )
             }
         }
-    }
-}
-
-@Composable
-internal fun SoftUpdateDialog(
-    shouldShow: Boolean,
-    updateInfo: UpdateInfo?,
-    onDismissRequest: () -> Unit,
-) {
-    val context = LocalContext.current
-
-    if (shouldShow && updateInfo != null) {
-        UpdateDialog(
-            updateInfo = updateInfo,
-            onDismissRequest = onDismissRequest,
-            onUpdateClick = {
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    "https://play.google.com/store/apps/details?id=com.tgyuu.ebbingplanner".toUri(),
-                )
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            },
-        )
     }
 }
 

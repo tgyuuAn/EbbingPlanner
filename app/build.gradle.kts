@@ -21,6 +21,12 @@ android {
 
         val localProperties = Properties()
         localProperties.load(project.rootProject.file("local.properties").bufferedReader())
+
+        buildConfigField(
+            type = "String",
+            name = "EBBING_NOTICE_URL",
+            value = "\"${localProperties["EBBING_NOTICE_URL"]}\""
+        )
     }
 
     signingConfigs {

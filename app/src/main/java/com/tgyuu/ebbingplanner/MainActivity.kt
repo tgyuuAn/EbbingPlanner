@@ -11,10 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -34,19 +32,24 @@ import com.tgyuu.common.toFormattedString
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.ebbingplanner.systemcallback.SystemCallbacksRegistrar
 import com.tgyuu.ebbingplanner.ui.EbbingApp
-import com.tgyuu.ebbingplanner.ui.SoftUpdateDialog
+import com.tgyuu.ebbingplanner.ui.HandleAppUpdate
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
-import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
+import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
+import com.tgyuu.ebbingplanner.widget.util.KEY_DESTINATION
+import com.tgyuu.ebbingplanner.widget.util.KEY_SELECTED_DATE
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.NavigationEvent.BottomBarTo
+import com.tgyuu.navigation.NavigationEvent.To
+import com.tgyuu.navigation.SettingGraph
+import com.tgyuu.setting.BuildConfig
 import com.tgyuu.sync.network.NetworkMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -90,12 +93,9 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val scope = rememberCoroutineScope()
+            val updateState by viewModel.updateState.collectAsStateWithLifecycle()
             val theme by viewModel.theme.collectAsStateWithLifecycle()
-            val updateInfo by viewModel.updateInfo.collectAsStateWithLifecycle()
-            var isDialogVisible by remember(updateInfo) {
-                mutableStateOf(shouldShowUpdateDialog(updateInfo))
-            }
-
             val navController = rememberNavController()
             val bottomSheetState = rememberEbbingBottomSheetState()
             val snackBarHostState = remember { SnackbarHostState() }
@@ -121,11 +121,23 @@ class MainActivity : ComponentActivity() {
                         snackBarHostState = snackBarHostState,
                     )
 
-                    SoftUpdateDialog(
-                        shouldShow = isDialogVisible,
-                        updateInfo = updateInfo,
-                        onDismissRequest = { isDialogVisible = false }
-                    )
+                    if (!appState.isWebViewRoute) {
+                        HandleAppUpdate(
+                            updateState = updateState,
+                            onClickUpdateInfo = {
+                                scope.launch {
+                                    navigationBus.navigate(
+                                        To(
+                                            SettingGraph.WebViewRoute(
+                                                title = "공지사항",
+                                                url = BuildConfig.EBBING_NOTICE_URL,
+                                            )
+                                        )
+                                    )
+                                }
+                            },
+                        )
+                    }
 
                     TrackNavigationDestination(navController)
                 }
@@ -176,25 +188,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    private fun shouldShowUpdateDialog(info: UpdateInfo?): Boolean {
-        if (info == null) return false
-
-        val currentVersion = this.packageManager.getPackageInfo(this.packageName, 0)
-            .versionName ?: return false
-
-        return checkShouldUpdate(currentVersion, info.minVersion)
-    }
-
-    private fun checkShouldUpdate(currentVersion: String, minVersion: String): Boolean {
-        val current = normalizeVersion(currentVersion)
-        val min = normalizeVersion(minVersion)
-        return current.zip(min).any { (cur, min) -> cur < min }
-    }
-
-    private fun normalizeVersion(version: String): List<Int> = version.split('.')
-        .map { it.toIntOrNull() ?: 0 }
-        .let { if (it.size == 2) it + 0 else it }
 
     @Composable
     private fun HandleSideEffects(
@@ -279,11 +272,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    companion object {
-        const val KEY_DESTINATION = "destination"
-        const val KEY_SELECTED_DATE = "selectedDate"
-        const val ADD_TODO = "addTodo"
     }
 }

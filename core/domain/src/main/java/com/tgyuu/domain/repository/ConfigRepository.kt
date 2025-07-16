@@ -19,5 +19,6 @@ interface ConfigRepository {
     suspend fun setWidgetAlpha(alpha: Float)
     suspend fun updateAlarmTime(hour: String, minute: String)
     suspend fun getAlarmTime(): Pair<Int, Int>
-    suspend fun getUpdateInfo(): UpdateInfo
+    suspend fun getSoftUpdateInfo(): UpdateInfo
+    suspend fun getHardUpdateInfo(): UpdateInfo
 }
