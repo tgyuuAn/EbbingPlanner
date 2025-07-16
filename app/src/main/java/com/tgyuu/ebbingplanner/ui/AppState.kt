@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.navigation.Route
+import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.sync.network.NetworkMonitor
 
 @Composable
@@ -61,6 +62,11 @@ class EbbingAppState(
     val isRootRoute: Boolean
         @Composable get() = currentDestination?.hierarchy?.any { d ->
             AppUiPolicy.rootRoutes.any { d.route?.startsWith(it.qualifiedName ?: "") == true }
+        } ?: false
+
+    val isWebViewRoute: Boolean
+        @Composable get() = currentDestination?.hierarchy?.any { d ->
+            d.route?.startsWith(SettingGraph.WebViewRoute::class.qualifiedName ?: "") == true
         } ?: false
 
     fun navigate(route: Route) = navController.navigate(route)

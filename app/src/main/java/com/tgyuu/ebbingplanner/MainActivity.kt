@@ -34,8 +34,8 @@ import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetSta
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.systemcallback.SystemCallbacksRegistrar
 import com.tgyuu.ebbingplanner.ui.EbbingApp
-import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
 import com.tgyuu.ebbingplanner.ui.HandleAppUpdate
+import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
@@ -47,6 +47,9 @@ import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.NavigationEvent.BottomBarTo
+import com.tgyuu.navigation.NavigationEvent.To
+import com.tgyuu.navigation.SettingGraph
+import com.tgyuu.setting.BuildConfig
 import com.tgyuu.sync.network.NetworkMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -90,8 +93,8 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val softUpdateInfo by viewModel.softUpdateInfo.collectAsStateWithLifecycle()
-            val hardUpdateInfo by viewModel.hardUpdateInfo.collectAsStateWithLifecycle()
+            val scope = rememberCoroutineScope()
+            val updateState by viewModel.updateState.collectAsStateWithLifecycle()
             val theme by viewModel.theme.collectAsStateWithLifecycle()
             val navController = rememberNavController()
             val bottomSheetState = rememberEbbingBottomSheetState()
@@ -118,10 +121,23 @@ class MainActivity : ComponentActivity() {
                         snackBarHostState = snackBarHostState,
                     )
 
-                    HandleAppUpdate(
-                        softUpdateInfo = softUpdateInfo,
-                        hardUpdateInfo = hardUpdateInfo,
-                    )
+                    if (!appState.isWebViewRoute) {
+                        HandleAppUpdate(
+                            updateState = updateState,
+                            onClickUpdateInfo = {
+                                scope.launch {
+                                    navigationBus.navigate(
+                                        To(
+                                            SettingGraph.WebViewRoute(
+                                                title = "공지사항",
+                                                url = BuildConfig.EBBING_NOTICE_URL,
+                                            )
+                                        )
+                                    )
+                                }
+                            },
+                        )
+                    }
 
                     TrackNavigationDestination(navController)
                 }

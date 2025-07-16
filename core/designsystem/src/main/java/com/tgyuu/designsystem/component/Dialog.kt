@@ -88,6 +88,7 @@ fun EbbingDialogDefaultTop(
 fun EbbingDialogDefaultTop(
     title: String,
     subText: String,
+    descriptionComposable: @Composable (() -> Unit)? = null,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -107,6 +108,10 @@ fun EbbingDialogDefaultTop(
             style = EbbingTheme.typography.bodySM,
             textAlign = TextAlign.Center,
         )
+
+        descriptionComposable?.let {
+            descriptionComposable()
+        }
     }
 }
 
@@ -114,6 +119,7 @@ fun EbbingDialogDefaultTop(
 fun EbbingDialogDefaultTop(
     title: String,
     subText: AnnotatedString,
+    descriptionComposable: @Composable (() -> Unit)? = null,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -133,6 +139,10 @@ fun EbbingDialogDefaultTop(
             textAlign = TextAlign.Center,
             style = EbbingTheme.typography.bodySM,
         )
+
+        descriptionComposable?.let {
+            descriptionComposable()
+        }
     }
 }
 

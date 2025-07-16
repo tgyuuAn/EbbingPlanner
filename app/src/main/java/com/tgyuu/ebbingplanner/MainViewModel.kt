@@ -7,6 +7,7 @@ import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
+import com.tgyuu.domain.model.UpdateState
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
@@ -18,7 +19,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,11 +33,19 @@ class MainViewModel @Inject constructor(
     private val errorBus: ErrorBus,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
-    private val _softUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
-    val softUpdateInfo = _softUpdateInfo.asStateFlow()
+    private val softUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
+    private val hardUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
 
-    private val _hardUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
-    val hardUpdateInfo = _hardUpdateInfo.asStateFlow()
+    val updateState: StateFlow<UpdateState> = combine(
+        softUpdateInfo,
+        hardUpdateInfo
+    ) { soft, hard ->
+        UpdateState(soft = soft, hard = hard)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = UpdateState()
+    )
 
     val theme: StateFlow<Theme> = configRepository.getAppTheme()
         .stateIn(
@@ -72,13 +81,13 @@ class MainViewModel @Inject constructor(
     private suspend fun getSoftUpdateInfo() {
         suspendRunCatching {
             configRepository.getSoftUpdateInfo()
-        }.onSuccess { _hardUpdateInfo.value = it }
+        }.onSuccess { hardUpdateInfo.value = it }
     }
 
     private suspend fun getHardUpdateInfo() {
         suspendRunCatching {
             configRepository.getSoftUpdateInfo()
-        }.onSuccess { _hardUpdateInfo.value = it }
+        }.onSuccess { hardUpdateInfo.value = it }
     }
 
     private suspend fun insertDefaultTag() {
