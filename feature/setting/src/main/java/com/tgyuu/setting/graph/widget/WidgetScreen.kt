@@ -245,7 +245,6 @@ private fun TabletWidgetScreen(
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 state.selectedTheme?.let {
                     state.selectedAlpha?.let {
