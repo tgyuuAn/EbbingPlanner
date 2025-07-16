@@ -120,7 +120,8 @@
 - Gson
 - Datastore
 - Room
-- FireStore
+- FireStore, Cloud Storage
+- WorkManager
 
 ### Logging
 
