@@ -81,12 +81,12 @@ class MainViewModel @Inject constructor(
     private suspend fun getSoftUpdateInfo() {
         suspendRunCatching {
             configRepository.getSoftUpdateInfo()
-        }.onSuccess { hardUpdateInfo.value = it }
+        }.onSuccess { softUpdateInfo.value = it }
     }
 
     private suspend fun getHardUpdateInfo() {
         suspendRunCatching {
-            configRepository.getSoftUpdateInfo()
+            configRepository.getHardUpdateInfo()
         }.onSuccess { hardUpdateInfo.value = it }
     }
 
