@@ -41,8 +41,13 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun getAlarmTime(): Pair<Int, Int> =
         localUserConfigDataSource.alarmTime.first()
 
-    override suspend fun getUpdateInfo(): UpdateInfo = configDataSource.getReferenceType(
+    override suspend fun getSoftUpdateInfo(): UpdateInfo = configDataSource.getReferenceType(
         key = ConfigDataSource.Key.getKey(ConfigDataSource.UPDATE),
+        defaultValue = GetUpdateInfoResponse(),
+    ).toDomain()
+
+    override suspend fun getHardUpdateInfo(): UpdateInfo = configDataSource.getReferenceType(
+        key = ConfigDataSource.Key.getKey(ConfigDataSource.HARD_UPDATE),
         defaultValue = GetUpdateInfoResponse(),
     ).toDomain()
 

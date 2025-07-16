@@ -15,9 +15,13 @@ import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import java.time.LocalDate
 
-internal val destinationKey = ActionParameters.Key<String>(MainActivity.KEY_DESTINATION)
+const val KEY_DESTINATION = "destination"
+const val KEY_SELECTED_DATE = "selectedDate"
+const val ADD_TODO = "addTodo"
+
+internal val destinationKey = ActionParameters.Key<String>(KEY_DESTINATION)
 internal val todoIdKey = ActionParameters.Key<Int>(TODO_ID)
-internal val selectedDateKey = ActionParameters.Key<String>("selectedDate")
+internal val selectedDateKey = ActionParameters.Key<String>(KEY_SELECTED_DATE)
 
 class RefreshAction : ActionCallback {
     override suspend fun onAction(

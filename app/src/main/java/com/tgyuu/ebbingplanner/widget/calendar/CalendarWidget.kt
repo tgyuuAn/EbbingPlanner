@@ -50,13 +50,13 @@ import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
-import com.tgyuu.ebbingplanner.MainActivity.Companion.ADD_TODO
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
+import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
@@ -107,7 +107,7 @@ private fun CalendarWidgetContent(
 ) {
     val selectedDateTodoLists = schedulesByDateMap[selectedDate] ?: emptyList()
     val todoListsDoneSize = selectedDateTodoLists.filter { it.isDone }.size
-    val image = when(alpha) {
+    val image = when (alpha) {
         0.25f -> R.drawable.shape_widget_background_25
         0.5f -> R.drawable.shape_widget_background_25
         0.75f -> R.drawable.shape_widget_background_75
@@ -134,7 +134,7 @@ private fun CalendarWidgetContent(
         )
 
         SelectedDateTodoList(
-            alpha= alpha,
+            alpha = alpha,
             selectedDate = selectedDate,
             todoLists = selectedDateTodoLists,
             doneSize = todoListsDoneSize
@@ -291,7 +291,7 @@ private fun ColumnScope.SelectedDateTodoList(
     todoLists: List<TodoSchedule>,
     doneSize: Int,
 ) {
-    val image = when(alpha) {
+    val image = when (alpha) {
         0.25f -> R.drawable.shape_widget_header_25
         0.5f -> R.drawable.shape_widget_header_50
         0.75f -> R.drawable.shape_widget_header_75

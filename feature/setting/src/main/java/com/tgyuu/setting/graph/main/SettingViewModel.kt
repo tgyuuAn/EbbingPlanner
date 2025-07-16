@@ -47,7 +47,7 @@ class SettingViewModel @Inject constructor(
 
             launch {
                 suspendRunCatching {
-                    configRepository.getUpdateInfo()
+                    configRepository.getSoftUpdateInfo()
                 }.onSuccess { setState { copy(updateInfo = it) } }
             }
 
