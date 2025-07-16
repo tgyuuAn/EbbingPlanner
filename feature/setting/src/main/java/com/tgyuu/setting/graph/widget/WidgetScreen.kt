@@ -38,6 +38,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
@@ -97,9 +98,42 @@ private fun WidgetScreen(
     onAlphaChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSizeClass = currentWindowAdaptiveInfo()
+        .windowSizeClass
+        .windowWidthSizeClass
 
+    if (windowSizeClass == WindowWidthSizeClass.COMPACT) {
+        PhoneWidgetScreen(
+            state = state,
+            onBackClick = onBackClick,
+            onSaveClick = onSaveClick,
+            onThemeChange = onThemeChange,
+            onAlphaChange = onAlphaChange,
+            modifier = modifier,
+        )
+    } else {
+        TabletWidgetScreen(
+            state = state,
+            onBackClick = onBackClick,
+            onSaveClick = onSaveClick,
+            onThemeChange = onThemeChange,
+            onAlphaChange = onAlphaChange,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun PhoneWidgetScreen(
+    state: WidgetState,
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onThemeChange: (Theme) -> Unit,
+    onAlphaChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val scrollState = rememberScrollState()
+
     Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "위젯 테마 변경",
@@ -113,10 +147,9 @@ private fun WidgetScreen(
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
                             throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                        },
+                            enabled = state.isSaveEnabled,
+                            onClick = onSaveClick,
+                        ),
                 )
             },
             modifier = Modifier.padding(horizontal = 20.dp),
@@ -136,20 +169,9 @@ private fun WidgetScreen(
 
             state.selectedTheme?.let {
                 state.selectedAlpha?.let {
-                    PreviewBody(
-                        theme = state.selectedTheme,
-                        alpha = state.selectedAlpha,
-                    )
-
-                    ThemeBody(
-                        selectedTheme = state.selectedTheme,
-                        onThemeChange = onThemeChange,
-                    )
-
-                    AlphaBody(
-                        selectedAlpha = state.selectedAlpha,
-                        onAlphaChange = onAlphaChange,
-                    )
+                    PreviewBody(theme = state.selectedTheme, alpha = state.selectedAlpha)
+                    ThemeBody(selectedTheme = state.selectedTheme, onThemeChange = onThemeChange)
+                    AlphaBody(selectedAlpha = state.selectedAlpha, onAlphaChange = onAlphaChange)
                 }
             }
 
@@ -158,6 +180,85 @@ private fun WidgetScreen(
     }
 }
 
+@Composable
+private fun TabletWidgetScreen(
+    state: WidgetState,
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onThemeChange: (Theme) -> Unit,
+    onAlphaChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxSize()) {
+        EbbingSubTopBar(
+            title = "위젯 테마 변경",
+            onNavigationClick = onBackClick,
+            rightComponent = {
+                Text(
+                    text = "적용",
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .throttledClickable(
+                            throttleTime = 1500L,
+                            enabled = state.isSaveEnabled,
+                            onClick = onSaveClick,
+                        ),
+                )
+            },
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp)
+                .imePadding(),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Text(
+                    text = "위젯 테마를 변경해요.",
+                    style = EbbingTheme.typography.headingLSB,
+                    color = EbbingTheme.colors.black,
+                )
+
+                state.selectedTheme?.let {
+                    state.selectedAlpha?.let {
+                        ThemeBody(
+                            selectedTheme = state.selectedTheme,
+                            onThemeChange = onThemeChange,
+                        )
+                        AlphaBody(
+                            selectedAlpha = state.selectedAlpha,
+                            onAlphaChange = onAlphaChange,
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                state.selectedTheme?.let {
+                    state.selectedAlpha?.let {
+                        PreviewBody(
+                            theme = state.selectedTheme,
+                            alpha = state.selectedAlpha,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 internal fun ThemeBody(
