@@ -93,7 +93,7 @@ private fun TodayTodoWidgetContent(todoLists: List<TodoSchedule>) {
             modifier = GlanceModifier.fillMaxWidth()
                 .background(
                     imageProvider = ImageProvider(R.drawable.shape_widget_header),
-                    colorFilter = ColorFilter.tint(GlanceTheme.colors.primaryContainer),
+                    colorFilter = ColorFilter.tint(GlanceTheme.colors.surfaceVariant),
                 )
                 .padding(horizontal = 12.dp, vertical = 4.dp),
         ) {

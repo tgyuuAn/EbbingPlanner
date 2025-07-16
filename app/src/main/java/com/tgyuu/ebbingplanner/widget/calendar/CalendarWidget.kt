@@ -246,7 +246,7 @@ private fun RowScope.CalendarDayCell(
             style = TextStyle(
                 fontSize = 12.sp,
                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                color = if (date.isCurrentMonth) textColor else GlanceTheme.colors.secondary,
+                color = if (date.isCurrentMonth) textColor else GlanceTheme.colors.tertiary,
                 textAlign = TextAlign.Center
             )
         )
@@ -281,7 +281,7 @@ private fun ColumnScope.SelectedDateTodoList(
         modifier = GlanceModifier.fillMaxWidth()
             .background(
                 imageProvider = ImageProvider(R.drawable.shape_widget_header),
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.secondary)
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.surfaceVariant)
             )
             .padding(horizontal = 12.dp, vertical = 4.dp),
     ) {

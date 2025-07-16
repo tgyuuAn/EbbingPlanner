@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.BasePreview
@@ -42,7 +43,7 @@ fun EbbingSnackBar(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.white,
+            color = Color.White,
         )
     }
 }

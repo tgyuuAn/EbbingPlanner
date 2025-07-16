@@ -46,6 +46,7 @@ fun EbbingWidgetTheme(
         inverseSurface = ColorProvider(light.white, dark.white),
         surfaceVariant = ColorProvider(light.light1, dark.light1),
         secondary = ColorProvider(light.primaryLight, dark.primaryLight),
+        tertiary = ColorProvider(light.dark3, dark.dark3),
 
         // 아래로는 사용하지 않는 색상들
         onPrimary = ColorProvider(Color.Transparent, Color.Transparent),
@@ -53,7 +54,6 @@ fun EbbingWidgetTheme(
         onSecondary = ColorProvider(Color.Transparent, Color.Transparent),
         secondaryContainer = ColorProvider(Color.Transparent, Color.Transparent),
         onSecondaryContainer = ColorProvider(Color.Transparent, Color.Transparent),
-        tertiary = ColorProvider(Color.Transparent, Color.Transparent),
         onTertiary = ColorProvider(Color.Transparent, Color.Transparent),
         tertiaryContainer = ColorProvider(Color.Transparent, Color.Transparent),
         onTertiaryContainer = ColorProvider(Color.Transparent, Color.Transparent),
