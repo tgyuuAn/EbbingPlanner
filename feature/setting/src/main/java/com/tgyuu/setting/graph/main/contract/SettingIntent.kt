@@ -10,7 +10,8 @@ sealed interface SettingIntent : UiIntent {
     data object OnTagManageClick : SettingIntent
     data object OnRepeatCycleManageClick : SettingIntent
     data object OnSyncClick : SettingIntent
-    data object OnThemeManageClick : SettingIntent
+    data object OnAppThemeManageClick : SettingIntent
+    data object OnWidgetManageClick : SettingIntent
     data object OnPrivacyAndPolicyClick : SettingIntent
     data object OnTermsOfUseClick : SettingIntent
     data object OnInquiryClick : SettingIntent

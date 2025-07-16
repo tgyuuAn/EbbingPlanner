@@ -6,14 +6,18 @@ import com.tgyuu.domain.model.UpdateInfo
 import kotlinx.coroutines.flow.Flow
 
 interface ConfigRepository {
+    fun getAppTheme(): Flow<Theme>
+    fun getWidgetTheme(): Flow<Theme>
+    fun getWidgetAlpha(): Flow<Float>
     suspend fun isFirstAppOpen(): Boolean
     suspend fun setSortType(sortType: SortType)
     suspend fun getSortType(): SortType
     suspend fun getNotificationEnabled(): Flow<Boolean>
     suspend fun setNotificationEnabled(enabled: Boolean)
-    suspend fun setTheme(theme: Theme)
+    suspend fun setAppTheme(theme: Theme)
+    suspend fun setWidgetTheme(theme: Theme)
+    suspend fun setWidgetAlpha(alpha: Float)
     suspend fun updateAlarmTime(hour: String, minute: String)
     suspend fun getAlarmTime(): Pair<Int, Int>
     suspend fun getUpdateInfo(): UpdateInfo
-    fun getTheme(): Flow<Theme>
 }

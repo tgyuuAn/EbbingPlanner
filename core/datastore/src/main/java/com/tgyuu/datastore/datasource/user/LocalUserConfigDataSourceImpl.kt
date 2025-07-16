@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
@@ -40,12 +41,23 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
                 } ?: default
         }
 
-    override val theme: Flow<Theme>
+    override val appTheme: Flow<Theme>
         get() = dataStore.data
             .map { prefs ->
-                val name = prefs[THEME] ?: Theme.NORMAL.name
+                val name = prefs[APP_THEME] ?: Theme.NORMAL.name
                 Theme.create(name)
             }
+
+    override val widgetTheme: Flow<Theme>
+        get() = dataStore.data
+            .map { prefs ->
+                val name = prefs[WIDGET_THEME] ?: Theme.NORMAL.name
+                Theme.create(name)
+            }
+
+    override val widgetAlpha: Flow<Float>
+        get() = dataStore.data
+            .map { prefs -> prefs[WIDGET_ALPHA] ?: 1f }
 
     override suspend fun consumeIsFirstAppOpen(): Boolean {
         var firstRun = false
@@ -68,8 +80,16 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[ALARM_TIME] = "$hour:$minute" }
     }
 
-    override suspend fun setTheme(theme: Theme) {
-        dataStore.edit { prefs -> prefs[THEME] = theme.name }
+    override suspend fun setAppTheme(theme: Theme) {
+        dataStore.edit { prefs -> prefs[APP_THEME] = theme.name }
+    }
+
+    override suspend fun setWidgetTheme(theme: Theme) {
+        dataStore.edit { prefs -> prefs[WIDGET_THEME] = theme.name }
+    }
+
+    override suspend fun setWidgetAlpha(alpha: Float) {
+        dataStore.edit { prefs -> prefs[WIDGET_ALPHA] = alpha }
     }
 
     companion object {
@@ -77,6 +97,8 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
-        private val THEME = stringPreferencesKey("THEME")
+        private val APP_THEME = stringPreferencesKey("APP_THEME")
+        private val WIDGET_THEME = stringPreferencesKey("WIDGET_THEME")
+        private val WIDGET_ALPHA = floatPreferencesKey("WIDGET_ALPHA")
     }
 }

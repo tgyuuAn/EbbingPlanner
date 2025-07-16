@@ -24,7 +24,7 @@ class ThemeViewModel @Inject constructor(
 ) : BaseViewModel<ThemeState, ThemeIntent>(ThemeState()) {
 
     internal suspend fun loadTheme() {
-        val origin = configRepository.getTheme().first()
+        val origin = configRepository.getAppTheme().first()
         setState {
             copy(
                 originTheme = origin,
@@ -49,10 +49,12 @@ class ThemeViewModel @Inject constructor(
         viewModelScope.launch {
             currentState.selectTheme?.let { select ->
                 suspendRunCatching {
-                    configRepository.setTheme(select)
+                    configRepository.setAppTheme(select)
                 }.onSuccess {
                     setState { copy(originTheme = select) }
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("테마를 변경하였습니다"))
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("앱 테마를 변경하였습니다"))
+                }.onFailure {
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("테마 변경에 실패하였습니다"))
                 }
             }
         }

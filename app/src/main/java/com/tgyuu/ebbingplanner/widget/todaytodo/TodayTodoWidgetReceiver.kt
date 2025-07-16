@@ -9,13 +9,18 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.domain.model.Theme
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.ebbingplanner.widget.CheckTodoAction
-import com.tgyuu.ebbingplanner.widget.CheckTodoAction.Companion.TODO_ID
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.widget.RefreshAction
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -24,6 +29,9 @@ import javax.inject.Inject
 class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
     @Inject
     lateinit var todoRepository: TodoRepository
+
+    @Inject
+    lateinit var configRepository: ConfigRepository
 
     override val glanceAppWidget: GlanceAppWidget = TodayTodoWidget()
 
@@ -60,6 +68,9 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     private fun updateData(context: Context) = scope.launch {
         val gson = GsonProvider.gson
+
+        val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
+        val alpha = configRepository.getWidgetAlpha().firstOrNull() ?: 1f
         val todoLists = todoRepository
             .loadSchedulesByDate(LocalDate.now())
             .sortedWith(compareBy({ it.isDone }, { it.title }))
@@ -74,6 +85,8 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
             updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) { pref ->
                 pref.toMutablePreferences().apply {
                     this[TODO_LISTS] = json
+                    this[THEME] = theme.name
+                    this[ALPHA] = alpha
                 }
             }
 

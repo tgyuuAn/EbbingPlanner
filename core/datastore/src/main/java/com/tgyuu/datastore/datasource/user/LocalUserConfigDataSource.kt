@@ -8,10 +8,14 @@ interface LocalUserConfigDataSource {
     val sortType: Flow<SortType>
     val notificationEnabled: Flow<Boolean>
     val alarmTime: Flow<Pair<Int, Int>>
-    val theme: Flow<Theme>
+    val appTheme: Flow<Theme>
+    val widgetTheme: Flow<Theme>
+    val widgetAlpha: Flow<Float>
     suspend fun consumeIsFirstAppOpen(): Boolean
     suspend fun setSortType(sortType: SortType)
     suspend fun setNotificationEnabled(enabled: Boolean)
     suspend fun setAlarmTime(hour: String, minute: String)
-    suspend fun setTheme(theme: Theme)
+    suspend fun setAppTheme(theme: Theme)
+    suspend fun setWidgetTheme(theme: Theme)
+    suspend fun setWidgetAlpha(alpha: Float)
 }

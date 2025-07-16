@@ -35,7 +35,7 @@ class MainViewModel @Inject constructor(
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     val updateInfo = _updateInfo.asStateFlow()
 
-    val theme: StateFlow<Theme> = configRepository.getTheme()
+    val theme: StateFlow<Theme> = configRepository.getAppTheme()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,

@@ -39,7 +39,7 @@ import com.tgyuu.ebbingplanner.systemcallback.SystemCallbacksRegistrar
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.SoftUpdateDialog
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
-import com.tgyuu.ebbingplanner.widget.RefreshAction
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.navigation.HomeBaseRoute
@@ -83,7 +83,6 @@ class MainActivity : ComponentActivity() {
 
         // 메모리 Component Callback 등록
         registerComponentCallbacks(systemCallbacksRegistrar)
-
         handleWidgetIntent(intent)
         lifecycleScope.launch {
             viewModel.initAppState()
@@ -112,7 +111,7 @@ class MainActivity : ComponentActivity() {
                 snackBarHostState = snackBarHostState,
             )
 
-            EbbingTheme(customTheme = theme) {
+            EbbingTheme(theme = theme) {
                 CompositionLocalProvider(
                     LocalAnalyticsHelper provides analyticsHelper,
                     LocalAnimationsEnabled provides MemoryAnimationController.animationsEnabled,

@@ -1,8 +1,5 @@
-package com.tgyuu.setting.graph.theme
+package com.tgyuu.setting.graph.widget
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,23 +7,19 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -37,10 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,8 +45,8 @@ import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.component.HorizontalSlider
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.foundation.LocalColors
 import com.tgyuu.designsystem.foundation.forestDarkColorScheme
@@ -65,75 +59,84 @@ import com.tgyuu.designsystem.foundation.normalDarkColorScheme
 import com.tgyuu.designsystem.foundation.normalLightColorScheme
 import com.tgyuu.designsystem.foundation.sunsetDarkColorScheme
 import com.tgyuu.designsystem.foundation.sunsetLightColorScheme
-import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.Theme
-import com.tgyuu.setting.graph.theme.contract.ThemeIntent
-import com.tgyuu.setting.graph.theme.contract.ThemeState
 import com.tgyuu.setting.graph.ui.animateEbbingColors
+import com.tgyuu.setting.graph.widget.contract.WidgetIntent
+import com.tgyuu.setting.graph.widget.contract.WidgetState
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Composable
-internal fun ThemeRoute(viewModel: ThemeViewModel = hiltViewModel()) {
+internal fun WidgetRoute(
+    viewModel: WidgetViewModel = hiltViewModel()
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.loadTheme()
+        coroutineScope {
+            launch { viewModel.loadWidgetAlpha() }
+            launch { viewModel.loadWidgetTheme() }
+        }
     }
 
-    ThemeScreen(
+    WidgetScreen(
         state = state,
-        onBackClick = { viewModel.onIntent(ThemeIntent.OnBackClick) },
-        onSaveClick = { viewModel.onIntent(ThemeIntent.OnUpdateClick) },
-        onThemeChange = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) },
+        onBackClick = { viewModel.onIntent(WidgetIntent.OnBackClick) },
+        onSaveClick = { viewModel.onIntent(WidgetIntent.OnSaveClick) },
+        onThemeChange = { viewModel.onIntent(WidgetIntent.OnThemeChange(it)) },
+        onAlphaChange = { viewModel.onIntent(WidgetIntent.OnAlphaChange(it)) },
     )
 }
 
 @Composable
-private fun ThemeScreen(
-    state: ThemeState,
+private fun WidgetScreen(
+    state: WidgetState,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onThemeChange: (Theme) -> Unit,
+    onAlphaChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val focusManager = LocalFocusManager.current
-    val scrollState = rememberScrollState()
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSizeClass = currentWindowAdaptiveInfo()
+        .windowSizeClass
+        .windowWidthSizeClass
 
-    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-        PhoneThemeLayout(
+    if (windowSizeClass == WindowWidthSizeClass.COMPACT) {
+        PhoneWidgetScreen(
             state = state,
-            scrollState = scrollState,
-            focusManager = focusManager,
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
             onThemeChange = onThemeChange,
-            modifier = modifier
+            onAlphaChange = onAlphaChange,
+            modifier = modifier,
         )
     } else {
-        TabletThemeLayout(
+        TabletWidgetScreen(
             state = state,
-            focusManager = focusManager,
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
             onThemeChange = onThemeChange,
-            modifier = modifier
+            onAlphaChange = onAlphaChange,
+            modifier = modifier,
         )
     }
 }
 
 @Composable
-private fun PhoneThemeLayout(
-    state: ThemeState,
-    scrollState: androidx.compose.foundation.ScrollState,
-    focusManager: androidx.compose.ui.focus.FocusManager,
+private fun PhoneWidgetScreen(
+    state: WidgetState,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onThemeChange: (Theme) -> Unit,
+    onAlphaChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState()
+
     Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "테마 변경",
+            title = "위젯 테마 변경",
             onNavigationClick = onBackClick,
             rightComponent = {
                 Text(
@@ -144,11 +147,9 @@ private fun PhoneThemeLayout(
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
                             throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
+                            enabled = state.isSaveEnabled,
+                            onClick = onSaveClick,
+                        ),
                 )
             },
             modifier = Modifier.padding(horizontal = 20.dp),
@@ -161,18 +162,17 @@ private fun PhoneThemeLayout(
                 .imePadding(),
         ) {
             Text(
-                text = "앱 테마를 변경해요.",
+                text = "위젯 테마를 변경해요.",
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
             )
 
-            state.selectTheme?.let {
-                PreviewBody(theme = state.selectTheme)
-
-                ThemeBody(
-                    selectedTheme = state.selectTheme,
-                    onThemeChange = onThemeChange,
-                )
+            state.selectedTheme?.let {
+                state.selectedAlpha?.let {
+                    PreviewBody(theme = state.selectedTheme, alpha = state.selectedAlpha)
+                    ThemeBody(selectedTheme = state.selectedTheme, onThemeChange = onThemeChange)
+                    AlphaBody(selectedAlpha = state.selectedAlpha, onAlphaChange = onAlphaChange)
+                }
             }
 
             Spacer(modifier = Modifier.height(60.dp))
@@ -181,21 +181,17 @@ private fun PhoneThemeLayout(
 }
 
 @Composable
-private fun TabletThemeLayout(
-    state: ThemeState,
-    focusManager: androidx.compose.ui.focus.FocusManager,
+private fun TabletWidgetScreen(
+    state: WidgetState,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onThemeChange: (Theme) -> Unit,
+    onAlphaChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-    ) {
+    Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "테마 변경",
+            title = "위젯 테마 변경",
             onNavigationClick = onBackClick,
             rightComponent = {
                 Text(
@@ -206,46 +202,57 @@ private fun TabletThemeLayout(
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
                             throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
+                            enabled = state.isSaveEnabled,
+                            onClick = onSaveClick,
+                        ),
                 )
             },
+            modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp)
+                .imePadding(),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(20.dp),
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
-                    text = "앱 테마를 변경해요.",
+                    text = "위젯 테마를 변경해요.",
                     style = EbbingTheme.typography.headingLSB,
                     color = EbbingTheme.colors.black,
                 )
 
-                state.selectTheme?.let {
-                    ThemeBody(
-                        selectedTheme = state.selectTheme,
-                        onThemeChange = onThemeChange,
-                    )
+                state.selectedTheme?.let {
+                    state.selectedAlpha?.let {
+                        ThemeBody(
+                            selectedTheme = state.selectedTheme,
+                            onThemeChange = onThemeChange,
+                        )
+                        AlphaBody(
+                            selectedAlpha = state.selectedAlpha,
+                            onAlphaChange = onAlphaChange,
+                        )
+                    }
                 }
             }
 
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(20.dp),
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                state.selectTheme?.let {
-                    PreviewBody(theme = state.selectTheme)
+                state.selectedTheme?.let {
+                    state.selectedAlpha?.let {
+                        PreviewBody(
+                            theme = state.selectedTheme,
+                            alpha = state.selectedAlpha,
+                        )
+                    }
                 }
             }
         }
@@ -299,8 +306,42 @@ internal fun ThemeBody(
 }
 
 @Composable
+internal fun AlphaBody(
+    selectedAlpha: Float,
+    onAlphaChange: (Float) -> Unit,
+) {
+    Text(
+        text = "투명도",
+        style = EbbingTheme.typography.bodyMSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(top = 32.dp),
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp)
+    ) {
+        HorizontalSlider(
+            value = selectedAlpha,
+            onValueChange = onAlphaChange,
+            modifier = Modifier.weight(1f),
+        )
+
+        Text(
+            text = "${(selectedAlpha * 100).roundToInt()} %",
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
+        )
+    }
+}
+
+@Composable
 internal fun PreviewBody(
     theme: Theme,
+    alpha: Float,
     modifier: Modifier = Modifier,
 ) {
     val (darkColors, lightColors) = when (theme) {
@@ -322,8 +363,9 @@ internal fun PreviewBody(
     )
 
     CompositionLocalProvider(LocalColors provides animatedLight) {
-        TodoListCard(
+        WidgetCard(
             isDarkMode = false,
+            alpha = alpha,
             modifier = modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(),
@@ -331,8 +373,9 @@ internal fun PreviewBody(
     }
 
     CompositionLocalProvider(LocalColors provides animatedDark) {
-        TodoListCard(
+        WidgetCard(
             isDarkMode = true,
+            alpha = alpha,
             modifier = modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(),
@@ -341,133 +384,68 @@ internal fun PreviewBody(
 }
 
 @Composable
-private fun TodoListCard(
+private fun WidgetCard(
     isDarkMode: Boolean,
+    alpha: Float,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                .background(EbbingTheme.colors.background, shape = RoundedCornerShape(12.dp))
+                .fillMaxWidth()
+                .background(
+                    color = EbbingTheme.colors.background.copy(alpha = alpha),
+                    shape = RoundedCornerShape(16.dp),
+                )
                 .border(
                     color = EbbingTheme.colors.black,
                     width = 0.5.dp,
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(16.dp)
                 )
-                .wrapContentHeight()
-                .animateContentSize(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = FastOutSlowInEasing,
-                    )
-                )
-                .padding(20.dp)
+                .padding(12.dp)
         ) {
-            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-                VerticalDivider(
-                    thickness = 8.dp,
-                    color = Color(DefaultTodoTag.color),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .animateContentSize(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        )
-                        .padding(end = 8.dp),
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(EbbingTheme.colors.light3)
-                            .padding(vertical = 12.dp, horizontal = 16.dp)
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "에빙 플래너 미리보기",
-                                style = EbbingTheme.typography.bodyMSB,
-                                color = EbbingTheme.colors.black,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(bottom = 4.dp),
-                            )
-
-                            Text(
-                                text = "에빙 플래너 미리보기",
-                                style = EbbingTheme.typography.bodyMM,
-                                color = EbbingTheme.colors.dark1,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(bottom = 4.dp),
-                            )
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                            ) {
-                                EbbingCheck(
-                                    checked = true,
-                                    colorValue = DefaultTodoTag.color,
-                                    onCheckedChange = {},
-                                    modifier = Modifier.size(16.dp),
-                                )
-
-                                Text(
-                                    text = "우선도 : 0",
-                                    style = EbbingTheme.typography.bodySSB,
-                                    color = EbbingTheme.colors.dark1,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.End,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f),
-                                )
-                            }
-                        }
-
-                        Image(
-                            painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_3dots),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    EbbingCheck(
-                        checked = true,
-                        colorValue = DefaultTodoTag.color,
-                        onCheckedChange = { },
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            }
-
             Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(end = 32.dp, top = 4.dp, bottom = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        EbbingTheme.colors.light1.copy(alpha = alpha),
+                        shape = RoundedCornerShape(12.dp),
+                    )
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
-                Image(
-                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_memo),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
-                    modifier = Modifier.size(16.dp),
-                )
-
                 Text(
-                    text = "에빙 플래너 미리보기",
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.dark1,
+                    text = buildAnnotatedString {
+                        append("오늘 할 일  ")
+
+                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryMiddle)) {
+                            append("0")
+                        }
+                        append(" /0")
+                    },
+                    style = EbbingTheme.typography.bodyMSB,
+                    color = EbbingTheme.colors.black.copy(alpha = alpha),
                     modifier = Modifier.weight(1f),
                 )
+
+                Image(
+                    painter = painterResource(R.drawable.ic_plus),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black.copy(alpha = alpha)),
+                    modifier = Modifier.size(20.dp),
+                )
             }
+
+            Text(
+                text = "금일 스케줄이 없어요.",
+                style = EbbingTheme.typography.bodyMM,
+                color = EbbingTheme.colors.black.copy(alpha = alpha),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 30.dp),
+            )
         }
 
         Text(
@@ -483,12 +461,13 @@ private fun TodoListCard(
 
 @EbbingPreview
 @Composable
-private fun PreviewTheme() {
+private fun PreviewWidget() {
     BasePreview {
-        ThemeScreen(
-            state = ThemeState(),
-            onBackClick = {},
+        WidgetScreen(
+            state = WidgetState(),
             onSaveClick = {},
+            onBackClick = {},
+            onAlphaChange = {},
             onThemeChange = {},
         )
     }

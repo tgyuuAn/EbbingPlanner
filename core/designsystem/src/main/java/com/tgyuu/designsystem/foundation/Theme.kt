@@ -18,10 +18,10 @@ val LocalTypography = staticCompositionLocalOf {
 @Composable
 fun EbbingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    customTheme: Theme = Theme.NORMAL,
+    theme: Theme = Theme.NORMAL,
     content: @Composable () -> Unit,
 ) {
-    val colors = when (customTheme) {
+    val colors = when (theme) {
         Theme.NORMAL -> if (darkTheme) normalDarkColorScheme else normalLightColorScheme
         Theme.FOREST -> if (darkTheme) forestDarkColorScheme else forestLightColorScheme
         Theme.SUNSET -> if (darkTheme) sunsetDarkColorScheme else sunsetLightColorScheme
