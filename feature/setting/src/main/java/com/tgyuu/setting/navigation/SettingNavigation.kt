@@ -10,6 +10,7 @@ import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.navigation.SettingGraph.SettingRoute
 import com.tgyuu.setting.graph.main.SettingRoute
 import com.tgyuu.setting.graph.theme.ThemeRoute
+import com.tgyuu.setting.graph.widget.WidgetRoute
 
 fun NavGraphBuilder.settingGraph() {
     navigation<SettingBaseRoute>(startDestination = SettingRoute) {
@@ -19,6 +20,10 @@ fun NavGraphBuilder.settingGraph() {
 
         composable<SettingGraph.ThemeRoute> {
             ThemeRoute()
+        }
+
+        composable<SettingGraph.WidgetRoute> {
+            WidgetRoute()
         }
 
         composable<SettingGraph.WebViewRoute> { backStackEntry ->

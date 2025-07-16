@@ -69,7 +69,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
     private fun updateData(context: Context) = scope.launch {
         val gson = GsonProvider.gson
-        val theme = configRepository.getTheme().firstOrNull() ?: Theme.NORMAL
+        val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
         val sortType = configRepository.getSortType()
         val allSchedules = todoRepository.loadSchedules()
         val byDate = buildByDateMap(allSchedules, sortType)

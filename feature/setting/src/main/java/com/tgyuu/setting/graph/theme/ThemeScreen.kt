@@ -47,14 +47,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
-import com.tgyuu.common.util.ebbingAnimateColorAsState
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.designsystem.foundation.EbbingColors
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.foundation.LocalColors
 import com.tgyuu.designsystem.foundation.forestDarkColorScheme
@@ -71,6 +69,7 @@ import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
+import com.tgyuu.setting.graph.ui.animateEbbingColors
 
 @Composable
 internal fun ThemeRoute(viewModel: ThemeViewModel = hiltViewModel()) {
@@ -162,7 +161,7 @@ private fun PhoneThemeLayout(
                 .imePadding(),
         ) {
             Text(
-                text = "어플 테마를 변경해요.",
+                text = "앱 테마를 변경해요.",
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
             )
@@ -227,7 +226,7 @@ private fun TabletThemeLayout(
                     .padding(20.dp),
             ) {
                 Text(
-                    text = "어플 테마를 변경해요.",
+                    text = "앱 테마를 변경해요.",
                     style = EbbingTheme.typography.headingLSB,
                     color = EbbingTheme.colors.black,
                 )
@@ -480,26 +479,6 @@ private fun TodoListCard(
                 .padding(bottom = 8.dp, end = 20.dp)
         )
     }
-}
-
-@Composable
-private fun animateEbbingColors(target: EbbingColors): EbbingColors {
-    return EbbingColors(
-        background = ebbingAnimateColorAsState(target.background),
-        primaryDefault = ebbingAnimateColorAsState(target.primaryDefault),
-        primaryMiddle = ebbingAnimateColorAsState(target.primaryMiddle),
-        primaryLight = ebbingAnimateColorAsState(target.primaryLight),
-        black = ebbingAnimateColorAsState(target.black),
-        dark1 = ebbingAnimateColorAsState(target.dark1),
-        dark2 = ebbingAnimateColorAsState(target.dark2),
-        dark3 = ebbingAnimateColorAsState(target.dark3),
-        light1 = ebbingAnimateColorAsState(target.light1),
-        light2 = ebbingAnimateColorAsState(target.light2),
-        light3 = ebbingAnimateColorAsState(target.light3),
-        white = ebbingAnimateColorAsState(target.white),
-        error = ebbingAnimateColorAsState(target.error),
-        success = ebbingAnimateColorAsState(target.success),
-    )
 }
 
 @EbbingPreview

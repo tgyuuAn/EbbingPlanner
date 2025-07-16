@@ -28,7 +28,12 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun setNotificationEnabled(enabled: Boolean) =
         localUserConfigDataSource.setNotificationEnabled(enabled)
 
-    override suspend fun setTheme(theme: Theme) = localUserConfigDataSource.setTheme(theme)
+    override suspend fun setAppTheme(theme: Theme) = localUserConfigDataSource.setAppTheme(theme)
+    override suspend fun setWidgetTheme(theme: Theme) =
+        localUserConfigDataSource.setWidgetTheme(theme)
+
+    override suspend fun setWidgetAlpha(alpha: Float) =
+        localUserConfigDataSource.setWidgetAlpha(alpha)
 
     override suspend fun updateAlarmTime(hour: String, minute: String) =
         localUserConfigDataSource.setAlarmTime(hour, minute)
@@ -41,5 +46,7 @@ class ConfigRepositoryImpl @Inject constructor(
         defaultValue = GetUpdateInfoResponse(),
     ).toDomain()
 
-    override fun getTheme(): Flow<Theme> = localUserConfigDataSource.theme
+    override fun getAppTheme(): Flow<Theme> = localUserConfigDataSource.appTheme
+    override fun getWidgetTheme(): Flow<Theme> = localUserConfigDataSource.widgetTheme
+    override fun getWidgetAlpha(): Flow<Float> = localUserConfigDataSource.widgetAlpha
 }

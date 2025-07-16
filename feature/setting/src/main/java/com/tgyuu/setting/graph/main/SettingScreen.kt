@@ -57,7 +57,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
-import com.tgyuu.setting.graph.main.ui.bottomsheet.AlarmTimeBottomSheet
+import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
 
 @Composable
 internal fun SettingRoute(
@@ -82,7 +82,8 @@ internal fun SettingRoute(
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
         onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
-        onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeManageClick) },
+        onAppThemeManageClick = { viewModel.onIntent(SettingIntent.OnAppThemeManageClick) },
+        onWidgetManageClick = { viewModel.onIntent(SettingIntent.OnWidgetManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
@@ -98,7 +99,8 @@ private fun SettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
-    onThemeManageClick: () -> Unit,
+    onAppThemeManageClick: () -> Unit,
+    onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -114,7 +116,8 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
-            onThemeManageClick = onThemeManageClick,
+            onAppThemeManageClick = onAppThemeManageClick,
+            onWidgetManageClick = onWidgetManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -128,7 +131,8 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
-            onThemeManageClick = onThemeManageClick,
+            onAppThemeManageClick = onAppThemeManageClick,
+            onWidgetManageClick = onWidgetManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onInquiryClick = onInquiryClick,
@@ -145,7 +149,8 @@ private fun PhoneSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
-    onThemeManageClick: () -> Unit,
+    onAppThemeManageClick: () -> Unit,
+    onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -183,7 +188,10 @@ private fun PhoneSettingScreen(
 
             SyncBody(onSyncClick = onSyncClick)
 
-            ThemeBody(onThemeManageClick = onThemeManageClick)
+            ThemeBody(
+                onThemeManageClick = onAppThemeManageClick,
+                onWidgetAlphaManageClick = onWidgetManageClick,
+            )
 
             InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -211,7 +219,8 @@ private fun TabletSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
-    onThemeManageClick: () -> Unit,
+    onAppThemeManageClick: () -> Unit,
+    onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onInquiryClick: () -> Unit,
@@ -224,9 +233,13 @@ private fun TabletSettingScreen(
         )
 
         Row(modifier = Modifier.fillMaxWidth()) {
+            val leftScrollState = rememberScrollState()
+            val rightScrollState = rememberScrollState()
+
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
+                    .verticalScroll(leftScrollState)
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
@@ -248,10 +261,14 @@ private fun TabletSettingScreen(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
+                    .verticalScroll(rightScrollState)
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             ) {
-                ThemeBody(onThemeManageClick = onThemeManageClick)
+                ThemeBody(
+                    onThemeManageClick = onAppThemeManageClick,
+                    onWidgetAlphaManageClick = onWidgetManageClick,
+                )
 
                 InquiryBody(onContactUsClick = onInquiryClick)
 
@@ -594,6 +611,7 @@ private fun AnnouncementBody(
 @Composable
 private fun ThemeBody(
     onThemeManageClick: () -> Unit,
+    onWidgetAlphaManageClick: () -> Unit,
 ) {
     Text(
         text = stringResource(R.string.setting_theme),
@@ -611,6 +629,27 @@ private fun ThemeBody(
     ) {
         Text(
             text = stringResource(R.string.setting_theme_color_change),
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onWidgetAlphaManageClick() },
+    ) {
+        Text(
+            text = stringResource(R.string.setting_widget_alpha_change),
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -740,7 +779,8 @@ private fun PreviewSettingScreen() {
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
             onSyncClick = {},
-            onThemeManageClick = {},
+            onAppThemeManageClick = {},
+            onWidgetManageClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onInquiryClick = {},

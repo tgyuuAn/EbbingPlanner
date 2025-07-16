@@ -88,7 +88,8 @@ class SettingViewModel @Inject constructor(
                 navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
 
             SettingIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
-            SettingIntent.OnThemeManageClick -> navigationBus.navigate(To(SettingGraph.ThemeRoute))
+            SettingIntent.OnAppThemeManageClick -> navigationBus.navigate(To(SettingGraph.ThemeRoute))
+            SettingIntent.OnWidgetManageClick -> navigationBus.navigate(To(SettingGraph.WidgetRoute))
         }
     }
 

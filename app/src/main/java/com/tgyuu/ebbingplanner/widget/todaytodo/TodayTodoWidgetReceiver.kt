@@ -68,7 +68,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
     private fun updateData(context: Context) = scope.launch {
         val gson = GsonProvider.gson
 
-        val theme = configRepository.getTheme().firstOrNull() ?: Theme.NORMAL
+        val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
         val todoLists = todoRepository
             .loadSchedulesByDate(LocalDate.now())
             .sortedWith(compareBy({ it.isDone }, { it.title }))
