@@ -72,9 +72,6 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    @Inject
-    lateinit var systemCallbacksRegistrar: SystemCallbacksRegistrar
-
     private var isInitialized = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,9 +80,6 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition { isInitialized }
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        // 메모리 Component Callback 등록
-        registerComponentCallbacks(systemCallbacksRegistrar)
         handleWidgetIntent(intent)
         lifecycleScope.launch {
             viewModel.initAppState()
