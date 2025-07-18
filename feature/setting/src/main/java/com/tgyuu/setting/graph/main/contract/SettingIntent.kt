@@ -14,6 +14,5 @@ sealed interface SettingIntent : UiIntent {
     data object OnWidgetManageClick : SettingIntent
     data object OnPrivacyAndPolicyClick : SettingIntent
     data object OnTermsOfUseClick : SettingIntent
-    data object OnInquiryClick : SettingIntent
     data object OnNotificationToggleClick : SettingIntent
 }
