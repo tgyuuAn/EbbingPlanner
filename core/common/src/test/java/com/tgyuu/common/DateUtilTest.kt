@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeParseException
@@ -141,5 +142,89 @@ class LocalDateFormatTest {
 
         // then
         assertEquals("5일 전", result)
+    }
+
+    @Test
+    fun `휴일이 없는 경우 그대로 반복 주기를 적용한다`() {
+        // given
+        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val intervals = listOf(0, 1, 2)
+        val restDays = emptySet<DayOfWeek>()
+
+        // when
+        val result = generateValidSchedules(baseDate, intervals, restDays)
+
+        // then
+        assertEquals(
+            listOf(
+                LocalDate.of(2025, 7, 20),
+                LocalDate.of(2025, 7, 21),
+                LocalDate.of(2025, 7, 22),
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `휴일이면 반복 주기를 계산할 때 다음 평일로 이동한다`() {
+        // given
+        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val intervals = listOf(0, 1, 2)
+        val restDays = setOf(DayOfWeek.SUNDAY)
+
+        // when
+        val result = generateValidSchedules(baseDate, intervals, restDays)
+
+        // then
+        assertEquals(
+            listOf(
+                LocalDate.of(2025, 7, 21), // 7/20은 일요일이라서 → 7/21
+                LocalDate.of(2025, 7, 22),
+                LocalDate.of(2025, 7, 23),
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `중복된 날짜가 있을 경우, 반복 주기를 구할 때 다음 날짜를 선택한다`() {
+        // given
+        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val intervals = listOf(0, 0, 0)
+        val restDays = emptySet<DayOfWeek>()
+
+        // when
+        val result = generateValidSchedules(baseDate, intervals, restDays)
+
+        // then
+        assertEquals(
+            listOf(
+                LocalDate.of(2025, 7, 20),
+                LocalDate.of(2025, 7, 21),
+                LocalDate.of(2025, 7, 22)
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `반복 주기를 구할 때 중복 방지와 휴일 회피가 동시에 작동한다`() {
+        // given
+        val baseDate = LocalDate.of(2025, 7, 19) // 토요일
+        val intervals = listOf(0, 0, 0)
+        val restDays = setOf(DayOfWeek.SUNDAY)
+
+        // when
+        val result = generateValidSchedules(baseDate, intervals, restDays)
+
+        // then
+        assertEquals(
+            listOf(
+                LocalDate.of(2025, 7, 19), // 7/19 (토)
+                LocalDate.of(2025, 7, 21), // 7/20 (일) → skip → 7/21
+                LocalDate.of(2025, 7, 22)  // 중복 회피 → 7/22
+            ),
+            result
+        )
     }
 }

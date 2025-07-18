@@ -1,5 +1,6 @@
 package com.tgyuu.common
 
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -49,4 +50,30 @@ fun LocalDate.toRelativeDayDescription(referenceDate: LocalDate = LocalDate.now(
 
 private fun daysBetween(start: LocalDate, end: LocalDate): Long {
     return ChronoUnit.DAYS.between(start, end)
+}
+
+fun generateValidSchedules(
+    baseDate: LocalDate,
+    intervals: List<Int>,
+    restDays: Set<DayOfWeek>
+): List<LocalDate> {
+    val usedDates = mutableSetOf<LocalDate>()
+    return intervals.map { interval ->
+        var candidate = baseDate.plusDays(interval.toLong()).nextValidDate(restDays)
+
+        while (candidate in usedDates) {
+            candidate = candidate.plusDays(1).nextValidDate(restDays)
+        }
+
+        usedDates += candidate
+        candidate
+    }
+}
+
+private fun LocalDate.nextValidDate(restDays: Set<DayOfWeek>): LocalDate {
+    var date = this
+    while (date.dayOfWeek in restDays) {
+        date = date.plusDays(1)
+    }
+    return date
 }

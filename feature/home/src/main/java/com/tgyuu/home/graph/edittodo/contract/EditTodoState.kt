@@ -1,6 +1,7 @@
 package com.tgyuu.home.graph.edittodo.contract
 
 import com.tgyuu.common.base.UiState
+import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
@@ -22,23 +23,10 @@ data class EditTodoState(
     val restDays: Set<DayOfWeek> = emptySet(),
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
-
     val schedules: List<LocalDate>
-        get() = repeatCycle.intervals.fold(mutableListOf()) { acc, interval ->
-            val base = acc.lastOrNull() ?: selectedDate
-
-            val next = base
-                .plusDays(interval.toLong())
-                .nextValidDate()
-
-            acc.apply { add(next) }
-        }
-
-    private fun LocalDate.nextValidDate(): LocalDate {
-        var d = this
-        while (d.dayOfWeek in restDays) {
-            d = d.plusDays(1)
-        }
-        return d
-    }
+        get() = generateValidSchedules(
+            baseDate = selectedDate,
+            intervals = repeatCycle.intervals,
+            restDays = restDays
+        )
 }
