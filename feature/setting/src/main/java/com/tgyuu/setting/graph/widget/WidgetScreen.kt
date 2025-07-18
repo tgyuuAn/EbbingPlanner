@@ -344,7 +344,7 @@ internal fun AlphaBody(
     onTextAlphaChange: (Float) -> Unit,
 ) {
     Text(
-        text = "위젯 배경 투명도",
+        text = "배경 투명도",
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
@@ -371,7 +371,7 @@ internal fun AlphaBody(
     }
 
     Text(
-        text = "위젯 내용 투명도",
+        text = "내용 투명도",
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
