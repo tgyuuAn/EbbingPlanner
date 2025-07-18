@@ -55,9 +55,13 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
                 Theme.create(name)
             }
 
-    override val widgetAlpha: Flow<Float>
+    override val widgetBackgroundAlpha: Flow<Float>
         get() = dataStore.data
-            .map { prefs -> prefs[WIDGET_ALPHA] ?: 1f }
+            .map { prefs -> prefs[WIDGET_BACKGROUND_ALPHA] ?: 1f }
+
+    override val widgetTextAlpha: Flow<Float>
+        get() = dataStore.data
+            .map { prefs -> prefs[WIDGET_TEXT_ALPHA] ?: 1f }
 
     override suspend fun consumeIsFirstAppOpen(): Boolean {
         var firstRun = false
@@ -88,8 +92,12 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[WIDGET_THEME] = theme.name }
     }
 
-    override suspend fun setWidgetAlpha(alpha: Float) {
-        dataStore.edit { prefs -> prefs[WIDGET_ALPHA] = alpha }
+    override suspend fun setWidgetBackgroundAlpha(alpha: Float) {
+        dataStore.edit { prefs -> prefs[WIDGET_BACKGROUND_ALPHA] = alpha }
+    }
+
+    override suspend fun setWidgetTextAlpha(alpha: Float) {
+        dataStore.edit { prefs -> prefs[WIDGET_TEXT_ALPHA] = alpha }
     }
 
     companion object {
@@ -99,6 +107,7 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
         private val APP_THEME = stringPreferencesKey("APP_THEME")
         private val WIDGET_THEME = stringPreferencesKey("WIDGET_THEME")
-        private val WIDGET_ALPHA = floatPreferencesKey("WIDGET_ALPHA")
+        private val WIDGET_BACKGROUND_ALPHA = floatPreferencesKey("WIDGET_BACKGROUND_ALPHA")
+        private val WIDGET_TEXT_ALPHA = floatPreferencesKey("WIDGET_TEXT_ALPHA")
     }
 }

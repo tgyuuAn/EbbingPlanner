@@ -12,8 +12,8 @@ android {
         localProperties.load(project.rootProject.file("local.properties").bufferedReader())
         buildConfigField(
             type = "String",
-            name = "EBBING_CHANNEL_TALK_URL",
-            value = "\"${localProperties["EBBING_CHANNEL_TALK_URL"]}\""
+            name = "EBBING_TALK_URL",
+            value = "\"${localProperties["EBBING_TALK_URL"]}\""
         )
         buildConfigField(
             type = "String",

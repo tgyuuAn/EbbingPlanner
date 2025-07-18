@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface ConfigRepository {
     fun getAppTheme(): Flow<Theme>
     fun getWidgetTheme(): Flow<Theme>
-    fun getWidgetAlpha(): Flow<Float>
+    fun getWidgetBackgroundAlpha(): Flow<Float>
+    fun getWidgetTextAlpha(): Flow<Float>
     suspend fun isFirstAppOpen(): Boolean
     suspend fun setSortType(sortType: SortType)
     suspend fun getSortType(): SortType
@@ -16,7 +17,8 @@ interface ConfigRepository {
     suspend fun setNotificationEnabled(enabled: Boolean)
     suspend fun setAppTheme(theme: Theme)
     suspend fun setWidgetTheme(theme: Theme)
-    suspend fun setWidgetAlpha(alpha: Float)
+    suspend fun setWidgetBackgroundAlpha(alpha: Float)
+    suspend fun setWidgetTextAlpha(alpha: Float)
     suspend fun updateAlarmTime(hour: String, minute: String)
     suspend fun getAlarmTime(): Pair<Int, Int>
     suspend fun getSoftUpdateInfo(): UpdateInfo

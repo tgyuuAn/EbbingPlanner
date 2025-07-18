@@ -12,7 +12,8 @@ import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
@@ -70,7 +71,8 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         val gson = GsonProvider.gson
 
         val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
-        val alpha = configRepository.getWidgetAlpha().firstOrNull() ?: 1f
+        val backgroundAlpha = configRepository.getWidgetBackgroundAlpha().firstOrNull() ?: 1f
+        val textAlpha = configRepository.getWidgetTextAlpha().firstOrNull() ?: 1f
         val todoLists = todoRepository
             .loadSchedulesByDate(LocalDate.now())
             .sortedWith(compareBy({ it.isDone }, { it.title }))
@@ -86,7 +88,8 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
                 pref.toMutablePreferences().apply {
                     this[TODO_LISTS] = json
                     this[THEME] = theme.name
-                    this[ALPHA] = alpha
+                    this[BACKGROUND_ALPHA] = backgroundAlpha
+                    this[TEXT_ALPHA] = textAlpha
                 }
             }
 

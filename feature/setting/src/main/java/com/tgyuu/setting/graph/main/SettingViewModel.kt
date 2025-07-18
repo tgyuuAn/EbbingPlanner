@@ -58,11 +58,6 @@ class SettingViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: SettingIntent) {
         when (intent) {
-            SettingIntent.OnInquiryClick -> navigateToWebView(
-                "문의하기",
-                BuildConfig.EBBING_CHANNEL_TALK_URL
-            )
-
             SettingIntent.OnNoticeClick -> navigateToWebView(
                 "공지사항",
                 BuildConfig.EBBING_NOTICE_URL

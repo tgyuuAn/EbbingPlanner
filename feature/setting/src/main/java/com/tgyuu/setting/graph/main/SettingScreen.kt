@@ -55,6 +55,7 @@ import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
+import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
@@ -86,7 +87,6 @@ internal fun SettingRoute(
         onWidgetManageClick = { viewModel.onIntent(SettingIntent.OnWidgetManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
-        onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
         onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
     )
 }
@@ -103,7 +103,6 @@ private fun SettingScreen(
     onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
-    onInquiryClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -120,7 +119,6 @@ private fun SettingScreen(
             onWidgetManageClick = onWidgetManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
-            onInquiryClick = onInquiryClick,
             onNotificationToggleClick = onNotificationToggleClick,
         )
     } else {
@@ -135,7 +133,6 @@ private fun SettingScreen(
             onWidgetManageClick = onWidgetManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
-            onInquiryClick = onInquiryClick,
             onNotificationToggleClick = onNotificationToggleClick,
         )
     }
@@ -153,7 +150,6 @@ private fun PhoneSettingScreen(
     onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
-    onInquiryClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -193,7 +189,7 @@ private fun PhoneSettingScreen(
                 onWidgetAlphaManageClick = onWidgetManageClick,
             )
 
-            InquiryBody(onContactUsClick = onInquiryClick)
+            InquiryBody()
 
             AnnouncementBody(
                 onNoticeClick = onNoticeClick,
@@ -223,7 +219,6 @@ private fun TabletSettingScreen(
     onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
-    onInquiryClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -270,7 +265,7 @@ private fun TabletSettingScreen(
                     onWidgetAlphaManageClick = onWidgetManageClick,
                 )
 
-                InquiryBody(onContactUsClick = onInquiryClick)
+                InquiryBody()
 
                 AnnouncementBody(
                     onNoticeClick = onNoticeClick,
@@ -489,7 +484,9 @@ private fun SyncBody(onSyncClick: () -> Unit) {
 }
 
 @Composable
-private fun InquiryBody(onContactUsClick: () -> Unit) {
+private fun InquiryBody() {
+    val context = LocalContext.current
+
     Text(
         text = "문의",
         style = EbbingTheme.typography.bodySM,
@@ -502,7 +499,12 @@ private fun InquiryBody(onContactUsClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 17.dp)
-            .clickable { onContactUsClick() },
+            .clickable {
+                val url = BuildConfig.EBBING_TALK_URL
+                val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            },
     ) {
         Text(
             text = "문의하기",
@@ -783,7 +785,6 @@ private fun PreviewSettingScreen() {
             onWidgetManageClick = {},
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
-            onInquiryClick = {},
             onNotificationToggleClick = {},
         )
     }

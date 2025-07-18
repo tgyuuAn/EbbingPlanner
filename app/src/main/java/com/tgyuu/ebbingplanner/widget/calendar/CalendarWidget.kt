@@ -52,8 +52,9 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
-import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
@@ -68,9 +69,12 @@ class CalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
+
             val rawTheme: String = prefs[THEME] ?: Theme.NORMAL.name
             val theme = Theme.create(rawTheme)
-            val alpha: Float = prefs[ALPHA] ?: 1f
+
+            val backgroundAlpha: Float = prefs[BACKGROUND_ALPHA] ?: 1f
+            val textAlpha: Float = prefs[TEXT_ALPHA] ?: 1f
 
             val rawJson: String = prefs[SCHEDULES_BY_DATE_MAP] ?: "[]"
             val type = object : TypeToken<Map<LocalDate, List<TodoSchedule>>>() {}.type
@@ -85,10 +89,10 @@ class CalendarWidget : GlanceAppWidget() {
 
             EbbingWidgetTheme(
                 theme = theme,
-                alpha = alpha,
+                alpha = textAlpha,
             ) {
                 CalendarWidgetContent(
-                    alpha = alpha,
+                    alpha = backgroundAlpha,
                     schedulesByDateMap = schedulesByDateMap,
                     selectedDate = selectedDate,
                     calendarDates = calendarDates,
@@ -120,7 +124,7 @@ private fun CalendarWidgetContent(
             .clickable(onClick = actionStartActivity<MainActivity>())
             .background(
                 imageProvider = ImageProvider(image),
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.background)
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
             )
             .padding(4.dp)
     ) {

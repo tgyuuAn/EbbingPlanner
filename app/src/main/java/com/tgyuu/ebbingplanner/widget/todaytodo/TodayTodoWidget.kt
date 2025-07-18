@@ -45,8 +45,9 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
-import com.tgyuu.ebbingplanner.widget.designsystem.foundation.ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
@@ -62,9 +63,12 @@ class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
+
             val rawTheme: String = prefs[THEME] ?: Theme.NORMAL.name
             val theme = Theme.create(rawTheme)
-            val alpha: Float = prefs[ALPHA] ?: 1f
+
+            val backgroundAlpha: Float = prefs[BACKGROUND_ALPHA] ?: 1f
+            val textAlpha: Float = prefs[TEXT_ALPHA] ?: 1f
 
             val rawJson: String = prefs[TODO_LISTS] ?: "[]"
             val type = object : TypeToken<List<TodoSchedule>>() {}.type
@@ -72,10 +76,10 @@ class TodayTodoWidget : GlanceAppWidget() {
 
             EbbingWidgetTheme(
                 theme = theme,
-                alpha = alpha,
+                alpha = textAlpha,
             ) {
                 TodayTodoWidgetContent(
-                    alpha = alpha,
+                    alpha = backgroundAlpha,
                     todoLists = todoLists,
                 )
             }
@@ -102,7 +106,7 @@ private fun TodayTodoWidgetContent(
             .clickable(onClick = actionStartActivity<MainActivity>())
             .background(
                 imageProvider = ImageProvider(backgroundImage),
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.background),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
             )
             .padding(12.dp)
     ) {
@@ -118,7 +122,7 @@ private fun TodayTodoWidgetContent(
             modifier = GlanceModifier.fillMaxWidth()
                 .background(
                     imageProvider = ImageProvider(headerImage),
-                    colorFilter = ColorFilter.tint(GlanceTheme.colors.surfaceVariant),
+                    colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant),
                 )
                 .padding(horizontal = 12.dp, vertical = 4.dp),
         ) {
