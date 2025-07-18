@@ -74,6 +74,16 @@ fun EbbingWidgetTheme(
             dark.dark3.copy(alpha = alpha)
         ),
 
+        // textAlpha가 지정되지 않은 백그라운드
+        onBackground = ColorProvider(
+            light.background,
+            dark.background,
+        ),
+        onSurfaceVariant = ColorProvider(
+            light.light1,
+            dark.light1,
+        ),
+
         // 아래는 여전히 사용하지 않는 색상으로 유지
         onPrimary = ColorProvider(Color.Transparent, Color.Transparent),
         onPrimaryContainer = ColorProvider(Color.Transparent, Color.Transparent),
@@ -87,10 +97,8 @@ fun EbbingWidgetTheme(
         errorContainer = ColorProvider(Color.Transparent, Color.Transparent),
         onError = ColorProvider(Color.Transparent, Color.Transparent),
         onErrorContainer = ColorProvider(Color.Transparent, Color.Transparent),
-        onBackground = ColorProvider(Color.Transparent, Color.Transparent),
         inverseOnSurface = ColorProvider(Color.Transparent, Color.Transparent),
         onSurface = ColorProvider(Color.Transparent, Color.Transparent),
-        onSurfaceVariant = ColorProvider(Color.Transparent, Color.Transparent),
         outline = ColorProvider(Color.Transparent, Color.Transparent),
         inversePrimary = ColorProvider(Color.Transparent, Color.Transparent),
         widgetBackground = ColorProvider(Color.Transparent, Color.Transparent),
@@ -103,4 +111,5 @@ fun EbbingWidgetTheme(
 }
 
 internal val THEME = stringPreferencesKey("theme")
-internal val ALPHA = floatPreferencesKey("alpha")
+internal val BACKGROUND_ALPHA = floatPreferencesKey("background_alpha")
+internal val TEXT_ALPHA = floatPreferencesKey("text_alpha")

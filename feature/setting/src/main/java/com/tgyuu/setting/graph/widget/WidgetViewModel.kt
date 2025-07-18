@@ -81,7 +81,7 @@ class WidgetViewModel @Inject constructor(
         currentState.selectedTheme ?: return@launch
 
         val newBackgroundAlpha = currentState.selectedBackgroundAlpha!!
-        val newTextAlpha = currentState.selectedBackgroundAlpha!!
+        val newTextAlpha = currentState.selectedTextAlpha!!
         val newTheme = currentState.selectedTheme!!
 
         suspendRunCatching {
