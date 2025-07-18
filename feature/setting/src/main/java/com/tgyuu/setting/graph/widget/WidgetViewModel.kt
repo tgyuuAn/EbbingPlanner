@@ -27,7 +27,8 @@ class WidgetViewModel @Inject constructor(
         when (intent) {
             WidgetIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             WidgetIntent.OnSaveClick -> saveWidgetConfigure()
-            is WidgetIntent.OnAlphaChange -> setAlpha(intent.alpha)
+            is WidgetIntent.OnBackgroundAlphaChange -> setBackgroundAlpha(intent.alpha)
+            is WidgetIntent.OnTextAlphaChange -> setTextAlpha(intent.alpha)
             is WidgetIntent.OnThemeChange -> setTheme(intent.theme)
         }
     }
@@ -42,18 +43,32 @@ class WidgetViewModel @Inject constructor(
         }
     }
 
-    internal suspend fun loadWidgetAlpha() {
-        val origin = configRepository.getWidgetAlpha().first()
+    internal suspend fun loadWidgetBackgroundAlpha() {
+        val origin = configRepository.getWidgetBackgroundAlpha().first()
         setState {
             copy(
-                originAlpha = origin,
-                selectedAlpha = origin,
+                originBackgroundAlpha = origin,
+                selectedBackgroundAlpha = origin,
             )
         }
     }
 
-    private fun setAlpha(alpha: Float) {
-        setState { copy(selectedAlpha = alpha) }
+    internal suspend fun loadWidgetTextAlpha() {
+        val origin = configRepository.getWidgetTextAlpha().first()
+        setState {
+            copy(
+                originTextAlpha = origin,
+                selectedTextAlpha = origin,
+            )
+        }
+    }
+
+    private fun setBackgroundAlpha(alpha: Float) {
+        setState { copy(selectedBackgroundAlpha = alpha) }
+    }
+
+    private fun setTextAlpha(alpha: Float) {
+        setState { copy(selectedTextAlpha = alpha) }
     }
 
     private fun setTheme(theme: Theme) {
@@ -61,19 +76,31 @@ class WidgetViewModel @Inject constructor(
     }
 
     private fun saveWidgetConfigure() = viewModelScope.launch {
-        currentState.selectedAlpha ?: return@launch
+        currentState.selectedBackgroundAlpha ?: return@launch
+        currentState.selectedTextAlpha ?: return@launch
         currentState.selectedTheme ?: return@launch
 
-        val newAlpha = currentState.selectedAlpha!!
+        val newBackgroundAlpha = currentState.selectedBackgroundAlpha!!
+        val newTextAlpha = currentState.selectedBackgroundAlpha!!
         val newTheme = currentState.selectedTheme!!
 
         suspendRunCatching {
-            val alphaJob = launch { configRepository.setWidgetAlpha(newAlpha) }
+            val backgroundAlphaJob =
+                launch { configRepository.setWidgetBackgroundAlpha(newBackgroundAlpha) }
+            val textAlphaJob = launch { configRepository.setWidgetTextAlpha(newTextAlpha) }
             val themeJob = launch { configRepository.setWidgetTheme(newTheme) }
-            alphaJob.join()
+
+            backgroundAlphaJob.join()
+            textAlphaJob.join()
             themeJob.join()
         }.onSuccess {
-            setState { copy(originTheme = newTheme, originAlpha = newAlpha) }
+            setState {
+                copy(
+                    originTheme = newTheme,
+                    originBackgroundAlpha = newBackgroundAlpha,
+                    originTextAlpha = newTextAlpha,
+                )
+            }
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("위젯 테마를 변경하였습니다"))
         }.onFailure {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("테마 변경에 실패하였습니다"))

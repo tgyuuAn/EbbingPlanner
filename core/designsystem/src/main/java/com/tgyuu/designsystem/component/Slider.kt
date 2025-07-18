@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Composable
-fun HorizontalSlider(
+fun HorizontalBackgroundSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
@@ -25,6 +25,28 @@ fun HorizontalSlider(
             onValueChange(snapped)
         },
         steps = 0,
+        colors = SliderDefaults.colors(
+            thumbColor = EbbingTheme.colors.primaryDefault,
+            activeTrackColor = EbbingTheme.colors.primaryDefault,
+            activeTickColor = EbbingTheme.colors.primaryDefault,
+            inactiveTrackColor = EbbingTheme.colors.light1,
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+    )
+}
+
+@Composable
+fun HorizontalTextSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Slider(
+        value = value,
+        valueRange = 0.1f..1f,
+        onValueChange = { onValueChange(it) },
         colors = SliderDefaults.colors(
             thumbColor = EbbingTheme.colors.primaryDefault,
             activeTrackColor = EbbingTheme.colors.primaryDefault,

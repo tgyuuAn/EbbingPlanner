@@ -32,7 +32,6 @@ import com.tgyuu.common.toFormattedString
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.ebbingplanner.systemcallback.SystemCallbacksRegistrar
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.HandleAppUpdate
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
@@ -152,11 +151,6 @@ class MainActivity : ComponentActivity() {
                 action = RefreshAction.UPDATE_ACTION
             }
         )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterComponentCallbacks(systemCallbacksRegistrar)
     }
 
     override fun onNewIntent(intent: Intent) {

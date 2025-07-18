@@ -32,8 +32,11 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun setWidgetTheme(theme: Theme) =
         localUserConfigDataSource.setWidgetTheme(theme)
 
-    override suspend fun setWidgetAlpha(alpha: Float) =
-        localUserConfigDataSource.setWidgetAlpha(alpha)
+    override suspend fun setWidgetBackgroundAlpha(alpha: Float) =
+        localUserConfigDataSource.setWidgetBackgroundAlpha(alpha)
+
+    override suspend fun setWidgetTextAlpha(alpha: Float) =
+        localUserConfigDataSource.setWidgetTextAlpha(alpha)
 
     override suspend fun updateAlarmTime(hour: String, minute: String) =
         localUserConfigDataSource.setAlarmTime(hour, minute)
@@ -53,5 +56,6 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override fun getAppTheme(): Flow<Theme> = localUserConfigDataSource.appTheme
     override fun getWidgetTheme(): Flow<Theme> = localUserConfigDataSource.widgetTheme
-    override fun getWidgetAlpha(): Flow<Float> = localUserConfigDataSource.widgetAlpha
+    override fun getWidgetBackgroundAlpha(): Flow<Float> = localUserConfigDataSource.widgetBackgroundAlpha
+    override fun getWidgetTextAlpha(): Flow<Float>  = localUserConfigDataSource.widgetTextAlpha
 }

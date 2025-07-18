@@ -46,7 +46,8 @@ import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.designsystem.component.HorizontalSlider
+import com.tgyuu.designsystem.component.HorizontalBackgroundSlider
+import com.tgyuu.designsystem.component.HorizontalTextSlider
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.foundation.LocalColors
 import com.tgyuu.designsystem.foundation.forestDarkColorScheme
@@ -75,7 +76,8 @@ internal fun WidgetRoute(
 
     LaunchedEffect(viewModel) {
         coroutineScope {
-            launch { viewModel.loadWidgetAlpha() }
+            launch { viewModel.loadWidgetBackgroundAlpha() }
+            launch { viewModel.loadWidgetTextAlpha() }
             launch { viewModel.loadWidgetTheme() }
         }
     }
@@ -85,7 +87,8 @@ internal fun WidgetRoute(
         onBackClick = { viewModel.onIntent(WidgetIntent.OnBackClick) },
         onSaveClick = { viewModel.onIntent(WidgetIntent.OnSaveClick) },
         onThemeChange = { viewModel.onIntent(WidgetIntent.OnThemeChange(it)) },
-        onAlphaChange = { viewModel.onIntent(WidgetIntent.OnAlphaChange(it)) },
+        onBackgroundAlphaChange = { viewModel.onIntent(WidgetIntent.OnBackgroundAlphaChange(it)) },
+        onTextAlphaChange = { viewModel.onIntent(WidgetIntent.OnTextAlphaChange(it)) },
     )
 }
 
@@ -95,7 +98,8 @@ private fun WidgetScreen(
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onThemeChange: (Theme) -> Unit,
-    onAlphaChange: (Float) -> Unit,
+    onBackgroundAlphaChange: (Float) -> Unit,
+    onTextAlphaChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo()
@@ -108,7 +112,8 @@ private fun WidgetScreen(
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
             onThemeChange = onThemeChange,
-            onAlphaChange = onAlphaChange,
+            onBackgroundAlphaChange = onBackgroundAlphaChange,
+            onTextAlphaChange = onTextAlphaChange,
             modifier = modifier,
         )
     } else {
@@ -117,7 +122,8 @@ private fun WidgetScreen(
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
             onThemeChange = onThemeChange,
-            onAlphaChange = onAlphaChange,
+            onBackgroundAlphaChange = onBackgroundAlphaChange,
+            onTextAlphaChange = onTextAlphaChange,
             modifier = modifier,
         )
     }
@@ -129,7 +135,8 @@ private fun PhoneWidgetScreen(
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onThemeChange: (Theme) -> Unit,
-    onAlphaChange: (Float) -> Unit,
+    onBackgroundAlphaChange: (Float) -> Unit,
+    onTextAlphaChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -168,10 +175,26 @@ private fun PhoneWidgetScreen(
             )
 
             state.selectedTheme?.let {
-                state.selectedAlpha?.let {
-                    PreviewBody(theme = state.selectedTheme, alpha = state.selectedAlpha)
-                    ThemeBody(selectedTheme = state.selectedTheme, onThemeChange = onThemeChange)
-                    AlphaBody(selectedAlpha = state.selectedAlpha, onAlphaChange = onAlphaChange)
+                state.selectedBackgroundAlpha?.let {
+                    state.selectedTextAlpha?.let {
+                        PreviewBody(
+                            theme = state.selectedTheme,
+                            backgroundAlpha = state.selectedBackgroundAlpha,
+                            textAlpha = state.selectedTextAlpha,
+                        )
+
+                        ThemeBody(
+                            selectedTheme = state.selectedTheme,
+                            onThemeChange = onThemeChange,
+                        )
+
+                        AlphaBody(
+                            selectedBackgroundAlpha = state.selectedBackgroundAlpha,
+                            selectedTextAlpha = state.selectedTextAlpha,
+                            onBackgroundAlphaChange = onBackgroundAlphaChange,
+                            onTextAlphaChange = onTextAlphaChange,
+                        )
+                    }
                 }
             }
 
@@ -186,7 +209,8 @@ private fun TabletWidgetScreen(
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onThemeChange: (Theme) -> Unit,
-    onAlphaChange: (Float) -> Unit,
+    onBackgroundAlphaChange: (Float) -> Unit,
+    onTextAlphaChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -229,15 +253,19 @@ private fun TabletWidgetScreen(
                 )
 
                 state.selectedTheme?.let {
-                    state.selectedAlpha?.let {
-                        ThemeBody(
-                            selectedTheme = state.selectedTheme,
-                            onThemeChange = onThemeChange,
-                        )
-                        AlphaBody(
-                            selectedAlpha = state.selectedAlpha,
-                            onAlphaChange = onAlphaChange,
-                        )
+                    state.selectedBackgroundAlpha?.let {
+                        state.selectedTextAlpha?.let {
+                            ThemeBody(
+                                selectedTheme = state.selectedTheme,
+                                onThemeChange = onThemeChange,
+                            )
+                            AlphaBody(
+                                selectedBackgroundAlpha = state.selectedBackgroundAlpha,
+                                selectedTextAlpha = state.selectedTextAlpha,
+                                onBackgroundAlphaChange = onBackgroundAlphaChange,
+                                onTextAlphaChange = onTextAlphaChange,
+                            )
+                        }
                     }
                 }
             }
@@ -247,11 +275,14 @@ private fun TabletWidgetScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 state.selectedTheme?.let {
-                    state.selectedAlpha?.let {
-                        PreviewBody(
-                            theme = state.selectedTheme,
-                            alpha = state.selectedAlpha,
-                        )
+                    state.selectedBackgroundAlpha?.let {
+                        state.selectedTextAlpha?.let {
+                            PreviewBody(
+                                theme = state.selectedTheme,
+                                backgroundAlpha = state.selectedBackgroundAlpha,
+                                textAlpha = state.selectedTextAlpha,
+                            )
+                        }
                     }
                 }
             }
@@ -307,11 +338,13 @@ internal fun ThemeBody(
 
 @Composable
 internal fun AlphaBody(
-    selectedAlpha: Float,
-    onAlphaChange: (Float) -> Unit,
+    selectedBackgroundAlpha: Float,
+    selectedTextAlpha: Float,
+    onBackgroundAlphaChange: (Float) -> Unit,
+    onTextAlphaChange: (Float) -> Unit,
 ) {
     Text(
-        text = "투명도",
+        text = "위젯 배경 투명도",
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
@@ -324,14 +357,41 @@ internal fun AlphaBody(
             .fillMaxWidth()
             .padding(top = 20.dp)
     ) {
-        HorizontalSlider(
-            value = selectedAlpha,
-            onValueChange = onAlphaChange,
+        HorizontalBackgroundSlider(
+            value = selectedBackgroundAlpha,
+            onValueChange = onBackgroundAlphaChange,
             modifier = Modifier.weight(1f),
         )
 
         Text(
-            text = "${(selectedAlpha * 100).roundToInt()} %",
+            text = "${(selectedBackgroundAlpha * 100).roundToInt()} %",
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
+        )
+    }
+
+    Text(
+        text = "위젯 내용 투명도",
+        style = EbbingTheme.typography.bodyMSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(top = 32.dp),
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp)
+    ) {
+        HorizontalTextSlider(
+            value = selectedTextAlpha,
+            onValueChange = onTextAlphaChange,
+            modifier = Modifier.weight(1f),
+        )
+
+        Text(
+            text = "${(selectedTextAlpha * 100).roundToInt()} %",
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
         )
@@ -341,7 +401,8 @@ internal fun AlphaBody(
 @Composable
 internal fun PreviewBody(
     theme: Theme,
-    alpha: Float,
+    backgroundAlpha: Float,
+    textAlpha: Float,
     modifier: Modifier = Modifier,
 ) {
     val (darkColors, lightColors) = when (theme) {
@@ -365,7 +426,8 @@ internal fun PreviewBody(
     CompositionLocalProvider(LocalColors provides animatedLight) {
         WidgetCard(
             isDarkMode = false,
-            alpha = alpha,
+            backgroundAlpha = backgroundAlpha,
+            textAlpha = textAlpha,
             modifier = modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(),
@@ -375,7 +437,8 @@ internal fun PreviewBody(
     CompositionLocalProvider(LocalColors provides animatedDark) {
         WidgetCard(
             isDarkMode = true,
-            alpha = alpha,
+            backgroundAlpha = backgroundAlpha,
+            textAlpha = textAlpha,
             modifier = modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(),
@@ -386,7 +449,8 @@ internal fun PreviewBody(
 @Composable
 private fun WidgetCard(
     isDarkMode: Boolean,
-    alpha: Float,
+    backgroundAlpha: Float,
+    textAlpha: Float,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -395,7 +459,7 @@ private fun WidgetCard(
             modifier = modifier
                 .fillMaxWidth()
                 .background(
-                    color = EbbingTheme.colors.background.copy(alpha = alpha),
+                    color = EbbingTheme.colors.background.copy(alpha = backgroundAlpha),
                     shape = RoundedCornerShape(16.dp),
                 )
                 .border(
@@ -410,7 +474,7 @@ private fun WidgetCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        EbbingTheme.colors.light1.copy(alpha = alpha),
+                        EbbingTheme.colors.light1.copy(alpha = backgroundAlpha),
                         shape = RoundedCornerShape(12.dp),
                     )
                     .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -419,20 +483,20 @@ private fun WidgetCard(
                     text = buildAnnotatedString {
                         append("오늘 할 일  ")
 
-                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryMiddle)) {
+                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryMiddle.copy(textAlpha))) {
                             append("0")
                         }
                         append(" /0")
                     },
                     style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black.copy(alpha = alpha),
+                    color = EbbingTheme.colors.black.copy(alpha = textAlpha),
                     modifier = Modifier.weight(1f),
                 )
 
                 Image(
                     painter = painterResource(R.drawable.ic_plus),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black.copy(alpha = alpha)),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black.copy(alpha = textAlpha)),
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -440,7 +504,7 @@ private fun WidgetCard(
             Text(
                 text = "금일 스케줄이 없어요.",
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black.copy(alpha = alpha),
+                color = EbbingTheme.colors.black.copy(alpha = textAlpha),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -467,7 +531,8 @@ private fun PreviewWidget() {
             state = WidgetState(),
             onSaveClick = {},
             onBackClick = {},
-            onAlphaChange = {},
+            onBackgroundAlphaChange = {},
+            onTextAlphaChange = {},
             onThemeChange = {},
         )
     }

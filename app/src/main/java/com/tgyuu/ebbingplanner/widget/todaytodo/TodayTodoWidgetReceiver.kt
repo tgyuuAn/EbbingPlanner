@@ -70,7 +70,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         val gson = GsonProvider.gson
 
         val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
-        val alpha = configRepository.getWidgetAlpha().firstOrNull() ?: 1f
+        val alpha = configRepository.getWidgetBackgroundAlpha().firstOrNull() ?: 1f
         val todoLists = todoRepository
             .loadSchedulesByDate(LocalDate.now())
             .sortedWith(compareBy({ it.isDone }, { it.title }))
