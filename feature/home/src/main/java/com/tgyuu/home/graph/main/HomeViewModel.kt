@@ -35,7 +35,8 @@ class HomeViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     internal val eventBus: EventBus,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
-    private var allSchedules: List<TodoSchedule> = emptyList()
+    private var currentMonthSchedules: List<TodoSchedule> = emptyList()
+    private var cachedSchedules: List<TodoSchedule> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -44,19 +45,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    internal suspend fun loadSchedules() {
-        allSchedules = todoRepository.loadSchedules()
+    suspend fun initCurrentMonthSchedules() {
+        val today = LocalDate.now()
+        val start = today.withDayOfMonth(1)
+        val end = today.withDayOfMonth(today.lengthOfMonth())
 
-        val byDate = buildByDateMap(allSchedules, currentState.sortType)
-        val byInfo = allSchedules.groupBy { it.infoId }
-
-        setState {
-            copy(
-                isLoading = false,
-                schedulesByDateMap = byDate,
-                schedulesByTodoInfo = byInfo
-            )
-        }
+        currentMonthSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
     }
 
     override suspend fun processIntent(intent: HomeIntent) {
@@ -82,6 +76,25 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)
             is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule)
             HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
+        }
+    }
+
+    private fun loadSchedules(currentDate: LocalDate) = viewModelScope.launch {
+        val start = currentDate.withDayOfMonth(1).minusMonths(1)
+        val end = currentDate.withDayOfMonth(1).plusMonths(2).minusDays(1)
+
+        val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
+        cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
+
+        val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
+        val byInfo = cachedSchedules.groupBy { it.infoId }
+        setState {
+            copy(
+                isLoading = false,
+                schedulesByDateMap = byDate,
+                schedulesByTodoInfo = byInfo
+            )
         }
     }
 
@@ -89,12 +102,14 @@ class HomeViewModel @Inject constructor(
         val newSchedule = schedule.copy(isDone = !schedule.isDone)
         todoRepository.updateTodo(newSchedule)
 
-        allSchedules = allSchedules.map {
+        currentMonthSchedules = currentMonthSchedules.map {
             if (it.id == schedule.id) newSchedule else it
         }
+        cachedSchedules = cachedSchedules.map { if (it.id == schedule.id) newSchedule else it }
+        updateCacheAfterChange()
 
-        val updatedByInfo = allSchedules.groupBy { it.infoId }
-        val updatedByDate = buildByDateMap(allSchedules, currentState.sortType)
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
+        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
             copy(
@@ -107,9 +122,12 @@ class HomeViewModel @Inject constructor(
     private suspend fun onDeleteSingleSchedule(schedule: TodoSchedule) {
         todoRepository.deleteTodo(schedule)
 
-        allSchedules = allSchedules.filterNot { it.id == schedule.id }
-        val updatedByInfo = allSchedules.groupBy { it.infoId }
-        val updatedByDate = buildByDateMap(allSchedules, currentState.sortType)
+        currentMonthSchedules = currentMonthSchedules.filterNot { it.id == schedule.id }
+        cachedSchedules = cachedSchedules.filterNot { it.id == schedule.id }
+        updateCacheAfterChange()
+
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
+        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
             copy(
@@ -129,11 +147,14 @@ class HomeViewModel @Inject constructor(
 
         for (item in futureSchedulesToDelete) {
             todoRepository.deleteTodo(item)
-            allSchedules = allSchedules.filterNot { it.id == item.id }
+            currentMonthSchedules = currentMonthSchedules.filterNot { it.id == item.id }
+            cachedSchedules = cachedSchedules.filterNot { it.id == item.id }
         }
 
-        val updatedByInfo = allSchedules.groupBy { it.infoId }
-        val updatedByDate = buildByDateMap(allSchedules, currentState.sortType)
+        updateCacheAfterChange()
+
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
+        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
             copy(
@@ -175,9 +196,13 @@ class HomeViewModel @Inject constructor(
             )
         }
 
-        allSchedules = allSchedules.map { if (it.id == schedule.id) delayed else it }
-        val newByDate = buildByDateMap(allSchedules, currentState.sortType)
-        val newByInfo = allSchedules.groupBy { it.infoId }
+        currentMonthSchedules =
+            currentMonthSchedules.map { if (it.id == schedule.id) delayed else it }
+        cachedSchedules = cachedSchedules.map { if (it.id == schedule.id) delayed else it }
+        updateCacheAfterChange()
+
+        val newByDate = buildByDateMap(cachedSchedules, currentState.sortType)
+        val newByInfo = cachedSchedules.groupBy { it.infoId }
         setState {
             copy(
                 schedulesByDateMap = newByDate,
@@ -211,9 +236,16 @@ class HomeViewModel @Inject constructor(
         val updated = schedule.copy(memo = "")
         todoRepository.updateTodo(updated)
 
-        allSchedules = allSchedules.map { if (it.id == schedule.id) updated else it }
-        val updatedByDate = buildByDateMap(allSchedules, currentState.sortType)
-        val updatedByInfo = allSchedules.groupBy { it.infoId }
+        currentMonthSchedules = currentMonthSchedules.map {
+            if (it.id == schedule.id) updated else it
+        }
+        cachedSchedules = cachedSchedules.map {
+            if (it.id == schedule.id) updated else it
+        }
+        updateCacheAfterChange()
+
+        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
 
         setState {
             copy(
@@ -229,7 +261,7 @@ class HomeViewModel @Inject constructor(
     private suspend fun onUpdateSortType(sortType: SortType) {
         configRepository.setSortType(sortType)
 
-        val byDate = buildByDateMap(allSchedules, sortType)
+        val byDate = buildByDateMap(cachedSchedules, sortType)
         setState {
             copy(
                 sortType = sortType,
@@ -252,5 +284,10 @@ class HomeViewModel @Inject constructor(
                 SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { it.priority }))
             }
         }
+    }
+
+    private fun updateCacheAfterChange() {
+        cachedSchedules = (currentMonthSchedules + cachedSchedules)
+            .distinctBy { it.id }
     }
 }

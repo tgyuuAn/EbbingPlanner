@@ -7,6 +7,7 @@ import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 sealed interface HomeIntent : UiIntent {
+    data class OnCurrentDateChanged(val currentDate: LocalDate) : HomeIntent
     data class OnAddTodoClick(val selectedDate: LocalDate) : HomeIntent
     data class OnCheckChanged(val schedule: TodoSchedule) : HomeIntent
     data class OnSortTypeClick(val content: BottomSheetContent) : HomeIntent

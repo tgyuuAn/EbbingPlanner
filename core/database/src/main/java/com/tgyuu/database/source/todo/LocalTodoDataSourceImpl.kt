@@ -16,9 +16,6 @@ class LocalTodoDataSourceImpl @Inject constructor(
     private val todoSchedulesDao: TodoSchedulesDao,
     private val todoWithSchedulesDao: TodoWithSchedulesDao,
 ) : LocalTodoDataSource {
-    override suspend fun getTodoSchedules(): List<TodoSchedule> =
-        todoSchedulesDao.loadAllTodoSchedulesWithInfoAndTag()
-
     override suspend fun getTodoSchedule(id: Int): TodoSchedule? =
         todoSchedulesDao.loadTodoScheduleWithInfoAndTag(id)
 
@@ -30,6 +27,11 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getUpcomingTodoSchedules(date: LocalDate): List<TodoSchedule> =
         todoSchedulesDao.loadUpcomingTodoSchedules(date)
+
+    override suspend fun getTodoSchedulesByDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<TodoSchedule> = todoSchedulesDao.loadTodoSchedulesByDateRange(startDate, endDate)
 
     override fun subscribeTodoSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>> =
         todoSchedulesDao.subscribeTodoScheduleWithInfoAndTagByDate(date)

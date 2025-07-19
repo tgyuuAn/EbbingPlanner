@@ -16,11 +16,11 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
-import com.tgyuu.ebbingplanner.widget.util.RefreshAction
-import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
@@ -70,18 +70,23 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
     }
 
     private fun updateData(context: Context) = scope.launch {
-        val gson = GsonProvider.gson
         val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
         val backgroundAlpha = configRepository.getWidgetBackgroundAlpha().firstOrNull() ?: 1f
         val textAlpha = configRepository.getWidgetTextAlpha().firstOrNull() ?: 1f
         val sortType = configRepository.getSortType()
-        val allSchedules = todoRepository.loadSchedules()
+
+        val now = LocalDate.now()
+        val allSchedules = todoRepository.loadTodoSchedulesByDateRange(
+            now.withDayOfMonth(1),
+            now.withDayOfMonth(now.lengthOfMonth())
+        )
         val byDate = buildByDateMap(allSchedules, sortType)
 
         val glanceId = GlanceAppWidgetManager(context)
             .getGlanceIds(CalendarWidget::class.java)
             .firstOrNull()
 
+        val gson = GsonProvider.gson
         val json = gson.toJson(byDate)
         glanceId?.let {
             updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) { pref ->
