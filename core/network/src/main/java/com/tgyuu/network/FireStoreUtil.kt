@@ -10,6 +10,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Date
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 val defaultDate = LocalDateTime.of(1970, 1, 1, 0, 0).toDate()
 
@@ -31,24 +32,24 @@ fun Date.toLocalDateTime(): LocalDateTime = this.toInstant()
     .atZone(ZoneId.systemDefault())
     .toLocalDateTime()
 
-// FireStore CallBack을 SuspendCancellableCoroutine으로 감싼 뒤, Result<T>로 래핑
-suspend inline fun <reified T> Task<DocumentSnapshot>.toResult(): Result<T> =
+// FireStore CallBack을 SuspendCancellableCoroutine으로 감싼 뒤 T를 반환
+suspend inline fun <reified T> Task<DocumentSnapshot>.toResponse(): T =
     suspendCancellableCoroutine { cont ->
         this
             .addOnSuccessListener { snapshot ->
                 if (!snapshot.exists()) {
-                    cont.resume(Result.failure(NoSuchElementException("Document does not exist")))
+                    cont.resumeWithException(NoSuchElementException("Document does not exist"))
                     return@addOnSuccessListener
                 }
 
                 val obj = snapshot.toObject(T::class.java)
                 if (obj != null) {
-                    cont.resume(Result.success(obj))
+                    cont.resume(obj)
                 } else {
-                    cont.resume(Result.failure(IllegalStateException("Failed to parse document to ${T::class.java.simpleName}")))
+                    cont.resumeWithException(IllegalStateException("Failed to parse document to ${T::class.java.simpleName}"))
                 }
             }
             .addOnFailureListener { exception ->
-                cont.resume(Result.failure(exception))
+                cont.resumeWithException(exception)
             }
     }

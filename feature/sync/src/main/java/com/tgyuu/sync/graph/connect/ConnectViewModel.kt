@@ -4,8 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.domain.model.Timer
+import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.ErrorBus
+import com.tgyuu.domain.model.Timer
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -106,22 +107,23 @@ class ConnectViewModel @Inject constructor(
             return
         }
 
-        syncRepository.generateConnectCode(connectCode = currentState.myCode)
-            .onSuccess {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드 생성에 성공하였습니다."))
+        suspendRunCatching {
+            syncRepository.generateConnectCode(connectCode = currentState.myCode)
+        }.onSuccess {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드 생성에 성공하였습니다."))
 
-                setState {
-                    copy(
-                        isConnectButtonEnabled = false,
-                        isGenerateButtonEnabled = false,
-                    )
-                }
-
-                startTimer()
-            }.onFailure { error ->
-                errorBus.sendError(error)
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("유효하지 않은 코드이거나, 네트워크가 불안정합니다."))
+            setState {
+                copy(
+                    isConnectButtonEnabled = false,
+                    isGenerateButtonEnabled = false,
+                )
             }
+
+            startTimer()
+        }.onFailure { error ->
+            errorBus.sendError(error)
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("유효하지 않은 코드이거나, 네트워크가 불안정합니다."))
+        }
     }
 
     private suspend fun connectAnother() {
@@ -135,24 +137,25 @@ class ConnectViewModel @Inject constructor(
             return
         }
 
-        syncRepository.connectAnother(connectCode = currentState.anotherCode)
-            .onSuccess { connectInfo ->
-                if (connectInfo == null) {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 유효시간이 만료되었습니다."))
-                    return@onSuccess
-                }
-
-                if (connectInfo.uuid == currentState.uuid) {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("나와는 연동할 수 없습니다."))
-                    return@onSuccess
-                }
-
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
-                navigationBus.navigate(NavigationEvent.Up)
-            }.onFailure { error ->
-                errorBus.sendError(error)
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 네트워크가 불안정합니다."))
+        suspendRunCatching {
+            syncRepository.connectAnother(connectCode = currentState.anotherCode)
+        }.onSuccess { connectInfo ->
+            if (connectInfo == null) {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 유효시간이 만료되었습니다."))
+                return@onSuccess
             }
+
+            if (connectInfo.uuid == currentState.uuid) {
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar("나와는 연동할 수 없습니다."))
+                return@onSuccess
+            }
+
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
+            navigationBus.navigate(NavigationEvent.Up)
+        }.onFailure { error ->
+            errorBus.sendError(error)
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 네트워크가 불안정합니다."))
+        }
     }
 
     private fun startTimer(fromSec: Long = Timer.DEFAULT_DURATION_IN_SEC) {

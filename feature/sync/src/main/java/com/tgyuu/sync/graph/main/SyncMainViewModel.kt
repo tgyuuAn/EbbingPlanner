@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.navigation.NavigationBus
@@ -44,8 +45,9 @@ class SyncMainViewModel @Inject constructor(
         }
 
         val serverLastUpdatedAtJob = launch {
-            syncRepository.getServerLastUpdatedAt()
-                .onSuccess { setState { copy(serverLastUpdatedAt = it) } }
+            suspendRunCatching {
+                syncRepository.getServerLastUpdatedAt()
+            }.onSuccess { setState { copy(serverLastUpdatedAt = it) } }
         }
 
         uuidJob.join()
@@ -70,22 +72,22 @@ class SyncMainViewModel @Inject constructor(
         }
 
         setState { copy(isNetworkLoading = true) }
-        syncRepository.syncUpData()
-            .onSuccess {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
-                setState {
-                    copy(
-                        localLastSyncedAt = it,
-                        serverLastUpdatedAt = it,
-                    )
-                }
+        suspendRunCatching {
+            syncRepository.syncUpData()
+        }.onSuccess {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
+            setState {
+                copy(
+                    localLastSyncedAt = it,
+                    serverLastUpdatedAt = it,
+                )
             }
-            .onFailure { error ->
-                errorBus.sendError(error)
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
-            }.also {
-                setState { copy(isNetworkLoading = false) }
-            }
+        }.onFailure { error ->
+            errorBus.sendError(error)
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
+        }.also {
+            setState { copy(isNetworkLoading = false) }
+        }
     }
 
     private fun disconnectAnother() = viewModelScope.launch {
@@ -95,23 +97,24 @@ class SyncMainViewModel @Inject constructor(
         }
 
         setState { copy(isNetworkLoading = true) }
-        syncRepository.disconnectAnother()
-            .onSuccess {
-                loadInitData()
+        suspendRunCatching {
+            syncRepository.disconnectAnother()
+        }.onSuccess {
+            loadInitData()
 
-                setState {
-                    copy(
-                        localLastSyncedAt = null,
-                        serverLastUpdatedAt = null,
-                    )
-                }
-
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 성공하였습니다."))
-            }.onFailure { error ->
-                errorBus.sendError(error)
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 실패하였습니다."))
-            }.also {
-                setState { copy(isNetworkLoading = false) }
+            setState {
+                copy(
+                    localLastSyncedAt = null,
+                    serverLastUpdatedAt = null,
+                )
             }
+
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 성공하였습니다."))
+        }.onFailure { error ->
+            errorBus.sendError(error)
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 실패하였습니다."))
+        }.also {
+            setState { copy(isNetworkLoading = false) }
+        }
     }
 }

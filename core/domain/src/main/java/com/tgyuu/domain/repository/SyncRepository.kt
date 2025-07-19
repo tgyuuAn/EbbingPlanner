@@ -7,12 +7,12 @@ interface SyncRepository {
     suspend fun ensureUUIDExists()
     suspend fun getUuid(): String
     suspend fun getConnectedUuid(): String?
-    suspend fun getServerLastUpdatedAt(): Result<ZonedDateTime?>
+    suspend fun getServerLastUpdatedAt(): ZonedDateTime?
     suspend fun getLocalSyncedAt(): ZonedDateTime?
-    suspend fun syncUpData(): Result<ZonedDateTime>
-    suspend fun generateConnectCode(connectCode: String): Result<ZonedDateTime>
+    suspend fun syncUpData(): ZonedDateTime
+    suspend fun generateConnectCode(connectCode: String): ZonedDateTime
     suspend fun getMyConnectCode(): String?
     suspend fun getConnectCodeExpiration(): ZonedDateTime?
-    suspend fun connectAnother(connectCode: String): Result<ConnectInfo?>
-    suspend fun disconnectAnother(): Result<Unit>
+    suspend fun connectAnother(connectCode: String): ConnectInfo?
+    suspend fun disconnectAnother()
 }

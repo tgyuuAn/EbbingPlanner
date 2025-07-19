@@ -17,7 +17,7 @@ import com.tgyuu.network.model.sync.TodoScheduleDto
 import com.tgyuu.network.model.sync.TodoTagDto
 import com.tgyuu.network.model.sync.toDto
 import com.tgyuu.network.toDate
-import com.tgyuu.network.toResult
+import com.tgyuu.network.toResponse
 import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -32,13 +32,13 @@ import javax.inject.Inject
 class SyncDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) {
-    suspend fun getSyncInfo(uuid: String): Result<SyncInfoDto> {
+    suspend fun getSyncInfo(uuid: String): SyncInfoDto {
         val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
         return userDoc.collection(COLLECTION_INFO)
             .document(INFO_DOCUMENT_ID)
             .get()
-            .toResult<SyncInfoDto>()
+            .toResponse<SyncInfoDto>()
     }
 
     suspend fun uploadData(
@@ -47,62 +47,58 @@ class SyncDataSource @Inject constructor(
         infos: List<TodoInfoForSync>,
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
-    ): Result<ZonedDateTime> = coroutineScope {
-        suspendRunCatching {
-            val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
+    ): ZonedDateTime = coroutineScope {
+        val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
 
-            val schedulesJob = launch {
-                schedules.forEach { schedule ->
-                    userDoc.collection(COLLECTION_SCHEDULES)
-                        .document(schedule.id.toString())
-                        .set(schedule.toDto())
-                        .await()
-                }
+        val schedulesJob = launch {
+            schedules.forEach { schedule ->
+                userDoc.collection(COLLECTION_SCHEDULES)
+                    .document(schedule.id.toString())
+                    .set(schedule.toDto())
+                    .await()
             }
-
-            val todoInfosJob = launch {
-                infos.forEach { info ->
-                    userDoc.collection(COLLECTION_TODO_INFOS)
-                        .document(info.id.toString())
-                        .set(info.toDto())
-                        .await()
-                }
-            }
-
-            val repeatCyclesJob = launch {
-                repeatCycles.forEach { repeat ->
-                    userDoc.collection(COLLECTION_REPEAT_CYCLES)
-                        .document(repeat.id.toString())
-                        .set(repeat)
-                        .await()
-                }
-            }
-
-            val tagsJob = launch {
-                tags.forEach { tag ->
-                    userDoc.collection(COLLECTION_TAGS)
-                        .document(tag.id.toString())
-                        .set(tag.toDto())
-                        .await()
-                }
-            }
-
-            repeatCyclesJob.join()
-            tagsJob.join()
-            todoInfosJob.join()
-            schedulesJob.join()
-
-            val infoDocRef = userDoc.collection(COLLECTION_INFO).document(INFO_DOCUMENT_ID)
-            infoDocRef.set(mapOf(FIELD_LAST_UPDATED_AT to serverTimestamp())).await()
-
-            val updatedSnapshot = infoDocRef.get().await()
-            val updatedAt = updatedSnapshot
-                .getTimestamp(FIELD_LAST_UPDATED_AT)
-                .toZonedDateTimeOrNull()
-                ?: throw IllegalStateException("lastUpdatedAt 가 비었습니다.")
-
-            return@suspendRunCatching updatedAt
         }
+
+        val todoInfosJob = launch {
+            infos.forEach { info ->
+                userDoc.collection(COLLECTION_TODO_INFOS)
+                    .document(info.id.toString())
+                    .set(info.toDto())
+                    .await()
+            }
+        }
+
+        val repeatCyclesJob = launch {
+            repeatCycles.forEach { repeat ->
+                userDoc.collection(COLLECTION_REPEAT_CYCLES)
+                    .document(repeat.id.toString())
+                    .set(repeat)
+                    .await()
+            }
+        }
+
+        val tagsJob = launch {
+            tags.forEach { tag ->
+                userDoc.collection(COLLECTION_TAGS)
+                    .document(tag.id.toString())
+                    .set(tag.toDto())
+                    .await()
+            }
+        }
+
+        repeatCyclesJob.join()
+        tagsJob.join()
+        todoInfosJob.join()
+        schedulesJob.join()
+
+        val infoDocRef = userDoc.collection(COLLECTION_INFO).document(INFO_DOCUMENT_ID)
+        infoDocRef.set(mapOf(FIELD_LAST_UPDATED_AT to serverTimestamp())).await()
+
+        val updatedSnapshot = infoDocRef.get().await()
+        updatedSnapshot
+            .getTimestamp(FIELD_LAST_UPDATED_AT)
+            .toZonedDateTimeOrNull()
+            ?: throw IllegalStateException("lastUpdatedAt 가 비었습니다.")
     }
 
     suspend fun downloadData(
@@ -166,27 +162,26 @@ class SyncDataSource @Inject constructor(
         }
     }
 
-    suspend fun generateConnectCode(uuid: String, connectCode: String): Result<ZonedDateTime> =
-        suspendRunCatching {
-            val connectCodeDoc = firestore.collection(COLLECTION_CONNECT_CODES)
-                .document(connectCode)
+    suspend fun generateConnectCode(uuid: String, connectCode: String): ZonedDateTime {
+        val connectCodeDoc = firestore.collection(COLLECTION_CONNECT_CODES)
+            .document(connectCode)
 
-            val connectCodeExpirationTime = LocalDateTime.now()
-                .plusMinutes(10L)
-                .toDate()
+        val connectCodeExpirationTime = LocalDateTime.now()
+            .plusMinutes(10L)
+            .toDate()
 
-            val connectDto = ConnectDto(
-                uuid = uuid,
-                connectCode = connectCode,
-                connectCodeExpirationTime = connectCodeExpirationTime,
-            )
+        val connectDto = ConnectDto(
+            uuid = uuid,
+            connectCode = connectCode,
+            connectCodeExpirationTime = connectCodeExpirationTime,
+        )
 
-            connectCodeDoc.set(connectDto)
-                .await()
+        connectCodeDoc.set(connectDto)
+            .await()
 
-            connectCodeExpirationTime.toInstant()
-                .atZone(ZoneId.systemDefault())
-        }
+        return connectCodeExpirationTime.toInstant()
+            .atZone(ZoneId.systemDefault())
+    }
 
     suspend fun connectAnother(connectCode: String): Result<ConnectDto?> = suspendRunCatching {
         val docRef = firestore
