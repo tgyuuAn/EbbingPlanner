@@ -27,8 +27,13 @@ class TodoRepositoryImpl @Inject constructor(
     override val recentAddedRepeatCycleId: Long?
         get() = _recentAddedRepeatCycleId.also { _recentAddedRepeatCycleId = null }
 
-    override suspend fun loadSchedules(): List<TodoSchedule> =
-        localTodoDataSource.getTodoSchedules()
+    override suspend fun loadTodoSchedulesByDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<TodoSchedule> = localTodoDataSource.getTodoSchedulesByDateRange(
+        startDate = startDate,
+        endDate = endDate,
+    )
 
     override suspend fun loadSchedulesByTodoInfo(id: Int): List<TodoSchedule> =
         localTodoDataSource.getTodoScheduleByTodoInfo(id)

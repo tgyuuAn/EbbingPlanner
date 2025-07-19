@@ -73,8 +73,8 @@ internal fun HomeRoute(
     var isShowDialog by remember { mutableStateOf(false) }
     var dialogType by remember { mutableStateOf<DialogType?>(null) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadSchedules()
+    LaunchedEffect(viewModel) {
+        viewModel.initCurrentMonthSchedules()
     }
 
     if (isShowDialog && dialogType != null) {
@@ -122,6 +122,7 @@ internal fun HomeRoute(
     HomeScreen(
         workedDate = workedDate,
         state = state,
+        onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
         onCheckedChange = { viewModel.onIntent(OnCheckChanged(it)) },
         onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
@@ -183,10 +184,18 @@ internal fun HomeRoute(
                                         UpdateBottomSheet(
                                             selectedSchedule = updatedSchedule,
                                             onClickUpdateDate = {
-                                                viewModel.onIntent(HomeIntent.OnUpdateDateClick(updatedSchedule))
+                                                viewModel.onIntent(
+                                                    HomeIntent.OnUpdateDateClick(
+                                                        updatedSchedule
+                                                    )
+                                                )
                                             },
                                             onClickUpdateInfo = {
-                                                viewModel.onIntent(HomeIntent.OnUpdateInfoClick(updatedSchedule))
+                                                viewModel.onIntent(
+                                                    HomeIntent.OnUpdateInfoClick(
+                                                        updatedSchedule
+                                                    )
+                                                )
                                             },
                                         )
                                     }
@@ -206,7 +215,7 @@ internal fun HomeRoute(
                     )
                 }
             )
-        }
+        },
     )
 }
 
@@ -219,6 +228,7 @@ private fun HomeScreen(
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
     onSyncClick: () -> Unit,
+    onCurrentDateChanged: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -231,6 +241,7 @@ private fun HomeScreen(
             onCheckedChange = onCheckedChange,
             onSortTypeClick = onSortTypeClick,
             onEditScheduleClick = onEditScheduleClick,
+            onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
             modifier = modifier
         )
@@ -242,6 +253,7 @@ private fun HomeScreen(
             onCheckedChange = onCheckedChange,
             onSortTypeClick = onSortTypeClick,
             onEditScheduleClick = onEditScheduleClick,
+            onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
             modifier = modifier
         )
@@ -256,6 +268,7 @@ private fun PhoneHomeScreen(
     onCheckedChange: (TodoSchedule) -> Unit,
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
+    onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -270,6 +283,10 @@ private fun PhoneHomeScreen(
 
     LaunchedEffect(workedDate) {
         calendarState.onDateSelect(workedDate)
+    }
+
+    LaunchedEffect(calendarState.currentDisplayDate.month) {
+        onCurrentDateChanged(calendarState.currentDisplayDate)
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -369,6 +386,7 @@ private fun TabletHomeScreen(
     onCheckedChange: (TodoSchedule) -> Unit,
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoSchedule) -> Unit,
+    onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -379,6 +397,10 @@ private fun TabletHomeScreen(
 
     LaunchedEffect(workedDate) {
         calendarState.onDateSelect(workedDate)
+    }
+
+    LaunchedEffect(calendarState.currentDisplayDate.month) {
+        onCurrentDateChanged(calendarState.currentDisplayDate)
     }
 
     Row(modifier = modifier.fillMaxSize()) {
@@ -450,6 +472,7 @@ private fun Preview1() {
             onAddTodoClick = {},
             onCheckedChange = {},
             onEditScheduleClick = {},
+            onCurrentDateChanged = {},
             onSortTypeClick = {},
             onSyncClick = {},
         )

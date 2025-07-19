@@ -9,11 +9,15 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface LocalTodoDataSource {
-    suspend fun getTodoSchedules(): List<TodoSchedule>
     suspend fun getTodoSchedule(id: Int): TodoSchedule?
     suspend fun getTodoScheduleByTodoInfo(id: Int): List<TodoSchedule>
     suspend fun getTodoSchedulesByDate(date: LocalDate): List<TodoSchedule>
     suspend fun getUpcomingTodoSchedules(date: LocalDate): List<TodoSchedule>
+    suspend fun getTodoSchedulesByDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<TodoSchedule>
+
     fun subscribeTodoSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>>
 
     suspend fun getTodoScheduleEntity(id: Int): TodoScheduleEntity?

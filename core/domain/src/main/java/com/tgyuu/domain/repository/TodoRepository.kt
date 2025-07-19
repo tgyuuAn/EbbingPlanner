@@ -10,7 +10,11 @@ interface TodoRepository {
     val recentAddedTagId: Long?
     val recentAddedRepeatCycleId: Long?
 
-    suspend fun loadSchedules(): List<TodoSchedule>
+    suspend fun loadTodoSchedulesByDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<TodoSchedule>
+
     suspend fun loadSchedulesByTodoInfo(id: Int): List<TodoSchedule>
     suspend fun loadSchedulesByDate(date: LocalDate): List<TodoSchedule>
     suspend fun loadUpcomingSchedules(date: LocalDate): List<TodoSchedule>

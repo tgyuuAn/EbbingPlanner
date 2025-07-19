@@ -33,8 +33,4 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindErrorRepository(errorRepositoryImpl: ErrorRepositoryImpl): ErrorRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindLogRepository(logRepositoryImpl: LogRepositoryImpl): LogRepository
 }
