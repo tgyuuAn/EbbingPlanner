@@ -1,7 +1,5 @@
 package com.tgyuu.network.di
 
-import android.content.Context
-import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,7 +14,6 @@ import com.tgyuu.network.source.error.ErrorDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import javax.inject.Qualifier
@@ -25,11 +22,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkProvidesModule {
-
-    @Provides
-    @Singleton
-    fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
-        WorkManager.getInstance(context)
 
     @Singleton
     @Provides

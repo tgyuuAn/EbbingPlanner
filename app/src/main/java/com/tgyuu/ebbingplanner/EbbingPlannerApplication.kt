@@ -1,33 +1,20 @@
 package com.tgyuu.ebbingplanner
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.Configuration
 import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.common.systemcallback.MemoryAnimationController
-import com.tgyuu.domain.model.HeapLogger
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
-class EbbingPlannerApplication : Application(), Configuration.Provider {
+class EbbingPlannerApplication : Application() {
     @Inject
     lateinit var notificationHelper: NotificationHelper
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    @Inject
-    lateinit var heapLogger: HeapLogger
-
-    override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
 
     override fun onCreate() {
         super.onCreate()
         notificationHelper.createNotificationChannel(this)
+        cleanupOldHeapDumps()
     }
 
     override fun onLowMemory() {
@@ -38,8 +25,11 @@ class EbbingPlannerApplication : Application(), Configuration.Provider {
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         MemoryAnimationController.onTrimMemory(level)
-        if (level >= TRIM_MEMORY_BACKGROUND) {
-            heapLogger.logHeapDump()
-        }
+    }
+
+    private fun cleanupOldHeapDumps() {
+        filesDir.listFiles { file ->
+            file.name.endsWith(".hprof")
+        }?.onEach { it.delete() }
     }
 }
