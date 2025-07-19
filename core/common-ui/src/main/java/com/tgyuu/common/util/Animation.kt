@@ -1,5 +1,6 @@
 package com.tgyuu.common.util
 
+import android.content.ComponentCallbacks2
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
@@ -12,9 +13,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.tgyuu.common.systemcallback.LocalAnimationsEnabled
 
 private const val BOTTOM_BAR_ANIMATION_DURATION = 700
 
@@ -60,6 +64,16 @@ fun EbbingVisibleAnimation(
     content = content,
     modifier = modifier,
 )
+
+val LocalAnimationsEnabled = staticCompositionLocalOf { true }
+
+object MemoryAnimationController {
+    var animationsEnabled by mutableStateOf(true)
+
+    fun onTrimMemory(level: Int) {
+        animationsEnabled = level < ComponentCallbacks2.TRIM_MEMORY_BACKGROUND
+    }
+}
 
 @Composable
 fun ebbingAnimateColorAsState(

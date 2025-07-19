@@ -26,9 +26,9 @@ import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.common.systemcallback.LocalAnimationsEnabled
-import com.tgyuu.common.systemcallback.MemoryAnimationController
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.util.LocalAnimationsEnabled
+import com.tgyuu.common.util.MemoryAnimationController
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -86,9 +86,11 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val scope = rememberCoroutineScope()
             val updateState by viewModel.updateState.collectAsStateWithLifecycle()
             val theme by viewModel.theme.collectAsStateWithLifecycle()
+
+            val scope = rememberCoroutineScope()
+
             val navController = rememberNavController()
             val bottomSheetState = rememberEbbingBottomSheetState()
             val snackBarHostState = remember { SnackbarHostState() }
@@ -96,12 +98,6 @@ class MainActivity : ComponentActivity() {
                 navController = navController,
                 networkMonitor = networkMonitor,
                 bottomSheetState = bottomSheetState,
-            )
-
-            HandleSideEffects(
-                navController = navController,
-                bottomSheetState = bottomSheetState,
-                snackBarHostState = snackBarHostState,
             )
 
             EbbingTheme(theme = theme) {
@@ -133,6 +129,12 @@ class MainActivity : ComponentActivity() {
                     }
 
                     TrackNavigationDestination(navController)
+
+                    HandleSideEffects(
+                        navController = navController,
+                        bottomSheetState = bottomSheetState,
+                        snackBarHostState = snackBarHostState,
+                    )
                 }
             }
         }

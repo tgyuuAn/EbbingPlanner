@@ -1,6 +1,5 @@
 package com.tgyuu.data.repository
 
-import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
@@ -97,12 +96,9 @@ class SyncRepositoryImpl @Inject constructor(
         if (info.uuid == myUuid) return info
 
         localSyncDataSource.setConnectedUuid(info.uuid)
-        replaceData().getOrElse {
-            localSyncDataSource.setConnectedUuid(null)
-            localSyncDataSource.setLastSyncTime(null)
-            throw it
-        }
-
+        replaceData()
+        localSyncDataSource.setConnectedUuid(null)
+        localSyncDataSource.setLastSyncTime(null)
         return info
     }
 
@@ -267,37 +263,35 @@ class SyncRepositoryImpl @Inject constructor(
         return localTodoDataSource.getTodoInfosForSync(lastSyncTime)
     }
 
-    private suspend fun replaceData(): Result<ZonedDateTime?> = suspendRunCatching {
-        coroutineScope {
-            val uuidDeferred = async { getUuid() }
-            val connectedUuidDeferred = async { getConnectedUuid() }
+    private suspend fun replaceData(): ZonedDateTime? = coroutineScope {
+        val uuidDeferred = async { getUuid() }
+        val connectedUuidDeferred = async { getConnectedUuid() }
 
-            val uuid = uuidDeferred.await()
-            val connectedUuid = connectedUuidDeferred.await()
+        val uuid = uuidDeferred.await()
+        val connectedUuid = connectedUuidDeferred.await()
 
-            val lastSyncTime = localSyncDataSource.lastSyncTime
-                .first()
-                ?.toLocalDateTime()
-                ?.toDate() ?: defaultDate
+        val lastSyncTime = localSyncDataSource.lastSyncTime
+            .first()
+            ?.toLocalDateTime()
+            ?.toDate() ?: defaultDate
 
-            val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
-                .getOrThrow()
+        val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
+            .getOrThrow()
 
-            val infos = response.todoInfos.map { it.toDomain() }
-            val repeatCycles = response.repeatCycles.map { it.toDomain() }
-            val tags = response.tags.map { it.toDomain() }
-            val schedules = response.schedules.map { it.toDomain() }
+        val infos = response.todoInfos.map { it.toDomain() }
+        val repeatCycles = response.repeatCycles.map { it.toDomain() }
+        val tags = response.tags.map { it.toDomain() }
+        val schedules = response.schedules.map { it.toDomain() }
 
-            localSyncTransactionDataSource.replaceAllData(
-                infos = infos,
-                repeatCycles = repeatCycles,
-                tags = tags,
-                schedules = schedules
-            )
+        localSyncTransactionDataSource.replaceAllData(
+            infos = infos,
+            repeatCycles = repeatCycles,
+            tags = tags,
+            schedules = schedules
+        )
 
-            val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
-            localSyncDataSource.setLastSyncTime(syncedAt)
-            syncedAt
-        }
+        val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
+        localSyncDataSource.setLastSyncTime(syncedAt)
+        syncedAt
     }
 }

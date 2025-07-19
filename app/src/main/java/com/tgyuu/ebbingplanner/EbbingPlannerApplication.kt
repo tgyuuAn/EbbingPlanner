@@ -2,7 +2,7 @@ package com.tgyuu.ebbingplanner
 
 import android.app.Application
 import com.tgyuu.alarm.NotificationHelper
-import com.tgyuu.common.systemcallback.MemoryAnimationController
+import com.tgyuu.common.util.MemoryAnimationController
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
