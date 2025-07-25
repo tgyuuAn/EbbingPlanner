@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +42,6 @@ import java.time.LocalDate
 
 @Composable
 internal fun EbbingTodoList(
-    listState: LazyListState,
     sortType: SortType,
     selectedDate: LocalDate,
     todoLists: List<TodoSchedule>,
@@ -87,7 +86,6 @@ internal fun EbbingTodoList(
                 date = selectedDate,
                 todos = todoLists,
                 schedulesByTodoInfo = schedulesByTodoInfo,
-                listState = listState,
                 onCheckedChange = onCheckedChange,
                 onEdit = onEditScheduleClick
             )
@@ -156,10 +154,11 @@ private fun TodoPage(
     date: LocalDate,
     todos: List<TodoSchedule>,
     schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
-    listState: LazyListState,
     onCheckedChange: (TodoSchedule) -> Unit,
     onEdit: (TodoSchedule) -> Unit
 ) {
+    val listState = rememberLazyListState()
+
     if (todos.isNotEmpty()) {
         LazyColumn(
             state = listState,

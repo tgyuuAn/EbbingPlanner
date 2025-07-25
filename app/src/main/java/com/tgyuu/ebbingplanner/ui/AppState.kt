@@ -8,6 +8,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingGraph
@@ -19,6 +20,8 @@ fun rememberEbbingAppState(
     networkMonitor: NetworkMonitor,
     bottomSheetState: EbbingBottomSheetState,
 ): EbbingAppState {
+    TrackNavigationDestination(navController)
+
     return remember(
         navController,
         networkMonitor,
@@ -53,9 +56,7 @@ class EbbingAppState(
     val requireNetworkConnection: Boolean
         @Composable get() = currentDestination?.hierarchy?.any { d ->
             AppUiPolicy.networkRequiredRoutes.any {
-                d.route?.startsWith(
-                    it.qualifiedName ?: ""
-                ) == true
+                d.route?.startsWith(it.qualifiedName ?: "") == true
             }
         } ?: false
 

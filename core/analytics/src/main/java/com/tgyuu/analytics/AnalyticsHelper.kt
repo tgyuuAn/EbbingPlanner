@@ -36,8 +36,8 @@ fun TrackNavigationDestination(navController: NavHostController) {
 
             analyticsHelper.logEvent(
                 AnalyticsEvent(
-                    type = AnalyticsEvent.Types.SCREEN_VIEW,
-                    properties = mutableMapOf(AnalyticsEvent.PropertiesKeys.SCREEN_NAME to screenName)
+                    type = SCREEN_VIEW,
+                    properties = mutableMapOf(SCREEN_NAME to screenName)
                 )
             )
         }
