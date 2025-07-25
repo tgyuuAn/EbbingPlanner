@@ -353,7 +353,6 @@ private fun PhoneHomeScreen(
                 }
             } else {
                 EbbingTodoList(
-                    listState = listState,
                     sortType = state.sortType,
                     selectedDate = selectedDate,
                     todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
@@ -391,7 +390,6 @@ private fun TabletHomeScreen(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
 
@@ -411,7 +409,6 @@ private fun TabletHomeScreen(
                 if (selectedDate != it) {
                     scope.launch {
                         selectedDate = it
-                        listState.animateScrollToItem(0)
                     }
                 }
             },
@@ -436,7 +433,6 @@ private fun TabletHomeScreen(
             }
         } else {
             EbbingTodoList(
-                listState = listState,
                 sortType = state.sortType,
                 selectedDate = selectedDate,
                 todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
@@ -446,7 +442,6 @@ private fun TabletHomeScreen(
                         scope.launch {
                             selectedDate = it
                             calendarState.onDateSelect(it)
-                            listState.animateScrollToItem(0)
                         }
                     }
                 },

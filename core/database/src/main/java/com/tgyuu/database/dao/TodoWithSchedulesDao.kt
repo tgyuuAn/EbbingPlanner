@@ -12,10 +12,10 @@ import java.time.LocalDateTime
 
 @Dao
 interface TodoWithSchedulesDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertInfo(entity: TodoInfoEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSchedules(schedules: List<TodoScheduleEntity>)
 
     @Transaction

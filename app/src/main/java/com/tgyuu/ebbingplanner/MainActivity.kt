@@ -90,7 +90,6 @@ class MainActivity : ComponentActivity() {
             val theme by viewModel.theme.collectAsStateWithLifecycle()
 
             val scope = rememberCoroutineScope()
-
             val navController = rememberNavController()
             val bottomSheetState = rememberEbbingBottomSheetState()
             val snackBarHostState = remember { SnackbarHostState() }
@@ -127,8 +126,6 @@ class MainActivity : ComponentActivity() {
                             },
                         )
                     }
-
-                    TrackNavigationDestination(navController)
 
                     HandleSideEffects(
                         navController = navController,
