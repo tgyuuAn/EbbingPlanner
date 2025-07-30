@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.tgyuu.ebbingplanner"
-
+    
     defaultConfig {
         versionCode = 20
         versionName = "1.0.19"
@@ -72,7 +72,7 @@ dependencies {
     implementation(projects.feature.onboarding)
     implementation(projects.feature.home)
     implementation(projects.feature.memo)
-    implementation(projects.feature.dashboard)
+    implementation(projects.feature.schedule)
     implementation(projects.feature.setting)
     implementation(projects.feature.tag)
     implementation(projects.feature.repeatcycle)

@@ -4,6 +4,7 @@ import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
 import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.database.model.toEntity
+import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
@@ -108,4 +109,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync> =
         todoSchedulesDao.loadAllTodoInfosForSync(lastSyncTime)
+
+    override suspend fun getTodoInfosByTagId(tagId: Int): List<TodoInfo> =
+        todoSchedulesDao.loadTodoInfoByTagId(tagId)
 }

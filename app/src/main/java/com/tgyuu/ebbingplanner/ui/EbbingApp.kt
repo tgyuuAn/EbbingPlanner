@@ -50,6 +50,10 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.navigation.AppNavHost
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination
+import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.SCHEDULE
+import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.HOME
+import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.SETTING
+import com.tgyuu.navigation.ScheduleRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.sync.network.NetworkBanner
@@ -230,11 +234,9 @@ private fun TabletContent(
                                 colors = navigationItemColor,
                                 onClick = {
                                     when (dest) {
-                                        TopLevelDestination.HOME ->
-                                            appState.navigate(HomeGraph.HomeRoute())
-
-                                        TopLevelDestination.SETTING ->
-                                            appState.navigate(SettingGraph.SettingRoute)
+                                        HOME -> appState.navigate(HomeGraph.HomeRoute())
+                                        SCHEDULE -> appState.navigate(ScheduleRoute)
+                                        SETTING -> appState.navigate(SettingGraph.SettingRoute)
                                     }
                                 }
                             )

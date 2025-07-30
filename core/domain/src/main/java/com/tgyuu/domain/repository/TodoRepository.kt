@@ -1,6 +1,7 @@
 package com.tgyuu.domain.repository
 
 import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +52,7 @@ interface TodoRepository {
 
     suspend fun loadSchedule(id: Int): TodoSchedule
     suspend fun loadTag(id: Int): TodoTag
+    suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
 
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
     suspend fun updateTodo(todoSchedule: TodoSchedule)

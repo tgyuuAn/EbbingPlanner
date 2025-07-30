@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.tgyuu.database.model.TodoInfoEntity
 import com.tgyuu.database.model.TodoScheduleEntity
+import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
@@ -122,7 +123,10 @@ interface TodoSchedulesDao {
     suspend fun softDeleteSchedule(id: Int, updatedAt: LocalDateTime = LocalDateTime.now())
 
     @Query("UPDATE schedule SET isDeleted = 1, updatedAt = :updatedAt WHERE infoId = :id")
-    suspend fun softDeleteScheduleByTodoInfo(id: Int, updatedAt: LocalDateTime = LocalDateTime.now())
+    suspend fun softDeleteScheduleByTodoInfo(
+        id: Int,
+        updatedAt: LocalDateTime = LocalDateTime.now()
+    )
 
     @Query("DELETE FROM schedule WHERE id = :id")
     suspend fun hardDeleteSchedule(id: Int)
@@ -190,6 +194,18 @@ interface TodoSchedulesDao {
     )
     suspend fun loadAllTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync>
 
+    @Query(
+        """
+    SELECT 
+        id,
+        title,
+        tagId
+    FROM todo_info
+    WHERE tagId = :tagId
+    """
+    )
+    suspend fun loadTodoInfoByTagId(tagId: Int): List<TodoInfo>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTodoSchedule(todoScheduleEntity: TodoScheduleEntity)
 
@@ -231,5 +247,8 @@ interface TodoSchedulesDao {
     ORDER BY s.date
     """
     )
-    suspend fun loadTodoSchedulesByDateRange(startDate: LocalDate, endDate: LocalDate): List<TodoSchedule>
+    suspend fun loadTodoSchedulesByDateRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<TodoSchedule>
 }

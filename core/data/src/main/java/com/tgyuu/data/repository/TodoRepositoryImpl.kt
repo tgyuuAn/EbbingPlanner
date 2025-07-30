@@ -7,6 +7,7 @@ import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
@@ -116,6 +117,8 @@ class TodoRepositoryImpl @Inject constructor(
         localTodoDataSource.getTodoSchedule(id)!!
 
     override suspend fun loadTag(id: Int): TodoTag = localTagDataSource.getTag(id)!!.toDomain()
+    override suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo> =
+        localTodoDataSource.getTodoInfosByTagId(tagId)
 
     override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
         localTodoDataSource.updateTodoInfo(todoSchedule)

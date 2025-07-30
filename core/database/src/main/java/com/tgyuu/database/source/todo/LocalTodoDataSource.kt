@@ -1,6 +1,7 @@
 package com.tgyuu.database.source.todo
 
 import com.tgyuu.database.model.TodoScheduleEntity
+import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
@@ -51,4 +52,5 @@ interface LocalTodoDataSource {
 
     suspend fun getSchedulesForSync(lastSyncTime: LocalDateTime): List<TodoScheduleForSync>
     suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync>
+    suspend fun getTodoInfosByTagId(tagId: Int): List<TodoInfo>
 }

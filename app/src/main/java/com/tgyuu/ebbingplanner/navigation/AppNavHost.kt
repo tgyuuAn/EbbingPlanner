@@ -2,8 +2,8 @@ package com.tgyuu.ebbingplanner.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.tgyuu.dashboard.navigation.scheduleNavigation
 import com.tgyuu.ebbingplanner.ui.EbbingAppState
 import com.tgyuu.home.navigation.homeGraph
 import com.tgyuu.memo.navigation.memoGraph
@@ -27,7 +27,7 @@ fun AppNavHost(
         onboardingNavigation()
         homeGraph()
         memoGraph()
-//        dashboardNavigation()
+        scheduleNavigation()
         settingGraph()
         tagGraph()
         repeatCycleGraph()

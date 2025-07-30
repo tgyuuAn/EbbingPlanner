@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 
@@ -85,11 +86,11 @@ fun TodoListCard(
                         )
 
                         Row(
-                            verticalAlignment = Alignment.Bottom,
+                            verticalAlignment = Alignment.Top,
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            FlowRow(modifier = Modifier.weight(1f)) {
+                            FlowRow {
                                 todosWithSameInfo.forEach {
                                     EbbingCheck(
                                         checked = it.isDone,
@@ -111,46 +112,51 @@ fun TodoListCard(
                             )
                         }
                     }
-
-                    Image(
-                        painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_3dots),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable { onEditScheduleClick(todo) }
-                    )
                 }
 
-                EbbingCheck(
-                    checked = todo.isDone,
-                    colorValue = todo.color,
-                    onCheckedChange = { onCheckedChange(todo) },
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-        }
-
-        EbbingVisibleAnimation(visible = todo.memo.isNotEmpty()) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier
-                    .padding(end = 32.dp, top = 4.dp),
-            ) {
                 Image(
-                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_memo),
+                    painter = painterResource(R.drawable.ic_3dots),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
-                    modifier = Modifier.size(16.dp),
-                )
-
-                Text(
-                    text = todo.memo,
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.dark1,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable { onEditScheduleClick(todo) },
                 )
             }
+
+            EbbingCheck(
+                checked = todo.isDone,
+                colorValue = todo.color,
+                onCheckedChange = { onCheckedChange(todo) },
+                modifier = Modifier.size(24.dp),
+            )
         }
+
+        EbbingVisibleAnimation(todo.memo.isNotEmpty()) { TodoListMemoContent(todo.memo) }
+    }
+}
+
+@Composable
+private fun TodoListMemoContent(
+    memo: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.padding(end = 32.dp, top = 4.dp),
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_memo),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+            modifier = Modifier.size(16.dp),
+        )
+
+        Text(
+            text = memo,
+            style = EbbingTheme.typography.bodySSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
     }
 }

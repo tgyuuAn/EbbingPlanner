@@ -37,7 +37,7 @@ sealed interface MemoGraph : Route {
 }
 
 @Serializable
-data object DashboardRoute : Route
+data object ScheduleRoute : Route
 
 @Serializable
 data object SettingBaseRoute : Route
