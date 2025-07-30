@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tgyuu.dashboard"
+    namespace = "com.tgyuu.schedule"
 
     defaultConfig {
         val localProperties = Properties()

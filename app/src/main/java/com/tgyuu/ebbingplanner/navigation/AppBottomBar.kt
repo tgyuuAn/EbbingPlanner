@@ -23,9 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.tgyuu.common.util.NoRippleInteractionSource
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.ebbingplanner.ui.isRouteInHierarchy
+import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.SCHEDULE
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.HOME
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.SETTING
+import com.tgyuu.ebbingplanner.ui.isRouteInHierarchy
+import com.tgyuu.navigation.ScheduleRoute
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingGraph.SettingRoute
@@ -97,7 +99,7 @@ internal fun AppBottomBar(
                     onClick = {
                         when (topLevelRoute) {
                             HOME -> navigateToBottomBarDestination(HomeRoute())
-//                            DASHBOARD -> navigateToBottomBarDestination(DashboardRoute)
+                            SCHEDULE -> navigateToBottomBarDestination(ScheduleRoute)
                             SETTING -> navigateToBottomBarDestination(SettingRoute)
                         }
                     }

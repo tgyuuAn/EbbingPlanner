@@ -11,10 +11,10 @@ plugins {
 
 android {
     namespace = "com.tgyuu.ebbingplanner"
-
+    
     defaultConfig {
-        versionCode = 20
-        versionName = "1.0.19"
+        versionCode = 21
+        versionName = "1.0.20"
         targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -72,7 +72,7 @@ dependencies {
     implementation(projects.feature.onboarding)
     implementation(projects.feature.home)
     implementation(projects.feature.memo)
-    implementation(projects.feature.dashboard)
+    implementation(projects.feature.schedule)
     implementation(projects.feature.setting)
     implementation(projects.feature.tag)
     implementation(projects.feature.repeatcycle)

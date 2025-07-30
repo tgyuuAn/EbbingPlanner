@@ -37,7 +37,7 @@ include(":core:alarm")
 include(":core:analytics")
 
 include(":feature:home")
-include(":feature:dashboard")
+include(":feature:schedule")
 include(":feature:setting")
 include(":feature:tag")
 include(":feature:onboarding")
