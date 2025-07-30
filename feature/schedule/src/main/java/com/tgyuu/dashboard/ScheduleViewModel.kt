@@ -68,6 +68,8 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private fun setSelectedTag(tag: TodoTag) {
+        if (tag == currentState.selectedTag) return
+
         setState {
             copy(
                 selectedTag = tag,
@@ -77,6 +79,8 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private fun setSelectedTodoInfo(todoInfo: TodoInfo) {
+        if (todoInfo == currentState.selectedTodoInfo) return
+
         setState { copy(selectedTodoInfo = todoInfo) }
     }
 

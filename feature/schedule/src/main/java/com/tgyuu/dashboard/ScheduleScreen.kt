@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.common.util.EbbingVisibleAnimation
@@ -74,6 +77,23 @@ private fun ScheduleScreen(
     onScheduleClick: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+
+    if (windowSizeClass == WindowWidthSizeClass.COMPACT) {
+        PhoneScheduleScreen(state, onTagClick, onInfoClick, onScheduleClick, modifier)
+    } else {
+        TabletScheduleScreen(state, onTagClick, onInfoClick, onScheduleClick, modifier)
+    }
+}
+
+@Composable
+private fun PhoneScheduleScreen(
+    state: ScheduleState,
+    onTagClick: (TodoTag) -> Unit,
+    onInfoClick: (TodoInfo) -> Unit,
+    onScheduleClick: (TodoSchedule) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val scrollState = rememberScrollState()
 
     Column(
@@ -94,32 +114,46 @@ private fun ScheduleScreen(
 
         EbbingVisibleAnimation(
             visible = state.selectedTodoInfo != null,
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .heightIn(max = 400.dp),
+            modifier = Modifier.padding(horizontal = 20.dp)
         ) {
-            SchedulesBody(
-                todoSchedules = state.todoSchedules,
-                selectedTodoInfo = state.selectedTodoInfo,
-                achievementRate = state.todoInfoAchievementRateMap[state.selectedTodoInfo?.id]
-                    ?: 0f,
-                onScheduleClick = onScheduleClick,
-            )
+            Column {
+                SchedulesBody(
+                    todoSchedules = state.todoSchedules,
+                    selectedTodoInfo = state.selectedTodoInfo,
+                    achievementRate = state.todoInfoAchievementRateMap[state.selectedTodoInfo?.id]
+                        ?: 0f,
+                    onScheduleClick = onScheduleClick,
+                    modifier = Modifier.heightIn(max = 400.dp),
+                )
+
+                HorizontalDivider(
+                    color = EbbingTheme.colors.light2,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
         }
 
         EbbingVisibleAnimation(
             visible = state.selectedTag != null,
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .heightIn(max = 400.dp),
+            modifier = Modifier.padding(horizontal = 20.dp),
         ) {
-            TodoInfosBody(
-                todoInfos = state.todoInfos,
-                selectedTag = state.selectedTag!!,
-                selectedTodoInfo = state.selectedTodoInfo,
-                achievementRateMap = state.todoInfoAchievementRateMap,
-                onTodoInfoClick = onInfoClick,
-            )
+            Column {
+                TodoInfosBody(
+                    todoInfos = state.todoInfos,
+                    selectedTag = state.selectedTag!!,
+                    selectedTodoInfo = state.selectedTodoInfo,
+                    achievementRateMap = state.todoInfoAchievementRateMap,
+                    onTodoInfoClick = onInfoClick,
+                    modifier = Modifier.heightIn(max = 400.dp),
+                )
+
+                HorizontalDivider(
+                    color = EbbingTheme.colors.light2,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
         }
 
         TagsBody(
@@ -131,6 +165,83 @@ private fun ScheduleScreen(
                 .padding(start = 20.dp, end = 20.dp, bottom = 16.dp)
                 .heightIn(max = 400.dp),
         )
+    }
+}
+
+@Composable
+private fun TabletScheduleScreen(
+    state: ScheduleState,
+    onTagClick: (TodoTag) -> Unit,
+    onInfoClick: (TodoInfo) -> Unit,
+    onScheduleClick: (TodoSchedule) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val maxBodyHeight = (screenHeight * 0.85f)
+
+    Column(modifier = modifier.fillMaxSize()) {
+        EbbingMainTopBar(
+            title = "일정 모아보기",
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                TagsBody(
+                    tags = state.tags,
+                    selectedTag = state.selectedTag,
+                    achievementRateMap = state.tagAchievementRateMap,
+                    onTagClick = onTagClick,
+                    modifier = Modifier.heightIn(max = maxBodyHeight / 3),
+                )
+
+                EbbingVisibleAnimation(visible = state.selectedTag != null) {
+                    Column {
+                        HorizontalDivider(
+                            color = EbbingTheme.colors.light2,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+
+                        TodoInfosBody(
+                            todoInfos = state.todoInfos,
+                            selectedTag = state.selectedTag!!,
+                            selectedTodoInfo = state.selectedTodoInfo,
+                            achievementRateMap = state.todoInfoAchievementRateMap,
+                            onTodoInfoClick = onInfoClick,
+                            modifier = Modifier.heightIn(max = maxBodyHeight / 2 * 3),
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                EbbingVisibleAnimation(visible = state.selectedTodoInfo != null) {
+                    SchedulesBody(
+                        todoSchedules = state.todoSchedules,
+                        selectedTodoInfo = state.selectedTodoInfo,
+                        achievementRate = state.todoInfoAchievementRateMap[state.selectedTodoInfo?.id]
+                            ?: 0f,
+                        onScheduleClick = onScheduleClick,
+                        modifier = Modifier.heightIn(max = maxBodyHeight),
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -256,24 +367,16 @@ private fun TodoInfosBody(
                     items = todoInfos,
                     key = { it.id },
                 ) { todoInfo ->
-                    selectedTag.let {
-                        ContentItemCard(
-                            value = todoInfo.title,
-                            achievementRate = achievementRateMap[todoInfo.id] ?: 0f,
-                            colorValue = selectedTag.color,
-                            isSelected = selectedTodoInfo == todoInfo,
-                            modifier = Modifier.clickable { onTodoInfoClick(todoInfo) },
-                        )
-                    }
+                    ContentItemCard(
+                        value = todoInfo.title,
+                        achievementRate = achievementRateMap[todoInfo.id] ?: 0f,
+                        colorValue = selectedTag.color,
+                        isSelected = selectedTodoInfo == todoInfo,
+                        modifier = Modifier.clickable { onTodoInfoClick(todoInfo) },
+                    )
                 }
             }
         }
-
-        HorizontalDivider(
-            color = EbbingTheme.colors.light2,
-            thickness = 1.dp,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
     }
 }
 
@@ -347,12 +450,6 @@ private fun SchedulesBody(
                 }
             }
         }
-
-        HorizontalDivider(
-            color = EbbingTheme.colors.light2,
-            thickness = 1.dp,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
     }
 }
 
@@ -369,8 +466,10 @@ private fun ContentItemCard(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.padding(vertical = 12.dp)
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
     ) {
         Spacer(
             modifier = Modifier
@@ -393,9 +492,9 @@ private fun ContentItemCard(
         Text(
             text = value,
             style = textStyle,
+            color = EbbingTheme.colors.black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
         )
 
         Text(
