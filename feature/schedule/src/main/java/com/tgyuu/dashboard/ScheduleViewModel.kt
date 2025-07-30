@@ -43,10 +43,27 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
+    private suspend fun loadTodoSchedules() = coroutineScope {
+        suspendRunCatching {
+            val todoInfos = currentState.todoInfoMap.values.flatten()
+
+            val schedulesPerInfos: List<List<TodoSchedule>> = todoInfos.map {
+                async { todoRepository.loadSchedulesByTodoInfo(it.id) }
+            }.awaitAll()
+
+            todoInfos.zip(schedulesPerInfos).associate { (todoInfo, schedules) ->
+                todoInfo.id to schedules
+            }
+        }.onSuccess {
+            setState { copy(todoScheduleMap = it) }
+        }
+    }
+
     override suspend fun processIntent(intent: ScheduleIntent) {
         when (intent) {
             is ScheduleIntent.OnTagClick -> setSelectedTag(intent.tag)
-            is ScheduleIntent.OnTodoInfoClick -> setSelectedTodoInfo(intent.todoInfo)
+            is ScheduleIntent.OnInfoClick -> setSelectedTodoInfo(intent.todoInfo)
+            is ScheduleIntent.OnScheduleClick -> onCheckedChange(intent.schedule)
         }
     }
 
@@ -63,18 +80,15 @@ class ScheduleViewModel @Inject constructor(
         setState { copy(selectedTodoInfo = todoInfo) }
     }
 
-    private suspend fun loadTodoSchedules() = coroutineScope {
-        suspendRunCatching {
-            val todoInfos = currentState.todoInfoMap.values.flatten()
+    private suspend fun onCheckedChange(schedule: TodoSchedule) {
+        val newSchedule = schedule.copy(isDone = !schedule.isDone)
+        todoRepository.updateTodo(newSchedule)
 
-            val schedulesPerInfos: List<List<TodoSchedule>> = todoInfos.map {
-                async { todoRepository.loadSchedulesByTodoInfo(it.id) }
-            }.awaitAll()
-
-            todoInfos.zip(schedulesPerInfos).associate { (todoInfo, schedules) ->
-                todoInfo.id to schedules }
-        }.onSuccess {
-            setState { copy(todoScheduleMap = it) }
+        val updatedMap = currentState.todoScheduleMap.toMutableMap()
+        val schedules = updatedMap[schedule.infoId].orEmpty().map {
+            if (it.id == schedule.id) newSchedule else it
         }
+        updatedMap[schedule.infoId] = schedules
+        setState { copy(todoScheduleMap = updatedMap) }
     }
 }

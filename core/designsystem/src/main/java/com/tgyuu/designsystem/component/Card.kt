@@ -86,11 +86,11 @@ fun TodoListCard(
                         )
 
                         Row(
-                            verticalAlignment = Alignment.Top,
+                            verticalAlignment = Alignment.Bottom,
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            FlowRow {
+                            FlowRow(modifier = Modifier.weight(1f)) {
                                 todosWithSameInfo.forEach {
                                     EbbingCheck(
                                         checked = it.isDone,
@@ -112,24 +112,24 @@ fun TodoListCard(
                             )
                         }
                     }
+
+                    Image(
+                        painter = painterResource(R.drawable.ic_3dots),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable { onEditScheduleClick(todo) },
+                    )
                 }
 
-                Image(
-                    painter = painterResource(R.drawable.ic_3dots),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clickable { onEditScheduleClick(todo) },
+                EbbingCheck(
+                    checked = todo.isDone,
+                    colorValue = todo.color,
+                    onCheckedChange = { onCheckedChange(todo) },
+                    modifier = Modifier.size(24.dp),
                 )
             }
-
-            EbbingCheck(
-                checked = todo.isDone,
-                colorValue = todo.color,
-                onCheckedChange = { onCheckedChange(todo) },
-                modifier = Modifier.size(24.dp),
-            )
         }
 
         EbbingVisibleAnimation(todo.memo.isNotEmpty()) { TodoListMemoContent(todo.memo) }

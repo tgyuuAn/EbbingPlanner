@@ -61,7 +61,8 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
     ScheduleScreen(
         state = state,
         onTagClick = { viewModel.onIntent(ScheduleIntent.OnTagClick(it)) },
-        onTodoInfoClick = { viewModel.onIntent(ScheduleIntent.OnTodoInfoClick(it)) },
+        onInfoClick = { viewModel.onIntent(ScheduleIntent.OnInfoClick(it)) },
+        onScheduleClick = { viewModel.onIntent(ScheduleIntent.OnScheduleClick(it)) },
     )
 }
 
@@ -69,7 +70,8 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
 private fun ScheduleScreen(
     state: ScheduleState,
     onTagClick: (TodoTag) -> Unit,
-    onTodoInfoClick: (TodoInfo) -> Unit,
+    onInfoClick: (TodoInfo) -> Unit,
+    onScheduleClick: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -101,6 +103,7 @@ private fun ScheduleScreen(
                 selectedTodoInfo = state.selectedTodoInfo,
                 achievementRate = state.todoInfoAchievementRateMap[state.selectedTodoInfo?.id]
                     ?: 0f,
+                onScheduleClick = onScheduleClick,
             )
         }
 
@@ -115,7 +118,7 @@ private fun ScheduleScreen(
                 selectedTag = state.selectedTag!!,
                 selectedTodoInfo = state.selectedTodoInfo,
                 achievementRateMap = state.todoInfoAchievementRateMap,
-                onTodoInfoClick = onTodoInfoClick,
+                onTodoInfoClick = onInfoClick,
             )
         }
 
@@ -125,7 +128,7 @@ private fun ScheduleScreen(
             achievementRateMap = state.tagAchievementRateMap,
             onTagClick = onTagClick,
             modifier = Modifier
-                .padding(horizontal = 20.dp)
+                .padding(start = 20.dp, end = 20.dp, bottom = 16.dp)
                 .heightIn(max = 400.dp),
         )
     }
@@ -279,7 +282,8 @@ private fun SchedulesBody(
     todoSchedules: List<TodoSchedule>,
     selectedTodoInfo: TodoInfo?,
     achievementRate: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScheduleClick: (TodoSchedule) -> Unit,
 ) {
     val listState = rememberLazyListState()
 
@@ -335,6 +339,7 @@ private fun SchedulesBody(
                 ) { todoSchedule ->
                     ScheduleCard(
                         schedule = todoSchedule,
+                        onScheduleClick = onScheduleClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 12.dp)
@@ -406,6 +411,7 @@ private fun ContentItemCard(
 @Composable
 private fun ScheduleCard(
     schedule: TodoSchedule,
+    onScheduleClick: (TodoSchedule) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -416,7 +422,7 @@ private fun ScheduleCard(
         EbbingCheck(
             checked = schedule.isDone,
             colorValue = schedule.color,
-            onCheckedChange = {},
+            onCheckedChange = { onScheduleClick(schedule) },
             modifier = Modifier.size(16.dp),
         )
 
