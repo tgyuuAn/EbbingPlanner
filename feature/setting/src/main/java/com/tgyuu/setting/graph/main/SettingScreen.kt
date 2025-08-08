@@ -26,6 +26,9 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +62,7 @@ import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
+import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
 
 @Composable
 internal fun SettingRoute(
@@ -83,6 +87,7 @@ internal fun SettingRoute(
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
         onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
+        onClearClick = { viewModel.onIntent(SettingIntent.OnClearClick) },
         onAppThemeManageClick = { viewModel.onIntent(SettingIntent.OnAppThemeManageClick) },
         onWidgetManageClick = { viewModel.onIntent(SettingIntent.OnWidgetManageClick) },
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
@@ -99,14 +104,25 @@ private fun SettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onClearClick: () -> Unit,
     onAppThemeManageClick: () -> Unit,
     onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    var isShowClearConfirm by remember { mutableStateOf(false) }
+    if (isShowClearConfirm) {
+        ConfirmClearDialog(
+            onDismissRequest = { isShowClearConfirm = false },
+            onClearClick = {
+                isShowClearConfirm = false
+                onClearClick()
+            },
+        )
+    }
 
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         PhoneSettingScreen(
             state = state,
@@ -115,6 +131,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onClearClick = { isShowClearConfirm = true },
             onAppThemeManageClick = onAppThemeManageClick,
             onWidgetManageClick = onWidgetManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
@@ -129,6 +146,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onClearClick = { isShowClearConfirm = true },
             onAppThemeManageClick = onAppThemeManageClick,
             onWidgetManageClick = onWidgetManageClick,
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
@@ -146,6 +164,7 @@ private fun PhoneSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onClearClick: () -> Unit,
     onAppThemeManageClick: () -> Unit,
     onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
@@ -182,7 +201,10 @@ private fun PhoneSettingScreen(
                 onRepeatCycleManageClick = onRepeatCycleManageClick,
             )
 
-            SyncBody(onSyncClick = onSyncClick)
+            DataBody(
+                onSyncClick = onSyncClick,
+                onClearClick = onClearClick,
+            )
 
             ThemeBody(
                 onThemeManageClick = onAppThemeManageClick,
@@ -215,6 +237,7 @@ private fun TabletSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onClearClick: () -> Unit,
     onAppThemeManageClick: () -> Unit,
     onWidgetManageClick: () -> Unit,
     onPrivacyAndPolicyClick: () -> Unit,
@@ -250,7 +273,10 @@ private fun TabletSettingScreen(
                     onRepeatCycleManageClick = onRepeatCycleManageClick,
                 )
 
-                SyncBody(onSyncClick = onSyncClick)
+                DataBody(
+                    onSyncClick = onSyncClick,
+                    onClearClick = onClearClick,
+                )
             }
 
             Column(
@@ -447,9 +473,12 @@ private fun TagRepeatCycleBody(
 }
 
 @Composable
-private fun SyncBody(onSyncClick: () -> Unit) {
+private fun DataBody(
+    onSyncClick: () -> Unit,
+    onClearClick: () -> Unit,
+) {
     Text(
-        text = "동기화",
+        text = "데이터",
         style = EbbingTheme.typography.bodySM,
         color = EbbingTheme.colors.dark2,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -464,6 +493,27 @@ private fun SyncBody(onSyncClick: () -> Unit) {
     ) {
         Text(
             text = "다른 기기와 동기화 하기",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onClearClick() },
+    ) {
+        Text(
+            text = "데이터 초기화 하기",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
@@ -781,6 +831,7 @@ private fun PreviewSettingScreen() {
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
             onSyncClick = {},
+            onClearClick = {},
             onAppThemeManageClick = {},
             onWidgetManageClick = {},
             onPrivacyAndPolicyClick = {},

@@ -85,6 +85,7 @@ class SettingViewModel @Inject constructor(
             SettingIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
             SettingIntent.OnAppThemeManageClick -> navigationBus.navigate(To(SettingGraph.ThemeRoute))
             SettingIntent.OnWidgetManageClick -> navigationBus.navigate(To(SettingGraph.WidgetRoute))
+            SettingIntent.OnClearClick -> clearData()
         }
     }
 
@@ -121,5 +122,13 @@ class SettingViewModel @Inject constructor(
         setState { copy(alarmHour = hour, alarmMinute = minute) }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 시간을 $hour:$minute 로 변경했어요"))
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+    }
+
+    private fun clearData() = viewModelScope.launch {
+        suspendRunCatching {
+            todoRepository.clearData()
+        }.onSuccess {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장된 데이터를 초기화 했어요"))
+        }
     }
 }

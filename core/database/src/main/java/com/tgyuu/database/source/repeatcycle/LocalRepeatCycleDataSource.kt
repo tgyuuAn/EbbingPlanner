@@ -13,6 +13,8 @@ interface LocalRepeatCycleDataSource {
     suspend fun updateRepeatCycle(repeatCycle: RepeatCycleForSync)
 
     suspend fun softDeleteRepeatCycle(repeatCycle: RepeatCycle)
+    suspend fun softDeleteAllRepeatCycles()
+
     suspend fun hardDeleteRepeatCycle(id: Int)
     suspend fun hardDeleteAllRepeatCycles()
 

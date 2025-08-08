@@ -33,6 +33,9 @@ class LocalRepeatCycleDataSourceImpl @Inject constructor(
     override suspend fun softDeleteRepeatCycle(repeatCycle: RepeatCycle) =
         repeatCyclesDao.softDeleteRepeatCycle(repeatCycle.toEntity().id)
 
+    override suspend fun softDeleteAllRepeatCycles() =
+        repeatCyclesDao.softDeleteAllRepeatCycles()
+
     override suspend fun hardDeleteRepeatCycle(id: Int) = repeatCyclesDao.hardDeleteRepeatCycle(id)
 
     override suspend fun hardDeleteAllRepeatCycles() = repeatCyclesDao.hardDeleteAllRepeatCycles()

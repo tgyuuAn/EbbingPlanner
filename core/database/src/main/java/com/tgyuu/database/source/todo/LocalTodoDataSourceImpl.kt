@@ -103,6 +103,8 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun softDeleteTodoByTodoInfo(id: Int) =
         todoSchedulesDao.softDeleteScheduleByTodoInfo(id)
 
+    override suspend fun softDeleteAllTodos() = todoSchedulesDao.softDeleteAllSchedules()
+
     override suspend fun hardDeleteTodo(id: Int) = todoSchedulesDao.hardDeleteSchedule(id)
 
     override suspend fun hardDeleteAllTodos() = todoSchedulesDao.hardDeleteAllSchedule()
@@ -115,4 +117,6 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getTodoInfosByTagId(tagId: Int): List<TodoInfo> =
         todoSchedulesDao.loadTodoInfoByTagId(tagId)
+
+    override suspend fun deleteAllTodoInfos() = todoSchedulesDao.hardDeleteAllTodoInfos()
 }

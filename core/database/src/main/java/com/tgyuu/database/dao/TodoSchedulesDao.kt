@@ -152,11 +152,17 @@ interface TodoSchedulesDao {
         updatedAt: LocalDateTime = LocalDateTime.now()
     )
 
+    @Query("UPDATE schedule  SET isDeleted = 1, updatedAt = :updatedAt")
+    suspend fun softDeleteAllSchedules(updatedAt: LocalDateTime = LocalDateTime.now())
+
     @Query("DELETE FROM schedule WHERE id = :id")
     suspend fun hardDeleteSchedule(id: Int)
 
     @Query("DELETE FROM schedule WHERE isDeleted = 1")
     suspend fun hardDeleteAllSchedule()
+
+    @Query("DELETE FROM todo_info")
+    suspend fun hardDeleteAllTodoInfos()
 
     @Query(
         """
