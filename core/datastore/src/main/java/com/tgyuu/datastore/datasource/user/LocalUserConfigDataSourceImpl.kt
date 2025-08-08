@@ -16,6 +16,14 @@ import javax.inject.Named
 class LocalUserConfigDataSourceImpl @Inject constructor(
     @Named("config") private val dataStore: DataStore<Preferences>,
 ) : LocalUserConfigDataSource {
+    override val clearSyncFlag: Flow<Boolean>
+        get() = dataStore.data
+            .map { prefs ->
+                val flag = prefs[CLEAR_SYNC_FLAG] ?: true
+                if (flag) { dataStore.edit { p -> p[CLEAR_SYNC_FLAG] = false } }
+                flag
+            }
+
     override val sortType: Flow<SortType>
         get() = dataStore.data
             .map { prefs ->
@@ -101,6 +109,7 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
     }
 
     companion object {
+        private val CLEAR_SYNC_FLAG = booleanPreferencesKey("CLEAR_SYNC_FLAG")
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")

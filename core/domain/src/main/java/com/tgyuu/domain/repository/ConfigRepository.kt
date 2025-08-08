@@ -23,4 +23,6 @@ interface ConfigRepository {
     suspend fun getAlarmTime(): Pair<Int, Int>
     suspend fun getSoftUpdateInfo(): UpdateInfo
     suspend fun getHardUpdateInfo(): UpdateInfo
+
+    suspend fun getClearSyncFlag(): Boolean
 }
