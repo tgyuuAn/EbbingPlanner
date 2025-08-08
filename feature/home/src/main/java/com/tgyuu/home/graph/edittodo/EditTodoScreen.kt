@@ -172,17 +172,19 @@ private fun EditTodoScreen(
                     horizontalArrangement = Arrangement.spacedBy(40.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    TagContent(
-                        tag = state.tag,
-                        onTagDropDownClick = onTagDropDownClick,
-                        modifier = Modifier.weight(1f),
-                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        TagContent(
+                            tag = state.tag,
+                            onTagDropDownClick = onTagDropDownClick,
+                        )
+                    }
 
-                    PriorityContent(
-                        priority = state.priority,
-                        onPriorityChange = onPriorityChange,
-                        modifier = Modifier.weight(1f),
-                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        PriorityContent(
+                            priority = state.priority,
+                            onPriorityChange = onPriorityChange,
+                        )
+                    }
                 }
             }
         }

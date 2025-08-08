@@ -1,5 +1,6 @@
 package com.tgyuu.dashboard
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -168,6 +169,7 @@ private fun PhoneScheduleScreen(
     }
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 private fun TabletScheduleScreen(
     state: ScheduleState,
@@ -546,6 +548,7 @@ private fun NoContentCard(modifier: Modifier = Modifier) {
     Text(
         text = "선택한 항목의 하위 요소가 없습니다.",
         style = EbbingTheme.typography.bodyMM,
+        color = EbbingTheme.colors.black,
         textAlign = TextAlign.Center,
         modifier = modifier
             .fillMaxWidth()
