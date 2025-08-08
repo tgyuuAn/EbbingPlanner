@@ -60,12 +60,14 @@ class MainViewModel @Inject constructor(
         val insertDefaultTagJob = launch { insertDefaultTag() }
         val checkOnboardingJob = launch { isFirstAppOpen() }
         val ensureUUIDExistsJob = launch { ensureUUIDExists() }
+        val clearSyncJob = launch { clearSync() }
 
         getSoftUpdateInfoJob.join()
         getHardUpdateInfoJob.join()
         insertDefaultTagJob.join()
         checkOnboardingJob.join()
         ensureUUIDExistsJob.join()
+        clearSyncJob.join()
 
         // UUID가 없을경우, 생성 이후 호출해야 하므로 동기적으로 호출
         setUserId()
@@ -102,5 +104,10 @@ class MainViewModel @Inject constructor(
         val uuid = syncRepository.getUuid()
         errorBus.setUserId(uuid)
         analyticsHelper.setUserId(uuid)
+    }
+
+    private suspend fun clearSync() {
+        val shouldClear = configRepository.getClearSyncFlag()
+        if (shouldClear) syncRepository.disconnectAnother()
     }
 }

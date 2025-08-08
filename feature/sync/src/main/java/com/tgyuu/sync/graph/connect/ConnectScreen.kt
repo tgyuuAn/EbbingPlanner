@@ -87,7 +87,7 @@ internal fun ConnectScreen(
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-        PhoneLinkScreen(
+        PhoneConnectScreen(
             state = state,
             onBackClick = onBackClick,
             onMyCodeChange = onMyCodeChange,
@@ -97,7 +97,7 @@ internal fun ConnectScreen(
             modifier = modifier,
         )
     } else {
-        TabletLinkScreen(
+        TabletConnectScreen(
             state = state,
             onBackClick = onBackClick,
             onMyCodeChange = onMyCodeChange,
@@ -110,7 +110,7 @@ internal fun ConnectScreen(
 }
 
 @Composable
-private fun PhoneLinkScreen(
+private fun PhoneConnectScreen(
     state: ConnectState,
     onBackClick: () -> Unit,
     onMyCodeChange: (String) -> Unit,
@@ -147,7 +147,7 @@ private fun PhoneLinkScreen(
 }
 
 @Composable
-private fun TabletLinkScreen(
+private fun TabletConnectScreen(
     state: ConnectState,
     onBackClick: () -> Unit,
     onMyCodeChange: (String) -> Unit,

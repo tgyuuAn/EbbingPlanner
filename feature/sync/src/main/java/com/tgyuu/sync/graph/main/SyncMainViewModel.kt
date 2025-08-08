@@ -75,7 +75,7 @@ class SyncMainViewModel @Inject constructor(
         suspendRunCatching {
             syncRepository.syncUpData()
         }.onSuccess {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 업로드 하였습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 동기화 하였습니다."))
             setState {
                 copy(
                     localLastSyncedAt = it,
@@ -84,7 +84,7 @@ class SyncMainViewModel @Inject constructor(
             }
         }.onFailure { error ->
             errorBus.sendError(error)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("업로드에 실패하였습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("동기화에 실패하였습니다."))
         }.also {
             setState { copy(isNetworkLoading = false) }
         }

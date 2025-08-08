@@ -5,6 +5,7 @@ import com.tgyuu.domain.model.Theme
 import kotlinx.coroutines.flow.Flow
 
 interface LocalUserConfigDataSource {
+    val clearSyncFlag: Flow<Boolean>
     val sortType: Flow<SortType>
     val notificationEnabled: Flow<Boolean>
     val alarmTime: Flow<Pair<Int, Int>>

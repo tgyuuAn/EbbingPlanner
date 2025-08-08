@@ -97,8 +97,6 @@ class SyncRepositoryImpl @Inject constructor(
 
         localSyncDataSource.setConnectedUuid(info.uuid)
         replaceData()
-        localSyncDataSource.setConnectedUuid(null)
-        localSyncDataSource.setLastSyncTime(null)
         return info
     }
 
@@ -126,22 +124,20 @@ class SyncRepositoryImpl @Inject constructor(
             repeatCycles = repeatCycles.await(),
             tags = tags.await(),
         )
+
         // 업로드 이후 로컬에 softDelete 데이터 제거
-        val schedulesDeleteJob = launch { localTodoDataSource.hardDeleteAllTodos() }
         val repeatCyclesDeleteJob =
             launch { localRepeatCycleDataSource.hardDeleteAllRepeatCycles() }
-        val tagsDeleteJob = launch { localTagDataSource.hardDeleteAllTags() }
-
-        schedulesDeleteJob.join()
+        localTodoDataSource.hardDeleteAllTodos()
+        localTagDataSource.hardDeleteAllTags()
         repeatCyclesDeleteJob.join()
-        tagsDeleteJob.join()
 
         // 클라이언트 동기화 시간 갱신
         localSyncDataSource.setLastSyncTime(response)
         response
     }
 
-    private suspend fun downloadData(): ZonedDateTime? = coroutineScope {
+    private suspend fun downloadData() = coroutineScope {
         val uuidDeferred = async { getUuid() }
         val connectedUuidDeferred = async { getConnectedUuid() }
 
@@ -169,70 +165,57 @@ class SyncRepositoryImpl @Inject constructor(
 
                     if (local == null) {
                         localRepeatCycleDataSource.insertRepeatCycle(repeatCycle)
-                    } else if (repeatCycle.updatedAt > local.updatedAt) {
+                    } else if (repeatCycle.updatedAt >= local.updatedAt) {
                         localRepeatCycleDataSource.updateRepeatCycle(repeatCycle)
                     }
                 }
             }
         }
 
-        val tagsJob = launch {
-            response.tags.forEach { dto ->
-                val tag = dto.toDomain()
+        response.tags.forEach { dto ->
+            val tag = dto.toDomain()
 
-                if (tag.isDeleted) {
-                    localTagDataSource.hardDeleteTag(tag.id)
-                } else {
-                    val local = localTagDataSource.getTag(tag.id)
-
-                    if (local == null) {
-                        localTagDataSource.insertTag(tag)
-                    } else if (tag.updatedAt > local.updatedAt) {
-                        localTagDataSource.updateTag(tag)
-                    }
-                }
-            }
-        }
-
-        val todoInfosJob = launch {
-            response.todoInfos.forEach { dto ->
-                val todoInfo = dto.toDomain()
-                val local = localTodoDataSource.getTodoScheduleEntity(todoInfo.id)
+            if (tag.isDeleted) {
+                localTagDataSource.hardDeleteTag(tag.id)
+            } else {
+                val local = localTagDataSource.getTag(tag.id)
 
                 if (local == null) {
-                    localTodoDataSource.insertTodoInfo(todoInfo)
-                } else if (todoInfo.updatedAt > local.updatedAt) {
-                    localTodoDataSource.updateTodoInfo(todoInfo)
+                    localTagDataSource.insertTag(tag)
+                } else if (tag.updatedAt >= local.updatedAt) {
+                    localTagDataSource.updateTag(tag)
                 }
             }
         }
 
-        val schedulesJob = launch {
-            response.schedules.forEach { dto ->
-                val schedule = dto.toDomain()
+        response.todoInfos.forEach { dto ->
+            val todoInfo = dto.toDomain()
+            val local = localTodoDataSource.getTodoScheduleEntity(todoInfo.id)
 
-                if (schedule.isDeleted) {
-                    localTodoDataSource.hardDeleteTodo(schedule.id)
-                } else {
-                    val local = localTodoDataSource.getTodoScheduleEntity(schedule.id)
+            if (local == null) {
+                localTodoDataSource.insertTodoInfo(todoInfo)
+            } else if (todoInfo.updatedAt >= local.updatedAt) {
+                localTodoDataSource.updateTodoInfo(todoInfo)
+            }
+        }
 
-                    if (local == null) {
-                        localTodoDataSource.insertSchedule(schedule)
-                    } else if (schedule.updatedAt > local.updatedAt) {
-                        localTodoDataSource.updateSchedule(schedule)
-                    }
+        response.schedules.forEach { dto ->
+            val schedule = dto.toDomain()
+
+            if (schedule.isDeleted) {
+                localTodoDataSource.hardDeleteTodo(schedule.id)
+            } else {
+                val local = localTodoDataSource.getTodoScheduleEntity(schedule.id)
+
+                if (local == null) {
+                    localTodoDataSource.insertSchedule(schedule)
+                } else if (schedule.updatedAt >= local.updatedAt) {
+                    localTodoDataSource.updateSchedule(schedule)
                 }
             }
         }
 
         repeatCyclesJob.join()
-        todoInfosJob.join()
-        tagsJob.join()
-        schedulesJob.join()
-
-        val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
-        localSyncDataSource.setLastSyncTime(syncedAt)
-        syncedAt
     }
 
     private suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
@@ -278,9 +261,9 @@ class SyncRepositoryImpl @Inject constructor(
         val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
             .getOrThrow()
 
-        val infos = response.todoInfos.map { it.toDomain() }
         val repeatCycles = response.repeatCycles.map { it.toDomain() }
         val tags = response.tags.map { it.toDomain() }
+        val infos = response.todoInfos.map { it.toDomain() }
         val schedules = response.schedules.map { it.toDomain() }
 
         localSyncTransactionDataSource.replaceAllData(

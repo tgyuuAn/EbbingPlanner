@@ -56,6 +56,11 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override fun getAppTheme(): Flow<Theme> = localUserConfigDataSource.appTheme
     override fun getWidgetTheme(): Flow<Theme> = localUserConfigDataSource.widgetTheme
-    override fun getWidgetBackgroundAlpha(): Flow<Float> = localUserConfigDataSource.widgetBackgroundAlpha
-    override fun getWidgetTextAlpha(): Flow<Float>  = localUserConfigDataSource.widgetTextAlpha
+    override fun getWidgetBackgroundAlpha(): Flow<Float> =
+        localUserConfigDataSource.widgetBackgroundAlpha
+
+    override fun getWidgetTextAlpha(): Flow<Float> = localUserConfigDataSource.widgetTextAlpha
+
+    override suspend fun getClearSyncFlag(): Boolean =
+        localUserConfigDataSource.clearSyncFlag.first()
 }
