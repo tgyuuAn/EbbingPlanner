@@ -54,9 +54,7 @@ class ScheduleViewModel @Inject constructor(
                 }.distinctBy { it.id }
             }
 
-            val todoTags = todoInfoMap.keys.map { tagId ->
-                todoRepository.loadTag(tagId)
-            }
+            val todoTags = todoRepository.loadTags()
 
             setState {
                 copy(
