@@ -14,6 +14,7 @@ interface LocalTodoDataSource {
     suspend fun getTodoScheduleByTodoInfo(id: Int): List<TodoSchedule>
     suspend fun getTodoSchedulesByDate(date: LocalDate): List<TodoSchedule>
     suspend fun getUpcomingTodoSchedules(date: LocalDate): List<TodoSchedule>
+    suspend fun getAllTodoSchedules(): List<TodoSchedule>
     suspend fun getTodoSchedulesByDateRange(
         startDate: LocalDate,
         endDate: LocalDate

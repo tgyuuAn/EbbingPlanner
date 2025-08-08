@@ -116,6 +116,30 @@ interface TodoSchedulesDao {
     )
     suspend fun loadUpcomingTodoSchedules(date: LocalDate): List<TodoSchedule>
 
+    @Query(
+        """
+        SELECT 
+            s.id          AS id,
+            s.infoId      AS infoId,
+            i.title       AS title, 
+            i.tagId       AS tagId,
+            i.createdAt   AS infoCreatedAt,
+            t.name        AS name,
+            t.color       AS color,
+            s.date        AS date,
+            s.memo        AS memo,
+            s.priority    AS priority,
+            s.isDone      AS isDone,
+            s.createdAt   AS createdAt
+        FROM schedule s
+        JOIN todo_info  i ON s.infoId = i.id
+        JOIN todo_tag   t ON i.tagId  = t.id
+        WHERE s.isDeleted = 0 AND t.isDeleted = 0
+        ORDER BY s.date               
+        """
+    )
+    suspend fun loadAllTodoSchedules(): List<TodoSchedule>
+
     @Query("SELECT * FROM schedule WHERE id = :id")
     suspend fun loadTodoScheduleEntity(id: Int): TodoScheduleEntity?
 

@@ -58,7 +58,7 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
-        viewModel.loadTags()
+        viewModel.loadTodoSchedules()
     }
 
     ScheduleScreen(
