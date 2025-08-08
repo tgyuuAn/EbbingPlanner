@@ -9,8 +9,6 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
@@ -19,43 +17,54 @@ class ScheduleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
-    internal suspend fun loadTags() {
+    internal suspend fun loadTodoSchedules() = coroutineScope {
         suspendRunCatching {
-            todoRepository.loadTags()
-        }.onSuccess { tags ->
-            setState { copy(tags = tags) }
+            val allSchedules = todoRepository.loadAllSchedules()
 
-            loadTodoInfos(tags)
-        }
-    }
-
-    private suspend fun loadTodoInfos(tags: List<TodoTag>) = coroutineScope {
-        suspendRunCatching {
-            val infosPerTag: List<List<TodoInfo>> = tags.map { tag ->
-                async { todoRepository.loadTodoInfosByTagId(tag.id) }
-            }.awaitAll()
-
-            tags.zip(infosPerTag).associate { (tag, infos) -> tag.id to infos }
-        }.onSuccess {
-            setState { copy(todoInfoMap = it) }
-
-            loadTodoSchedules()
-        }
-    }
-
-    private suspend fun loadTodoSchedules() = coroutineScope {
-        suspendRunCatching {
-            val todoInfos = currentState.todoInfoMap.values.flatten()
-
-            val schedulesPerInfos: List<List<TodoSchedule>> = todoInfos.map {
-                async { todoRepository.loadSchedulesByTodoInfo(it.id) }
-            }.awaitAll()
-
-            todoInfos.zip(schedulesPerInfos).associate { (todoInfo, schedules) ->
-                todoInfo.id to schedules
+            val todoInfoMap = allSchedules.groupBy { schedule ->
+                schedule.tagId
+            }.mapValues { entry ->
+                entry.value.map { schedule ->
+                    TodoInfo(
+                        id = schedule.infoId,
+                        title = schedule.title,
+                        tagId = schedule.tagId,
+                    )
+                }.distinctBy { it.id }
             }
-        }.onSuccess {
-            setState { copy(todoScheduleMap = it) }
+
+            val todoScheduleMap = allSchedules.groupBy { schedule ->
+                schedule.infoId
+            }.mapValues { entry ->
+                entry.value.map { schedule ->
+                    TodoSchedule(
+                        id = schedule.id,
+                        infoId = schedule.infoId,
+                        title = schedule.title,
+                        tagId = schedule.tagId,
+                        name = schedule.name,
+                        color = schedule.color,
+                        date = schedule.date,
+                        memo = schedule.memo,
+                        priority = schedule.priority,
+                        isDone = schedule.isDone,
+                        createdAt = schedule.createdAt,
+                        infoCreatedAt = schedule.createdAt
+                    )
+                }.distinctBy { it.id }
+            }
+
+            val todoTags = todoInfoMap.keys.map { tagId ->
+                todoRepository.loadTag(tagId)
+            }
+
+            setState {
+                copy(
+                    todoInfoMap = todoInfoMap,
+                    todoScheduleMap = todoScheduleMap,
+                    tags = todoTags,
+                )
+            }
         }
     }
 

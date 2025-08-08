@@ -29,6 +29,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun getUpcomingTodoSchedules(date: LocalDate): List<TodoSchedule> =
         todoSchedulesDao.loadUpcomingTodoSchedules(date)
 
+    override suspend fun getAllTodoSchedules(): List<TodoSchedule> =
+        todoSchedulesDao.loadAllTodoSchedules()
+
     override suspend fun getTodoSchedulesByDateRange(
         startDate: LocalDate,
         endDate: LocalDate

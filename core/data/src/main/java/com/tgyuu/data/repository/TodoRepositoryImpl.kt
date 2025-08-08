@@ -45,6 +45,8 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadUpcomingSchedules(date: LocalDate): List<TodoSchedule> =
         localTodoDataSource.getUpcomingTodoSchedules(date)
 
+    override suspend fun loadAllSchedules(): List<TodoSchedule> = localTodoDataSource.getAllTodoSchedules()
+
     override suspend fun loadTags(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
 
