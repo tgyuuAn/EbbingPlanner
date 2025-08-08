@@ -11,7 +11,9 @@ import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -45,7 +47,8 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadUpcomingSchedules(date: LocalDate): List<TodoSchedule> =
         localTodoDataSource.getUpcomingTodoSchedules(date)
 
-    override suspend fun loadAllSchedules(): List<TodoSchedule> = localTodoDataSource.getAllTodoSchedules()
+    override suspend fun loadAllSchedules(): List<TodoSchedule> =
+        localTodoDataSource.getAllTodoSchedules()
 
     override suspend fun loadTags(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
@@ -136,4 +139,16 @@ class TodoRepositoryImpl @Inject constructor(
 
     override suspend fun updateTag(todoTag: TodoTag) = localTagDataSource.updateTag(todoTag)
     override suspend fun deleteTag(todoTag: TodoTag) = localTagDataSource.softDeleteTag(todoTag)
+
+    override suspend fun clearData() = coroutineScope {
+        val tagJob = launch { localTagDataSource.softDeleteAllTags() }
+        val todoJob = launch { localTodoDataSource.softDeleteAllTodos() }
+        val todoInfoJob = launch { localTodoDataSource.deleteAllTodoInfos() }
+        val repeatCycleJob = launch { localRepeatCycleDataSource.softDeleteAllRepeatCycles() }
+
+        tagJob.join()
+        todoJob.join()
+        todoInfoJob.join()
+        repeatCycleJob.join()
+    }
 }

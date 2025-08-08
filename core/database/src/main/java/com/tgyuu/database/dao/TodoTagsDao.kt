@@ -21,6 +21,9 @@ interface TodoTagsDao {
     @Query("UPDATE todo_tag SET isDeleted = 1, updatedAt = :updatedAt WHERE id = :tagId")
     suspend fun softDeleteTag(tagId: Int, updatedAt: LocalDateTime)
 
+    @Query("UPDATE todo_tag SET isDeleted = 1, updatedAt = :updatedAt WHERE id != 1")
+    suspend fun softDeleteAllTags(updatedAt: LocalDateTime)
+
     @Query("DELETE FROM todo_tag WHERE id = :id")
     suspend fun hardDeleteTag(id: Int)
 

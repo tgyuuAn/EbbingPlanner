@@ -16,6 +16,9 @@ interface RepeatCyclesDao {
     @Query("UPDATE repeat_cycle SET isDeleted = 1, updatedAt = :updatedAt WHERE id = :id")
     suspend fun softDeleteRepeatCycle(id: Int, updatedAt: LocalDateTime = LocalDateTime.now())
 
+    @Query("UPDATE repeat_cycle SET isDeleted = 1, updatedAt = :updatedAt")
+    suspend fun softDeleteAllRepeatCycles(updatedAt: LocalDateTime = LocalDateTime.now())
+
     @Query("DELETE FROM repeat_cycle WHERE id = :id")
     suspend fun hardDeleteRepeatCycle(id: Int)
 
@@ -23,7 +26,7 @@ interface RepeatCyclesDao {
     suspend fun hardDeleteAllRepeatCycles()
 
     @Query(
-    """
+        """
         UPDATE repeat_cycle 
         SET intervals = :intervalsJson, updatedAt = :updatedAt
         WHERE id = :id AND isDeleted = 0

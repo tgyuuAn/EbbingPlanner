@@ -62,4 +62,6 @@ interface TodoRepository {
 
     suspend fun updateTag(todoTag: TodoTag)
     suspend fun deleteTag(todoTag: TodoTag)
+
+    suspend fun clearData()
 }
