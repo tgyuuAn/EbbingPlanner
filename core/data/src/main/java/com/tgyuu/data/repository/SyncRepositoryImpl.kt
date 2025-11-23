@@ -95,6 +95,7 @@ class SyncRepositoryImpl @Inject constructor(
         val myUuid = getUuid()
         if (info.uuid == myUuid) return info
 
+        localSyncDataSource.setLastSyncTime(null)
         localSyncDataSource.setConnectedUuid(info.uuid)
         replaceData()
         return info
