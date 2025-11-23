@@ -96,8 +96,8 @@ class SyncRepositoryImpl @Inject constructor(
         if (info.uuid == myUuid) return info
 
         localSyncDataSource.setLastSyncTime(null)
-        localSyncDataSource.setConnectedUuid(info.uuid)
         replaceData()
+        localSyncDataSource.setConnectedUuid(info.uuid)
         return info
     }
 
@@ -248,6 +248,8 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     private suspend fun replaceData(): ZonedDateTime? = coroutineScope {
+        throw Exception("test")
+
         val uuidDeferred = async { getUuid() }
         val connectedUuidDeferred = async { getConnectedUuid() }
 

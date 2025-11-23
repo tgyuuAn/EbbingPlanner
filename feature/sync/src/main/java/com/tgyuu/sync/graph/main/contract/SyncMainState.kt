@@ -13,5 +13,5 @@ data class SyncMainState(
 ) : UiState {
     val isSyncUpEnabled: Boolean
         get() = serverLastUpdatedAt == null ||
-                Duration.between(serverLastUpdatedAt, ZonedDateTime.now()).toMinutes() >= 10
+                Duration.between(serverLastUpdatedAt, ZonedDateTime.now()).toSeconds() >= 10
 }
