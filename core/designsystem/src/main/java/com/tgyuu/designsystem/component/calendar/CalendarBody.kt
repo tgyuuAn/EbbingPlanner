@@ -36,14 +36,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.ebbingAnimateColorAsState
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import java.time.LocalDate
 
 @Composable
 internal fun CalendarBody(
     currentDate: LocalDate,
     selectedDate: LocalDate?,
-    schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
+    schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -70,7 +70,7 @@ internal fun CalendarBody(
 private fun CalendarDayItem(
     calendarDate: CalendarDate,
     selectedDate: LocalDate?,
-    events: List<TodoSchedule>,
+    events: List<TodoScheduleUiModel>,
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {

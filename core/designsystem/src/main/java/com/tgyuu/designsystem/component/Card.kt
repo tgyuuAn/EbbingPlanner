@@ -29,14 +29,15 @@ import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.designsystem.model.ClickableText
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 
 @Composable
 fun TodoListCard(
-    todo: TodoSchedule,
-    todosWithSameInfo: List<TodoSchedule>,
-    onCheckedChange: (TodoSchedule) -> Unit,
-    onEditScheduleClick: (TodoSchedule) -> Unit,
+    todo: TodoScheduleUiModel,
+    todosWithSameInfo: List<TodoScheduleUiModel>,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
@@ -69,8 +70,8 @@ fun TodoListCard(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.weight(1f),
                     ) {
-                        Text(
-                            text = todo.title,
+                        EbbingClickableText(
+                            clickableText = todo.title,
                             style = EbbingTheme.typography.bodyMSB,
                             color = EbbingTheme.colors.black,
                             maxLines = 3,
@@ -132,13 +133,13 @@ fun TodoListCard(
             }
         }
 
-        EbbingVisibleAnimation(todo.memo.isNotEmpty()) { TodoListMemoContent(todo.memo) }
+        EbbingVisibleAnimation(todo.memo.originalText.isNotEmpty()) { TodoListMemoContent(todo.memo) }
     }
 }
 
 @Composable
 private fun TodoListMemoContent(
-    memo: String,
+    memo: ClickableText,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -152,8 +153,8 @@ private fun TodoListMemoContent(
             modifier = Modifier.size(16.dp),
         )
 
-        Text(
-            text = memo,
+        EbbingClickableText(
+            clickableText = memo,
             style = EbbingTheme.typography.bodySSB,
             color = EbbingTheme.colors.dark1,
             modifier = Modifier.weight(1f),
