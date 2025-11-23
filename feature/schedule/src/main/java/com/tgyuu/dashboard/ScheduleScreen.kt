@@ -338,8 +338,13 @@ private fun TodoInfosBody(
                         append(todoInfos.size.toString())
                     }
                 },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = EbbingTheme.typography.bodyMSB,
                 color = EbbingTheme.colors.black,
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .weight(1f, false),
             )
 
             Text(
@@ -407,8 +412,13 @@ private fun SchedulesBody(
                         append(todoSchedules.size.toString())
                     }
                 },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = EbbingTheme.typography.bodyMSB,
                 color = EbbingTheme.colors.black,
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .weight(1f, false),
             )
 
             Text(
@@ -497,14 +507,15 @@ private fun ContentItemCard(
             color = EbbingTheme.colors.black,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .weight(1f, false)
+                .padding(horizontal = 12.dp),
         )
 
         Text(
             text = "${Math.round(achievementRate * 100)} %",
             style = textStyle,
             color = EbbingTheme.colors.primaryDefault,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
     }
 }
