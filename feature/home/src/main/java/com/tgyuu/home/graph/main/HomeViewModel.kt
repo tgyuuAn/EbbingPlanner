@@ -7,12 +7,14 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
+import com.tgyuu.home.model.toUiModel
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.EditTodoRoute
@@ -88,7 +90,9 @@ class HomeViewModel @Inject constructor(
         cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
 
         val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val byInfo = cachedSchedules.groupBy { it.infoId }
+        val byInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
+            list.map { it.toUiModel() }
+        }
         setState {
             copy(
                 isLoading = false,
@@ -108,7 +112,9 @@ class HomeViewModel @Inject constructor(
         cachedSchedules = cachedSchedules.map { if (it.id == schedule.id) newSchedule else it }
         updateCacheAfterChange()
 
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
+            list.map { it.toUiModel() }
+        }
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
@@ -126,7 +132,9 @@ class HomeViewModel @Inject constructor(
         cachedSchedules = cachedSchedules.filterNot { it.id == schedule.id }
         updateCacheAfterChange()
 
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
+            list.map { it.toUiModel() }
+        }
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
@@ -153,7 +161,9 @@ class HomeViewModel @Inject constructor(
 
         updateCacheAfterChange()
 
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
+            list.map { it.toUiModel() }
+        }
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
@@ -202,7 +212,9 @@ class HomeViewModel @Inject constructor(
         updateCacheAfterChange()
 
         val newByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val newByInfo = cachedSchedules.groupBy { it.infoId }
+        val newByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
+            list.map { it.toUiModel() }
+        }
         setState {
             copy(
                 schedulesByDateMap = newByDate,
@@ -245,7 +257,9 @@ class HomeViewModel @Inject constructor(
         updateCacheAfterChange()
 
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }
+        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
+            list.map { it.toUiModel() }
+        }
 
         setState {
             copy(
@@ -274,15 +288,16 @@ class HomeViewModel @Inject constructor(
     private fun buildByDateMap(
         schedules: List<TodoSchedule>,
         sortType: SortType,
-    ): Map<LocalDate, List<TodoSchedule>> {
+    ): Map<LocalDate, List<TodoScheduleUiModel>> {
         val grouped = schedules.groupBy { it.date }
 
         return grouped.mapValues { (_, list) ->
-            when (sortType) {
+            val sorted = when (sortType) {
                 SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
                 SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
                 SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { it.priority }))
             }
+            sorted.map { it.toUiModel() }
         }
     }
 

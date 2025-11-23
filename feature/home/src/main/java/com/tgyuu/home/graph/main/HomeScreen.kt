@@ -41,12 +41,14 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckChanged
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
 import com.tgyuu.home.graph.main.contract.HomeState
+import com.tgyuu.home.model.toDomainModel
 import com.tgyuu.home.graph.main.ui.EbbingTodoList
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
@@ -124,7 +126,7 @@ internal fun HomeRoute(
         state = state,
         onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
-        onCheckedChange = { viewModel.onIntent(OnCheckChanged(it)) },
+        onCheckedChange = { viewModel.onIntent(OnCheckChanged(it.toDomainModel())) },
         onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
         onSortTypeClick = {
             viewModel.onIntent(OnSortTypeClick({
@@ -135,10 +137,11 @@ internal fun HomeRoute(
             }))
         },
         onEditScheduleClick = { schedule ->
+            val domainSchedule = schedule.toDomainModel()
             viewModel.onIntent(
                 HomeIntent.OnEditScheduleClick {
                     OptionsBottomSheet(
-                        selectedSchedule = schedule,
+                        selectedSchedule = domainSchedule,
                         onClickDelay = { delayedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
@@ -224,9 +227,9 @@ private fun HomeScreen(
     workedDate: LocalDate,
     state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
-    onCheckedChange: (TodoSchedule) -> Unit,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onSortTypeClick: () -> Unit,
-    onEditScheduleClick: (TodoSchedule) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onSyncClick: () -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
@@ -265,9 +268,9 @@ private fun PhoneHomeScreen(
     workedDate: LocalDate,
     state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
-    onCheckedChange: (TodoSchedule) -> Unit,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onSortTypeClick: () -> Unit,
-    onEditScheduleClick: (TodoSchedule) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -382,9 +385,9 @@ private fun TabletHomeScreen(
     workedDate: LocalDate,
     state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
-    onCheckedChange: (TodoSchedule) -> Unit,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onSortTypeClick: () -> Unit,
-    onEditScheduleClick: (TodoSchedule) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
     modifier: Modifier = Modifier

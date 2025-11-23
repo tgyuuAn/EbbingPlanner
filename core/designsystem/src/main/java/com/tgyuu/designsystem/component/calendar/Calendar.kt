@@ -11,14 +11,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
 fun EbbingCalendar(
     calendarState: CalendarState,
-    schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
+    schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     modifier: Modifier = Modifier,
     onSelectDate: (LocalDate) -> Unit = {},
     onSyncClick: () -> Unit = {},

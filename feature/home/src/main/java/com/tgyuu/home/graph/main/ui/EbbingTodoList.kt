@@ -36,19 +36,19 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
-import com.tgyuu.domain.model.TodoSchedule
 import java.time.LocalDate
 
 @Composable
 internal fun EbbingTodoList(
     sortType: SortType,
     selectedDate: LocalDate,
-    todoLists: List<TodoSchedule>,
-    schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
+    todoLists: List<TodoScheduleUiModel>,
+    schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
     onSelectDate: (LocalDate) -> Unit,
-    onCheckedChange: (TodoSchedule) -> Unit,
-    onEditScheduleClick: (TodoSchedule) -> Unit,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onAddTodoClick: () -> Unit,
     onSortTypeClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -152,10 +152,10 @@ private fun TodoHeader(
 @Composable
 private fun TodoPage(
     date: LocalDate,
-    todos: List<TodoSchedule>,
-    schedulesByTodoInfo: Map<Int, List<TodoSchedule>>,
-    onCheckedChange: (TodoSchedule) -> Unit,
-    onEdit: (TodoSchedule) -> Unit
+    todos: List<TodoScheduleUiModel>,
+    schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
+    onEdit: (TodoScheduleUiModel) -> Unit
 ) {
     val listState = rememberLazyListState()
 

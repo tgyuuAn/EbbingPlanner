@@ -14,6 +14,7 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
+import com.tgyuu.home.model.toUiModel
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -54,7 +55,9 @@ class EditTodoViewModel @Inject constructor(
             setState {
                 copy(
                     originSchedule = originSchedule,
-                    schedulesByDateMap = schedulesByDateMap.groupBy { it.date },
+                    schedulesByDateMap = schedulesByDateMap
+                        .groupBy { it.date }
+                        .mapValues { (_, list) -> list.map { it.toUiModel() } },
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
                     priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
