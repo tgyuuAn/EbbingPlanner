@@ -16,7 +16,10 @@ import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,7 +50,17 @@ class SyncMainViewModel @Inject constructor(
         val serverLastUpdatedAtJob = launch {
             suspendRunCatching {
                 syncRepository.getServerLastUpdatedAt()
-            }.onSuccess { setState { copy(serverLastUpdatedAt = it) } }
+            }.onSuccess { serverLastUpdatedAt ->
+                val isSyncUpEnabled = serverLastUpdatedAt == null ||
+                        Duration.between(serverLastUpdatedAt, ZonedDateTime.now())
+                            .toMillis() >= SYNC_UP_COOL_TIME
+                setState {
+                    copy(
+                        serverLastUpdatedAt = serverLastUpdatedAt,
+                        isSyncUpEnabled = isSyncUpEnabled,
+                    )
+                }
+            }
         }
 
         uuidJob.join()
@@ -80,7 +93,13 @@ class SyncMainViewModel @Inject constructor(
                 copy(
                     localLastSyncedAt = it,
                     serverLastUpdatedAt = it,
+                    isSyncUpEnabled = false,
                 )
+            }
+
+            launch {
+                delay(SYNC_UP_COOL_TIME)
+                setState { copy(isSyncUpEnabled = true) }
             }
         }.onFailure { error ->
             errorBus.sendError(error)
@@ -116,5 +135,9 @@ class SyncMainViewModel @Inject constructor(
         }.also {
             setState { copy(isNetworkLoading = false) }
         }
+    }
+
+    companion object {
+        private const val SYNC_UP_COOL_TIME = 10_000L
     }
 }
