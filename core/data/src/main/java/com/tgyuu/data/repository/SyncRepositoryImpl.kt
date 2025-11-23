@@ -248,8 +248,6 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     private suspend fun replaceData(): ZonedDateTime? = coroutineScope {
-        throw Exception("test")
-
         val uuidDeferred = async { getUuid() }
         val connectedUuidDeferred = async { getConnectedUuid() }
 
