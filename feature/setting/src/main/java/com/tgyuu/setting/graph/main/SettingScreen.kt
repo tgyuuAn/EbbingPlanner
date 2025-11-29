@@ -61,6 +61,7 @@ import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
+import com.tgyuu.setting.graph.ui.bottomsheet.AlarmMessageBottomSheet
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
 import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
 
@@ -84,6 +85,22 @@ internal fun SettingRoute(
                 )
             }))
         },
+        onAlarmMessageClick = {
+            viewModel.onIntent(SettingIntent.OnAlarmMessageClick {
+                AlarmMessageBottomSheet(
+                    state = state.alarmMessageBottomSheet,
+                    onMessageChange = { message ->
+                        viewModel.onIntent(SettingIntent.OnAlarmMessageChange(message))
+                    },
+                    onResetClick = {
+                        viewModel.onIntent(SettingIntent.OnAlarmMessageReset)
+                    },
+                    onUpdateClick = {
+                        viewModel.onIntent(SettingIntent.OnApplyAlarmMessage)
+                    },
+                )
+            })
+        },
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
         onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
@@ -101,6 +118,7 @@ private fun SettingScreen(
     state: SettingState,
     onNoticeClick: () -> Unit,
     onAlarmTimeClick: () -> Unit,
+    onAlarmMessageClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
@@ -128,6 +146,7 @@ private fun SettingScreen(
             state = state,
             onNoticeClick = onNoticeClick,
             onAlarmTimeClick = onAlarmTimeClick,
+            onAlarmMessageClick = onAlarmMessageClick,
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
@@ -143,6 +162,7 @@ private fun SettingScreen(
             state = state,
             onNoticeClick = onNoticeClick,
             onAlarmTimeClick = onAlarmTimeClick,
+            onAlarmMessageClick = onAlarmMessageClick,
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
@@ -161,6 +181,7 @@ private fun PhoneSettingScreen(
     state: SettingState,
     onNoticeClick: () -> Unit,
     onAlarmTimeClick: () -> Unit,
+    onAlarmMessageClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
@@ -192,8 +213,10 @@ private fun PhoneSettingScreen(
             NotificationBody(
                 notificationEnabled = state.notificationEnabled,
                 alarmTime = "${state.alarmHour}:${state.alarmMinute}",
+                alarmMessage = state.alarmMessage,
                 onNotificationToggleClick = onNotificationToggleClick,
                 onAlarmTimeClick = onAlarmTimeClick,
+                onAlarmMessageClick = onAlarmMessageClick,
             )
 
             TagRepeatCycleBody(
@@ -234,6 +257,7 @@ private fun TabletSettingScreen(
     state: SettingState,
     onNoticeClick: () -> Unit,
     onAlarmTimeClick: () -> Unit,
+    onAlarmMessageClick: () -> Unit,
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
@@ -264,8 +288,10 @@ private fun TabletSettingScreen(
                 NotificationBody(
                     notificationEnabled = state.notificationEnabled,
                     alarmTime = "${state.alarmHour}:${state.alarmMinute}",
+                    alarmMessage = state.alarmMessage,
                     onNotificationToggleClick = onNotificationToggleClick,
                     onAlarmTimeClick = onAlarmTimeClick,
+                    onAlarmMessageClick = onAlarmMessageClick,
                 )
 
                 TagRepeatCycleBody(
@@ -314,8 +340,10 @@ private fun TabletSettingScreen(
 private fun NotificationBody(
     notificationEnabled: Boolean,
     alarmTime: String,
+    alarmMessage: String,
     onNotificationToggleClick: () -> Unit,
     onAlarmTimeClick: () -> Unit,
+    onAlarmMessageClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val permissionState = if (SDK_INT >= TIRAMISU) rememberPermissionState(POST_NOTIFICATIONS)
@@ -400,6 +428,32 @@ private fun NotificationBody(
                 style = EbbingTheme.typography.headingSM,
                 color = EbbingTheme.colors.primaryDefault,
                 modifier = Modifier.clickable { onAlarmTimeClick() },
+            )
+        }
+    }
+
+    EbbingVisibleAnimation(
+        visible = isOn,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 17.dp)
+                .clickable { onAlarmMessageClick() },
+        ) {
+            Text(
+                text = "알림 메시지",
+                style = EbbingTheme.typography.headingSSB,
+                color = EbbingTheme.colors.dark1,
+                modifier = Modifier.weight(1f),
+            )
+
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = "상세 내용",
+                modifier = Modifier.padding(start = 4.dp),
             )
         }
     }
@@ -828,6 +882,7 @@ private fun PreviewSettingScreen() {
             state = SettingState(),
             onNoticeClick = {},
             onAlarmTimeClick = {},
+            onAlarmMessageClick = {},
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
             onSyncClick = {},

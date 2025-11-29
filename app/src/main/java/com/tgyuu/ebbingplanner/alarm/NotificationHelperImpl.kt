@@ -9,13 +9,16 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.ebbingplanner.MainActivity
 import java.time.LocalDate
 import javax.inject.Inject
 
-class NotificationHelperImpl @Inject constructor() : NotificationHelper() {
+class NotificationHelperImpl @Inject constructor(
+    private val configRepository: ConfigRepository,
+) : NotificationHelper() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    override fun showTodoNotification(
+    override suspend fun showTodoNotification(
         context: Context,
         schedules: List<TodoSchedule>,
         date: LocalDate,
@@ -33,7 +36,8 @@ class NotificationHelperImpl @Inject constructor() : NotificationHelper() {
         )
 
         val contentTitle = "에빙 플래너 일정 알림"
-        val contentText = "${schedules.first().title} 을 확인하고, 잊지 말고 복습하세요!"
+        val messageTemplate = configRepository.getAlarmMessage()
+        val contentText = messageTemplate.replace("{할일}", schedules.first().title)
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(com.tgyuu.ebbingplanner.R.drawable.ic_notification)

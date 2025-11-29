@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
+import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -48,6 +49,10 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
                     if (h in 0..23 && m in 0..59) h!! to m!! else default
                 } ?: default
         }
+
+    override val alarmMessage: Flow<String>
+        get() = dataStore.data
+            .map { prefs -> prefs[ALARM_MESSAGE] ?: DEFAULT_ALARM_MESSAGE }
 
     override val appTheme: Flow<Theme>
         get() = dataStore.data
@@ -92,6 +97,10 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[ALARM_TIME] = "$hour:$minute" }
     }
 
+    override suspend fun setAlarmMessage(message: String) {
+        dataStore.edit { prefs -> prefs[ALARM_MESSAGE] = message }
+    }
+
     override suspend fun setAppTheme(theme: Theme) {
         dataStore.edit { prefs -> prefs[APP_THEME] = theme.name }
     }
@@ -114,6 +123,7 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
+        private val ALARM_MESSAGE = stringPreferencesKey("ALARM_MESSAGE")
         private val APP_THEME = stringPreferencesKey("APP_THEME")
         private val WIDGET_THEME = stringPreferencesKey("WIDGET_THEME")
         private val WIDGET_BACKGROUND_ALPHA = floatPreferencesKey("WIDGET_BACKGROUND_ALPHA")
