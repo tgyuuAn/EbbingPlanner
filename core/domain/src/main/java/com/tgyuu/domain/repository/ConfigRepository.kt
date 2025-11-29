@@ -21,8 +21,14 @@ interface ConfigRepository {
     suspend fun setWidgetTextAlpha(alpha: Float)
     suspend fun updateAlarmTime(hour: String, minute: String)
     suspend fun getAlarmTime(): Pair<Int, Int>
+    suspend fun updateAlarmMessage(message: String)
+    suspend fun getAlarmMessage(): String
     suspend fun getSoftUpdateInfo(): UpdateInfo
     suspend fun getHardUpdateInfo(): UpdateInfo
 
     suspend fun getClearSyncFlag(): Boolean
+
+    companion object {
+        const val DEFAULT_ALARM_MESSAGE: String = "{할일} 을 확인하고, 잊지 말고 복습하세요!"
+    }
 }

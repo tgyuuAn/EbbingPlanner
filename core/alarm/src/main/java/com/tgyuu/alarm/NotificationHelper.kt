@@ -21,7 +21,7 @@ abstract class NotificationHelper() {
         mgr.createNotificationChannel(channel)
     }
 
-    abstract fun showTodoNotification(
+    abstract suspend fun showTodoNotification(
         context: Context,
         schedules: List<TodoSchedule>,
         date: LocalDate,

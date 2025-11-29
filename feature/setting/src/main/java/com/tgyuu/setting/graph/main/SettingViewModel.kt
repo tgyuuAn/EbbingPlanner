@@ -7,6 +7,7 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
@@ -15,6 +16,7 @@ import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.navigation.SyncGraph
 import com.tgyuu.navigation.TagGraph
 import com.tgyuu.setting.BuildConfig
+import com.tgyuu.setting.graph.main.contract.AlarmMessageBottomSheetState
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +48,11 @@ class SettingViewModel @Inject constructor(
             }
 
             launch {
+                val message = configRepository.getAlarmMessage()
+                setState { copy(alarmMessage = message) }
+            }
+
+            launch {
                 suspendRunCatching {
                     configRepository.getSoftUpdateInfo()
                 }.onSuccess { setState { copy(updateInfo = it) } }
@@ -59,28 +66,57 @@ class SettingViewModel @Inject constructor(
     override suspend fun processIntent(intent: SettingIntent) {
         when (intent) {
             SettingIntent.OnNoticeClick -> navigateToWebView(
-                "공지사항",
-                BuildConfig.EBBING_NOTICE_URL
+                "공지사항", BuildConfig.EBBING_NOTICE_URL
             )
 
             SettingIntent.OnPrivacyAndPolicyClick -> navigateToWebView(
-                "개인정보처리방침",
-                BuildConfig.EBBING_PRIVACY_AND_POLICY_URL
+                "개인정보처리방침", BuildConfig.EBBING_PRIVACY_AND_POLICY_URL
             )
 
             SettingIntent.OnTermsOfUseClick -> navigateToWebView(
-                "이용약관",
-                BuildConfig.EBBING_TERMS_OF_USE_URL
+                "이용약관", BuildConfig.EBBING_TERMS_OF_USE_URL
             )
 
             SettingIntent.OnNotificationToggleClick -> onNotificationToggleClick()
-            is SettingIntent.OnAlarmTimeClick ->
+            is SettingIntent.OnAlarmTimeClick -> eventBus.sendEvent(
+                EbbingEvent.ShowBottomSheet(
+                    intent.content
+                )
+            )
+
+            is SettingIntent.OnAlarmMessageClick -> {
+                setState {
+                    copy(
+                        alarmMessageBottomSheet = AlarmMessageBottomSheetState(
+                            message = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
+                            originMessage = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
+                        )
+                    )
+                }
                 eventBus.sendEvent(EbbingEvent.ShowBottomSheet(intent.content))
+            }
+
+            is SettingIntent.OnAlarmMessageChange -> {
+                setState {
+                    copy(alarmMessageBottomSheet = alarmMessageBottomSheet.copy(message = intent.message))
+                }
+            }
+
+            SettingIntent.OnAlarmMessageReset -> {
+                setState {
+                    copy(
+                        alarmMessageBottomSheet = alarmMessageBottomSheet.copy(
+                            message = DEFAULT_ALARM_MESSAGE
+                        )
+                    )
+                }
+            }
+
+            SettingIntent.OnApplyAlarmMessage -> applyAlarmMessage()
 
             SettingIntent.OnTagManageClick -> navigationBus.navigate(To(TagGraph.TagRoute))
             is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
-            SettingIntent.OnRepeatCycleManageClick ->
-                navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
+            SettingIntent.OnRepeatCycleManageClick -> navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
 
             SettingIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
             SettingIntent.OnAppThemeManageClick -> navigationBus.navigate(To(SettingGraph.ThemeRoute))
@@ -108,19 +144,23 @@ class SettingViewModel @Inject constructor(
             val localDateTime = sch.date.atTime(h, m)
             if (localDateTime.isBefore(now)) return@forEach
 
-            val trigger = localDateTime
-                .atZone(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli()
+            val trigger = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
             alarmScheduler.rescheduleDailyExact(
-                date = sch.date,
-                newTriggerMs = trigger
+                date = sch.date, newTriggerMs = trigger
             )
         }
 
         setState { copy(alarmHour = hour, alarmMinute = minute) }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 시간을 $hour:$minute 로 변경했어요"))
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+    }
+
+    private suspend fun applyAlarmMessage() {
+        val message = currentState.alarmMessageBottomSheet.message
+        configRepository.updateAlarmMessage(message)
+        setState { copy(alarmMessage = message) }
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 메시지를 변경했어요"))
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 

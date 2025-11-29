@@ -7,6 +7,10 @@ sealed interface SettingIntent : UiIntent {
     data object OnNoticeClick : SettingIntent
     data class OnAlarmTimeClick(val content: BottomSheetContent) : SettingIntent
     data class OnUpdateAlarmTime(val hour: String, val minute: String) : SettingIntent
+    data class OnAlarmMessageClick(val content: BottomSheetContent) : SettingIntent
+    data class OnAlarmMessageChange(val message: String) : SettingIntent
+    data object OnAlarmMessageReset : SettingIntent
+    data object OnApplyAlarmMessage : SettingIntent
     data object OnTagManageClick : SettingIntent
     data object OnRepeatCycleManageClick : SettingIntent
     data object OnSyncClick : SettingIntent
