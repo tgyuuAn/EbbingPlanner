@@ -153,15 +153,13 @@ class SyncRepositoryImpl @Inject constructor(
         val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
             .getOrThrow()
 
+        // 1 : 삽입/업데이트만 수행 (isDeleted가 아닌 항목들)
         // 각 항목에 대해서 updatedAt을 비교하여, 로컬보다 더 이후에 변경된 항목만 반영
-        // 만약 softDeleted 된 항이라면 제거, id가 없다면 새로 생성, 그 외는 수정
         val repeatCyclesJob = launch {
             response.repeatCycles.forEach { dto ->
                 val repeatCycle = dto.toDomain()
 
-                if (repeatCycle.isDeleted) {
-                    localRepeatCycleDataSource.hardDeleteRepeatCycle(repeatCycle.id)
-                } else {
+                if (!repeatCycle.isDeleted) {
                     val local = localRepeatCycleDataSource.getRepeatCycle(repeatCycle.id)
 
                     if (local == null) {
@@ -176,9 +174,7 @@ class SyncRepositoryImpl @Inject constructor(
         response.tags.forEach { dto ->
             val tag = dto.toDomain()
 
-            if (tag.isDeleted) {
-                localTagDataSource.hardDeleteTag(tag.id)
-            } else {
+            if (!tag.isDeleted) {
                 val local = localTagDataSource.getTag(tag.id)
 
                 if (local == null) {
@@ -203,9 +199,7 @@ class SyncRepositoryImpl @Inject constructor(
         response.schedules.forEach { dto ->
             val schedule = dto.toDomain()
 
-            if (schedule.isDeleted) {
-                localTodoDataSource.hardDeleteTodo(schedule.id)
-            } else {
+            if (!schedule.isDeleted) {
                 val local = localTodoDataSource.getTodoScheduleEntity(schedule.id)
 
                 if (local == null) {
@@ -217,6 +211,29 @@ class SyncRepositoryImpl @Inject constructor(
         }
 
         repeatCyclesJob.join()
+
+        // 2 : Foreign Key 제약조건을 고려하여 삭제 수행
+        // Schedule -> Tag -> RepeatCycle 순서로 삭제
+        response.schedules.forEach { dto ->
+            val schedule = dto.toDomain()
+            if (schedule.isDeleted) {
+                localTodoDataSource.hardDeleteTodo(schedule.id)
+            }
+        }
+
+        response.tags.forEach { dto ->
+            val tag = dto.toDomain()
+            if (tag.isDeleted) {
+                localTagDataSource.hardDeleteTag(tag.id)
+            }
+        }
+
+        response.repeatCycles.forEach { dto ->
+            val repeatCycle = dto.toDomain()
+            if (repeatCycle.isDeleted) {
+                localRepeatCycleDataSource.hardDeleteRepeatCycle(repeatCycle.id)
+            }
+        }
     }
 
     private suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
