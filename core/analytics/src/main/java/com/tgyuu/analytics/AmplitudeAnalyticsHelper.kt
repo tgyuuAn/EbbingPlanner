@@ -12,7 +12,8 @@ class AmplitudeAnalyticsHelper @Inject constructor(
     }
 
     override fun setUserId(userId: String?) {
-        amplitude.setUserId(userId)
+        val androidUserId = "android-$userId"
+        amplitude.setUserId(androidUserId)
     }
 
     private fun AnalyticsEvent.toAmplitudeEvent(): BaseEvent = BaseEvent().apply {
