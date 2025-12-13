@@ -14,7 +14,6 @@ class EbbingPlannerApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         notificationHelper.createNotificationChannel(this)
-        cleanupOldHeapDumps()
     }
 
     override fun onLowMemory() {
@@ -25,11 +24,5 @@ class EbbingPlannerApplication : Application() {
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
         MemoryAnimationController.onTrimMemory(level)
-    }
-
-    private fun cleanupOldHeapDumps() {
-        filesDir.listFiles { file ->
-            file.name.endsWith(".hprof")
-        }?.onEach { it.delete() }
     }
 }
