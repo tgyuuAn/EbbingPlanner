@@ -93,17 +93,18 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val bottomSheetState = rememberEbbingBottomSheetState()
             val snackBarHostState = remember { SnackbarHostState() }
-            val appState = rememberEbbingAppState(
-                navController = navController,
-                networkMonitor = networkMonitor,
-                bottomSheetState = bottomSheetState,
-            )
 
             EbbingTheme(theme = theme) {
                 CompositionLocalProvider(
                     LocalAnalyticsHelper provides analyticsHelper,
                     LocalAnimationsEnabled provides MemoryAnimationController.animationsEnabled,
                 ) {
+                    val appState = rememberEbbingAppState(
+                        navController = navController,
+                        networkMonitor = networkMonitor,
+                        bottomSheetState = bottomSheetState,
+                    )
+
                     EbbingApp(
                         appState = appState,
                         snackBarHostState = snackBarHostState,
