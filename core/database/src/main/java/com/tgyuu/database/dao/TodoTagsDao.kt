@@ -25,7 +25,13 @@ interface TodoTagsDao {
     suspend fun softDeleteAllTags(updatedAt: LocalDateTime)
 
     @Query("DELETE FROM todo_tag WHERE id = :id")
-    suspend fun hardDeleteTag(id: Int)
+    suspend fun hardDeleteTagInternal(id: Int)
+
+    @Transaction
+    suspend fun hardDeleteTag(id: Int) {
+        resetTagId(id, LocalDateTime.now())
+        hardDeleteTagInternal(id)
+    }
 
     @Query("DELETE FROM todo_tag WHERE isDeleted = 1")
     suspend fun hardDeleteAllTags()
