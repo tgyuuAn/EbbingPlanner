@@ -71,11 +71,6 @@ internal fun HandleAppUpdate(
             )
         }
     }
-
-    SideEffect {
-        Log.d("HandleAppUpdate", "HardUpdate : ${updateState.hard} ${isHardUpdate}\n" +
-                "SoftUpdate : ${updateState.soft} ${showSoftUpdate}\n")
-    }
 }
 
 @Composable
