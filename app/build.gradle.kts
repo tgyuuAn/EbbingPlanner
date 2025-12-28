@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.tgyuu.ebbingplanner"
-    
+
     defaultConfig {
         versionCode = 26
         versionName = "1.0.25"

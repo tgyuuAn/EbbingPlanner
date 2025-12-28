@@ -37,7 +37,7 @@ interface SyncDao {
     @Query("DELETE FROM repeat_cycle")
     suspend fun clearRepeatCycles()
 
-    @Query("DELETE FROM todo_tag")
+    @Query("DELETE FROM todo_tag WHERE id != 1")
     suspend fun clearTags()
 
     @Query("DELETE FROM schedule")

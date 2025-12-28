@@ -1,5 +1,6 @@
 package com.tgyuu.data.repository
 
+import android.util.Log
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
@@ -85,8 +86,7 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     override suspend fun connectAnother(connectCode: String): ConnectInfo? {
-        val dto = syncDataSource.connectAnother(connectCode)
-            .getOrThrow()
+        val dto = syncDataSource.connectAnother(connectCode).getOrThrow()
         if (dto == null) return null
 
         val info = dto.toDomain()
@@ -96,8 +96,8 @@ class SyncRepositoryImpl @Inject constructor(
         if (info.uuid == myUuid) return info
 
         localSyncDataSource.setLastSyncTime(null)
-        replaceData()
         localSyncDataSource.setConnectedUuid(info.uuid)
+        replaceData()
         return info
     }
 
