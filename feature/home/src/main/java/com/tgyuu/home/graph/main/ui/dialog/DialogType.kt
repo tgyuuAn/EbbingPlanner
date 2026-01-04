@@ -1,8 +1,8 @@
 package com.tgyuu.home.graph.main.ui.dialog
 
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 
 sealed class DialogType(open val schedule: TodoScheduleUiModel) {
     data class ConfirmDeleteSingle(override val schedule: TodoScheduleUiModel) : DialogType(schedule)

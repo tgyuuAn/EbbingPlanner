@@ -26,7 +26,7 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun ScheduleContent(

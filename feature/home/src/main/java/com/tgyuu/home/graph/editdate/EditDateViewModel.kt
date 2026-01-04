@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -30,11 +28,14 @@ import com.tgyuu.navigation.RepeatCycleGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class EditDateViewModel @Inject constructor(
@@ -43,8 +44,6 @@ class EditDateViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
     private var originSchedules: List<TodoSchedule> = emptyList()
@@ -80,11 +79,6 @@ class EditDateViewModel @Inject constructor(
 
             originSchedules = result
         }
-
-        viewModelScope.launch {
-            configRepository.getMondayStart()
-                .collect { setState { copy(mondayStart = it) } }
-        }
     }
 
     internal fun loadNewRepeatCycle() {
@@ -106,17 +100,12 @@ class EditDateViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditDateIntent) {
         when (intent) {
-            EditDateIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "EditDate", buttonName = "Back")
+            EditDateIntent.OnBackClick -> navigationBus.navigate(
+                NavigationEvent.To(
+                    route = HomeRoute(currentState.selectedDate.toFormattedString()),
+                    popUpTo = true,
                 )
-                navigationBus.navigate(
-                    NavigationEvent.To(
-                        route = HomeRoute(currentState.selectedDate.toFormattedString()),
-                        popUpTo = true,
-                    )
-                )
-            }
+            )
 
             is EditDateIntent.OnSelectedDataChangeClick ->
                 eventBus.sendEvent(ShowBottomSheet(intent.content))
@@ -141,7 +130,7 @@ class EditDateViewModel @Inject constructor(
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.awaitBottomSheetHidden()
+
         setState { copy(repeatCycle = repeatCycle) }
     }
 
@@ -167,14 +156,8 @@ class EditDateViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "EditDate",
-                buttonName = "Save",
-            )
-        )
-
         val tagId = currentState.tagId ?: run {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
             return
@@ -209,11 +192,18 @@ class EditDateViewModel @Inject constructor(
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
             try {
-                val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(hour, minute))
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+                val triggerAtMillis = schedule.run {
+                    val dateTime = LocalDateTime(
+                        year = this.year,
+                        month = this.monthNumber,
+                        day = this.day,
+                        hour = hour,
+                        minute = minute,
+                        second = 0,
+                        nanosecond = 0
+                    )
+                    dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                }
 
                 if (triggerAtMillis <= System.currentTimeMillis()) return@forEach
 

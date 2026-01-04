@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.now
 import com.tgyuu.common.util.EbbingPageTransitionAnimation
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -61,8 +62,9 @@ import com.tgyuu.home.graph.ui.ScheduleContent
 import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun AddTodoRoute(
@@ -368,13 +370,8 @@ private fun TodoMainFormContent(
     val addTodoHeaderSuffix = stringResource(R.string.home_add_todo_header_suffix)
     Text(
         text = buildAnnotatedString {
-            withStyle(
-                SpanStyle(
-                    textDecoration = TextDecoration.Underline,
-                    color = EbbingTheme.colors.textPrimary,
-                )
-            ) {
-                append(monthDayText)
+            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.day}일")
             }
             append(addTodoHeaderSuffix)
         },

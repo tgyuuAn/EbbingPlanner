@@ -3,12 +3,11 @@ package com.tgyuu.home.graph.edittodo
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.designsystem.R
@@ -29,10 +28,13 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class EditTodoViewModel @Inject constructor(
@@ -41,8 +43,6 @@ class EditTodoViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
@@ -89,11 +89,6 @@ class EditTodoViewModel @Inject constructor(
                 )
             }
         }
-
-        viewModelScope.launch {
-            configRepository.getMondayStart()
-                .collect { setState { copy(mondayStart = it) } }
-        }
     }
 
     internal fun loadTags() = viewModelScope.launch {
@@ -114,17 +109,12 @@ class EditTodoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditTodoIntent) {
         when (intent) {
-            EditTodoIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "EditTodo", buttonName = "Back")
+            EditTodoIntent.OnBackClick -> navigationBus.navigate(
+                NavigationEvent.To(
+                    route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),
+                    popUpTo = true,
                 )
-                navigationBus.navigate(
-                    NavigationEvent.To(
-                        route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),
-                        popUpTo = true,
-                    )
-                )
-            }
+            )
 
             is EditTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
@@ -180,14 +170,8 @@ class EditTodoViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(TagGraph.AddTagRoute))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "EditTodo",
-                buttonName = "Save",
-            )
-        )
-
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return
@@ -211,12 +195,19 @@ class EditTodoViewModel @Inject constructor(
         currentState.originSchedule?.date?.let { originDate ->
             if (newSchedule.date != originDate) {
                 // 새 날짜가 오늘 이후면 알람 재등록
-                if (newSchedule.date.isAfter(LocalDate.now())) {
-                    val triggerAtMillis = newSchedule.date
-                        .atTime(LocalTime.of(hour, minute))
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
-                        .toEpochMilli()
+                if (newSchedule.date > LocalDate.now()) {
+                    val triggerAtMillis = newSchedule.date.run {
+                        val dateTime = LocalDateTime(
+                            year = this.year,
+                            month = this.monthNumber,
+                            day = this.day,
+                            hour = hour,
+                            minute = minute,
+                            second = 0,
+                            nanosecond = 0
+                        )
+                        dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                    }
 
                     alarmScheduler.scheduleDailyExact(
                         date = newSchedule.date,

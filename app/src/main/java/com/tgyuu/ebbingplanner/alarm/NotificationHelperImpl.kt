@@ -11,7 +11,7 @@ import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.ebbingplanner.MainActivity
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 class NotificationHelperImpl @Inject constructor(

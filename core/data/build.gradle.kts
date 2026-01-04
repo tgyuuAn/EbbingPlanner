@@ -13,7 +13,6 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.common)
-    implementation(projects.core.deviceInfo)
 
-    testImplementation(libs.mockk)
+    implementation(libs.kotlinx.datetime)
 }

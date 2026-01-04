@@ -1,7 +1,5 @@
 package com.tgyuu.memo.graph.addmemo
 
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -14,7 +12,7 @@ import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,27 +20,12 @@ class AddRepeatCycleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
-) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(resourceProvider = resourceProvider)) {
-
-    init {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.View(
-                screenName = "AddRepeatCycle",
-            )
-        )
-    }
+) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState()) {
 
     override suspend fun processIntent(intent: AddRepeatCycleIntent) {
         when (intent) {
             is AddRepeatCycleIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            AddRepeatCycleIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddRepeatCycle", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            AddRepeatCycleIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             AddRepeatCycleIntent.OnSaveClick -> saveRepeatCycle()
         }
     }
@@ -65,12 +48,6 @@ class AddRepeatCycleViewModel @Inject constructor(
                 return
             }
 
-            analyticsHelper.logEvent(
-                AnalyticsEvent.Click(
-                    screenName = "AddRepeatCycle",
-                    buttonName = "SaveRepeatCycle",
-                )
-            )
             todoRepository.addRepeatCycle(intervals = intervals)
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_added)))
             navigationBus.navigate(NavigationEvent.Up)

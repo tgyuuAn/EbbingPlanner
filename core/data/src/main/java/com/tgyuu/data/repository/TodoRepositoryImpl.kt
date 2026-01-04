@@ -13,7 +13,8 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
@@ -83,8 +84,8 @@ class TodoRepositoryImpl @Inject constructor(
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek>,
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
@@ -98,8 +99,8 @@ class TodoRepositoryImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek>,
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
@@ -134,25 +135,7 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTodoInfoById(infoId: Int): TodoInfo =
         localTodoDataSource.getTodoInfoById(infoId)
 
-    override suspend fun replaceSchedules(
-        infoId: Int,
-        title: String,
-        tagId: Int,
-        dates: List<LocalDate>,
-        isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek>,
-    ) = localTodoDataSource.replaceSchedules(
-        infoId = infoId,
-        title = title,
-        tagId = tagId,
-        dates = dates,
-        isDoneSchedules = isDoneSchedules,
-        isPinned = isPinned,
-        restDays = restDays,
-    )
-
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<kotlinx.datetime.DayOfWeek>) =
         localTodoDataSource.updateTodoInfo(todoSchedule, restDays)
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =

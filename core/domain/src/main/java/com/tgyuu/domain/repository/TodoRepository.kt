@@ -5,7 +5,7 @@ import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 interface TodoRepository {
     val recentAddedTagId: Long?
@@ -35,8 +35,8 @@ interface TodoRepository {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 
     suspend fun addTodo(
@@ -44,8 +44,8 @@ interface TodoRepository {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 
     suspend fun addRepeatCycle(intervals: List<Int>): Long
@@ -58,17 +58,7 @@ interface TodoRepository {
     suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun loadTodoInfoById(infoId: Int): TodoInfo
 
-    suspend fun replaceSchedules(
-        infoId: Int,
-        title: String,
-        tagId: Int,
-        dates: List<LocalDate>,
-        isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
-    )
-
-    suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek> = emptySet())
+    suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet())
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun updateTodos(schedules: List<TodoSchedule>)
     suspend fun toggleDone(id: Int)

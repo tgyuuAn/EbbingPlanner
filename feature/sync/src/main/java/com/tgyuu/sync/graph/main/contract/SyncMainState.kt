@@ -1,17 +1,14 @@
 package com.tgyuu.sync.graph.main.contract
 
 import com.tgyuu.common.base.UiState
-import com.tgyuu.domain.model.Timer
-import java.time.ZonedDateTime
-import java.util.Locale
+import kotlinx.datetime.LocalDateTime
 
 data class SyncMainState(
     val uuid: String = "",
     val deviceName: String = "",
     val linkedUuid: String? = null,
-    val connectedDeviceName: String? = null,
-    val localLastSyncedAt: ZonedDateTime? = null,
-    val serverLastUpdatedAt: ZonedDateTime? = null,
+    val localLastSyncedAt: LocalDateTime? = null,
+    val serverLastUpdatedAt: LocalDateTime? = null,
     val isNetworkLoading: Boolean = true,
     val isInitialLoading: Boolean = true,
     val isSyncUpEnabled: Boolean = true,

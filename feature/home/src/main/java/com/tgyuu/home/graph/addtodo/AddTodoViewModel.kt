@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -34,12 +32,16 @@ import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @HiltViewModel
 class AddTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
@@ -47,38 +49,21 @@ class AddTodoViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<AddTodoState, AddTodoIntent>(
-    AddTodoState(
-        selectedDate = (savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")).toLocalDateOrThrow(),
-        tag = DefaultTodoTag.toUiModel(),
-        repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider),
-    )
-) {
+) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
 
     init {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.View(
-                screenName = "AddTodo",
-            )
-        )
+        val dateStr = savedStateHandle.get<String>("selectedDate")
+            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
 
         setState {
             copy(
-                tag = tag?.copy(name = resourceProvider.getString(R.string.tag_unassigned))
+                selectedDate = dateStr.toLocalDateOrThrow(),
+                tag = DefaultTodoTag.toUiModel(),
+                repeatCycle = DefaultRepeatCycles.first().toUiModel(),
             )
         }
-
         initNotificationState()
-        initLastSelected()
-
-        viewModelScope.launch {
-            configRepository.getMondayStart()
-                .collect { setState { copy(mondayStart = it) } }
-        }
     }
 
     private fun initLastSelected() = viewModelScope.launch {
@@ -109,10 +94,8 @@ class AddTodoViewModel @Inject constructor(
 
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
-        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
-        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
-        val storedMessage = configRepository.getAlarmMessage()
-        val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) defaultMessage else storedMessage
+        val message = configRepository.getAlarmMessage()
+        val nudgeTextVariant = experimentRepository.getVariant(Experiment.NotificationNudgeText)
 
         setState {
             copy(
@@ -122,7 +105,7 @@ class AddTodoViewModel @Inject constructor(
                     defaultMessage = defaultMessage,
                     message = message,
                     originMessage = message,
-                    placeholderToken = placeholderToken,
+                    nudgeTextVariant = nudgeTextVariant,
                 )
             )
         }
@@ -163,12 +146,12 @@ class AddTodoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
-            AddTodoIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "Back")
+            AddTodoIntent.OnBackClick -> navigationBus.navigate(
+                NavigationEvent.To(
+                    route = HomeRoute(currentState.selectedDate.toFormattedString()),
+                    popUpTo = true,
                 )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            )
 
             is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
@@ -224,7 +207,7 @@ class AddTodoViewModel @Inject constructor(
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.awaitBottomSheetHidden()
+
         setState { copy(repeatCycle = repeatCycle) }
     }
 
@@ -255,14 +238,8 @@ class AddTodoViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "AddTodo",
-                buttonName = "Save",
-            )
-        )
-
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return
@@ -295,11 +272,18 @@ class AddTodoViewModel @Inject constructor(
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
             try {
-                val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(hour, minute))
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+                val triggerAtMillis = schedule.run {
+                    val dateTime = LocalDateTime(
+                        year = this.year,
+                        month = this.monthNumber,
+                        day = this.day,
+                        hour = hour,
+                        minute = minute,
+                        second = 0,
+                        nanosecond = 0
+                    )
+                    dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                }
 
                 if (triggerAtMillis <= System.currentTimeMillis()) return@forEach
 
@@ -328,13 +312,6 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onNotificationToggleClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "NotificationNudge_Toggle",
-            )
-        )
-
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -345,13 +322,6 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onAlarmTimeChange(hour: Int, minute: Int) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "NotificationNudge_Toggle",
-            )
-        )
-
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -397,13 +367,6 @@ class AddTodoViewModel @Inject constructor(
             configRepository.updateAlarmMessage(notificationState.message)
         }
 
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "SaveNotification",
-            )
-        )
         saveTodoAndNavigateHome()
     }
-
 }

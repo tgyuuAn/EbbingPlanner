@@ -29,6 +29,7 @@ dependencies {
     implementation(projects.core.common)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.firebase.config)
     implementation(libs.firebase.storage)
     implementation(libs.supabase.postgrest)

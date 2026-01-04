@@ -5,10 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.tgyuu.common.now
 import com.tgyuu.database.model.TodoInfoEntity
 import com.tgyuu.database.model.TodoScheduleEntity
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface TodoWithSchedulesDao {
@@ -23,14 +24,14 @@ interface TodoWithSchedulesDao {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
-                restDays = restDays.joinToString(",") { it.value.toString() },
+                restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
             )
         ).toInt()
 
@@ -52,14 +53,14 @@ interface TodoWithSchedulesDao {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
-                restDays = restDays.joinToString(",") { it.value.toString() },
+                restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
             )
         ).toInt()
 

@@ -7,8 +7,8 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 interface LocalTodoDataSource {
     suspend fun getTodoSchedule(id: Int): TodoSchedule?
@@ -32,8 +32,8 @@ interface LocalTodoDataSource {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 
     suspend fun insertTodos(
@@ -41,11 +41,11 @@ interface LocalTodoDataSource {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 
-    suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek> = emptySet())
+    suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet())
     suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync)
     suspend fun updateSchedule(todoSchedule: TodoSchedule)
     suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync)

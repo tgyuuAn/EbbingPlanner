@@ -6,7 +6,7 @@ import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 import javax.inject.Inject
 
 class LocalRepeatCycleDataSourceImpl @Inject constructor(

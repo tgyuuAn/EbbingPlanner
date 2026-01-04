@@ -4,7 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import com.tgyuu.domain.model.TodoSchedule
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 abstract class NotificationHelper() {
     fun createNotificationChannel(context: Context) {

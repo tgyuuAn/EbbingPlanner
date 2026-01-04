@@ -2,10 +2,11 @@ package com.tgyuu.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.tgyuu.common.now
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 @Entity(tableName = "todo_tag")
 data class TodoTagEntity(

@@ -13,9 +13,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 private const val CALENDAR_PAGE_COUNT = 12_001 // ±500년(월), ±115년(주)
 
@@ -40,59 +43,12 @@ fun EbbingCalendar(
     )
     val monthOffset = monthPagerState.currentPage - monthInitialPage
 
-    val weekInitialPage = CALENDAR_PAGE_COUNT / 2
-    val weekPagerState = rememberPagerState(
-        initialPage = weekInitialPage,
-        pageCount = { CALENDAR_PAGE_COUNT },
-    )
-    val weekOffset = weekPagerState.currentPage - weekInitialPage
-
-    // 월간 페이저 스크롤 → 현재 표시 날짜 업데이트
-    LaunchedEffect(monthPagerState.currentPage) {
-        if (!showWeekOnly) {
-            calendarState.currentDisplayDate =
-                calendarState.originSelectedDate.plusMonths(monthOffset.toLong())
-        }
-    }
-
-    // 주간 페이저 스크롤 → 현재 표시 날짜 업데이트
-    LaunchedEffect(weekPagerState.currentPage) {
-        if (showWeekOnly) {
-            val originWeekStart = getWeekStart(calendarState.originSelectedDate, startFromMonday)
-            calendarState.currentDisplayDate = originWeekStart.plusWeeks(weekOffset.toLong())
-        }
-    }
-
-    // 선택 날짜 변경 시 주간 페이저 동기화 (하단 리스트 스와이프 포함)
-    LaunchedEffect(calendarState.selectedDate) {
-        if (showWeekOnly) {
-            val targetWeekOffset = weeksBetween(
-                from = calendarState.originSelectedDate,
-                to = calendarState.selectedDate,
-                startFromMonday = startFromMonday,
-            )
-            if (targetWeekOffset != weekOffset) {
-                weekPagerState.animateScrollToPage(weekInitialPage + targetWeekOffset)
-            }
-        }
-    }
-
-    // 뷰 모드 전환 시 페이저 위치 동기화
-    LaunchedEffect(showWeekOnly) {
-        if (showWeekOnly) {
-            val targetWeekOffset = weeksBetween(
-                from = calendarState.originSelectedDate,
-                to = calendarState.selectedDate,
-                startFromMonday = startFromMonday,
-            )
-            weekPagerState.scrollToPage(weekInitialPage + targetWeekOffset)
-        } else {
-            val targetMonthOffset = yearMonthDiff(
-                from = calendarState.originSelectedDate,
-                to = calendarState.currentDisplayDate,
-            )
-            monthPagerState.scrollToPage(monthInitialPage + targetMonthOffset)
-        }
+    LaunchedEffect(pagerState.currentPage) {
+        val newDate = calendarState.originSelectedDate.plus(
+            value = currentOffset.toLong(),
+            unit = DateTimeUnit.MONTH,
+        )
+        calendarState.currentDisplayDate = newDate
     }
 
     Column(

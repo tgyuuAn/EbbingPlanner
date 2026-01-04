@@ -25,10 +25,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.LocalAnalyticsHelper
-import com.tgyuu.ebbingplanner.backup.AutoBackupManager
-import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.util.LocalAnimationsEnabled
 import com.tgyuu.common.util.MemoryAnimationController
@@ -57,7 +56,7 @@ import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint

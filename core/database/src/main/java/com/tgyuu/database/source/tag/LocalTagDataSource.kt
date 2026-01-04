@@ -3,7 +3,7 @@ package com.tgyuu.database.source.tag
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 interface LocalTagDataSource {
     suspend fun insertTag(tag: TodoTag): Long

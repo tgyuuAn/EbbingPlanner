@@ -60,6 +60,7 @@ import com.tgyuu.sync.graph.main.ui.dialog.CameraPermissionDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmDisconnectDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncUpDialog
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -280,13 +281,78 @@ internal fun SyncMainScreen(
 }
 
 @Composable
-private fun QrCardSection(
-    state: SyncMainState,
-    onClickGenerateCode: () -> Unit,
-    onScanQrClick: () -> Unit,
+internal fun UuidBody(
+    uuid: String,
+    lastSyncedAt: LocalDateTime?,
+    lastUpdatedAt: LocalDateTime?,
 ) {
     Text(
-        text = stringResource(R.string.sync_new_device_section),
+        text = "해당 디바이스의 고유 ID :",
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = uuid,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    Text(
+        text = "해당 기기의 마지막 업데이트 시점 : ",
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    Text(
+        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.fillStrong,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+internal fun LinkedUuidBody(
+    linkedUuid: String,
+    lastSyncedAt: LocalDateTime?,
+    lastUpdatedAt: LocalDateTime?,
+) {
+    Text(
+        text = "연동 되어있는 ID :",
         style = EbbingTheme.typography.heading14SB,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(bottom = 16.dp),
@@ -403,9 +469,40 @@ private fun SectionDivider() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 26.dp)
-            .height(6.dp)
-            .background(EbbingTheme.colors.fillTextfield),
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    Text(
+        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    )
+
+    Text(
+        text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
+        style = EbbingTheme.typography.bodySR,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    )
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.fillStrong,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
     )
 }
 
