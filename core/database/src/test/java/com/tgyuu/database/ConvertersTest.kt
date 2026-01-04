@@ -4,7 +4,7 @@ import com.tgyuu.database.converter.EbbingConverters
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 class ConvertersTest {
     private val converters = EbbingConverters()

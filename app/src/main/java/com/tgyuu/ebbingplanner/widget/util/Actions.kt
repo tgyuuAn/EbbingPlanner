@@ -13,7 +13,9 @@ import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 const val KEY_DESTINATION = "destination"
 const val KEY_SELECTED_DATE = "selectedDate"
@@ -86,7 +88,7 @@ class SelectDateAction : ActionCallback {
         val today = LocalDate.now()
 
         // 이번 달이 아니라면 보여주지 않음
-        if (date.monthValue != today.monthValue) return
+        if (date.monthNumber != today.monthNumber) return
 
         updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
             prefs.toMutablePreferences().apply {

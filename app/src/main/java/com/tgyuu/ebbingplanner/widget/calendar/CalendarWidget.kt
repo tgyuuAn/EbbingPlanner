@@ -43,10 +43,10 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.component.calendar.CalendarDate
 import com.tgyuu.designsystem.component.calendar.EbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.getCalendarDates
-import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -57,15 +57,15 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
-import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
-import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
+import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
+import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
-import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 class CalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -83,10 +83,8 @@ class CalendarWidget : GlanceAppWidget() {
             val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> =
                 GsonProvider.gson.fromJson(rawJson, type)
 
-            val mondayStart: Boolean = prefs[WIDGET_MONDAY_START] ?: false
-
             val today = LocalDate.now()
-            val calendarDates = getCalendarDates(today, mondayStart)
+            val calendarDates = getCalendarDates(today)
 
             val selectedDateString = prefs[SELECTED_DATE]
             val selectedDate = selectedDateString?.let { LocalDate.parse(it) } ?: today
@@ -100,7 +98,6 @@ class CalendarWidget : GlanceAppWidget() {
                     schedulesByDateMap = schedulesByDateMap,
                     selectedDate = selectedDate,
                     calendarDates = calendarDates,
-                    mondayStart = mondayStart,
                 )
             }
         }
@@ -113,7 +110,6 @@ private fun CalendarWidgetContent(
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     calendarDates: List<CalendarDate>,
     selectedDate: LocalDate,
-    mondayStart: Boolean,
 ) {
     val selectedDateTodoLists = schedulesByDateMap[selectedDate] ?: emptyList()
     val todoListsDoneSize = selectedDateTodoLists.filter { it.isDone }.size
@@ -134,7 +130,7 @@ private fun CalendarWidgetContent(
             )
             .padding(4.dp)
     ) {
-        CalendarWidgetHeader(mondayStart = mondayStart)
+        CalendarWidgetHeader()
 
         CalendarWidgetBody(
             calendarDates = calendarDates,
@@ -153,7 +149,7 @@ private fun CalendarWidgetContent(
 }
 
 @Composable
-private fun CalendarWidgetHeader(mondayStart: Boolean) {
+private fun CalendarWidgetHeader() {
     val today = LocalDate.now()
     Column(modifier = GlanceModifier.fillMaxWidth()) {
         Row(
@@ -165,7 +161,7 @@ private fun CalendarWidgetHeader(mondayStart: Boolean) {
             Spacer(modifier = GlanceModifier.size(20.dp))
 
             Text(
-                text = "${today.year}년 ${today.monthValue}월",
+                text = "${today.year}년 ${today.monthNumber}월",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -190,7 +186,7 @@ private fun CalendarWidgetHeader(mondayStart: Boolean) {
         }
 
         Row(modifier = GlanceModifier.fillMaxWidth()) {
-            getEbbingDayOfWeek(mondayStart).forEach {
+            EbbingDayOfWeek.forEach {
                 Text(
                     text = it.toKorean(),
                     style = TextStyle(
@@ -323,7 +319,7 @@ private fun ColumnScope.SelectedDateTodoList(
         ) {
             Text(
                 text = if (selectedDate == LocalDate.now()) "오늘 할 일   "
-                else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
+                else "${selectedDate.monthNumber}월 ${selectedDate.dayOfMonth}일 할 일   ",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -355,9 +351,9 @@ private fun ColumnScope.SelectedDateTodoList(
             modifier = GlanceModifier
                 .size(20.dp)
                 .clickable(
-                    actionRunCallback<AddTodoFromWidgetAction>(
+                    actionStartActivity<MainActivity>(
                         actionParametersOf(
-                            widgetSourceKey to "CalendarWidget",
+                            destinationKey to ADD_TODO,
                             selectedDateKey to selectedDate.toString()
                         )
                     )

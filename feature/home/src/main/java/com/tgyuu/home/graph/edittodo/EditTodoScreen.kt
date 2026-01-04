@@ -1,6 +1,5 @@
 package com.tgyuu.home.graph.edittodo
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,10 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.now
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
-import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
@@ -42,7 +41,8 @@ import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.home.graph.ui.PriorityContent
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun EditTodoRoute(
@@ -65,7 +65,6 @@ internal fun EditTodoRoute(
                         SelectedDateBottomSheet(
                             originSelectedDate = state.selectedDate,
                             schedulesByDateMap = state.schedulesByDateMap,
-                            startFromMonday = state.mondayStart,
                             updateSelectedDate = {
                                 viewModel.onIntent(EditTodoIntent.OnSelectedDateChange(it))
                             },
@@ -109,60 +108,56 @@ private fun EditTodoScreen(
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        EbbingSubTopBar(
+            title = "일정 수정",
+            onNavigationClick = onBackClick,
+            rightComponent = {
+                Text(
+                    text = "저장",
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .throttledClickable(
+                            throttleTime = 1500L,
+                            enabled = state.isSaveEnabled
+                        ) {
+                            onSaveClick()
+                            focusManager.clearFocus()
+                        },
+                )
+            },
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+
         Column(
-            modifier = modifier
-                .fillMaxSize()
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(20.dp)
                 .imePadding(),
         ) {
-            EbbingSubTopBar(
-                title = "일정 수정",
-                onNavigationClick = onBackClick,
-                rightComponent = {
-                    if (!state.isTreatment) {
-                        Text(
-                            text = "저장",
-                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .throttledClickable(
-                                    throttleTime = 1500L,
-                                    enabled = state.isSaveEnabled
-                                ) {
-                                    onSaveClick()
-                                    focusManager.clearFocus()
-                                },
-                        )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
                     }
+                    append(" 에\n진행하는 걸로 바꿀래요")
                 },
-                modifier = Modifier.padding(horizontal = 20.dp),
+                style = EbbingTheme.typography.headingLSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.clickable { onSelectedDateChangeClick() },
             )
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(20.dp),
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
-                        }
-                        append(" 에\n진행하는 걸로 바꿀래요")
-                    },
-                    style = EbbingTheme.typography.heading24B,
-                    color = EbbingTheme.colors.textOnBackground,
-                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
-                )
+            TitleContent(
+                scrollState = scrollState,
+                title = state.title,
+                onTitleChange = onTitleChange,
+            )
 
-                TitleContent(
-                    scrollState = scrollState,
-                    title = state.title,
-                    onTitleChange = onTitleChange,
-                )
-
+            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 TagContent(
                     tag = state.tag,
                     onTagDropDownClick = onTagDropDownClick,
@@ -174,73 +169,7 @@ private fun EditTodoScreen(
                 )
 
                 Spacer(modifier = Modifier.height(60.dp))
-            }
-
-            if (state.isTreatment) {
-                EbbingSolidButton(
-                    label = "저장",
-                    onClick = {
-                        onSaveClick()
-                        focusManager.clearFocus()
-                    },
-                    enabled = state.isSaveEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(EbbingTheme.colors.background)
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                )
-            }
-        }
-    } else {
-        Column(
-            modifier = modifier.fillMaxSize(),
-        ) {
-            EbbingSubTopBar(
-                title = "일정 수정",
-                onNavigationClick = onBackClick,
-                rightComponent = {
-                    Text(
-                        text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                },
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-
-            Column(
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .padding(20.dp)
-                    .imePadding(),
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
-                        }
-                        append(" 에\n진행하는 걸로 바꿀래요")
-                    },
-                    style = EbbingTheme.typography.heading24B,
-                    color = EbbingTheme.colors.textOnBackground,
-                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
-                )
-
-                TitleContent(
-                    scrollState = scrollState,
-                    title = state.title,
-                    onTitleChange = onTitleChange,
-                )
-
+            } else {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(40.dp),
                     modifier = Modifier.fillMaxWidth()

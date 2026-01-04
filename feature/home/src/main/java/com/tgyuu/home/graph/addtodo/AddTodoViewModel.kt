@@ -5,8 +5,6 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -34,13 +32,16 @@ import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @HiltViewModel
 class AddTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
@@ -49,31 +50,27 @@ class AddTodoViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
-    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<AddTodoState, AddTodoIntent>(
-    AddTodoState(
-        selectedDate = (savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")).toLocalDateOrThrow(),
-        tag = DefaultTodoTag.toUiModel(),
-        repeatCycle = DefaultRepeatCycles.first().toUiModel(),
-        saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) },
-    )
-) {
+) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
 
     init {
+        val dateStr = savedStateHandle.get<String>("selectedDate")
+            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
 
-        initNotificationState()
-
-        viewModelScope.launch {
-            configRepository.getMondayStart()
-                .collect { setState { copy(mondayStart = it) } }
+        setState {
+            copy(
+                selectedDate = dateStr.toLocalDateOrThrow(),
+                tag = DefaultTodoTag.toUiModel(),
+                repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+            )
         }
+        initNotificationState()
     }
 
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
         val message = configRepository.getAlarmMessage()
+        val nudgeTextVariant = experimentRepository.getVariant(Experiment.NotificationNudgeText)
 
         setState {
             copy(
@@ -82,6 +79,7 @@ class AddTodoViewModel @Inject constructor(
                     alarmMinute = minute,
                     message = message,
                     originMessage = message,
+                    nudgeTextVariant = nudgeTextVariant,
                 )
             )
         }
@@ -118,17 +116,12 @@ class AddTodoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
-            AddTodoIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "Back")
+            AddTodoIntent.OnBackClick -> navigationBus.navigate(
+                NavigationEvent.To(
+                    route = HomeRoute(currentState.selectedDate.toFormattedString()),
+                    popUpTo = true,
                 )
-                navigationBus.navigate(
-                    NavigationEvent.To(
-                        route = HomeRoute(currentState.selectedDate.toFormattedString()),
-                        popUpTo = true,
-                    )
-                )
-            }
+            )
 
             is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
@@ -187,7 +180,7 @@ class AddTodoViewModel @Inject constructor(
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.awaitBottomSheetHidden()
+
         setState { copy(repeatCycle = repeatCycle) }
     }
 
@@ -218,15 +211,8 @@ class AddTodoViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "AddTodo",
-                buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
-            )
-        )
-
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
@@ -254,11 +240,18 @@ class AddTodoViewModel @Inject constructor(
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
             try {
-                val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(hour, minute))
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+                val triggerAtMillis = schedule.run {
+                    val dateTime = LocalDateTime(
+                        year = this.year,
+                        month = this.monthNumber,
+                        day = this.day,
+                        hour = hour,
+                        minute = minute,
+                        second = 0,
+                        nanosecond = 0
+                    )
+                    dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                }
 
                 if (triggerAtMillis <= System.currentTimeMillis()) return@forEach
 
@@ -287,13 +280,6 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onNotificationToggleClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "NotificationNudge_Toggle",
-            )
-        )
-
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -304,13 +290,6 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onAlarmTimeChange(hour: Int, minute: Int) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "NotificationNudge_Toggle",
-            )
-        )
-
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -356,13 +335,6 @@ class AddTodoViewModel @Inject constructor(
             configRepository.updateAlarmMessage(notificationState.message)
         }
 
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "SaveNotification",
-            )
-        )
         saveTodoAndNavigateHome()
     }
-
 }

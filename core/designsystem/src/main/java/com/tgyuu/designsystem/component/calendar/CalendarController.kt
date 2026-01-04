@@ -19,10 +19,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.now
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun CalendarController(
@@ -54,7 +56,7 @@ internal fun CalendarController(
         }
 
         Text(
-            text = "${currentDate.year}년 ${currentDate.monthValue}월",
+            text = "${currentDate.year}년 ${currentDate.monthNumber}월",
             textAlign = TextAlign.Center,
             style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textOnBackground,

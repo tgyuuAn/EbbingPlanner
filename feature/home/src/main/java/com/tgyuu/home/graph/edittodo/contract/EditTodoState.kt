@@ -3,6 +3,7 @@ package com.tgyuu.home.graph.edittodo.contract
 import androidx.compose.runtime.Immutable
 import com.tgyuu.common.base.UiState
 import com.tgyuu.common.generateValidSchedules
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
@@ -15,8 +16,8 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 
 @Immutable
 data class EditTodoState(

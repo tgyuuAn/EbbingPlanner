@@ -6,7 +6,7 @@ import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.model.Experiment.SaveButtonPosition
 import com.tgyuu.repeatcycle.util.parsingIntervals
 import com.tgyuu.repeatcycle.util.toPreviewIntervals
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 data class AddRepeatCycleState(
     val intervals: String = "",

@@ -39,6 +39,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.common.event.EbbingEvent
+import com.tgyuu.common.now
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -69,7 +70,9 @@ import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteSingle
 import com.tgyuu.home.graph.main.ui.dialog.InAppReviewDialog
 import com.tgyuu.home.graph.main.ui.dialog.WidgetNudgeDialog
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 @Composable
 internal fun HomeRoute(
@@ -157,7 +160,7 @@ internal fun HomeRoute(
                                                         schedule = delayedSchedule,
                                                         restDays = restDays,
                                                         expectedDateExcludingRestDays = expectedDateExcludingRestDays,
-                                                        expectedDateIncludingRestDays = delayedSchedule.date.plusDays(1)
+                                                        expectedDateIncludingRestDays = delayedSchedule.date.plus(1, DateTimeUnit.DAY)
                                                     )
                                                     isShowDialog = true
                                                 }

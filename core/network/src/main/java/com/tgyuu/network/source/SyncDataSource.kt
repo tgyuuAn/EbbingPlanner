@@ -3,6 +3,8 @@ package com.tgyuu.network.source
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue.serverTimestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.tgyuu.common.copy
+import com.tgyuu.common.now
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
@@ -18,15 +20,14 @@ import com.tgyuu.network.model.sync.TodoScheduleDto
 import com.tgyuu.network.model.sync.TodoTagDto
 import com.tgyuu.network.model.sync.toDto
 import com.tgyuu.network.toDate
+import com.tgyuu.network.toLocalDateTime
+import com.tgyuu.network.toLocalDateTimeOrNull
 import com.tgyuu.network.toResponse
-import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import kotlinx.datetime.LocalDateTime
 import java.util.Date
 import javax.inject.Inject
 
@@ -48,7 +49,7 @@ class SyncDataSource @Inject constructor(
         infos: List<TodoInfoForSync>,
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
-    ): ZonedDateTime = coroutineScope {
+    ): LocalDateTime = coroutineScope {
         val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
         val batchHelper = FirestoreBatchHelper(firestore)
 
@@ -103,7 +104,7 @@ class SyncDataSource @Inject constructor(
         val updatedSnapshot = infoDocRef.get().await()
         updatedSnapshot
             .getTimestamp(FIELD_LAST_UPDATED_AT)
-            .toZonedDateTimeOrNull()
+            .toLocalDateTimeOrNull()
             ?: throw IllegalStateException("lastUpdatedAt 가 비었습니다.")
     }
 
@@ -168,14 +169,12 @@ class SyncDataSource @Inject constructor(
         }
     }
 
-    suspend fun generateConnectCode(uuid: String, connectCode: String): ZonedDateTime {
+    suspend fun generateConnectCode(uuid: String, connectCode: String): LocalDateTime {
         val connectCodeDoc = firestore.collection(COLLECTION_CONNECT_CODES)
             .document(connectCode)
 
-        val connectCodeExpirationTime = LocalDateTime.now()
-            .plusMinutes(10L)
-            .toDate()
-
+        val now = LocalDateTime.now()
+        val connectCodeExpirationTime = now.copy(minute = now.minute + 10).toDate()
         val connectDto = ConnectDto(
             uuid = uuid,
             connectCode = connectCode,
@@ -185,8 +184,7 @@ class SyncDataSource @Inject constructor(
         connectCodeDoc.set(connectDto)
             .await()
 
-        return connectCodeExpirationTime.toInstant()
-            .atZone(ZoneId.systemDefault())
+        return connectCodeExpirationTime.toLocalDateTime()
     }
 
     suspend fun connectAnother(connectCode: String): Result<ConnectDto?> = suspendRunCatching {

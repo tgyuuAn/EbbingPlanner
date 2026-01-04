@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
-import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
@@ -25,28 +22,27 @@ import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class EditDateViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
-    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
+) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
     private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
@@ -73,11 +69,6 @@ class EditDateViewModel @Inject constructor(
 
             originSchedules = result
         }
-
-        viewModelScope.launch {
-            configRepository.getMondayStart()
-                .collect { setState { copy(mondayStart = it) } }
-        }
     }
 
     internal fun loadNewRepeatCycle() {
@@ -97,17 +88,12 @@ class EditDateViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditDateIntent) {
         when (intent) {
-            EditDateIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "EditDate", buttonName = "Back")
+            EditDateIntent.OnBackClick -> navigationBus.navigate(
+                NavigationEvent.To(
+                    route = HomeRoute(currentState.selectedDate.toFormattedString()),
+                    popUpTo = true,
                 )
-                navigationBus.navigate(
-                    NavigationEvent.To(
-                        route = HomeRoute(currentState.selectedDate.toFormattedString()),
-                        popUpTo = true,
-                    )
-                )
-            }
+            )
 
             is EditDateIntent.OnSelectedDataChangeClick ->
                 eventBus.sendEvent(ShowBottomSheet(intent.content))
@@ -131,7 +117,7 @@ class EditDateViewModel @Inject constructor(
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.awaitBottomSheetHidden()
+
         setState { copy(repeatCycle = repeatCycle) }
     }
 
@@ -157,15 +143,8 @@ class EditDateViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "EditDate",
-                buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
-            )
-        )
-
         val tagId = currentState.tagId ?: run {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
             return
@@ -194,11 +173,18 @@ class EditDateViewModel @Inject constructor(
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
             try {
-                val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(hour, minute))
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+                val triggerAtMillis = schedule.run {
+                    val dateTime = LocalDateTime(
+                        year = this.year,
+                        month = this.monthNumber,
+                        day = this.day,
+                        hour = hour,
+                        minute = minute,
+                        second = 0,
+                        nanosecond = 0
+                    )
+                    dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                }
 
                 if (triggerAtMillis <= System.currentTimeMillis()) return@forEach
 

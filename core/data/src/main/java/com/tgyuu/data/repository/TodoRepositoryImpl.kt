@@ -14,7 +14,7 @@ import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
@@ -84,7 +84,7 @@ class TodoRepositoryImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         priority: Int?,
-        restDays: Set<java.time.DayOfWeek>,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
@@ -99,7 +99,7 @@ class TodoRepositoryImpl @Inject constructor(
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         priority: Int?,
-        restDays: Set<java.time.DayOfWeek>,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
@@ -132,7 +132,7 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTodoInfoById(infoId: Int): TodoInfo =
         localTodoDataSource.getTodoInfoById(infoId)
 
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<kotlinx.datetime.DayOfWeek>) =
         localTodoDataSource.updateTodoInfo(todoSchedule, restDays)
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =

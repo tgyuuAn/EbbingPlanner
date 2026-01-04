@@ -23,9 +23,8 @@ import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import java.time.DayOfWeek
-import java.time.format.TextStyle
-import java.util.Locale
+import com.tgyuu.designsystem.component.calendar.toKorean
+import kotlinx.datetime.DayOfWeek
 
 @Composable
 internal fun ConfirmDelayAllDialog(
@@ -36,8 +35,8 @@ internal fun ConfirmDelayAllDialog(
 ) {
     var excludeRestDays by remember { mutableStateOf(true) }
     val restDaysText = if (restDays.isNotEmpty()) {
-        val dayNames = restDays.sortedBy { it.value }
-            .joinToString(", ") { it.getDisplayName(TextStyle.SHORT, Locale.KOREAN) }
+        val dayNames = restDays.sortedBy { it.ordinal }
+            .joinToString(", ") { it.toKorean() }
         "쉬는 요일 제외 ($dayNames)"
     } else {
         ""

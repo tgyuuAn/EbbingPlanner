@@ -50,14 +50,14 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
-import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
+import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
-import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -171,8 +171,8 @@ private fun TodayTodoWidgetContent(
                 modifier = GlanceModifier
                     .size(20.dp)
                     .clickable(
-                        actionRunCallback<AddTodoFromWidgetAction>(
-                            actionParametersOf(widgetSourceKey to "TodoWidget")
+                        actionStartActivity<MainActivity>(
+                            actionParametersOf(destinationKey to ADD_TODO)
                         )
                     ),
             )
@@ -273,12 +273,12 @@ private fun HomeWidgetPreview2() {
                     tagId = 1,
                     name = "공부",
                     color = 0xFF3282B8.toInt(),
-                    date = LocalDate.of(2025, 5, 8),
+                    date = LocalDate(2025, 5, 8),
                     memo = "Jetpack Compose 위젯",
                     priority = 1,
                     isDone = false,
-                    createdAt = LocalDate.of(2025, 5, 1),
-                    infoCreatedAt = LocalDate.of(2025, 5, 1)
+                    createdAt = LocalDate(2025, 5, 1),
+                    infoCreatedAt = LocalDate(2025, 5, 1)
                 ),
                 TodoSchedule(
                     id = 2,
@@ -287,12 +287,12 @@ private fun HomeWidgetPreview2() {
                     tagId = 2,
                     name = "운동",
                     color = 0xFFFF7490.toInt(),
-                    date = LocalDate.of(2025, 5, 8),
+                    date = LocalDate(2025, 5, 8),
                     memo = "헬스장 1시간",
                     priority = 2,
                     isDone = true,
-                    createdAt = LocalDate.of(2025, 5, 2),
-                    infoCreatedAt = LocalDate.of(2025, 5, 2)
+                    createdAt = LocalDate(2025, 5, 2),
+                    infoCreatedAt = LocalDate(2025, 5, 2)
                 )
             )
         )

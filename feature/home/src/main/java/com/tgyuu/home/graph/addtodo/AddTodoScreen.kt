@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.now
 import com.tgyuu.common.util.EbbingPageTransitionAnimation
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -60,8 +61,9 @@ import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleContent
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun AddTodoRoute(
@@ -401,7 +403,7 @@ private fun TodoMainFormContent(
     Text(
         text = buildAnnotatedString {
             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.day}일")
             }
             append(" 부터\n시작하는 일정을 만들어요")
         },

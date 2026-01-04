@@ -24,10 +24,9 @@ import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
+import com.tgyuu.designsystem.component.calendar.toKorean
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun ConfirmDelayDialog(
@@ -47,22 +46,18 @@ internal fun ConfirmDelayDialog(
     }
 
     val dateText = if (displayedExpectedDate != null) {
-        "${schedule.date.monthValue}월 ${schedule.date.dayOfMonth}일(${
-            schedule.date.dayOfWeek.getDisplayName(
-                TextStyle.SHORT, Locale.KOREAN
-            )
-        }) → " + "${displayedExpectedDate.monthValue}월 ${displayedExpectedDate.dayOfMonth}일(${
-            displayedExpectedDate.dayOfWeek.getDisplayName(
-                TextStyle.SHORT, Locale.KOREAN
-            )
+        "${schedule.date.monthNumber}월 ${schedule.date.dayOfMonth}일(${
+            schedule.date.dayOfWeek.toKorean()
+        }) → " + "${displayedExpectedDate.monthNumber}월 ${displayedExpectedDate.dayOfMonth}일(${
+            displayedExpectedDate.dayOfWeek.toKorean()
         })"
     } else {
         ""
     }
 
     val restDaysText = if (restDays.isNotEmpty()) {
-        val dayNames = restDays.sortedBy { it.value }
-            .joinToString(", ") { it.getDisplayName(TextStyle.SHORT, Locale.KOREAN) }
+        val dayNames = restDays.sortedBy { it.ordinal }
+            .joinToString(", ") { it.toKorean() }
         "쉬는 요일 제외 ($dayNames)"
     } else {
         ""

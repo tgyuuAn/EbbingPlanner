@@ -11,9 +11,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 @Composable
 fun EbbingCalendar(
@@ -34,7 +37,10 @@ fun EbbingCalendar(
     val currentOffset = pagerState.currentPage - initialPage
 
     LaunchedEffect(pagerState.currentPage) {
-        val newDate = calendarState.originSelectedDate.plusMonths(currentOffset.toLong())
+        val newDate = calendarState.originSelectedDate.plus(
+            value = currentOffset.toLong(),
+            unit = DateTimeUnit.MONTH,
+        )
         calendarState.currentDisplayDate = newDate
     }
 

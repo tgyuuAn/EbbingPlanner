@@ -49,6 +49,8 @@ kotlinxSerializationJson = "1.8.0"
 kotlinxCoroutine = "1.10.1"
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlinxCollectionsImmutable = "0.4.0"
+# https://github.com/Kotlin/kotlinx-datetime
+kotlinxDatetime = "0.7.1"
 # https://github.com/google/gson
 gson = "2.12.1"
 
@@ -84,6 +86,7 @@ amplitude = "1.21.3"
 ## Accompanist
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
+roomKtx = "2.8.4"
 
 ## Play Core
 # https://developer.android.com/reference/com/google/android/play/core/release-notes
@@ -137,6 +140,8 @@ coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutine" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
@@ -169,6 +174,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
 
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playCore" }
 play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "playAppUpdate" }

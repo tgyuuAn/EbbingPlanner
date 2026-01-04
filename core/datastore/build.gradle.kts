@@ -16,5 +16,5 @@ dependencies {
     implementation(projects.core.common)
 
     implementation(libs.androidx.datastore)
-    testImplementation(libs.androidx.datastore.core)
+    implementation(libs.kotlinx.datetime)
 }
