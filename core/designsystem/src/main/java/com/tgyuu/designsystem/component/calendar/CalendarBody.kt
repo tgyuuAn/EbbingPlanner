@@ -34,10 +34,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.now
 import com.tgyuu.common.util.ebbingAnimateColorAsState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun CalendarBody(

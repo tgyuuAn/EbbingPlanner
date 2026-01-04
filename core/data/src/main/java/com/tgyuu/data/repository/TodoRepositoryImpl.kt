@@ -14,7 +14,7 @@ import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(

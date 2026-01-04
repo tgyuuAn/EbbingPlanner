@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.model.Timer
@@ -17,9 +18,13 @@ import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import java.time.Duration
 import java.time.ZonedDateTime
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class ConnectViewModel @Inject constructor(
@@ -39,14 +44,17 @@ class ConnectViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     internal suspend fun getMyConnectInfo() {
         val myConnectCode = syncRepository.getMyConnectCode()
         val expiration = syncRepository.getConnectCodeExpiration()
 
         if (myConnectCode != null && expiration != null) {
-            val now = ZonedDateTime.now()
-            if (expiration.isAfter(now)) {
-                val remainingSec = Duration.between(now, expiration).seconds
+            val now = LocalDateTime.now()
+            if (expiration > now) {
+                val nowInstant = now.toInstant(TimeZone.currentSystemDefault())
+                val expirationInstant = expiration.toInstant(TimeZone.currentSystemDefault())
+                val remainingSec: Long = (expirationInstant - nowInstant).inWholeSeconds
 
                 setState {
                     copy(

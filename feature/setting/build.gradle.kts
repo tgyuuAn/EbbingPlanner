@@ -42,4 +42,5 @@ dependencies {
     implementation(projects.core.alarm)
 
     implementation(libs.accompanist.permission)
+    implementation(libs.kotlinx.datetime)
 }

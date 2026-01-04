@@ -33,12 +33,16 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.now
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
-import java.time.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
+import kotlinx.datetime.plus
 
 @Composable
 internal fun EbbingTodoList(
@@ -64,7 +68,7 @@ internal fun EbbingTodoList(
         val newPage = pagerState.currentPage
         val delta = newPage - prevPage
         if (delta != 0) {
-            onSelectDate(selectedDate.plusDays(delta.toLong()))
+            onSelectDate(selectedDate.plus(delta.toLong(), DateTimeUnit.DAY))
             prevPage = newPage
         }
     }
@@ -108,7 +112,7 @@ private fun TodoHeader(
             .padding(horizontal = 20.dp, vertical = 8.dp)
     ) {
         val dateText = if (displayDate == LocalDate.now()) "오늘"
-        else "${displayDate.monthValue}월 ${displayDate.dayOfMonth}일"
+        else "${displayDate.month.number}월 ${displayDate.day}일"
         Text(
             text = "$dateText  할 일 $count",
             style = EbbingTheme.typography.bodyMSB,
@@ -181,7 +185,7 @@ private fun TodoPage(
         }
     } else {
         Text(
-            text = "${date.monthValue}월 ${date.dayOfMonth}일 스케줄이 없어요.\n" +
+            text = "${date.month.number}월 ${date.day}일 스케줄이 없어요.\n" +
                     "우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
             style = EbbingTheme.typography.bodySM,
             textAlign = TextAlign.Center,

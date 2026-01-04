@@ -9,7 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 

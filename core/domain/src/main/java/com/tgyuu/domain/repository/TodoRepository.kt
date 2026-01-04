@@ -5,7 +5,7 @@ import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 interface TodoRepository {
     val recentAddedTagId: Long?

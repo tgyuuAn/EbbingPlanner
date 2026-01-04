@@ -1,11 +1,12 @@
 package com.tgyuu.database.source.tag
 
+import com.tgyuu.common.now
 import com.tgyuu.database.dao.TodoTagsDao
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 import javax.inject.Inject
 
 class LocalTagDataSourceImpl @Inject constructor(

@@ -10,6 +10,8 @@ android {
 dependencies {
     implementation(projects.core.commonUi)
     implementation(projects.core.domain)
+    implementation(projects.core.common)
 
+    implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.metrics.performance)
 }

@@ -43,6 +43,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.component.calendar.CalendarDate
 import com.tgyuu.designsystem.component.calendar.EbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.getCalendarDates
@@ -63,7 +64,8 @@ import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
 import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 class CalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -159,7 +161,7 @@ private fun CalendarWidgetHeader() {
             Spacer(modifier = GlanceModifier.size(20.dp))
 
             Text(
-                text = "${today.year}년 ${today.monthValue}월",
+                text = "${today.year}년 ${today.month.number}월",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -317,7 +319,7 @@ private fun ColumnScope.SelectedDateTodoList(
         ) {
             Text(
                 text = if (selectedDate == LocalDate.now()) "오늘 할 일   "
-                else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
+                else "${selectedDate.month.number}월 ${selectedDate.dayOfMonth}일 할 일   ",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,

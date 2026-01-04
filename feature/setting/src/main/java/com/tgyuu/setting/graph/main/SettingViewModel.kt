@@ -5,6 +5,7 @@ import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
@@ -21,10 +22,12 @@ import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -132,6 +135,7 @@ class SettingViewModel @Inject constructor(
     private suspend fun navigateToWebView(title: String, url: String) =
         navigationBus.navigate(To(SettingGraph.WebViewRoute(title = title, url = url)))
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun updateAlarmTime(hour: String, minute: String) {
         configRepository.updateAlarmTime(hour, minute)
 
@@ -141,10 +145,18 @@ class SettingViewModel @Inject constructor(
         val now = LocalDateTime.now()
 
         upcoming.forEach { sch ->
-            val localDateTime = sch.date.atTime(h, m)
-            if (localDateTime.isBefore(now)) return@forEach
+            val localDateTime = sch.date.run {
+                LocalDateTime(
+                    year = year,
+                    month = month,
+                    day = day,
+                    hour = h,
+                    minute = m,
+                )
+            }
+            if (localDateTime < now) return@forEach
 
-            val trigger = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val trigger = localDateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
             alarmScheduler.rescheduleDailyExact(
                 date = sch.date, newTriggerMs = trigger

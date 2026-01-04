@@ -5,10 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.tgyuu.common.now
 import com.tgyuu.database.model.TodoInfoEntity
 import com.tgyuu.database.model.TodoScheduleEntity
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface TodoWithSchedulesDao {

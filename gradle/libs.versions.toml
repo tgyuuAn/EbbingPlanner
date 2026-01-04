@@ -47,6 +47,8 @@ kotlin = "2.1.0"
 kotlinxSerializationJson = "1.8.0"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinxCoroutine = "1.10.1"
+# https://github.com/Kotlin/kotlinx-datetime
+kotlinxDatetime = "0.7.1"
 # https://github.com/google/gson
 gson = "2.12.1"
 
@@ -82,6 +84,7 @@ amplitude = "1.16.8"
 ## Accompanist
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
+roomKtx = "2.8.4"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -128,6 +131,8 @@ coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutine" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutine" }
 
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
@@ -160,6 +165,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
 
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 [bundles]
 

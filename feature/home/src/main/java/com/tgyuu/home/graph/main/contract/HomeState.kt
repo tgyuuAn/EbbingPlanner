@@ -3,7 +3,7 @@ package com.tgyuu.home.graph.main.contract
 import com.tgyuu.common.base.UiState
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 data class HomeState(
     val isLoading: Boolean = true,

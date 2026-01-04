@@ -57,7 +57,7 @@ import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -273,12 +273,12 @@ private fun HomeWidgetPreview2() {
                     tagId = 1,
                     name = "공부",
                     color = 0xFF3282B8.toInt(),
-                    date = LocalDate.of(2025, 5, 8),
+                    date = LocalDate(2025, 5, 8),
                     memo = "Jetpack Compose 위젯",
                     priority = 1,
                     isDone = false,
-                    createdAt = LocalDate.of(2025, 5, 1),
-                    infoCreatedAt = LocalDate.of(2025, 5, 1)
+                    createdAt = LocalDate(2025, 5, 1),
+                    infoCreatedAt = LocalDate(2025, 5, 1)
                 ),
                 TodoSchedule(
                     id = 2,
@@ -287,12 +287,12 @@ private fun HomeWidgetPreview2() {
                     tagId = 2,
                     name = "운동",
                     color = 0xFFFF7490.toInt(),
-                    date = LocalDate.of(2025, 5, 8),
+                    date = LocalDate(2025, 5, 8),
                     memo = "헬스장 1시간",
                     priority = 2,
                     isDone = true,
-                    createdAt = LocalDate.of(2025, 5, 2),
-                    infoCreatedAt = LocalDate.of(2025, 5, 2)
+                    createdAt = LocalDate(2025, 5, 2),
+                    infoCreatedAt = LocalDate(2025, 5, 2)
                 )
             )
         )

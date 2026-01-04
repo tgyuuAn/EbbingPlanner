@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.repository.SyncRepository
@@ -18,9 +19,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.Duration
-import java.time.ZonedDateTime
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class SyncMainViewModel @Inject constructor(
@@ -31,6 +34,7 @@ class SyncMainViewModel @Inject constructor(
     internal val eventBus: EventBus,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
+    @OptIn(ExperimentalTime::class)
     internal suspend fun loadInitData() = coroutineScope {
         val uuidJob = launch {
             val uuid = syncRepository.getUuid()
@@ -51,9 +55,12 @@ class SyncMainViewModel @Inject constructor(
             suspendRunCatching {
                 syncRepository.getServerLastUpdatedAt()
             }.onSuccess { serverLastUpdatedAt ->
+                val now = LocalDateTime.now()
                 val isSyncUpEnabled = serverLastUpdatedAt == null ||
-                        Duration.between(serverLastUpdatedAt, ZonedDateTime.now())
-                            .toMillis() >= SYNC_UP_COOL_TIME
+                        (now.toInstant(TimeZone.currentSystemDefault()) -
+                                serverLastUpdatedAt.toInstant(TimeZone.currentSystemDefault()))
+                            .inWholeMilliseconds >= SYNC_UP_COOL_TIME
+
                 setState {
                     copy(
                         serverLastUpdatedAt = serverLastUpdatedAt,

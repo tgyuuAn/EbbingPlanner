@@ -1,6 +1,7 @@
 package com.tgyuu.domain.model.sync
 
-import java.time.LocalDateTime
+import com.tgyuu.common.now
+import kotlinx.datetime.LocalDateTime
 
 data class ConnectInfo(
     val uuid: String,
@@ -9,6 +10,6 @@ data class ConnectInfo(
 ) {
     fun isValid(): Boolean {
         val now = LocalDateTime.now()
-        return connectCodeExpirationTime.isAfter(now)
+        return connectCodeExpirationTime > now
     }
 }

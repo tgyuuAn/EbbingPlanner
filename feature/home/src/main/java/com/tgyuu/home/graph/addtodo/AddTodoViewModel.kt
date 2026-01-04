@@ -25,11 +25,14 @@ import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class AddTodoViewModel @Inject constructor(
@@ -166,6 +169,7 @@ class AddTodoViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
@@ -182,11 +186,18 @@ class AddTodoViewModel @Inject constructor(
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
             try {
-                val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(hour, minute))
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+                val triggerAtMillis = schedule.run {
+                    val dateTime = LocalDateTime(
+                        year = this.year,
+                        month = this.month.number,
+                        day = this.day,
+                        hour = hour,
+                        minute = minute,
+                        second = 0,
+                        nanosecond = 0
+                    )
+                    dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                }
 
                 if (triggerAtMillis <= System.currentTimeMillis()) return@forEach
 

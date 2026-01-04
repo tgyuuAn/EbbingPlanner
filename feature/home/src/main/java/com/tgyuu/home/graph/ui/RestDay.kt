@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.component.EbbingChip
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 @Composable
 internal fun RestDayContent(

@@ -6,8 +6,8 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 interface LocalTodoDataSource {
     suspend fun getTodoSchedule(id: Int): TodoSchedule?

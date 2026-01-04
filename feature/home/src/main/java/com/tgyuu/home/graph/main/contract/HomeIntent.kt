@@ -4,7 +4,7 @@ import com.tgyuu.common.base.UiIntent
 import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.TodoSchedule
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 sealed interface HomeIntent : UiIntent {
     data class OnCurrentDateChanged(val currentDate: LocalDate) : HomeIntent

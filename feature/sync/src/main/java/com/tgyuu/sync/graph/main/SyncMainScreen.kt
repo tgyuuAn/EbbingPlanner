@@ -41,7 +41,7 @@ import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmDisconnectDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncUpDialog
 import kotlinx.coroutines.launch
-import java.time.ZonedDateTime
+import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun SyncMainRoute(
@@ -249,8 +249,8 @@ private fun TabletSyncMainScreen(
 @Composable
 internal fun UuidBody(
     uuid: String,
-    lastSyncedAt: ZonedDateTime?,
-    lastUpdatedAt: ZonedDateTime?,
+    lastSyncedAt: LocalDateTime?,
+    lastUpdatedAt: LocalDateTime?,
 ) {
     Text(
         text = "해당 디바이스의 고유 ID :",
@@ -278,7 +278,7 @@ internal fun UuidBody(
     )
 
     Text(
-        text = lastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
+        text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
         style = EbbingTheme.typography.bodySR,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier
@@ -296,7 +296,7 @@ internal fun UuidBody(
     )
 
     Text(
-        text = lastUpdatedAt?.toLocalDateTime()?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
+        text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
         style = EbbingTheme.typography.bodySR,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier
@@ -314,8 +314,8 @@ internal fun UuidBody(
 @Composable
 internal fun LinkedUuidBody(
     linkedUuid: String,
-    lastSyncedAt: ZonedDateTime?,
-    lastUpdatedAt: ZonedDateTime?,
+    lastSyncedAt: LocalDateTime?,
+    lastUpdatedAt: LocalDateTime?,
 ) {
     Text(
         text = "연동 되어있는 ID :",
@@ -343,7 +343,7 @@ internal fun LinkedUuidBody(
     )
 
     Text(
-        text = lastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
+        text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
         style = EbbingTheme.typography.bodySR,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier
@@ -361,7 +361,7 @@ internal fun LinkedUuidBody(
     )
 
     Text(
-        text = lastUpdatedAt?.toLocalDateTime()?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
+        text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
         style = EbbingTheme.typography.bodySR,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier

@@ -20,7 +20,7 @@ import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun ScheduleContent(

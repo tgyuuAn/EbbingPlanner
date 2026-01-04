@@ -4,8 +4,8 @@ import androidx.room.TypeConverter
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.common.toLocalDateTimeOrThrow
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 class EbbingConverters {
     // --- LocalDate ---

@@ -2,12 +2,13 @@ package com.tgyuu.home.graph.addtodo.contract
 
 import com.tgyuu.common.base.UiState
 import com.tgyuu.common.generateValidSchedules
+import com.tgyuu.common.now
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 
 data class AddTodoState(
     val selectedDate: LocalDate = LocalDate.now(),

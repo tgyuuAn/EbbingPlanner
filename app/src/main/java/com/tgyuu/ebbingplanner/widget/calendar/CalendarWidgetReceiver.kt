@@ -9,6 +9,9 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.common.copy
+import com.tgyuu.common.now
+import com.tgyuu.designsystem.component.calendar.totalDaysInMonth
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -25,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -77,8 +80,8 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
         val now = LocalDate.now()
         val allSchedules = todoRepository.loadTodoSchedulesByDateRange(
-            now.withDayOfMonth(1),
-            now.withDayOfMonth(now.lengthOfMonth())
+            now.copy(day = 1),
+            now.copy(now.totalDaysInMonth())
         )
         val byDate = buildByDateMap(allSchedules, sortType)
 

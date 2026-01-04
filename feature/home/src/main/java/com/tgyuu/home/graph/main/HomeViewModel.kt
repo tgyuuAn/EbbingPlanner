@@ -3,10 +3,13 @@ package com.tgyuu.home.graph.main
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.base.BaseViewModel
+import com.tgyuu.common.copy
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.designsystem.component.calendar.totalDaysInMonth
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.TodoSchedule
@@ -24,10 +27,16 @@ import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SyncGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.number
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -49,8 +58,8 @@ class HomeViewModel @Inject constructor(
 
     suspend fun initCurrentMonthSchedules() {
         val today = LocalDate.now()
-        val start = today.withDayOfMonth(1)
-        val end = today.withDayOfMonth(today.lengthOfMonth())
+        val start = today.copy(day = 1)
+        val end = today.copy(today.totalDaysInMonth())
 
         currentMonthSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
     }
@@ -83,8 +92,10 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadSchedules(currentDate: LocalDate) = viewModelScope.launch {
-        val start = currentDate.withDayOfMonth(1).minusMonths(1)
-        val end = currentDate.withDayOfMonth(1).plusMonths(2).minusDays(1)
+        val start = currentDate.minus(1, DateTimeUnit.MONTH)
+            .run { LocalDate(year, month, 1) }
+        val end = currentDate.plus(1, DateTimeUnit.MONTH)
+            .run { LocalDate(year, month, totalDaysInMonth()) }
 
         val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
         cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
@@ -177,8 +188,9 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정 이후 연계된 일정들을 모두 지웠습니다."))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onDelaySchedule(schedule: TodoSchedule) {
-        val nextDate = schedule.date.plusDays(1)
+        val nextDate = schedule.date.plus(1, DateTimeUnit.DAY)
         val alreadyExistsOnNext = currentState
             .schedulesByDateMap[nextDate]
             ?.any { it.infoId == schedule.infoId } == true
@@ -193,12 +205,19 @@ class HomeViewModel @Inject constructor(
         todoRepository.updateTodo(delayed)
         val (hour, minute) = configRepository.getAlarmTime()
 
-        if (nextDate.isAfter(LocalDate.now())) {
-            val triggerAtMillis = nextDate
-                .atTime(LocalTime.of(hour, minute))
-                .atZone(ZoneId.systemDefault())
-                .toInstant()
-                .toEpochMilli()
+        if (nextDate > LocalDate.now()) {
+            val triggerAtMillis = nextDate.run {
+                val dateTime = LocalDateTime(
+                    year = this.year,
+                    month = this.month.number,
+                    day = this.day,
+                    hour = hour,
+                    minute = minute,
+                    second = 0,
+                    nanosecond = 0
+                )
+                dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            }
 
             alarmScheduler.scheduleDailyExact(
                 date = nextDate,

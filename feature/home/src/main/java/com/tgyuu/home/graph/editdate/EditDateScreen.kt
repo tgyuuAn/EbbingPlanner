@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.now
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -43,8 +44,9 @@ import com.tgyuu.home.graph.editdate.contract.EditDateState
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleCheckContent
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun EditDateRoute(
@@ -297,7 +299,7 @@ private fun EditDateMainFormContent(
     Text(
         text = buildAnnotatedString {
             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                append("${state.selectedDate.month.number}월 ${state.selectedDate.day}일")
             }
             append(" 부터\n시작하는 일정으로 바꿔요")
         },

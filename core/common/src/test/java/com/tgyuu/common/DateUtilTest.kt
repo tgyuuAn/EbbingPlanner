@@ -1,21 +1,20 @@
 package com.tgyuu.common
 
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeParseException
 
 class LocalDateFormatTest {
 
     @Test
     fun `LocalDate를 문자열로 변환할 수 있다`() {
         // given
-        val date = LocalDate.of(2025, 4, 22)
+        val date = LocalDate(2025, 4, 22)
 
         // when
         val result = date.toFormattedString()
@@ -33,7 +32,7 @@ class LocalDateFormatTest {
         val result = input.toLocalDateOrThrow()
 
         // then
-        assertEquals(LocalDate.of(2023, 11, 15), result)
+        assertEquals(LocalDate(2023, 11, 15), result)
     }
 
     @ParameterizedTest
@@ -60,7 +59,7 @@ class LocalDateFormatTest {
     @Test
     fun `LocalDateTime을 문자열로 변환할 수 있다`() {
         // given
-        val dateTime = LocalDateTime.of(2025, 4, 22, 15, 30, 45)
+        val dateTime = LocalDateTime(2025, 4, 22, 15, 30, 45)
 
         // when
         val result = dateTime.toFormattedString()
@@ -78,7 +77,7 @@ class LocalDateFormatTest {
         val result = input.toLocalDateTimeOrThrow()
 
         // then
-        assertEquals(LocalDateTime.of(2023, 11, 15, 9, 5, 0), result)
+        assertEquals(LocalDateTime(2023, 11, 15, 9, 5, 0), result)
     }
 
     @ParameterizedTest
@@ -97,11 +96,11 @@ class LocalDateFormatTest {
             "2023-12-31 23:60:00"  // 60분은 허용 안 됨
         ]
     )
-    fun `잘못된 형식의 문자열을 LocalDateTime으로 변환하려고 하면 DateTimeParseException이 발생한다`(
+    fun `잘못된 형식의 문자열을 LocalDateTime으로 변환하려고 하면 IllegalArgumentException이 발생한다`(
         input: String
     ) {
         // expect
-        assertThrows<DateTimeParseException> {
+        assertThrows<IllegalArgumentException> {
             input.toLocalDateTimeOrThrow()
         }
     }
@@ -109,7 +108,7 @@ class LocalDateFormatTest {
     @Test
     fun `같은 날짜를 비교하면 오늘을 반환한다`() {
         // given
-        val reference = LocalDate.of(2025, 4, 23)
+        val reference = LocalDate(2025, 4, 23)
 
         // when
         val result = reference.toRelativeDayDescription(referenceDate = reference)
@@ -121,8 +120,8 @@ class LocalDateFormatTest {
     @Test
     fun `미래 날짜를 비교하면 N일 후를 반환한다`() {
         // given
-        val reference = LocalDate.of(2025, 4, 20)
-        val futureDate = LocalDate.of(2025, 4, 25)
+        val reference = LocalDate(2025, 4, 20)
+        val futureDate = LocalDate(2025, 4, 25)
 
         // when
         val result = futureDate.toRelativeDayDescription(referenceDate = reference)
@@ -134,8 +133,8 @@ class LocalDateFormatTest {
     @Test
     fun `과거 날짜를 비교하면 N일 전을 반환한다`() {
         // given
-        val reference = LocalDate.of(2025, 4, 25)
-        val pastDate = LocalDate.of(2025, 4, 20)
+        val reference = LocalDate(2025, 4, 25)
+        val pastDate = LocalDate(2025, 4, 20)
 
         // when
         val result = pastDate.toRelativeDayDescription(referenceDate = reference)
@@ -147,7 +146,7 @@ class LocalDateFormatTest {
     @Test
     fun `휴일이 없는 경우 그대로 반복 주기를 적용한다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val baseDate = LocalDate(2025, 7, 20) // 일요일
         val intervals = listOf(0, 1, 2)
         val restDays = emptySet<DayOfWeek>()
 
@@ -157,9 +156,9 @@ class LocalDateFormatTest {
         // then
         assertEquals(
             listOf(
-                LocalDate.of(2025, 7, 20),
-                LocalDate.of(2025, 7, 21),
-                LocalDate.of(2025, 7, 22),
+                LocalDate(2025, 7, 20),
+                LocalDate(2025, 7, 21),
+                LocalDate(2025, 7, 22),
             ),
             result
         )
@@ -168,7 +167,7 @@ class LocalDateFormatTest {
     @Test
     fun `휴일이면 반복 주기를 계산할 때 다음 평일로 이동한다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val baseDate = LocalDate(2025, 7, 20) // 일요일
         val intervals = listOf(0, 1, 2)
         val restDays = setOf(DayOfWeek.SUNDAY)
 
@@ -178,9 +177,9 @@ class LocalDateFormatTest {
         // then
         assertEquals(
             listOf(
-                LocalDate.of(2025, 7, 21), // 7/20은 일요일이라서 → 7/21
-                LocalDate.of(2025, 7, 22),
-                LocalDate.of(2025, 7, 23),
+                LocalDate(2025, 7, 21), // 7/20은 일요일이라서 → 7/21
+                LocalDate(2025, 7, 22),
+                LocalDate(2025, 7, 23),
             ),
             result
         )
@@ -189,7 +188,7 @@ class LocalDateFormatTest {
     @Test
     fun `중복된 날짜가 있을 경우, 반복 주기를 구할 때 다음 날짜를 선택한다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val baseDate = LocalDate(2025, 7, 20) // 일요일
         val intervals = listOf(0, 0, 0)
         val restDays = emptySet<DayOfWeek>()
 
@@ -199,9 +198,9 @@ class LocalDateFormatTest {
         // then
         assertEquals(
             listOf(
-                LocalDate.of(2025, 7, 20),
-                LocalDate.of(2025, 7, 21),
-                LocalDate.of(2025, 7, 22)
+                LocalDate(2025, 7, 20),
+                LocalDate(2025, 7, 21),
+                LocalDate(2025, 7, 22)
             ),
             result
         )
@@ -210,7 +209,7 @@ class LocalDateFormatTest {
     @Test
     fun `반복 주기를 구할 때 중복 방지와 휴일 회피가 동시에 작동한다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 19) // 토요일
+        val baseDate = LocalDate(2025, 7, 19) // 토요일
         val intervals = listOf(0, 0, 0)
         val restDays = setOf(DayOfWeek.SUNDAY)
 
@@ -220,9 +219,9 @@ class LocalDateFormatTest {
         // then
         assertEquals(
             listOf(
-                LocalDate.of(2025, 7, 19), // 7/19 (토)
-                LocalDate.of(2025, 7, 21), // 7/20 (일) → skip → 7/21
-                LocalDate.of(2025, 7, 22)  // 중복 회피 → 7/22
+                LocalDate(2025, 7, 19), // 7/19 (토)
+                LocalDate(2025, 7, 21), // 7/20 (일) → skip → 7/21
+                LocalDate(2025, 7, 22)  // 중복 회피 → 7/22
             ),
             result
         )

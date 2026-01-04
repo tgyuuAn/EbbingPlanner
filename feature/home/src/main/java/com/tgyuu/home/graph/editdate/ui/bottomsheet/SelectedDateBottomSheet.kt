@@ -14,7 +14,7 @@ import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun SelectedDateBottomSheet(

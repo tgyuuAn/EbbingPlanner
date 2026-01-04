@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.now
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -40,7 +41,8 @@ import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.home.graph.ui.PriorityContent
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun EditTodoRoute(
@@ -140,7 +142,7 @@ private fun EditTodoScreen(
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                        append("${state.selectedDate.month.number}월 ${state.selectedDate.day}일")
                     }
                     append(" 에\n진행하는 걸로 바꿀래요")
                 },

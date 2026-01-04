@@ -4,33 +4,61 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.Date
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.time.ExperimentalTime
 
-val defaultDate = LocalDateTime.of(1970, 1, 1, 0, 0).toDate()
+val defaultDate = LocalDateTime(1970, 1, 1, 0, 0).toDate()
 
 // FireStore timeStamp? -> ZonedDateTime? 로 변환해주는 확장함수
-fun Timestamp?.toZonedDateTimeOrNull(): ZonedDateTime? {
-    return this?.toDate()
-        ?.toInstant()
-        ?.atZone(ZoneId.systemDefault())
+fun Timestamp?.toLocalDateTimeOrNull(): LocalDateTime? {
+    return this?.toDate()?.toLocalDateTime()
 }
 
-fun LocalDate.toDate(): Date = Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
-fun LocalDateTime.toDate(): Date = Date.from(this.atZone(ZoneId.systemDefault()).toInstant())
+fun LocalDate.toDate(): Date = LocalDateTime(
+    year = this.year,
+    month = this.month.number,
+    day = this.day,
+    hour = 0,
+    minute = 0,
+).toDate()
 
-fun Date.toLocalDate(): LocalDate = this.toInstant()
-    .atZone(ZoneId.systemDefault())
-    .toLocalDate()
+@OptIn(ExperimentalTime::class)
+fun LocalDateTime.toDate(): Date {
+    val instant = this.toInstant(TimeZone.currentSystemDefault())
+    return Date(instant.toEpochMilliseconds())
+}
 
-fun Date.toLocalDateTime(): LocalDateTime = this.toInstant()
-    .atZone(ZoneId.systemDefault())
-    .toLocalDateTime()
+fun Date.toLocalDate(): LocalDate {
+    val instant = this.toInstant()
+    val zdt = instant.atZone(java.time.ZoneId.systemDefault())
+    return LocalDate(
+        year = zdt.year,
+        month = zdt.monthValue,
+        day = zdt.dayOfMonth
+    )
+}
+
+fun Date.toLocalDateTime(): LocalDateTime {
+    val instant = this.toInstant()
+    val ldt = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+    return LocalDateTime(
+        year = ldt.year,
+        month = ldt.monthValue,
+        day = ldt.dayOfMonth,
+        hour = ldt.hour,
+        minute = ldt.minute,
+        second = ldt.second,
+        nanosecond = ldt.nano
+    )
+}
 
 // FireStore CallBack을 SuspendCancellableCoroutine으로 감싼 뒤 T를 반환
 suspend inline fun <reified T> Task<DocumentSnapshot>.toResponse(): T =

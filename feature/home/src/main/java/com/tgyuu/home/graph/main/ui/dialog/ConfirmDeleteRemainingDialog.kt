@@ -9,6 +9,7 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
+import kotlinx.datetime.number
 
 @Composable
 internal fun ConfirmDeleteRemainingDialog(
@@ -20,7 +21,7 @@ internal fun ConfirmDeleteRemainingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("${schedule.title} 와 연계된 ${schedule.date.monthValue}월 ${schedule.date.dayOfMonth}일 이후 일정을 모두 ")
+                    append("${schedule.title} 와 연계된 ${schedule.date.month.number}월 ${schedule.date.day}일 이후 일정을 모두 ")
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
                         append("삭제")
                     }
