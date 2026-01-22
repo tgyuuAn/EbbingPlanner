@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.util.EbbingPageTransitionAnimation
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -43,6 +44,7 @@ import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.dialog.ConfirmExitDialog
+import com.tgyuu.home.graph.notification.NotificationScreen
 import com.tgyuu.home.graph.ui.PriorityContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
@@ -65,65 +67,81 @@ internal fun AddTodoRoute(
         viewModel.loadRepeatCycles()
     }
 
-    AddTodoScreen(
-        state = state,
-        onBackClick = { viewModel.onIntent(AddTodoIntent.OnBackClick) },
-        onSelectedDateChangeClick = {
-            viewModel.onIntent(
-                AddTodoIntent.OnSelectedDataChangeClick(
-                    {
-                        SelectedDateBottomSheet(
-                            originSelectedDate = state.selectedDate,
-                            schedulesByDateMap = emptyMap(),
-                            updateSelectedDate = {
-                                viewModel.onIntent(
-                                    AddTodoIntent.OnSelectedDateChange(it)
+    EbbingPageTransitionAnimation(state.page) { page ->
+        when (page) {
+            AddTodoState.Page.ADD_TODO -> AddTodoScreen(
+                state = state,
+                onBackClick = { viewModel.onIntent(AddTodoIntent.OnBackClick) },
+                onSelectedDateChangeClick = {
+                    viewModel.onIntent(
+                        AddTodoIntent.OnSelectedDataChangeClick(
+                            {
+                                SelectedDateBottomSheet(
+                                    originSelectedDate = state.selectedDate,
+                                    schedulesByDateMap = emptyMap(),
+                                    updateSelectedDate = {
+                                        viewModel.onIntent(
+                                            AddTodoIntent.OnSelectedDateChange(it)
+                                        )
+                                    },
                                 )
-                            },
+                            }
                         )
-                    }
-                )
-            )
-        },
-        onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
-        onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
-        onTagDropDownClick = {
-            viewModel.onIntent(
-                AddTodoIntent.OnTagDropDownClick(
-                    {
-                        TagBottomSheet(
-                            originTag = state.tag,
-                            tagList = state.tagList,
-                            updateTag = { viewModel.onIntent(AddTodoIntent.OnTagChange(it)) },
-                            onAddTagClick = { viewModel.onIntent(AddTodoIntent.OnAddTagClick) },
-                        )
-                    }
-                )
-            )
-        },
-        onRepeatCycleDropDownClick = {
-            viewModel.onIntent(
-                AddTodoIntent.OnRepeatCycleDropDownClick(
-                    {
-                        RepeatCycleBottomSheet(
-                            repeatCycleList = state.repeatCycleList,
-                            originRepeatCycle = state.repeatCycle,
-                            onAddRepeatCycleClick = {
-                                viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
-                            },
-                            updateRepeatCycle = {
-                                viewModel.onIntent(
-                                    AddTodoIntent.OnRepeatCycleChange(it)
+                    )
+                },
+                onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
+                onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
+                onTagDropDownClick = {
+                    viewModel.onIntent(
+                        AddTodoIntent.OnTagDropDownClick(
+                            {
+                                TagBottomSheet(
+                                    originTag = state.tag,
+                                    tagList = state.tagList,
+                                    updateTag = { viewModel.onIntent(AddTodoIntent.OnTagChange(it)) },
+                                    onAddTagClick = { viewModel.onIntent(AddTodoIntent.OnAddTagClick) },
                                 )
-                            },
+                            }
                         )
-                    }
-                )
+                    )
+                },
+                onRepeatCycleDropDownClick = {
+                    viewModel.onIntent(
+                        AddTodoIntent.OnRepeatCycleDropDownClick(
+                            {
+                                RepeatCycleBottomSheet(
+                                    repeatCycleList = state.repeatCycleList,
+                                    originRepeatCycle = state.repeatCycle,
+                                    onAddRepeatCycleClick = {
+                                        viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
+                                    },
+                                    updateRepeatCycle = {
+                                        viewModel.onIntent(
+                                            AddTodoIntent.OnRepeatCycleChange(it)
+                                        )
+                                    },
+                                )
+                            }
+                        )
+                    )
+                },
+                onRestDayChange = { viewModel.onIntent(AddTodoIntent.OnRestDayChange(it)) },
+                onSaveClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
             )
-        },
-        onRestDayChange = { viewModel.onIntent(AddTodoIntent.OnRestDayChange(it)) },
-        onSaveClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
-    )
+
+            AddTodoState.Page.NOTIFICATION -> NotificationScreen(
+                state = state,
+                onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
+                onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
+                onNotificationToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
+                onAlarmTimeChange = { hour, minute ->
+                    viewModel.onIntent(AddTodoIntent.OnAlarmTimeChange(hour, minute))
+                },
+                onMessageChange = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageChange(it)) },
+                onResetClick = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageReset) },
+            )
+        }
+    }
 }
 
 @Composable

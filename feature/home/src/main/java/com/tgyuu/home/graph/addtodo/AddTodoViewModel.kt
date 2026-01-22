@@ -15,6 +15,7 @@ import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
@@ -46,6 +47,23 @@ class AddTodoViewModel @Inject constructor(
             ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
 
         setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
+        loadAlarmSettings()
+    }
+
+    private fun loadAlarmSettings() = viewModelScope.launch {
+        val (hour, minute) = configRepository.getAlarmTime()
+        val message = configRepository.getAlarmMessage()
+
+        setState {
+            copy(
+                notificationState = notificationState.copy(
+                    alarmHour = hour,
+                    alarmMinute = minute,
+                    message = message,
+                    originMessage = message,
+                )
+            )
+        }
     }
 
     internal fun loadNewTag() {
@@ -107,6 +125,14 @@ class AddTodoViewModel @Inject constructor(
             AddTodoIntent.OnAddTagClick -> onAddTagClick()
             AddTodoIntent.OnSaveClick -> onSaveClick()
             AddTodoIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
+
+            // Notification 관련 Intent
+            AddTodoIntent.OnNotificationToggleClick -> onNotificationToggleClick()
+            is AddTodoIntent.OnAlarmTimeChange -> onAlarmTimeChange(intent.hour, intent.minute)
+            is AddTodoIntent.OnAlarmMessageChange -> onAlarmMessageChange(intent.message)
+            AddTodoIntent.OnAlarmMessageReset -> onAlarmMessageReset()
+            AddTodoIntent.OnNotificationBackClick -> onNotificationBackClick()
+            AddTodoIntent.OnNotificationSaveClick -> onNotificationSaveClick()
         }
     }
 
@@ -172,6 +198,16 @@ class AddTodoViewModel @Inject constructor(
             return
         }
 
+        val shouldShowNudge = configRepository.shouldShowNotificationNudge()
+
+        if (shouldShowNudge) {
+            setState { copy(page = AddTodoState.Page.NOTIFICATION) }
+        } else {
+            saveTodoAndNavigateHome()
+        }
+    }
+
+    private suspend fun saveTodoAndNavigateHome() {
         todoRepository.addTodo(
             title = currentState.title,
             dates = currentState.schedules,
@@ -206,5 +242,64 @@ class AddTodoViewModel @Inject constructor(
                 popUpTo = true,
             )
         )
+    }
+
+    private fun onNotificationToggleClick() {
+        setState {
+            copy(
+                notificationState = notificationState.copy(
+                    notificationEnabled = !notificationState.notificationEnabled
+                )
+            )
+        }
+    }
+
+    private fun onAlarmTimeChange(hour: Int, minute: Int) {
+        setState {
+            copy(
+                notificationState = notificationState.copy(
+                    alarmHour = hour,
+                    alarmMinute = minute
+                )
+            )
+        }
+    }
+
+    private fun onAlarmMessageChange(message: String) {
+        setState {
+            copy(
+                notificationState = notificationState.copy(message = message)
+            )
+        }
+    }
+
+    private fun onAlarmMessageReset() {
+        setState {
+            copy(
+                notificationState = notificationState.copy(
+                    message = DEFAULT_ALARM_MESSAGE
+                )
+            )
+        }
+    }
+
+    private fun onNotificationBackClick() {
+        setState { copy(page = AddTodoState.Page.ADD_TODO) }
+    }
+
+    private suspend fun onNotificationSaveClick() {
+        val notificationState = currentState.notificationState
+
+        configRepository.setNotificationEnabled(notificationState.notificationEnabled)
+
+        if (notificationState.notificationEnabled) {
+            configRepository.updateAlarmTime(
+                notificationState.alarmHour.toString(),
+                notificationState.alarmMinute.toString()
+            )
+            configRepository.updateAlarmMessage(notificationState.message)
+        }
+
+        saveTodoAndNavigateHome()
     }
 }

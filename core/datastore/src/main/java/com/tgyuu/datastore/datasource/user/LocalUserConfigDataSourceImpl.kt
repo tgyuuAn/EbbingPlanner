@@ -85,6 +85,15 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         return firstRun
     }
 
+    override suspend fun consumeHasSeenNotificationNudgeScreen(): Boolean {
+        var hasNotSeen = false
+        dataStore.edit { prefs ->
+            hasNotSeen = !(prefs[HAS_SEEN_NOTIFICATION_NUDGE_SCREEN] ?: false)
+            prefs[HAS_SEEN_NOTIFICATION_NUDGE_SCREEN] = true
+        }
+        return hasNotSeen
+    }
+
     override suspend fun setSortType(sortType: SortType) {
         dataStore.edit { prefs -> prefs[SORT_TYPE] = sortType.name }
     }
@@ -122,6 +131,7 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
+        private val HAS_SEEN_NOTIFICATION_NUDGE_SCREEN = booleanPreferencesKey("HAS_SEEN_NOTIFICATION_NUDGE_SCREEN")
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
         private val ALARM_MESSAGE = stringPreferencesKey("ALARM_MESSAGE")
         private val APP_THEME = stringPreferencesKey("APP_THEME")

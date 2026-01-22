@@ -18,6 +18,9 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun isFirstAppOpen(): Boolean =
         localUserConfigDataSource.consumeIsFirstAppOpen()
 
+    override suspend fun shouldShowNotificationNudge(): Boolean =
+        localUserConfigDataSource.consumeHasSeenNotificationNudgeScreen()
+
     override suspend fun setSortType(sortType: SortType) =
         localUserConfigDataSource.setSortType(sortType)
 

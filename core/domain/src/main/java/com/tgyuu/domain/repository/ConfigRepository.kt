@@ -11,6 +11,7 @@ interface ConfigRepository {
     fun getWidgetBackgroundAlpha(): Flow<Float>
     fun getWidgetTextAlpha(): Flow<Float>
     suspend fun isFirstAppOpen(): Boolean
+    suspend fun shouldShowNotificationNudge(): Boolean
     suspend fun setSortType(sortType: SortType)
     suspend fun getSortType(): SortType
     suspend fun getNotificationEnabled(): Flow<Boolean>

@@ -21,4 +21,12 @@ sealed class AddTodoIntent : UiIntent {
     data class OnRepeatCycleChange(val repeatCycle: RepeatCycle) : AddTodoIntent()
     data class OnRestDayChange(val restDay: DayOfWeek) : AddTodoIntent()
     data object OnSaveClick : AddTodoIntent()
+
+    // Notification 관련 Intent
+    data object OnNotificationToggleClick : AddTodoIntent()
+    data class OnAlarmTimeChange(val hour: Int, val minute: Int) : AddTodoIntent()
+    data class OnAlarmMessageChange(val message: String) : AddTodoIntent()
+    data object OnAlarmMessageReset : AddTodoIntent()
+    data object OnNotificationBackClick : AddTodoIntent()
+    data object OnNotificationSaveClick : AddTodoIntent()
 }
