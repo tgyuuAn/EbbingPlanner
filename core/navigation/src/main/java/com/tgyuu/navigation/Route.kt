@@ -13,7 +13,10 @@ data object HomeBaseRoute : Route
 sealed interface HomeGraph : Route {
 
     @Serializable
-    data class HomeRoute(val workedDate: String? = null) : HomeGraph
+    data class HomeRoute(
+        val workedDate: String? = null,
+        val showWidgetNudge: Boolean = false,
+    ) : HomeGraph
 
     @Serializable
     data class AddTodoRoute(val selectedDate: String) : HomeGraph

@@ -126,6 +126,17 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[WIDGET_TEXT_ALPHA] = alpha }
     }
 
+    override suspend fun markFirstTodoAdded(): Boolean {
+        var isFirstTime = false
+        dataStore.edit { prefs ->
+            if (prefs[HAS_EVER_ADDED_TODO] != true) {
+                isFirstTime = true
+                prefs[HAS_EVER_ADDED_TODO] = true
+            }
+        }
+        return isFirstTime
+    }
+
     companion object {
         private val CLEAR_SYNC_FLAG = booleanPreferencesKey("CLEAR_SYNC_FLAG")
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
@@ -138,5 +149,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val WIDGET_THEME = stringPreferencesKey("WIDGET_THEME")
         private val WIDGET_BACKGROUND_ALPHA = floatPreferencesKey("WIDGET_BACKGROUND_ALPHA")
         private val WIDGET_TEXT_ALPHA = floatPreferencesKey("WIDGET_TEXT_ALPHA")
+        private val HAS_EVER_ADDED_TODO = booleanPreferencesKey("HAS_EVER_ADDED_TODO")
     }
 }

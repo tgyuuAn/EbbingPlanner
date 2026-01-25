@@ -61,6 +61,7 @@ import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteSingleDialog
 import com.tgyuu.home.graph.main.ui.dialog.DialogType
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteRemaining
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteSingle
+import com.tgyuu.home.graph.main.ui.dialog.WidgetNudgeDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -68,6 +69,7 @@ import java.time.LocalDate
 @Composable
 internal fun HomeRoute(
     workedDate: LocalDate,
+    showWidgetNudge: Boolean = false,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -77,6 +79,12 @@ internal fun HomeRoute(
 
     LaunchedEffect(viewModel) {
         viewModel.initCurrentMonthSchedules()
+    }
+
+    LaunchedEffect(showWidgetNudge) {
+        if (showWidgetNudge) {
+            viewModel.showWidgetNudgeDialog()
+        }
     }
 
     if (isShowDialog && dialogType != null) {
@@ -119,6 +127,12 @@ internal fun HomeRoute(
 
             else -> Unit
         }
+    }
+
+    if (state.showWidgetNudgeDialog) {
+        WidgetNudgeDialog(
+            onDismiss = { viewModel.onIntent(HomeIntent.OnWidgetNudgeDismiss) }
+        )
     }
 
     HomeScreen(

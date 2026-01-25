@@ -23,4 +23,5 @@ sealed interface HomeIntent : UiIntent {
     data class OnMemoClick(val schedule: TodoSchedule) : HomeIntent
     data class OnDeleteMemoClick(val schedule: TodoSchedule) : HomeIntent
     data object OnSyncClick : HomeIntent
+    data object OnWidgetNudgeDismiss : HomeIntent
 }

@@ -24,4 +24,5 @@ interface LocalUserConfigDataSource {
     suspend fun setWidgetTheme(theme: Theme)
     suspend fun setWidgetBackgroundAlpha(alpha: Float)
     suspend fun setWidgetTextAlpha(alpha: Float)
+    suspend fun markFirstTodoAdded(): Boolean
 }

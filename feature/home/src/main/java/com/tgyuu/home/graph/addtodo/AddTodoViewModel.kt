@@ -235,10 +235,15 @@ class AddTodoViewModel @Inject constructor(
             }
         }
 
+        val isFirstTodo = configRepository.markFirstTodoAdded()
+
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
-                route = HomeRoute(currentState.selectedDate.toFormattedString()),
+                route = HomeRoute(
+                    workedDate = currentState.selectedDate.toFormattedString(),
+                    showWidgetNudge = isFirstTodo,
+                ),
                 popUpTo = true,
             )
         )

@@ -31,6 +31,28 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Composable
 fun EbbingDialog(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Card(
+            colors = cardColors().copy(containerColor = EbbingTheme.colors.background),
+            shape = RoundedCornerShape(12.dp),
+            modifier = modifier
+                .padding(horizontal = 32.dp)
+                .widthIn(max = 400.dp),
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
+fun EbbingDialog(
     dialogTop: @Composable () -> Unit,
     dialogBottom: @Composable () -> Unit,
     onDismissRequest: () -> Unit,

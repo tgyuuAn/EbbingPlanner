@@ -1,7 +1,6 @@
 package com.tgyuu.home.graph.notification
 
 import android.Manifest.permission.POST_NOTIFICATIONS
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -43,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.component.EbbingSubTopBar

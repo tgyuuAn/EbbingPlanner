@@ -72,4 +72,7 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun getClearSyncFlag(): Boolean =
         localUserConfigDataSource.clearSyncFlag.first()
+
+    override suspend fun markFirstTodoAdded(): Boolean =
+        localUserConfigDataSource.markFirstTodoAdded()
 }
