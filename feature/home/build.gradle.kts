@@ -20,4 +20,7 @@ android {
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.alarm)
+    implementation(projects.core.analytics)
+
+    implementation(libs.accompanist.permission)
 }

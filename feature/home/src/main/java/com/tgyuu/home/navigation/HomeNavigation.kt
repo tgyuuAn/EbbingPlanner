@@ -17,10 +17,13 @@ import java.time.LocalDate
 fun NavGraphBuilder.homeGraph() {
     navigation<HomeBaseRoute>(startDestination = HomeGraph.HomeRoute()) {
         composable<HomeRoute> { backStackEntry ->
-            val workedDate = backStackEntry.toRoute<HomeRoute>()
-                .workedDate?.toLocalDateOrThrow() ?: LocalDate.now()
+            val route = backStackEntry.toRoute<HomeRoute>()
+            val workedDate = route.workedDate?.toLocalDateOrThrow() ?: LocalDate.now()
 
-            com.tgyuu.home.graph.main.HomeRoute(workedDate = workedDate)
+            com.tgyuu.home.graph.main.HomeRoute(
+                workedDate = workedDate,
+                showWidgetNudge = route.showWidgetNudge,
+            )
         }
 
         composable<AddTodoRoute> {

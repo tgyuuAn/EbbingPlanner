@@ -10,4 +10,5 @@ data class HomeState(
     val schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>> = emptyMap(),
     val schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>> = emptyMap(),
     val sortType: SortType = SortType.CREATED,
+    val showWidgetNudgeDialog: Boolean = false,
 ) : UiState

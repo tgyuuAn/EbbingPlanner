@@ -55,6 +55,10 @@ class HomeViewModel @Inject constructor(
         currentMonthSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
     }
 
+    fun showWidgetNudgeDialog() {
+        setState { copy(showWidgetNudgeDialog = true) }
+    }
+
     override suspend fun processIntent(intent: HomeIntent) {
         when (intent) {
             is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
@@ -79,6 +83,7 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule)
             HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
             is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
+            HomeIntent.OnWidgetNudgeDismiss -> setState { copy(showWidgetNudgeDialog = false) }
         }
     }
 

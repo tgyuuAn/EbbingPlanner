@@ -11,6 +11,7 @@ interface ConfigRepository {
     fun getWidgetBackgroundAlpha(): Flow<Float>
     fun getWidgetTextAlpha(): Flow<Float>
     suspend fun isFirstAppOpen(): Boolean
+    suspend fun shouldShowNotificationNudge(): Boolean
     suspend fun setSortType(sortType: SortType)
     suspend fun getSortType(): SortType
     suspend fun getNotificationEnabled(): Flow<Boolean>
@@ -27,6 +28,7 @@ interface ConfigRepository {
     suspend fun getHardUpdateInfo(): UpdateInfo
 
     suspend fun getClearSyncFlag(): Boolean
+    suspend fun markFirstTodoAdded(): Boolean
 
     companion object {
         const val DEFAULT_ALARM_MESSAGE: String = "{할일} 을 확인하고, 잊지 말고 복습하세요!"

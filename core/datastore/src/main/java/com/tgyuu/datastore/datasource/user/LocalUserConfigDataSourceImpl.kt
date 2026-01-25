@@ -85,6 +85,15 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         return firstRun
     }
 
+    override suspend fun consumeHasSeenNotificationNudgeScreen(): Boolean {
+        var hasNotSeen = false
+        dataStore.edit { prefs ->
+            hasNotSeen = !(prefs[HAS_SEEN_NOTIFICATION_NUDGE_SCREEN] ?: false)
+            prefs[HAS_SEEN_NOTIFICATION_NUDGE_SCREEN] = true
+        }
+        return hasNotSeen
+    }
+
     override suspend fun setSortType(sortType: SortType) {
         dataStore.edit { prefs -> prefs[SORT_TYPE] = sortType.name }
     }
@@ -117,16 +126,29 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[WIDGET_TEXT_ALPHA] = alpha }
     }
 
+    override suspend fun markFirstTodoAdded(): Boolean {
+        var isFirstTime = false
+        dataStore.edit { prefs ->
+            if (prefs[HAS_EVER_ADDED_TODO] != true) {
+                isFirstTime = true
+                prefs[HAS_EVER_ADDED_TODO] = true
+            }
+        }
+        return isFirstTime
+    }
+
     companion object {
         private val CLEAR_SYNC_FLAG = booleanPreferencesKey("CLEAR_SYNC_FLAG")
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("NOTIFICATION_ENABLED")
         private val IS_FIRST_APP_OPEN = booleanPreferencesKey("IS_FIRST_APP_OPEN")
+        private val HAS_SEEN_NOTIFICATION_NUDGE_SCREEN = booleanPreferencesKey("HAS_SEEN_NOTIFICATION_NUDGE_SCREEN")
         private val ALARM_TIME = stringPreferencesKey("ALARM_TIME")
         private val ALARM_MESSAGE = stringPreferencesKey("ALARM_MESSAGE")
         private val APP_THEME = stringPreferencesKey("APP_THEME")
         private val WIDGET_THEME = stringPreferencesKey("WIDGET_THEME")
         private val WIDGET_BACKGROUND_ALPHA = floatPreferencesKey("WIDGET_BACKGROUND_ALPHA")
         private val WIDGET_TEXT_ALPHA = floatPreferencesKey("WIDGET_TEXT_ALPHA")
+        private val HAS_EVER_ADDED_TODO = booleanPreferencesKey("HAS_EVER_ADDED_TODO")
     }
 }
