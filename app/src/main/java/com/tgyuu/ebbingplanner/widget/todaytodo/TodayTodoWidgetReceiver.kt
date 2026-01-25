@@ -17,6 +17,8 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,9 +36,17 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
     @Inject
     lateinit var configRepository: ConfigRepository
 
+    @Inject
+    lateinit var analyticsHelper: AnalyticsHelper
+
     override val glanceAppWidget: GlanceAppWidget = TodayTodoWidget()
 
     private val scope = MainScope()
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        logWidgetEvent("today_todo_widget_added")
+    }
 
     override fun onUpdate(
         context: Context,
@@ -44,6 +54,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+        logWidgetEvent("today_todo_widget_update")
         updateData(context)
     }
 
@@ -51,10 +62,14 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onReceive(context, intent)
 
         when (intent.action) {
-            RefreshAction.UPDATE_ACTION -> updateData(context)
+            RefreshAction.UPDATE_ACTION -> {
+                logWidgetEvent("today_todo_widget_refresh")
+                updateData(context)
+            }
             CheckTodoAction.CHECK_TODO_ACTION -> {
                 val todoId = intent.extras?.getInt(TODO_ID)
                 todoId ?: return
+                logWidgetEvent("today_todo_widget_check_todo", mapOf("todoId" to todoId))
                 checkTodo(todoId, context)
             }
         }
@@ -65,6 +80,15 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
         todoRepository.updateTodo(updatedTodo)
         updateData(context)
+    }
+
+    private fun logWidgetEvent(eventName: String, properties: Map<String, Any?> = emptyMap()) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent(
+                type = eventName,
+                properties = properties.toMutableMap()
+            )
+        )
     }
 
     private fun updateData(context: Context) = scope.launch {

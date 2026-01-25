@@ -44,6 +44,9 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.LocalAnalyticsHelper
+import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingToggle
@@ -63,6 +66,8 @@ internal fun NotificationScreen(
     onMessageChange: (String) -> Unit,
     onResetClick: () -> Unit,
 ) {
+    TrackScreenViewEvent(key = Unit, screenName = "NotificationNudgeScreen")
+    val analyticsHelper = LocalAnalyticsHelper.current
     val notificationState = state.notificationState
     val context = LocalContext.current
     val permissionState = if (SDK_INT >= TIRAMISU) rememberPermissionState(POST_NOTIFICATIONS)
@@ -116,6 +121,14 @@ internal fun NotificationScreen(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(throttleTime = 1500L) {
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent(
+                                    type = "notification_nudge_save_click",
+                                    properties = mutableMapOf(
+                                        "notification_enabled" to notificationState.notificationEnabled
+                                    )
+                                )
+                            )
                             onSaveClick()
                             focusManager.clearFocus()
                         },
@@ -163,6 +176,12 @@ internal fun NotificationScreen(
                 EbbingToggle(
                     checked = notificationState.notificationEnabled,
                     onCheckedChange = { desiredOn ->
+                        analyticsHelper.logEvent(
+                            AnalyticsEvent(
+                                type = "notification_nudge_toggle_click",
+                                properties = mutableMapOf("desired_on" to desiredOn)
+                            )
+                        )
                         if (!desiredOn) {
                             onNotificationToggleClick()
                         } else {
@@ -232,7 +251,15 @@ internal fun NotificationScreen(
                             },
                             style = EbbingTheme.typography.headingSM,
                             color = EbbingTheme.colors.primaryDefault,
-                            modifier = Modifier.clickable { isShowTimeDialog = true },
+                            modifier = Modifier.clickable {
+                                analyticsHelper.logEvent(
+                                    AnalyticsEvent(
+                                        type = "notification_nudge_time_click",
+                                        properties = mutableMapOf()
+                                    )
+                                )
+                                isShowTimeDialog = true
+                            },
                         )
                     }
 
@@ -329,7 +356,15 @@ internal fun NotificationScreen(
                                 style = EbbingTheme.typography.bodySSB,
                                 color = EbbingTheme.colors.dark2,
                                 modifier = Modifier
-                                    .clickable { onResetClick() }
+                                    .clickable {
+                                        analyticsHelper.logEvent(
+                                            AnalyticsEvent(
+                                                type = "notification_nudge_reset_click",
+                                                properties = mutableMapOf()
+                                            )
+                                        )
+                                        onResetClick()
+                                    }
                                     .padding(top = 20.dp),
                             )
                         }

@@ -3,6 +3,8 @@ package com.tgyuu.home.graph.main.ui.dialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,12 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.R
+import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
@@ -28,6 +33,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 internal fun WidgetNudgeDialog(
     onDismiss: () -> Unit,
 ) {
+    TrackScreenViewEvent(key = Unit, screenName = "WidgetNudgeDialog")
     EbbingDialog(onDismissRequest = onDismiss) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
@@ -68,11 +74,20 @@ internal fun WidgetNudgeDialog(
                 Image(
                     painter = painterResource(R.drawable.ic_widget_nudge),
                     contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier
                         .padding(vertical = 23.5.dp)
-                        .size(173.dp, 121.dp)
+                        .size(220.dp, 152.dp),
                 )
             }
         }
+    }
+}
+
+@Composable
+@Preview
+private fun PreviewWidgetNudgeDialog() {
+    EbbingTheme {
+        WidgetNudgeDialog { }
     }
 }
