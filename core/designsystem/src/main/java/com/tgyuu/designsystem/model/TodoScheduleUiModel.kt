@@ -1,7 +1,9 @@
 package com.tgyuu.designsystem.model
 
+import androidx.compose.runtime.Immutable
 import java.time.LocalDate
 
+@Immutable
 data class TodoScheduleUiModel(
     val id: Int,
     val infoId: Int,

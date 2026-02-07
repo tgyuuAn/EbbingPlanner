@@ -14,7 +14,9 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeState
+import com.tgyuu.home.model.toDomainModel
 import com.tgyuu.home.model.toUiModel
+import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.EditTodoRoute
@@ -23,6 +25,9 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SyncGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -65,22 +70,22 @@ class HomeViewModel @Inject constructor(
                 To(AddTodoRoute(intent.selectedDate.toFormattedString()))
             )
 
-            is HomeIntent.OnCheckChanged -> onCheckedChange(intent.schedule)
+            is HomeIntent.OnCheckChanged -> onCheckedChange(intent.schedule.toDomainModel())
             is HomeIntent.OnEditScheduleClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
 
-            is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule)
-            is HomeIntent.OnMemoClick -> onClickMemo(intent.schedule)
+            is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule.toDomainModel())
+            is HomeIntent.OnMemoClick -> onClickMemo(intent.schedule.toDomainModel())
             is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
             is HomeIntent.OnUpdateScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateInfoClick -> navigateToUpdateInfo(intent.schedule.id)
             is HomeIntent.OnUpdateDateClick -> navigateToUpdateDate(intent.schedule.infoId)
-            is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule)
+            is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule.toDomainModel())
             is HomeIntent.OnDeleteScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
-            is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)
-            is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule)
+            is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule.toDomainModel())
+            is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule.toDomainModel())
             HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
             is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
             HomeIntent.OnWidgetNudgeDismiss -> setState { copy(showWidgetNudgeDialog = false) }
@@ -95,9 +100,7 @@ class HomeViewModel @Inject constructor(
         cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
 
         val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val byInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.map { it.toUiModel() }
-        }
+        val byInfo = buildByInfoMap(cachedSchedules)
         setState {
             copy(
                 isLoading = false,
@@ -117,9 +120,7 @@ class HomeViewModel @Inject constructor(
         cachedSchedules = cachedSchedules.map { if (it.id == schedule.id) newSchedule else it }
         updateCacheAfterChange()
 
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.map { it.toUiModel() }
-        }
+        val updatedByInfo = buildByInfoMap(cachedSchedules)
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
@@ -137,9 +138,7 @@ class HomeViewModel @Inject constructor(
         cachedSchedules = cachedSchedules.filterNot { it.id == schedule.id }
         updateCacheAfterChange()
 
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.map { it.toUiModel() }
-        }
+        val updatedByInfo = buildByInfoMap(cachedSchedules)
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
@@ -166,9 +165,7 @@ class HomeViewModel @Inject constructor(
 
         updateCacheAfterChange()
 
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.map { it.toUiModel() }
-        }
+        val updatedByInfo = buildByInfoMap(cachedSchedules)
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
 
         setState {
@@ -217,9 +214,7 @@ class HomeViewModel @Inject constructor(
         updateCacheAfterChange()
 
         val newByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val newByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.map { it.toUiModel() }
-        }
+        val newByInfo = buildByInfoMap(cachedSchedules)
         setState {
             copy(
                 schedulesByDateMap = newByDate,
@@ -262,9 +257,7 @@ class HomeViewModel @Inject constructor(
         updateCacheAfterChange()
 
         val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val updatedByInfo = cachedSchedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.map { it.toUiModel() }
-        }
+        val updatedByInfo = buildByInfoMap(cachedSchedules)
 
         setState {
             copy(
@@ -293,7 +286,7 @@ class HomeViewModel @Inject constructor(
     private fun buildByDateMap(
         schedules: List<TodoSchedule>,
         sortType: SortType,
-    ): Map<LocalDate, List<TodoScheduleUiModel>> {
+    ): ImmutableMap<LocalDate, ImmutableList<TodoScheduleUiModel>> {
         val grouped = schedules.groupBy { it.date }
 
         return grouped.mapValues { (_, list) ->
@@ -302,8 +295,16 @@ class HomeViewModel @Inject constructor(
                 SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
                 SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { it.priority }))
             }
-            sorted.map { it.toUiModel() }
-        }
+            sorted.toUiModels()
+        }.toImmutableMap()
+    }
+
+    private fun buildByInfoMap(
+        schedules: List<TodoSchedule>,
+    ): ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> {
+        return schedules.groupBy { it.infoId }.mapValues { (_, list) ->
+            list.toUiModels()
+        }.toImmutableMap()
     }
 
     private fun updateCacheAfterChange() {

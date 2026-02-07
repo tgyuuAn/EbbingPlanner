@@ -11,11 +11,12 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.component.EbbingChip
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import kotlinx.collections.immutable.ImmutableSet
 import java.time.DayOfWeek
 
 @Composable
 internal fun RestDayContent(
-    restDays: Set<DayOfWeek>,
+    restDays: ImmutableSet<DayOfWeek>,
     onRestDayChange: (DayOfWeek) -> Unit,
     modifier: Modifier = Modifier,
 ) {

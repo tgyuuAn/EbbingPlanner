@@ -11,5 +11,6 @@ dependencies {
     implementation(projects.core.commonUi)
     implementation(projects.core.domain)
 
+    api(libs.kotlinx.collections.immutable)
     implementation(libs.androidx.metrics.performance)
 }

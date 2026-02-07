@@ -41,10 +41,11 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDef
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.tag.graph.main.contract.TagIntent
 import com.tgyuu.tag.graph.main.contract.TagState
 import com.tgyuu.tag.graph.main.ui.dialog.DeleteDialog
+import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 
 @Composable
@@ -69,11 +70,11 @@ internal fun TagRoute(
 private fun TagScreen(
     state: TagState,
     onBackClick: () -> Unit,
-    onEditClick: (TodoTag) -> Unit,
-    onDeleteClick: (TodoTag) -> Unit,
+    onEditClick: (TodoTagUiModel) -> Unit,
+    onDeleteClick: (TodoTagUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedTag by remember { mutableStateOf<TodoTag?>(null) }
+    var selectedTag by remember { mutableStateOf<TodoTagUiModel?>(null) }
     val listState = rememberLazyListState()
     val gridListState = rememberLazyGridState()
     var isShowDialog by remember { mutableStateOf(false) }
@@ -185,14 +186,14 @@ private fun PreviewTag() {
     BasePreview {
         TagScreen(
             state = TagState(
-                tagList = listOf(
-                    TodoTag(
+                tagList = persistentListOf(
+                    TodoTagUiModel(
                         id = 3,
                         name = "국어",
                         color = 0xFFFF6961.toInt(),
                         createdAt = LocalDate.now()
                     ),
-                    TodoTag(
+                    TodoTagUiModel(
                         id = 2,
                         name = "영어",
                         color = 0xFF123298.toInt(),

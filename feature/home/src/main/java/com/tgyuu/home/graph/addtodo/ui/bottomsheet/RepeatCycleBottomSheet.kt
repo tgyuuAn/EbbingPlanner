@@ -24,13 +24,14 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.designsystem.model.RepeatCycleUiModel
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun RepeatCycleBottomSheet(
-    repeatCycleList: List<RepeatCycle>,
-    originRepeatCycle: RepeatCycle,
-    updateRepeatCycle: (RepeatCycle) -> Unit,
+    repeatCycleList: ImmutableList<RepeatCycleUiModel>,
+    originRepeatCycle: RepeatCycleUiModel?,
+    updateRepeatCycle: (RepeatCycleUiModel) -> Unit,
     onAddRepeatCycleClick: () -> Unit,
 ) {
     var newRepeatCycle by remember(originRepeatCycle) { mutableStateOf(originRepeatCycle) }
@@ -70,8 +71,8 @@ internal fun RepeatCycleBottomSheet(
                 key = { it.id },
             ) { cycle ->
                 EbbingBottomSheetListItemDefault(
-                    label = cycle.toDisplayName(),
-                    checked = cycle == newRepeatCycle,
+                    label = cycle.displayName,
+                    checked = cycle.id == newRepeatCycle?.id,
                     onChecked = { newRepeatCycle = cycle },
                 )
             }
@@ -79,7 +80,7 @@ internal fun RepeatCycleBottomSheet(
 
         EbbingSolidButton(
             label = "적용하기",
-            onClick = { updateRepeatCycle(newRepeatCycle) },
+            onClick = { newRepeatCycle?.let { updateRepeatCycle(it) } },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp, bottom = 10.dp),

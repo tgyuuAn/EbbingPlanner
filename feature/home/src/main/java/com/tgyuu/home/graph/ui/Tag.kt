@@ -8,11 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.component.EbbingTextInputDropDown
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoTagUiModel
 
 @Composable
 internal fun TagContent(
-    tag: TodoTag?,
+    tag: TodoTagUiModel?,
     onTagDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

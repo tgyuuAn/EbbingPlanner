@@ -24,13 +24,14 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoTagUiModel
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun TagBottomSheet(
-    originTag: TodoTag,
-    tagList: List<TodoTag>,
-    updateTag: (TodoTag) -> Unit,
+    originTag: TodoTagUiModel?,
+    tagList: ImmutableList<TodoTagUiModel>,
+    updateTag: (TodoTagUiModel) -> Unit,
     onAddTagClick: () -> Unit,
 ) {
     var newTag by remember(originTag) { mutableStateOf(originTag) }
@@ -73,7 +74,7 @@ internal fun TagBottomSheet(
                 EbbingBottomSheetListItemDefault(
                     label = tag.name,
                     color = tag.color,
-                    checked = tag.id == newTag.id,
+                    checked = tag.id == newTag?.id,
                     onChecked = { newTag = tag },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -82,7 +83,7 @@ internal fun TagBottomSheet(
 
         EbbingSolidButton(
             label = "적용하기",
-            onClick = { updateTag(newTag) },
+            onClick = { newTag?.let { updateTag(it) } },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp, bottom = 10.dp),

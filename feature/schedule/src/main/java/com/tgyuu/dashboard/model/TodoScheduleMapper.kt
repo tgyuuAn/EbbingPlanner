@@ -1,4 +1,4 @@
-package com.tgyuu.home.model
+package com.tgyuu.dashboard.model
 
 import com.tgyuu.designsystem.model.ClickableText
 import com.tgyuu.designsystem.model.TodoScheduleUiModel

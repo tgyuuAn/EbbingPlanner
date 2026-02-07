@@ -50,9 +50,10 @@ import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoInfo
-import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoInfoUiModel
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.model.TodoTagUiModel
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
@@ -73,9 +74,9 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
 @Composable
 private fun ScheduleScreen(
     state: ScheduleState,
-    onTagClick: (TodoTag) -> Unit,
-    onInfoClick: (TodoInfo) -> Unit,
-    onScheduleClick: (TodoSchedule) -> Unit,
+    onTagClick: (TodoTagUiModel) -> Unit,
+    onInfoClick: (TodoInfoUiModel) -> Unit,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
@@ -90,9 +91,9 @@ private fun ScheduleScreen(
 @Composable
 private fun PhoneScheduleScreen(
     state: ScheduleState,
-    onTagClick: (TodoTag) -> Unit,
-    onInfoClick: (TodoInfo) -> Unit,
-    onScheduleClick: (TodoSchedule) -> Unit,
+    onTagClick: (TodoTagUiModel) -> Unit,
+    onInfoClick: (TodoInfoUiModel) -> Unit,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -173,9 +174,9 @@ private fun PhoneScheduleScreen(
 @Composable
 private fun TabletScheduleScreen(
     state: ScheduleState,
-    onTagClick: (TodoTag) -> Unit,
-    onInfoClick: (TodoInfo) -> Unit,
-    onScheduleClick: (TodoSchedule) -> Unit,
+    onTagClick: (TodoTagUiModel) -> Unit,
+    onInfoClick: (TodoInfoUiModel) -> Unit,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val configuration = LocalConfiguration.current
@@ -249,10 +250,10 @@ private fun TabletScheduleScreen(
 
 @Composable
 private fun TagsBody(
-    tags: List<TodoTag>,
-    selectedTag: TodoTag?,
+    tags: ImmutableList<TodoTagUiModel>,
+    selectedTag: TodoTagUiModel?,
     achievementRateMap: Map<Int, Float>,
-    onTagClick: (TodoTag) -> Unit,
+    onTagClick: (TodoTagUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -314,11 +315,11 @@ private fun TagsBody(
 
 @Composable
 private fun TodoInfosBody(
-    todoInfos: List<TodoInfo>,
-    selectedTag: TodoTag,
-    selectedTodoInfo: TodoInfo?,
+    todoInfos: ImmutableList<TodoInfoUiModel>,
+    selectedTag: TodoTagUiModel,
+    selectedTodoInfo: TodoInfoUiModel?,
     achievementRateMap: Map<Int, Float>,
-    onTodoInfoClick: (TodoInfo) -> Unit,
+    onTodoInfoClick: (TodoInfoUiModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -389,11 +390,11 @@ private fun TodoInfosBody(
 
 @Composable
 private fun SchedulesBody(
-    todoSchedules: List<TodoSchedule>,
-    selectedTodoInfo: TodoInfo?,
+    todoSchedules: ImmutableList<TodoScheduleUiModel>,
+    selectedTodoInfo: TodoInfoUiModel?,
     achievementRate: Float,
     modifier: Modifier = Modifier,
-    onScheduleClick: (TodoSchedule) -> Unit,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
 ) {
     val listState = rememberLazyListState()
 
@@ -522,8 +523,8 @@ private fun ContentItemCard(
 
 @Composable
 private fun ScheduleCard(
-    schedule: TodoSchedule,
-    onScheduleClick: (TodoSchedule) -> Unit,
+    schedule: TodoScheduleUiModel,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(

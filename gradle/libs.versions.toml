@@ -47,6 +47,8 @@ kotlin = "2.1.0"
 kotlinxSerializationJson = "1.8.0"
 # https://github.com/Kotlin/kotlinx.coroutines
 kotlinxCoroutine = "1.10.1"
+# https://github.com/Kotlin/kotlinx.collections.immutable
+kotlinxCollectionsImmutable = "0.4.0"
 # https://github.com/google/gson
 gson = "2.12.1"
 
@@ -127,6 +129,7 @@ androidx-glance-preview = { module = "androidx.glance:glance-preview", version.r
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutine" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutine" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutine" }
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 

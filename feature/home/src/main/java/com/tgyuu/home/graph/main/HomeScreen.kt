@@ -42,13 +42,11 @@ import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckChanged
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
 import com.tgyuu.home.graph.main.contract.HomeState
-import com.tgyuu.home.model.toDomainModel
 import com.tgyuu.home.graph.main.ui.EbbingTodoList
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
@@ -140,7 +138,7 @@ internal fun HomeRoute(
         state = state,
         onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
-        onCheckedChange = { viewModel.onIntent(OnCheckChanged(it.toDomainModel())) },
+        onCheckedChange = { viewModel.onIntent(OnCheckChanged(it)) },
         onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
         onSortTypeClick = {
             viewModel.onIntent(OnSortTypeClick({
@@ -151,11 +149,10 @@ internal fun HomeRoute(
             }))
         },
         onEditScheduleClick = { schedule ->
-            val domainSchedule = schedule.toDomainModel()
             viewModel.onIntent(
                 HomeIntent.OnEditScheduleClick {
                     OptionsBottomSheet(
-                        selectedSchedule = domainSchedule,
+                        selectedSchedule = schedule,
                         onClickDelay = { delayedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)

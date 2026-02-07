@@ -4,14 +4,17 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.TagGraph
 import com.tgyuu.tag.graph.main.contract.TagIntent
 import com.tgyuu.tag.graph.main.contract.TagState
+import com.tgyuu.tag.model.toDomainModel
+import com.tgyuu.tag.model.toUiModels
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,12 +37,12 @@ class TagViewModel @Inject constructor(
 
     internal fun loadTags() = viewModelScope.launch {
         val tagList = todoRepository.loadTags()
-        setState { copy(tagList = tagList) }
+        setState { copy(tagList = tagList.toUiModels()) }
     }
 
-    private suspend fun deleteTag(tag: TodoTag) {
-        todoRepository.deleteTag(tag)
-        setState { copy(tagList = tagList.filterNot { it.id == tag.id }) }
+    private suspend fun deleteTag(tag: TodoTagUiModel) {
+        todoRepository.deleteTag(tag.toDomainModel())
+        setState { copy(tagList = tagList.filterNot { it.id == tag.id }.toImmutableList()) }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그를 삭제하였습니다"))
     }
 }

@@ -11,9 +11,10 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
+import com.tgyuu.designsystem.model.RepeatCycleUiModel
+import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
-import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
@@ -21,12 +22,15 @@ import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.model.toUiModel
+import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -49,7 +53,13 @@ class AddTodoViewModel @Inject constructor(
         val dateStr = savedStateHandle.get<String>("selectedDate")
             ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
 
-        setState { copy(selectedDate = dateStr.toLocalDateOrThrow()) }
+        setState {
+            copy(
+                selectedDate = dateStr.toLocalDateOrThrow(),
+                tag = DefaultTodoTag.toUiModel(),
+                repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+            )
+        }
         initNotificationState()
     }
 
@@ -75,7 +85,7 @@ class AddTodoViewModel @Inject constructor(
         todoRepository.recentAddedTagId?.let {
             viewModelScope.launch {
                 val newTag = todoRepository.loadTag(it.toInt())
-                setState { copy(tag = newTag) }
+                setState { copy(tag = newTag.toUiModel()) }
             }
         }
     }
@@ -84,20 +94,20 @@ class AddTodoViewModel @Inject constructor(
         todoRepository.recentAddedRepeatCycleId?.let {
             viewModelScope.launch {
                 val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
-                setState { copy(repeatCycle = newRepeatCycle) }
+                setState { copy(repeatCycle = newRepeatCycle.toUiModel()) }
             }
         }
     }
 
     internal fun loadTags() = viewModelScope.launch {
         val loadedTagList = todoRepository.loadTags()
-        setState { copy(tagList = loadedTagList) }
+        setState { copy(tagList = loadedTagList.toUiModels()) }
     }
 
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
-
-        setState { copy(repeatCycleList = DefaultRepeatCycles + loadedRepeatCycleList) }
+        val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
+        setState { copy(repeatCycleList = allRepeatCycles.toUiModels()) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {
@@ -158,20 +168,20 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(priority = priority) }
     }
 
-    private suspend fun onTagChange(todoTag: TodoTag) {
+    private suspend fun onTagChange(todoTag: TodoTagUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
 
         setState { copy(tag = todoTag) }
     }
 
-    private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycle) {
+    private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
 
         setState { copy(repeatCycle = repeatCycle) }
     }
 
     private suspend fun onRestDayChange(restDay: DayOfWeek) {
-        val origin = currentState.restDays
+        val origin = currentState.restDays.toMutableSet()
 
         val newRestDays = if (origin.contains(restDay)) {
             origin - restDay
@@ -184,7 +194,7 @@ class AddTodoViewModel @Inject constructor(
             return
         }
 
-        setState { copy(restDays = newRestDays) }
+        setState { copy(restDays = newRestDays.toImmutableSet()) }
     }
 
     private suspend fun onAddTagClick() {
@@ -213,10 +223,11 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private suspend fun saveTodoAndNavigateHome() {
+        val tag = currentState.tag ?: return
         todoRepository.addTodo(
             title = currentState.title,
             dates = currentState.schedules,
-            tagId = currentState.tag.id,
+            tagId = tag.id,
             priority = currentState.priority?.toIntOrNull(),
         )
 

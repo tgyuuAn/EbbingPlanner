@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 
 @Composable
 internal fun ConfirmDelayDialog(
-    schedule: TodoSchedule,
+    schedule: TodoScheduleUiModel,
     onDismissRequest: () -> Unit,
     onDelayClick: () -> Unit,
 ) {

@@ -4,14 +4,17 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleState
+import com.tgyuu.repeatcycle.model.toDomainModel
+import com.tgyuu.repeatcycle.model.toUiModels
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,12 +37,12 @@ class RepeatCycleViewModel @Inject constructor(
 
     internal fun loadTags() = viewModelScope.launch {
         val repeatCycleList = todoRepository.loadRepeatCycles()
-        setState { copy(repeatCycleList = repeatCycleList) }
+        setState { copy(repeatCycleList = repeatCycleList.toUiModels()) }
     }
 
-    private suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) {
-        todoRepository.deleteRepeatCycle(repeatCycle)
-        setState { copy(repeatCycleList = repeatCycleList.filterNot { it.id == repeatCycle.id }) }
+    private suspend fun deleteRepeatCycle(repeatCycle: RepeatCycleUiModel) {
+        todoRepository.deleteRepeatCycle(repeatCycle.toDomainModel())
+        setState { copy(repeatCycleList = repeatCycleList.filterNot { it.id == repeatCycle.id }.toImmutableList()) }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 삭제하였습니다"))
     }
 }

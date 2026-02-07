@@ -12,13 +12,13 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 
 @Composable
 internal fun DeleteBottomSheet(
-    selectedSchedule: TodoSchedule,
-    onClickDeleteRemaining: (TodoSchedule) -> Unit,
-    onClickDeleteSingle: (TodoSchedule) -> Unit,
+    selectedSchedule: TodoScheduleUiModel,
+    onClickDeleteRemaining: (TodoScheduleUiModel) -> Unit,
+    onClickDeleteSingle: (TodoScheduleUiModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
