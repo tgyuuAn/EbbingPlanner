@@ -37,8 +37,10 @@ import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.DefaultRepeatCycles
+import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.addtodo.ui.bottomsheet.SelectedDateBottomSheet
@@ -402,8 +404,12 @@ private fun PreviewAddTodo() {
                 selectedDate = LocalDate.now(),
                 title = "토익",
                 priority = "3",
-                repeatCycle = DefaultRepeatCycles.last(),
-                restDays = setOf(DayOfWeek.MONDAY),
+                repeatCycle = RepeatCycleUiModel(
+                    id = 1,
+                    intervals = persistentListOf(1, 3, 7, 14, 30),
+                    displayName = "1일, 3일, 7일, 14일, 30일"
+                ),
+                restDays = persistentSetOf(DayOfWeek.MONDAY),
             ),
             onSelectedDateChangeClick = {},
             onSaveClick = {},

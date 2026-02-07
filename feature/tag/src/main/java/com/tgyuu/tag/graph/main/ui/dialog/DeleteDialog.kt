@@ -8,11 +8,11 @@ import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoTagUiModel
 
 @Composable
 internal fun DeleteDialog(
-    tag: TodoTag,
+    tag: TodoTagUiModel,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {

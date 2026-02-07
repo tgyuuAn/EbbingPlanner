@@ -1,16 +1,22 @@
 package com.tgyuu.dashboard.contract
 
+import androidx.compose.runtime.Immutable
 import com.tgyuu.common.base.UiState
-import com.tgyuu.domain.model.TodoInfo
-import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoInfoUiModel
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.model.TodoTagUiModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 
+@Immutable
 data class ScheduleState(
-    val tags: List<TodoTag> = emptyList(),
-    val selectedTag: TodoTag? = null,
-    val todoInfoMap: Map<Int, List<TodoInfo>> = emptyMap(),
-    val selectedTodoInfo: TodoInfo? = null,
-    val todoScheduleMap: Map<Int, List<TodoSchedule>> = emptyMap(),
+    val tags: ImmutableList<TodoTagUiModel> = persistentListOf(),
+    val selectedTag: TodoTagUiModel? = null,
+    val todoInfoMap: ImmutableMap<Int, ImmutableList<TodoInfoUiModel>> = persistentMapOf(),
+    val selectedTodoInfo: TodoInfoUiModel? = null,
+    val todoScheduleMap: ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> = persistentMapOf(),
 ) : UiState {
     val todoInfoAchievementRateMap: Map<Int, Float>
         get() = todoInfoMap.values.flatten().associate { info ->
@@ -28,9 +34,9 @@ data class ScheduleState(
             tag.id to avgRate
         }
 
-    val todoInfos: List<TodoInfo>
-        get() = selectedTag?.let { todoInfoMap[it.id] } ?: emptyList()
+    val todoInfos: ImmutableList<TodoInfoUiModel>
+        get() = selectedTag?.let { todoInfoMap[it.id] } ?: persistentListOf()
 
-    val todoSchedules: List<TodoSchedule>
-        get() = selectedTodoInfo?.let { todoScheduleMap[it.id] } ?: emptyList()
+    val todoSchedules: ImmutableList<TodoScheduleUiModel>
+        get() = selectedTodoInfo?.let { todoScheduleMap[it.id] } ?: persistentListOf()
 }

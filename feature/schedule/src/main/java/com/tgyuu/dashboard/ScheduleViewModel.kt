@@ -4,11 +4,18 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.dashboard.contract.ScheduleIntent
 import com.tgyuu.dashboard.contract.ScheduleState
+import com.tgyuu.dashboard.model.toDomainModel
+import com.tgyuu.dashboard.model.toUiModel
+import com.tgyuu.dashboard.model.toUiModels
+import com.tgyuu.designsystem.model.TodoInfoUiModel
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
@@ -29,9 +36,9 @@ class ScheduleViewModel @Inject constructor(
                         id = schedule.infoId,
                         title = schedule.title,
                         tagId = schedule.tagId,
-                    )
-                }.distinctBy { it.id }
-            }
+                    ).toUiModel()
+                }.distinctBy { it.id }.toImmutableList()
+            }.toImmutableMap()
 
             val todoScheduleMap = allSchedules.groupBy { schedule ->
                 schedule.infoId
@@ -50,9 +57,9 @@ class ScheduleViewModel @Inject constructor(
                         isDone = schedule.isDone,
                         createdAt = schedule.createdAt,
                         infoCreatedAt = schedule.createdAt
-                    )
-                }.distinctBy { it.id }
-            }
+                    ).toUiModel()
+                }.distinctBy { it.id }.toImmutableList()
+            }.toImmutableMap()
 
             val todoTags = todoRepository.loadTags()
 
@@ -60,7 +67,7 @@ class ScheduleViewModel @Inject constructor(
                 copy(
                     todoInfoMap = todoInfoMap,
                     todoScheduleMap = todoScheduleMap,
-                    tags = todoTags,
+                    tags = todoTags.toUiModels(),
                 )
             }
         }
@@ -74,7 +81,7 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun setSelectedTag(tag: TodoTag) {
+    private fun setSelectedTag(tag: TodoTagUiModel) {
         if (tag == currentState.selectedTag) return
 
         setState {
@@ -85,21 +92,23 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun setSelectedTodoInfo(todoInfo: TodoInfo) {
+    private fun setSelectedTodoInfo(todoInfo: TodoInfoUiModel) {
         if (todoInfo == currentState.selectedTodoInfo) return
 
         setState { copy(selectedTodoInfo = todoInfo) }
     }
 
-    private suspend fun onCheckedChange(schedule: TodoSchedule) {
-        val newSchedule = schedule.copy(isDone = !schedule.isDone)
-        todoRepository.updateTodo(newSchedule)
+    private suspend fun onCheckedChange(schedule: TodoScheduleUiModel) {
+        val domainSchedule = schedule.toDomainModel()
+        val newDomainSchedule = domainSchedule.copy(isDone = !domainSchedule.isDone)
+        todoRepository.updateTodo(newDomainSchedule)
 
+        val newSchedule = newDomainSchedule.toUiModel()
         val updatedMap = currentState.todoScheduleMap.toMutableMap()
         val schedules = updatedMap[schedule.infoId].orEmpty().map {
             if (it.id == schedule.id) newSchedule else it
-        }
+        }.toImmutableList()
         updatedMap[schedule.infoId] = schedules
-        setState { copy(todoScheduleMap = updatedMap) }
+        setState { copy(todoScheduleMap = updatedMap.toImmutableMap()) }
     }
 }

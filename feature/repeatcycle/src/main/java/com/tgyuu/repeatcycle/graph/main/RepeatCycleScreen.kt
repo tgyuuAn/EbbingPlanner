@@ -41,11 +41,11 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDef
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.domain.model.DefaultRepeatCycles
-import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleState
 import com.tgyuu.repeatcycle.graph.main.ui.dialog.DeleteDialog
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun RepeatCycleRoute(
@@ -69,11 +69,11 @@ internal fun RepeatCycleRoute(
 private fun RepeatCycleScreen(
     state: RepeatCycleState,
     onBackClick: () -> Unit,
-    onEditClick: (RepeatCycle) -> Unit,
-    onDeleteClick: (RepeatCycle) -> Unit,
+    onEditClick: (RepeatCycleUiModel) -> Unit,
+    onDeleteClick: (RepeatCycleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedRepeatCycle by remember { mutableStateOf<RepeatCycle?>(null) }
+    var selectedRepeatCycle by remember { mutableStateOf<RepeatCycleUiModel?>(null) }
     val listState = rememberLazyListState()
     val gridListState = rememberLazyGridState()
     var isShowDialog by remember { mutableStateOf(false) }
@@ -113,7 +113,7 @@ private fun RepeatCycleScreen(
                         key = { it.id },
                     ) { repeatCycle ->
                         EbbingBottomSheetListItemDefault(
-                            label = "- ${repeatCycle.toDisplayName()}",
+                            label = "- ${repeatCycle.displayName}",
                             checked = repeatCycle.id == selectedRepeatCycle?.id,
                             onChecked = { selectedRepeatCycle = repeatCycle },
                             modifier = Modifier.fillMaxWidth()
@@ -134,7 +134,7 @@ private fun RepeatCycleScreen(
                         key = { it.id },
                     ) { tag ->
                         EbbingBottomSheetListItemDefault(
-                            label = tag.toDisplayName(),
+                            label = tag.displayName,
                             checked = tag.id == selectedRepeatCycle?.id,
                             onChecked = { selectedRepeatCycle = tag },
                             modifier = Modifier
@@ -181,7 +181,12 @@ private fun RepeatCycleScreen(
 private fun PreviewRepeatCycle() {
     BasePreview {
         RepeatCycleScreen(
-            state = RepeatCycleState(repeatCycleList = DefaultRepeatCycles),
+            state = RepeatCycleState(
+                repeatCycleList = persistentListOf(
+                    RepeatCycleUiModel(id = 1, intervals = persistentListOf(1, 3, 7, 14, 30), displayName = "1일, 3일, 7일, 14일, 30일"),
+                    RepeatCycleUiModel(id = 2, intervals = persistentListOf(1, 2, 4, 7, 14), displayName = "1일, 2일, 4일, 7일, 14일"),
+                )
+            ),
             onBackClick = {},
             onEditClick = {},
             onDeleteClick = {},

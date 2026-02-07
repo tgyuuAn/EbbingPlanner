@@ -9,18 +9,21 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
-import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.editdate.contract.EditDateIntent
 import com.tgyuu.home.graph.editdate.contract.EditDateState
+import com.tgyuu.home.model.toUiModel
+import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -40,6 +43,8 @@ class EditDateViewModel @Inject constructor(
     private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
+        setState { copy(repeatCycle = DefaultRepeatCycles.first().toUiModel()) }
+
         viewModelScope.launch {
             val infoId = savedStateHandle.get<Int>("infoId")
                 ?: throw IllegalArgumentException("해당 일정의 정보가 없습니다.")
@@ -63,15 +68,15 @@ class EditDateViewModel @Inject constructor(
         todoRepository.recentAddedRepeatCycleId?.let {
             viewModelScope.launch {
                 val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
-                setState { copy(repeatCycle = newRepeatCycle) }
+                setState { copy(repeatCycle = newRepeatCycle.toUiModel()) }
             }
         }
     }
 
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
-
-        setState { copy(repeatCycleList = DefaultRepeatCycles + loadedRepeatCycleList) }
+        val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
+        setState { copy(repeatCycleList = allRepeatCycles.toUiModels()) }
     }
 
     override suspend fun processIntent(intent: EditDateIntent) {
@@ -103,14 +108,14 @@ class EditDateViewModel @Inject constructor(
         setState { copy(selectedDate = date) }
     }
 
-    private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycle) {
+    private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
 
         setState { copy(repeatCycle = repeatCycle) }
     }
 
     private suspend fun onRestDayChange(restDay: DayOfWeek) {
-        val origin = currentState.restDays
+        val origin = currentState.restDays.toMutableSet()
 
         val newRestDays = if (origin.contains(restDay)) {
             origin - restDay
@@ -123,7 +128,7 @@ class EditDateViewModel @Inject constructor(
             return
         }
 
-        setState { copy(restDays = newRestDays) }
+        setState { copy(restDays = newRestDays.toImmutableSet()) }
     }
 
     private suspend fun onAddRepeatCycleClick() {

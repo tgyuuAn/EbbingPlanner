@@ -12,16 +12,16 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 
 @Composable
 internal fun OptionsBottomSheet(
-    selectedSchedule: TodoSchedule,
-    onClickUpdate: (TodoSchedule) -> Unit,
-    onClickDelete: (TodoSchedule) -> Unit,
-    onClickDelay: (TodoSchedule) -> Unit,
-    onClickMemo: (TodoSchedule) -> Unit,
-    onClickDeleteMemo: (TodoSchedule) -> Unit,
+    selectedSchedule: TodoScheduleUiModel,
+    onClickUpdate: (TodoScheduleUiModel) -> Unit,
+    onClickDelete: (TodoScheduleUiModel) -> Unit,
+    onClickDelay: (TodoScheduleUiModel) -> Unit,
+    onClickMemo: (TodoScheduleUiModel) -> Unit,
+    onClickDeleteMemo: (TodoScheduleUiModel) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -75,7 +75,7 @@ internal fun OptionsBottomSheet(
             )
 
             Text(
-                text = if (selectedSchedule.memo.isEmpty()) "메모 추가하기" else "메모 수정하기",
+                text = if (selectedSchedule.memo.originalText.isEmpty()) "메모 추가하기" else "메모 수정하기",
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -86,7 +86,7 @@ internal fun OptionsBottomSheet(
                     .height(62.dp),
             )
 
-            if (selectedSchedule.memo.isNotEmpty()) {
+            if (selectedSchedule.memo.originalText.isNotEmpty()) {
                 Text(
                     text = "메모 지우기",
                     style = EbbingTheme.typography.bodyMM,

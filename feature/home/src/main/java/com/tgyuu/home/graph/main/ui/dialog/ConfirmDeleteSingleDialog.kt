@@ -8,11 +8,11 @@ import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 
 @Composable
 internal fun ConfirmDeleteSingleDialog(
-    schedule: TodoSchedule,
+    schedule: TodoScheduleUiModel,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {

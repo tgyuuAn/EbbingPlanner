@@ -9,20 +9,21 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.home.model.toUiModel
+import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -57,11 +58,12 @@ class EditTodoViewModel @Inject constructor(
                     originSchedule = originSchedule,
                     schedulesByDateMap = schedulesByDateMap
                         .groupBy { it.date }
-                        .mapValues { (_, list) -> list.map { it.toUiModel() } },
+                        .mapValues { (_, list) -> list.toUiModels() }
+                        .toImmutableMap(),
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
                     priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
-                    tag = originTag,
+                    tag = originTag.toUiModel(),
                 )
             }
         }
@@ -69,14 +71,14 @@ class EditTodoViewModel @Inject constructor(
 
     internal fun loadTags() = viewModelScope.launch {
         val loadedTagList = todoRepository.loadTags()
-        setState { copy(tagList = loadedTagList) }
+        setState { copy(tagList = loadedTagList.toUiModels()) }
     }
 
     internal fun loadNewTag() {
         todoRepository.recentAddedTagId?.let {
             viewModelScope.launch {
                 val newTag = todoRepository.loadTag(it.toInt())
-                setState { copy(tag = newTag) }
+                setState { copy(tag = newTag.toUiModel()) }
             }
         }
     }
@@ -136,7 +138,7 @@ class EditTodoViewModel @Inject constructor(
         setState { copy(priority = priority) }
     }
 
-    private suspend fun onTagChange(todoTag: TodoTag) {
+    private suspend fun onTagChange(todoTag: TodoTagUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
 
         setState { copy(tag = todoTag) }
@@ -153,12 +155,13 @@ class EditTodoViewModel @Inject constructor(
             return
         }
 
+        val tag = currentState.tag ?: return
         val newSchedule = currentState.originSchedule!!.copy(
             title = currentState.title,
             date = currentState.selectedDate,
-            tagId = currentState.tag.id,
-            name = currentState.tag.name,
-            color = currentState.tag.color,
+            tagId = tag.id,
+            name = tag.name,
+            color = tag.color,
             priority = currentState.priority?.toIntOrNull() ?: 0,
         )
 
