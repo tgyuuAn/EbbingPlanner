@@ -68,6 +68,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.alarm)
     implementation(projects.core.analytics)
+    implementation(projects.core.experiment.data)
 
     implementation(projects.feature.onboarding)
     implementation(projects.feature.home)

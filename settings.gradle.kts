@@ -35,6 +35,8 @@ include(":core:database")
 include(":core:datastore")
 include(":core:alarm")
 include(":core:analytics")
+include(":core:experiment:domain")
+include(":core:experiment:data")
 
 include(":feature:home")
 include(":feature:schedule")

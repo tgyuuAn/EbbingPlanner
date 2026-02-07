@@ -8,6 +8,8 @@ import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
+import com.tgyuu.experiment.domain.model.Experiment
+import com.tgyuu.experiment.domain.model.Experiment.NotificationNudgeText
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -45,14 +47,17 @@ data class NotificationState(
     val alarmMinute: Int = 0,
     val message: String = DEFAULT_ALARM_MESSAGE,
     val originMessage: String = DEFAULT_ALARM_MESSAGE,
+    val nudgeTextVariant: NotificationNudgeText.Variant = NotificationNudgeText.Variant.CONTROL,
 ) {
+    val nudgeText: String = when (nudgeTextVariant) {
+        NotificationNudgeText.Variant.CONTROL -> "다음 복습일을 놓치지 않도록\n알려드릴까요?"
+        NotificationNudgeText.Variant.TREATMENT -> "바쁜 날에도\n복습일을 자동으로 챙겨드릴게요"
+    }
     private val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
 
     val isValidPlaceholder: Boolean = placeholderCount <= 1
 
     val isValidLength: Boolean = message.length <= 50
-
-    val isValid: Boolean = isValidPlaceholder && isValidLength
 
     val previewMessage: String = when {
         placeholderCount == 1 -> message.replace("{할일}", "영어 단어 복습")
@@ -67,10 +72,6 @@ data class NotificationState(
     }
 
     val lengthText: String = "${message.length} / 50자"
-
-    val isChanged: Boolean = message != originMessage
-
-    val canApply: Boolean = isValid && isChanged
 
     val shouldShowResetButton: Boolean = message != DEFAULT_ALARM_MESSAGE
 }

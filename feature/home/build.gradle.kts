@@ -21,6 +21,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.alarm)
     implementation(projects.core.analytics)
+    implementation(projects.core.experiment.domain)
 
     implementation(libs.accompanist.permission)
 }
