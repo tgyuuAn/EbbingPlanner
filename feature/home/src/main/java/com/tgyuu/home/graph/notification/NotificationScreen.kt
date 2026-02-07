@@ -43,10 +43,10 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
-import com.tgyuu.analytics.LocalAnalyticsHelper
-import com.tgyuu.analytics.TrackScreenViewEvent
+import com.tgyuu.analytics.data.compose.LocalAnalyticsHelper
+import com.tgyuu.analytics.data.compose.TrackScreenViewEvent
+import com.tgyuu.analytics.domain.AnalyticsHelper
+import com.tgyuu.analytics.domain.model.AnalyticsEvent
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.component.EbbingSubTopBar

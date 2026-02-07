@@ -21,9 +21,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.tgyuu.analytics.AnalyticsHelper
-import com.tgyuu.analytics.LocalAnalyticsHelper
-import com.tgyuu.analytics.TrackNavigationDestination
+import com.tgyuu.analytics.data.compose.LocalAnalyticsHelper
+import com.tgyuu.analytics.domain.AnalyticsHelper
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString

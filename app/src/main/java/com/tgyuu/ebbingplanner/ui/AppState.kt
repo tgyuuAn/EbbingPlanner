@@ -8,7 +8,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.tgyuu.analytics.TrackNavigationDestination
+import com.tgyuu.analytics.data.compose.TrackNavigationDestination
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingGraph

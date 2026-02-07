@@ -1,11 +1,13 @@
-package com.tgyuu.analytics
+package com.tgyuu.analytics.data
 
 import android.util.Log
+import com.tgyuu.analytics.domain.AnalyticsHelper
+import com.tgyuu.analytics.domain.model.AnalyticsEvent
 import javax.inject.Inject
 
 class DebugAnalyticsHelper @Inject constructor(
     private var userId: String = "",
-) : AnalyticsHelper() {
+) : AnalyticsHelper {
     override fun logEvent(event: AnalyticsEvent) {
         Log.d("DebugAnalyticsHelper", "${this.userId}, $event")
     }

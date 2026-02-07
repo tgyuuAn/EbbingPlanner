@@ -17,8 +17,8 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
+import com.tgyuu.analytics.domain.AnalyticsHelper
+import com.tgyuu.analytics.domain.model.AnalyticsEvent
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint

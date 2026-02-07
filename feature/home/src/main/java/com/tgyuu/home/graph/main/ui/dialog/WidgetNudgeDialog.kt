@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.R
-import com.tgyuu.analytics.TrackScreenViewEvent
+import com.tgyuu.analytics.data.compose.TrackScreenViewEvent
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop

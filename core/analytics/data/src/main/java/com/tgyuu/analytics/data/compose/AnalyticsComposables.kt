@@ -1,4 +1,4 @@
-package com.tgyuu.analytics
+package com.tgyuu.analytics.data.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -6,20 +6,14 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.BUTTON_NAME
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.SCREEN_NAME
-import com.tgyuu.analytics.AnalyticsEvent.Types.BUTTON_CLICK
-import com.tgyuu.analytics.AnalyticsEvent.Types.SCREEN_VIEW
-
-abstract class AnalyticsHelper {
-    abstract fun logEvent(event: AnalyticsEvent)
-    abstract fun setUserId(userId: String?)
-}
-
-class NoOpAnalyticsHelper : AnalyticsHelper() {
-    override fun logEvent(event: AnalyticsEvent) = Unit
-    override fun setUserId(userId: String?) = Unit
-}
+import com.tgyuu.analytics.data.NoOpAnalyticsHelper
+import com.tgyuu.analytics.domain.AnalyticsHelper
+import com.tgyuu.analytics.domain.extractScreenName
+import com.tgyuu.analytics.domain.model.AnalyticsEvent
+import com.tgyuu.analytics.domain.model.AnalyticsEvent.PropertiesKeys.BUTTON_NAME
+import com.tgyuu.analytics.domain.model.AnalyticsEvent.PropertiesKeys.SCREEN_NAME
+import com.tgyuu.analytics.domain.model.AnalyticsEvent.Types.BUTTON_CLICK
+import com.tgyuu.analytics.domain.model.AnalyticsEvent.Types.SCREEN_VIEW
 
 val LocalAnalyticsHelper = staticCompositionLocalOf<AnalyticsHelper> {
     NoOpAnalyticsHelper()

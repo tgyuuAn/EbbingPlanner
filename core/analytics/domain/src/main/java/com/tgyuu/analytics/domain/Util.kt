@@ -1,4 +1,4 @@
-package com.tgyuu.analytics
+package com.tgyuu.analytics.domain
 
 /**
  * 주어진 네비게이션 route 문자열에서 화면 이름만 추출합니다.

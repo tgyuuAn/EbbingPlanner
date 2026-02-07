@@ -1,4 +1,4 @@
-package com.tgyuu.analytics
+package com.tgyuu.analytics.domain.model
 
 data class AnalyticsEvent(
     val type: String,

@@ -1,12 +1,12 @@
-package com.tgyuu.analytics.di
+package com.tgyuu.analytics.data.di
 
 import android.content.Context
 import com.amplitude.android.Amplitude
 import com.amplitude.android.Configuration
-import com.tgyuu.analytics.AmplitudeAnalyticsHelper
-import com.tgyuu.analytics.AnalyticsHelper
-import com.tgyuu.analytics.BuildConfig
-import com.tgyuu.analytics.DebugAnalyticsHelper
+import com.tgyuu.analytics.data.AmplitudeAnalyticsHelper
+import com.tgyuu.analytics.data.BuildConfig
+import com.tgyuu.analytics.data.DebugAnalyticsHelper
+import com.tgyuu.analytics.domain.AnalyticsHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

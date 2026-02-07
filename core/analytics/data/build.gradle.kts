@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tgyuu.analytics"
+    namespace = "com.tgyuu.analytics.data"
 
     defaultConfig {
         val properties = Properties()
@@ -19,11 +19,13 @@ android {
         )
     }
 
-    buildFeatures{
+    buildFeatures {
         buildConfig = true
     }
 }
 
 dependencies {
+    api(projects.core.analytics.domain)
+
     implementation(libs.amplitude.analytics)
 }

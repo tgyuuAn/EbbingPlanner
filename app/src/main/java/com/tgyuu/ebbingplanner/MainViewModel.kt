@@ -2,7 +2,7 @@ package com.tgyuu.ebbingplanner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsHelper
+import com.tgyuu.analytics.domain.AnalyticsHelper
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.model.Theme
