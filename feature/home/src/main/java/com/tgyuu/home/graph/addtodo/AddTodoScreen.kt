@@ -130,7 +130,7 @@ internal fun AddTodoRoute(
             )
 
             AddTodoState.Page.NOTIFICATION -> NotificationScreen(
-                state = state,
+                state = state.notificationState,
                 onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
                 onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
                 onNotificationToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
