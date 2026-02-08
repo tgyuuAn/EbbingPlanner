@@ -30,7 +30,7 @@ internal fun OptionsBottomSheet(
     ) {
         EbbingBottomSheetHeader(
             title = "편집",
-            subTitle = "${selectedSchedule.title} 일정을 어떻게 할까요?"
+            subTitle = "${selectedSchedule.title.originalText} 일정을 어떻게 할까요?"
         )
 
         Column(

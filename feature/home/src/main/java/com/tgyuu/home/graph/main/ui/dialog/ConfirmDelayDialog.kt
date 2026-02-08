@@ -15,7 +15,7 @@ internal fun ConfirmDelayDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "${schedule.title} 일정을 하루 미루겠습니까?",
+                title = "${schedule.title.originalText} 일정을 하루 미루겠습니까?",
                 subText = "미룬 일정은 수정하기에서 되돌릴 수 있습니다."
             )
         },

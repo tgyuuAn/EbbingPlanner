@@ -20,7 +20,7 @@ internal fun ConfirmDeleteSingleDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("${schedule.title} 일정을 ")
+                    append("${schedule.title.originalText} 일정을 ")
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
                         append("삭제")
                     }
