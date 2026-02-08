@@ -20,7 +20,7 @@ internal fun ConfirmDeleteMemoDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("${schedule.title} 일정의 메모를 ")
+                    append("${schedule.title.originalText} 일정의 메모를 ")
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
                         append("삭제")
                     }
