@@ -1,5 +1,7 @@
 package com.tgyuu.dashboard
 
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.dashboard.contract.ScheduleIntent
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
     internal suspend fun loadTodoSchedules() = coroutineScope {
@@ -84,6 +87,8 @@ class ScheduleViewModel @Inject constructor(
     private fun setSelectedTag(tag: TodoTagUiModel) {
         if (tag == currentState.selectedTag) return
 
+        analyticsHelper.logEvent(AnalyticsEvent(type = ScheduleAnalytics.TAG_CLICK))
+
         setState {
             copy(
                 selectedTag = tag,
@@ -95,6 +100,8 @@ class ScheduleViewModel @Inject constructor(
     private fun setSelectedTodoInfo(todoInfo: TodoInfoUiModel) {
         if (todoInfo == currentState.selectedTodoInfo) return
 
+        analyticsHelper.logEvent(AnalyticsEvent(type = ScheduleAnalytics.INFO_CLICK))
+
         setState { copy(selectedTodoInfo = todoInfo) }
     }
 
@@ -102,6 +109,8 @@ class ScheduleViewModel @Inject constructor(
         val domainSchedule = schedule.toDomainModel()
         val newDomainSchedule = domainSchedule.copy(isDone = !domainSchedule.isDone)
         todoRepository.updateTodo(newDomainSchedule)
+
+        analyticsHelper.logEvent(AnalyticsEvent(type = ScheduleAnalytics.SCHEDULE_TOGGLE))
 
         val newSchedule = newDomainSchedule.toUiModel()
         val updatedMap = currentState.todoScheduleMap.toMutableMap()
