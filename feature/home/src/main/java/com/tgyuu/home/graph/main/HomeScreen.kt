@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -127,7 +128,7 @@ internal fun HomeRoute(
         }
     }
 
-    if (state.showWidgetNudgeDialog) {
+    AnimatedVisibility(state.showWidgetNudgeDialog) {
         WidgetNudgeDialog(
             onDismiss = { viewModel.onIntent(HomeIntent.OnWidgetNudgeDismiss) }
         )
