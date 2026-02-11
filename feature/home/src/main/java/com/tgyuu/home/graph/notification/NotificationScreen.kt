@@ -24,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
@@ -59,6 +61,45 @@ import com.tgyuu.home.graph.notification.ui.dialog.AlarmTimeDialog
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun NotificationScreen(
+    state: NotificationState,
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onNotificationToggleClick: () -> Unit,
+    onAlarmTimeChange: (Int, Int) -> Unit,
+    onMessageChange: (String) -> Unit,
+    onResetClick: () -> Unit,
+) {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
+    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+        NotificationScreenPhone(
+            state = state,
+            modifier = modifier,
+            onBackClick = onBackClick,
+            onSaveClick = onSaveClick,
+            onNotificationToggleClick = onNotificationToggleClick,
+            onAlarmTimeChange = onAlarmTimeChange,
+            onMessageChange = onMessageChange,
+            onResetClick = onResetClick,
+        )
+    } else {
+        NotificationScreenTablet(
+            state = state,
+            modifier = modifier,
+            onBackClick = onBackClick,
+            onSaveClick = onSaveClick,
+            onNotificationToggleClick = onNotificationToggleClick,
+            onAlarmTimeChange = onAlarmTimeChange,
+            onMessageChange = onMessageChange,
+            onResetClick = onResetClick,
+        )
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun NotificationScreenPhone(
     state: NotificationState,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
@@ -172,7 +213,145 @@ internal fun NotificationScreen(
                     onTimeClick = { isShowTimeDialog = true },
                     onMessageChange = onMessageChange,
                     onResetClick = onResetClick,
+                    showDivider = true,
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+private fun NotificationScreenTablet(
+    state: NotificationState,
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onNotificationToggleClick: () -> Unit,
+    onAlarmTimeChange: (Int, Int) -> Unit,
+    onMessageChange: (String) -> Unit,
+    onResetClick: () -> Unit,
+) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val scrollState = rememberScrollState()
+
+    val permissionState = if (SDK_INT >= TIRAMISU) rememberPermissionState(POST_NOTIFICATIONS)
+    else null
+
+    var pendingNotificationEnable by remember { mutableStateOf(false) }
+    var isShowTimeDialog by remember { mutableStateOf(false) }
+
+    TrackScreenViewEvent(key = Unit, screenName = "NotificationNudgeScreen")
+    LaunchedEffect(Unit) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent(
+                type = NotificationAnalytics.SCREEN_VIEW,
+                properties = mutableMapOf(
+                    NotificationAnalytics.PARAM_NUDGE_TEXT_VARIANT to state.nudgeTextVariant.key
+                )
+            )
+        )
+    }
+
+    LaunchedEffect(permissionState?.status) {
+        if (pendingNotificationEnable && permissionState?.status == PermissionStatus.Granted) {
+            onNotificationToggleClick()
+            pendingNotificationEnable = false
+        }
+    }
+
+    if (isShowTimeDialog) {
+        AlarmTimeDialog(
+            initialHour = state.alarmHour,
+            initialMinute = state.alarmMinute,
+            onDismissRequest = { isShowTimeDialog = false },
+            onConfirmClick = { hour, minute ->
+                onAlarmTimeChange(hour, minute)
+                isShowTimeDialog = false
+            },
+        )
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        NotificationTopBar(
+            analyticsHelper = analyticsHelper,
+            state = state,
+            onBackClick = onBackClick,
+            onSaveClick = {
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+        )
+
+        Row(
+            modifier = modifier
+                .fillMaxSize()
+                .imePadding(),
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(20.dp)
+                    .padding(horizontal = 20.dp),
+            ) {
+                NotificationHeader(nudgeText = state.nudgeText)
+
+                NotificationToggleSection(
+                    checked = state.notificationEnabled,
+                    analyticsHelper = analyticsHelper,
+                    onToggleClick = { desiredOn ->
+                        if (!desiredOn) {
+                            onNotificationToggleClick()
+                            return@NotificationToggleSection
+                        }
+
+                        if (permissionState == null) {
+                            onNotificationToggleClick()
+                            return@NotificationToggleSection
+                        }
+
+                        when (val status = permissionState.status) {
+                            PermissionStatus.Granted -> onNotificationToggleClick()
+                            is PermissionStatus.Denied -> {
+                                pendingNotificationEnable = true
+                                if (status.shouldShowRationale) {
+                                    context.startActivity(
+                                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                            data = Uri.fromParts("package", context.packageName, null)
+                                        }
+                                    )
+                                } else {
+                                    permissionState.launchPermissionRequest()
+                                }
+                            }
+                        }
+                    },
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(20.dp)
+                    .padding(horizontal = 20.dp),
+            ) {
+                AnimatedVisibility(
+                    visible = state.notificationEnabled,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
+                    NotificationDetailSection(
+                        state = state,
+                        analyticsHelper = analyticsHelper,
+                        onTimeClick = { isShowTimeDialog = true },
+                        onMessageChange = onMessageChange,
+                        onResetClick = onResetClick,
+                        showDivider = false,
+                    )
+                }
             }
         }
     }
@@ -274,6 +453,7 @@ private fun NotificationDetailSection(
     onTimeClick: () -> Unit,
     onMessageChange: (String) -> Unit,
     onResetClick: () -> Unit,
+    showDivider: Boolean = true,
 ) {
     val formattedTime = remember(state.alarmHour, state.alarmMinute) {
         val hour = state.alarmHour.toString().padStart(2, '0')
@@ -282,13 +462,15 @@ private fun NotificationDetailSection(
     }
 
     Column {
-        Spacer(
-            modifier = Modifier
-                .padding(vertical = 28.dp)
-                .fillMaxWidth()
-                .height(6.dp)
-                .background(color = EbbingTheme.colors.light2)
-        )
+        if (showDivider) {
+            Spacer(
+                modifier = Modifier
+                    .padding(vertical = 28.dp)
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .background(color = EbbingTheme.colors.light2)
+            )
+        }
 
         AlarmTimeRow(
             formattedTime = formattedTime,
