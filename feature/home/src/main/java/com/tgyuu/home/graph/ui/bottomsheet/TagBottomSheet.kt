@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.editdate.ui.bottomsheet
+package com.tgyuu.home.graph.ui.bottomsheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,16 +24,17 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.designsystem.model.TodoTagUiModel
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-internal fun RepeatCycleBottomSheet(
-    repeatCycleList: List<RepeatCycle>,
-    originRepeatCycle: RepeatCycle,
-    updateRepeatCycle: (RepeatCycle) -> Unit,
-    onAddRepeatCycleClick: () -> Unit,
+internal fun TagBottomSheet(
+    originTag: TodoTagUiModel?,
+    tagList: ImmutableList<TodoTagUiModel>,
+    updateTag: (TodoTagUiModel) -> Unit,
+    onAddTagClick: () -> Unit,
 ) {
-    var newRepeatCycle by remember(originRepeatCycle) { mutableStateOf(originRepeatCycle) }
+    var newTag by remember(originTag) { mutableStateOf(originTag) }
     val listState = rememberLazyListState()
 
     Column(
@@ -42,7 +43,7 @@ internal fun RepeatCycleBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "반복 주기",
+            title = "태그",
             rightComponent = {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -50,9 +51,10 @@ internal fun RepeatCycleBottomSheet(
                     tint = EbbingTheme.colors.black,
                     modifier = Modifier
                         .size(32.dp)
-                        .clickable { onAddRepeatCycleClick() },
+                        .clickable { onAddTagClick() },
                 )
-            })
+            }
+        )
 
         LazyColumn(
             state = listState,
@@ -66,20 +68,22 @@ internal fun RepeatCycleBottomSheet(
                 ),
         ) {
             items(
-                items = repeatCycleList,
+                items = tagList,
                 key = { it.id },
-            ) { cycle ->
+            ) { tag ->
                 EbbingBottomSheetListItemDefault(
-                    label = cycle.toDisplayName(),
-                    checked = cycle == newRepeatCycle,
-                    onChecked = { newRepeatCycle = cycle },
+                    label = tag.name,
+                    color = tag.color,
+                    checked = tag.id == newTag?.id,
+                    onChecked = { newTag = tag },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
 
         EbbingSolidButton(
             label = "적용하기",
-            onClick = { updateRepeatCycle(newRepeatCycle) },
+            onClick = { newTag?.let { updateTag(it) } },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp, bottom = 10.dp),

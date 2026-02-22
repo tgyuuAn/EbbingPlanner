@@ -1,4 +1,4 @@
-package com.tgyuu.home.graph.addtodo.ui.dialog
+package com.tgyuu.home.graph.ui.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
