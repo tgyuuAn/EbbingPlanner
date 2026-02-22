@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.addtodo.contract
 
+import kotlinx.collections.immutable.persistentSetOf
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
@@ -34,7 +35,7 @@ class EditDateStateTest {
     @Test
     fun `휴일을 선택하였을 경우 작성상태이다`(){
         // given
-        val addTodoState = AddTodoState(restDays = setOf(DayOfWeek.SATURDAY))
+        val addTodoState = AddTodoState(restDays = persistentSetOf(DayOfWeek.SATURDAY))
 
         // when
         val actual = addTodoState.isModified
