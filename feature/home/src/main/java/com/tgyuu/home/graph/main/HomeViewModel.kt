@@ -39,7 +39,7 @@ class HomeViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
-    private val alarmScheduler: AlarmScheduler,
+    private val alarmScheduler: AlarmScheduler?,
     internal val eventBus: EventBus,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
     private var currentMonthSchedules: List<TodoSchedule> = emptyList()
@@ -75,7 +75,9 @@ class HomeViewModel @Inject constructor(
                 ShowBottomSheet(intent.content)
             )
 
-            is HomeIntent.OnDelayScheduleClick -> onDelaySchedule(intent.schedule.toDomainModel())
+            is HomeIntent.OnDelayScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnDelaySingleClick -> onDelaySchedule(intent.schedule.toDomainModel())
+            is HomeIntent.OnDelayAllClick -> onDelayAllSchedules(intent.schedule.toDomainModel())
             is HomeIntent.OnMemoClick -> onClickMemo(intent.schedule.toDomainModel())
             is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
@@ -202,7 +204,7 @@ class HomeViewModel @Inject constructor(
                 .toInstant()
                 .toEpochMilli()
 
-            alarmScheduler.scheduleDailyExact(
+            alarmScheduler?.scheduleDailyExact(
                 date = nextDate,
                 triggerAtMillis = triggerAtMillis
             )
@@ -224,6 +226,60 @@ class HomeViewModel @Inject constructor(
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
+    }
+
+    private suspend fun onDelayAllSchedules(schedule: TodoSchedule) {
+        val futureSchedules = todoRepository
+            .loadSchedulesByTodoInfo(schedule.infoId)
+            .filter { it.date >= schedule.date }
+            .sortedByDescending { it.date }
+
+        if (futureSchedules.isEmpty()) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("미룰 일정이 없습니다."))
+            eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+            return
+        }
+
+        val (hour, minute) = configRepository.getAlarmTime()
+        for (scheduleToDelay in futureSchedules) {
+            val nextDate = scheduleToDelay.date.plusDays(1)
+            val delayed = scheduleToDelay.copy(date = nextDate)
+
+            todoRepository.updateTodo(delayed)
+
+            if (nextDate.isAfter(LocalDate.now())) {
+                val triggerAtMillis = nextDate
+                    .atTime(LocalTime.of(hour, minute))
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+
+                alarmScheduler?.scheduleDailyExact(
+                    date = nextDate,
+                    triggerAtMillis = triggerAtMillis
+                )
+            }
+
+            currentMonthSchedules = currentMonthSchedules.map {
+                if (it.id == scheduleToDelay.id) delayed else it
+            }
+            cachedSchedules = cachedSchedules.map {
+                if (it.id == scheduleToDelay.id) delayed else it
+            }
+        }
+
+        updateCacheAfterChange()
+        val newByDate = buildByDateMap(cachedSchedules, currentState.sortType)
+        val newByInfo = buildByInfoMap(cachedSchedules)
+        setState {
+            copy(
+                schedulesByDateMap = newByDate,
+                schedulesByTodoInfo = newByInfo
+            )
+        }
+
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("${futureSchedules.size}개 일정을 미뤘습니다."))
     }
 
     private suspend fun navigateToUpdateInfo(infoId: Int) {

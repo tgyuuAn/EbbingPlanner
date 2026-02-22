@@ -49,10 +49,12 @@ import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckChanged
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
 import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.home.graph.main.ui.EbbingTodoList
+import com.tgyuu.home.graph.main.ui.bottomsheet.DelayBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.UpdateBottomSheet
+import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayAllDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteMemoDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteRemainingDialog
@@ -111,7 +113,16 @@ internal fun HomeRoute(
                 onDismissRequest = { isShowDialog = false },
                 onDelayClick = {
                     isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDelayScheduleClick(dt.schedule))
+                    viewModel.onIntent(HomeIntent.OnDelaySingleClick(dt.schedule))
+                },
+            )
+
+            is DialogType.ConfirmDelayAll -> ConfirmDelayAllDialog(
+                schedule = dt.schedule,
+                onDismissRequest = { isShowDialog = false },
+                onDelayClick = {
+                    isShowDialog = false
+                    viewModel.onIntent(HomeIntent.OnDelayAllClick(dt.schedule))
                 },
             )
 
@@ -157,8 +168,28 @@ internal fun HomeRoute(
                         onClickDelay = { delayedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                dialogType = DialogType.ConfirmDelay(delayedSchedule)
-                                isShowDialog = true
+                                delay(200L)
+                                viewModel.onIntent(
+                                    HomeIntent.OnDelayScheduleClick {
+                                        DelayBottomSheet(
+                                            selectedSchedule = delayedSchedule,
+                                            onClickDelaySingle = {
+                                                scope.launch {
+                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                                    dialogType = DialogType.ConfirmDelay(delayedSchedule)
+                                                    isShowDialog = true
+                                                }
+                                            },
+                                            onClickDelayAll = {
+                                                scope.launch {
+                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                                    dialogType = DialogType.ConfirmDelayAll(delayedSchedule)
+                                                    isShowDialog = true
+                                                }
+                                            },
+                                        )
+                                    }
+                                )
                             }
                         },
                         onClickDelete = { deletedSchedule ->
