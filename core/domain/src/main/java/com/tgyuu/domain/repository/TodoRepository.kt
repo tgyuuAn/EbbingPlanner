@@ -36,6 +36,7 @@ interface TodoRepository {
         tagId: Int,
         dates: List<LocalDate>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     )
 
     suspend fun addTodo(
@@ -44,6 +45,7 @@ interface TodoRepository {
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     )
 
     suspend fun addRepeatCycle(intervals: List<Int>): Long
@@ -54,6 +56,7 @@ interface TodoRepository {
     suspend fun loadSchedule(id: Int): TodoSchedule
     suspend fun loadTag(id: Int): TodoTag
     suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
+    suspend fun loadTodoInfoById(infoId: Int): TodoInfo
 
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
     suspend fun updateTodo(todoSchedule: TodoSchedule)

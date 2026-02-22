@@ -17,6 +17,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -156,6 +157,99 @@ class HomeViewModelTest {
             (it.id == 2 && it.date == baseDate.plusDays(6)) ||
             (it.id == 3 && it.date == baseDate.plusDays(11))
         })
+    }
+
+    @Test
+    fun `쉬는 요일이 있을 때 해당 요일을 건너뛰고 미룬다`() = runTest {
+        // given: 월요일 일정, 쉬는 요일 = 화요일
+        val monday = LocalDate.of(2024, 1, 1)  // 월요일
+        val schedule = createSchedule(id = 1, infoId = 100, date = monday)
+
+        todoRepository.addSchedules(schedule)
+        todoRepository.setRestDays(infoId = 100, restDays = setOf(DayOfWeek.TUESDAY))
+
+        // when: 모두 미루기
+        viewModel.onIntent(HomeIntent.OnDelayAllClick(schedule.toUiModel()))
+
+        // then: 화요일(1/2)을 건너뛰고 수요일(1/3)로 미뤄짐
+        val updatedSchedules = todoRepository.loadAllSchedules()
+        assertEquals(monday.plusDays(2), updatedSchedules[0].date)  // 1/3 (수요일)
+    }
+
+    @Test
+    fun `여러 쉬는 요일을 건너뛰고 미룬다`() = runTest {
+        // given: 금요일 일정, 쉬는 요일 = 토요일, 일요일
+        val friday = LocalDate.of(2024, 1, 5)  // 금요일
+        val schedule = createSchedule(id = 1, infoId = 100, date = friday)
+
+        todoRepository.addSchedules(schedule)
+        todoRepository.setRestDays(
+            infoId = 100,
+            restDays = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+        )
+
+        // when: 모두 미루기
+        viewModel.onIntent(HomeIntent.OnDelayAllClick(schedule.toUiModel()))
+
+        // then: 토요일(1/6), 일요일(1/7)을 건너뛰고 월요일(1/8)로 미뤄짐
+        val updatedSchedules = todoRepository.loadAllSchedules()
+        assertEquals(friday.plusDays(3), updatedSchedules[0].date)  // 1/8 (월요일)
+    }
+
+    @Test
+    fun `쉬는 요일이 없으면 바로 다음날로 미룬다`() = runTest {
+        // given: 월요일 일정, 쉬는 요일 없음
+        val monday = LocalDate.of(2024, 1, 1)
+        val schedule = createSchedule(id = 1, infoId = 100, date = monday)
+
+        todoRepository.addSchedules(schedule)
+        todoRepository.setRestDays(infoId = 100, restDays = emptySet())
+
+        // when: 모두 미루기
+        viewModel.onIntent(HomeIntent.OnDelayAllClick(schedule.toUiModel()))
+
+        // then: 화요일(1/2)로 미뤄짐
+        val updatedSchedules = todoRepository.loadAllSchedules()
+        assertEquals(monday.plusDays(1), updatedSchedules[0].date)
+    }
+
+    @Test
+    fun `연속된 일정을 쉬는 요일 고려해서 모두 미룬다`() = runTest {
+        // given: 월, 화, 수 일정, 쉬는 요일 = 수요일
+        val monday = LocalDate.of(2024, 1, 1)
+        val schedule1 = createSchedule(id = 1, infoId = 100, date = monday)            // 1/1 (월)
+        val schedule2 = createSchedule(id = 2, infoId = 100, date = monday.plusDays(1)) // 1/2 (화)
+        val schedule3 = createSchedule(id = 3, infoId = 100, date = monday.plusDays(2)) // 1/3 (수)
+
+        todoRepository.addSchedules(schedule1, schedule2, schedule3)
+        todoRepository.setRestDays(infoId = 100, restDays = setOf(DayOfWeek.WEDNESDAY))
+
+        // when: 모두 미루기
+        viewModel.onIntent(HomeIntent.OnDelayAllClick(schedule1.toUiModel()))
+
+        // then: 1/3 (수) 일정이 쉬는 요일을 건너뛰고 1/4 (목)로 미뤄짐
+        val updatedSchedules = todoRepository.loadAllSchedules().sortedBy { it.date }
+        assertEquals(monday.plusDays(3), updatedSchedules[1].date)  // 1/4 (목)
+    }
+
+    @Test
+    fun `단일 일정 미루기도 쉬는 요일을 건너뛴다`() = runTest {
+        // given: 월요일 일정, 쉬는 요일 = 화요일, 수요일
+        val monday = LocalDate.of(2024, 1, 1)
+        val schedule = createSchedule(id = 1, infoId = 100, date = monday)
+
+        todoRepository.addSchedules(schedule)
+        todoRepository.setRestDays(
+            infoId = 100,
+            restDays = setOf(DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY)
+        )
+
+        // when: 단일 일정 미루기
+        viewModel.onIntent(HomeIntent.OnDelaySingleClick(schedule.toUiModel()))
+
+        // then: 화요일(1/2), 수요일(1/3)을 건너뛰고 목요일(1/4)로 미뤄짐
+        val updatedSchedules = todoRepository.loadAllSchedules()
+        assertEquals(monday.plusDays(3), updatedSchedules[0].date)  // 1/4 (목요일)
     }
 
     private fun createSchedule(

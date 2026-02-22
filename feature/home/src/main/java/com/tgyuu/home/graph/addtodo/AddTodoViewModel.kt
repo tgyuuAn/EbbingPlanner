@@ -229,6 +229,7 @@ class AddTodoViewModel @Inject constructor(
             dates = currentState.schedules,
             tagId = tag.id,
             priority = currentState.priority?.toIntOrNull(),
+            restDays = currentState.restDays.toSet(),
         )
 
         val (hour, minute) = configRepository.getAlarmTime()

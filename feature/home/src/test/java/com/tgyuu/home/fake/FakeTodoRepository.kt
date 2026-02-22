@@ -7,12 +7,14 @@ import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 class FakeTodoRepository : TodoRepository {
     private val schedules = mutableListOf<TodoSchedule>()
     private val tags = mutableListOf<TodoTag>()
     private val repeatCycles = mutableListOf<RepeatCycle>()
+    private val todoInfos = mutableMapOf<Int, TodoInfo>()
 
     override var recentAddedTagId: Long? = null
     override var recentAddedRepeatCycleId: Long? = null
@@ -78,7 +80,8 @@ class FakeTodoRepository : TodoRepository {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?
+        priority: Int?,
+        restDays: Set<DayOfWeek>
     ) {
         // No-op for testing
     }
@@ -88,7 +91,8 @@ class FakeTodoRepository : TodoRepository {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?
+        priority: Int?,
+        restDays: Set<DayOfWeek>
     ) {
         // No-op for testing
     }
@@ -120,6 +124,25 @@ class FakeTodoRepository : TodoRepository {
 
     override suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo> {
         return emptyList() // Not needed for these tests
+    }
+
+    override suspend fun loadTodoInfoById(infoId: Int): TodoInfo {
+        return todoInfos[infoId] ?: TodoInfo(
+            id = infoId,
+            title = "Test Todo",
+            tagId = 1,
+            restDays = emptySet()
+        )
+    }
+
+    fun setRestDays(infoId: Int, restDays: Set<DayOfWeek>) {
+        val existing = todoInfos[infoId] ?: TodoInfo(
+            id = infoId,
+            title = "Test Todo",
+            tagId = 1,
+            restDays = restDays
+        )
+        todoInfos[infoId] = existing.copy(restDays = restDays)
     }
 
     override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) {

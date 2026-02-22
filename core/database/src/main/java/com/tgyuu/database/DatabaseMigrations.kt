@@ -56,5 +56,14 @@ class DatabaseMigrations {
                 database.execSQL("ALTER TABLE todo_tag ADD COLUMN updatedAt TEXT NOT NULL DEFAULT '1970-01-01T00:00:00'")
             }
         }
+
+        val MIGRATION_3_TO_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // todo_info에 restDays Column 추가
+                database.execSQL(
+                    "ALTER TABLE todo_info ADD COLUMN rest_days TEXT NOT NULL DEFAULT ''"
+                )
+            }
+        }
     }
 }

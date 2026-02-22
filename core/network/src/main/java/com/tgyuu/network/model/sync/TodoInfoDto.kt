@@ -14,6 +14,7 @@ data class TodoInfoDto(
     val tagId: Int = -1,
     val createdAt: Date = defaultDate,
     val updatedAt: Date = defaultDate,
+    val restDays: String = "",
     @ServerTimestamp var uploadedAt: Date? = null,
 ) {
     fun toDomain() = TodoInfoForSync(
@@ -22,6 +23,7 @@ data class TodoInfoDto(
         tagId = tagId,
         createdAt = createdAt.toLocalDate(),
         updatedAt = updatedAt.toLocalDateTime(),
+        restDays = restDays,
     )
 }
 
@@ -31,4 +33,5 @@ fun TodoInfoForSync.toDto() = TodoInfoDto(
     tagId = tagId,
     createdAt = createdAt.toDate(),
     updatedAt = updatedAt.toDate(),
+    restDays = restDays,
 )

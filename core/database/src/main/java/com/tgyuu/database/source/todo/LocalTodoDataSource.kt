@@ -31,6 +31,7 @@ interface LocalTodoDataSource {
         tagId: Int,
         dates: List<LocalDate>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     )
 
     suspend fun insertTodos(
@@ -39,6 +40,7 @@ interface LocalTodoDataSource {
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     )
 
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
@@ -56,5 +58,6 @@ interface LocalTodoDataSource {
     suspend fun getSchedulesForSync(lastSyncTime: LocalDateTime): List<TodoScheduleForSync>
     suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync>
     suspend fun getTodoInfosByTagId(tagId: Int): List<TodoInfo>
+    suspend fun getTodoInfoById(infoId: Int): TodoInfo
     suspend fun deleteAllTodoInfos()
 }

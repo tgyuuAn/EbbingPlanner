@@ -38,4 +38,20 @@ class EbbingConverters {
     @TypeConverter
     fun toIntList(data: String?): List<Int> =
         data?.split(",")?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()
+
+    // --- Set<DayOfWeek> ---
+    @TypeConverter
+    fun fromRestDays(value: Set<java.time.DayOfWeek>?): String {
+        return value?.joinToString(",") { it.value.toString() } ?: ""
+    }
+
+    @TypeConverter
+    fun toRestDays(value: String?): Set<java.time.DayOfWeek> {
+        if (value.isNullOrEmpty()) return emptySet()
+        return value.split(",")
+            .mapNotNull { it.toIntOrNull() }
+            .filter { it in 1..7 }
+            .map { java.time.DayOfWeek.of(it) }
+            .toSet()
+    }
 }

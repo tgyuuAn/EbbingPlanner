@@ -24,11 +24,13 @@ interface TodoWithSchedulesDao {
         tagId: Int,
         dates: List<LocalDate>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
+                restDays = restDays.joinToString(",") { it.value.toString() },
             )
         ).toInt()
 
@@ -51,11 +53,13 @@ interface TodoWithSchedulesDao {
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
+                restDays = restDays.joinToString(",") { it.value.toString() },
             )
         ).toInt()
 

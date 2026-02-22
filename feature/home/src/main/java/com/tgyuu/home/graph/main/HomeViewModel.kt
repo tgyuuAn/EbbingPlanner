@@ -182,15 +182,13 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onDelaySchedule(schedule: TodoSchedule) {
-        val nextDate = schedule.date.plusDays(1)
-        val alreadyExistsOnNext = currentState
-            .schedulesByDateMap[nextDate]
-            ?.any { it.infoId == schedule.infoId } == true
+        val todoInfo = todoRepository.loadTodoInfoById(schedule.infoId)
+        val restDays = todoInfo.restDays
 
-        if (alreadyExistsOnNext) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정은 이미 다음 날에 있습니다."))
-            eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-            return
+        var nextDate = schedule.date.plusDays(1).nextValidDate(restDays)
+
+        while (cachedSchedules.any { it.infoId == schedule.infoId && it.date == nextDate && it.id != schedule.id }) {
+            nextDate = nextDate.plusDays(1).nextValidDate(restDays)
         }
 
         val delayed = schedule.copy(date = nextDate)
@@ -229,6 +227,9 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onDelayAllSchedules(schedule: TodoSchedule) {
+        val todoInfo = todoRepository.loadTodoInfoById(schedule.infoId)
+        val restDays = todoInfo.restDays
+
         val futureSchedules = todoRepository
             .loadSchedulesByTodoInfo(schedule.infoId)
             .filter { it.date >= schedule.date }
@@ -240,10 +241,18 @@ class HomeViewModel @Inject constructor(
             return
         }
 
+        val updatedDates = mutableMapOf<Int, LocalDate>()
         val (hour, minute) = configRepository.getAlarmTime()
         for (scheduleToDelay in futureSchedules) {
-            val nextDate = scheduleToDelay.date.plusDays(1)
+            var nextDate = scheduleToDelay.date.plusDays(1).nextValidDate(restDays)
+
+            while (updatedDates.values.contains(nextDate) ||
+                   cachedSchedules.any { it.infoId == schedule.infoId && it.date == nextDate && it.id != scheduleToDelay.id }) {
+                nextDate = nextDate.plusDays(1).nextValidDate(restDays)
+            }
+
             val delayed = scheduleToDelay.copy(date = nextDate)
+            updatedDates[scheduleToDelay.id] = nextDate
 
             todoRepository.updateTodo(delayed)
 
@@ -367,4 +376,12 @@ class HomeViewModel @Inject constructor(
         cachedSchedules = (currentMonthSchedules + cachedSchedules)
             .distinctBy { it.id }
     }
+}
+
+private fun LocalDate.nextValidDate(restDays: Set<java.time.DayOfWeek>): LocalDate {
+    var candidate = this
+    while (restDays.contains(candidate.dayOfWeek)) {
+        candidate = candidate.plusDays(1)
+    }
+    return candidate
 }

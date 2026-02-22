@@ -9,4 +9,5 @@ data class TodoInfoForSync(
     val tagId: Int,
     val createdAt: LocalDate,
     val updatedAt: LocalDateTime,
+    val restDays: String = "",
 )
