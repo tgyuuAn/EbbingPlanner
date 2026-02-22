@@ -58,7 +58,7 @@ interface TodoRepository {
     suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun loadTodoInfoById(infoId: Int): TodoInfo
 
-    suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
+    suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek> = emptySet())
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun deleteTodo(todoSchedule: TodoSchedule)
     suspend fun deleteTodoByTodoInfo(id: Int)

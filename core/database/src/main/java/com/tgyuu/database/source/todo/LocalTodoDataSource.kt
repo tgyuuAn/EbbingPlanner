@@ -43,7 +43,7 @@ interface LocalTodoDataSource {
         restDays: Set<java.time.DayOfWeek> = emptySet(),
     )
 
-    suspend fun updateTodoInfo(todoSchedule: TodoSchedule)
+    suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek> = emptySet())
     suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync)
     suspend fun updateSchedule(todoSchedule: TodoSchedule)
     suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync)

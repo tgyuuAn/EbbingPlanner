@@ -91,11 +91,12 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync) =
         todoSchedulesDao.updateTodoSchedule(todoScheduleForSync.toEntity())
 
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
         todoWithSchedulesDao.updateInfo(
             id = todoSchedule.infoId,
             title = todoSchedule.title,
             tagId = todoSchedule.tagId,
+            restDays = restDays.joinToString(",") { it.value.toString() },
         )
 
     override suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync) =

@@ -33,7 +33,7 @@ internal fun DelayBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = "하루만 미루기",
+                text = "이 일정만 미루기",
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,

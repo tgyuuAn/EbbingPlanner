@@ -132,8 +132,8 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTodoInfoById(infoId: Int): TodoInfo =
         localTodoDataSource.getTodoInfoById(infoId)
 
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
-        localTodoDataSource.updateTodoInfo(todoSchedule)
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
+        localTodoDataSource.updateTodoInfo(todoSchedule, restDays)
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =
         localTodoDataSource.updateSchedule(todoSchedule)

@@ -145,8 +145,15 @@ class FakeTodoRepository : TodoRepository {
         todoInfos[infoId] = existing.copy(restDays = restDays)
     }
 
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) {
-        // No-op for testing
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<DayOfWeek>) {
+        val existing = todoInfos[todoSchedule.infoId]
+        if (existing != null) {
+            todoInfos[todoSchedule.infoId] = existing.copy(
+                title = todoSchedule.title,
+                tagId = todoSchedule.tagId,
+                restDays = restDays
+            )
+        }
     }
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) {

@@ -50,12 +50,15 @@ class EditDateViewModel @Inject constructor(
                 ?: throw IllegalArgumentException("해당 일정의 정보가 없습니다.")
 
             val result = todoRepository.loadSchedulesByTodoInfo(infoId)
+            val todoInfo = todoRepository.loadTodoInfoById(infoId)
+
             result.firstOrNull()?.let {
                 setState {
                     copy(
                         title = it.title,
                         originTagColor = it.color,
                         selectedDate = it.date,
+                        restDays = todoInfo.restDays.toImmutableSet(),
                     )
                 }
             }
@@ -154,6 +157,7 @@ class EditDateViewModel @Inject constructor(
             isDoneSchedules = isDoneSchedules,
             tagId = originSchedules.firstOrNull()?.tagId ?: 0,
             priority = originSchedules.firstOrNull()?.priority,
+            restDays = currentState.restDays.toSet(),
         )
 
         val (hour, minute) = configRepository.getAlarmTime()
