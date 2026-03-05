@@ -19,7 +19,15 @@ sealed interface HomeIntent : UiIntent {
     data class OnUpdateScheduleClick(val content: BottomSheetContent) : HomeIntent
     data class OnUpdateInfoClick(val schedule: TodoScheduleUiModel) : HomeIntent
     data class OnUpdateDateClick(val schedule: TodoScheduleUiModel) : HomeIntent
-    data class OnDelayScheduleClick(val schedule: TodoScheduleUiModel) : HomeIntent
+    data class OnDelayScheduleClick(val content: BottomSheetContent) : HomeIntent
+    data class OnDelaySingleClick(
+        val schedule: TodoScheduleUiModel,
+        val includeRestDays: Boolean = false,
+    ) : HomeIntent
+    data class OnDelayAllClick(
+        val schedule: TodoScheduleUiModel,
+        val includeRestDays: Boolean = false,
+    ) : HomeIntent
     data class OnMemoClick(val schedule: TodoScheduleUiModel) : HomeIntent
     data class OnDeleteMemoClick(val schedule: TodoScheduleUiModel) : HomeIntent
     data object OnSyncClick : HomeIntent

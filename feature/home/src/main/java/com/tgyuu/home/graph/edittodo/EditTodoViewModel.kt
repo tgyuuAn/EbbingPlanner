@@ -22,6 +22,7 @@ import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -49,9 +50,11 @@ class EditTodoViewModel @Inject constructor(
             val originTagDeferred = async { todoRepository.loadTag(originSchedule.tagId) }
             val sameInfoSchedulesDeferred =
                 async { todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId) }
+            val todoInfoDeferred = async { todoRepository.loadTodoInfoById(originSchedule.infoId) }
 
             val originTag = originTagDeferred.await()
             val schedulesByDateMap = sameInfoSchedulesDeferred.await()
+            val todoInfo = todoInfoDeferred.await()
 
             setState {
                 copy(
@@ -64,6 +67,7 @@ class EditTodoViewModel @Inject constructor(
                     title = originSchedule.title,
                     priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
                     tag = originTag.toUiModel(),
+                    restDays = todoInfo.restDays.toImmutableSet(),
                 )
             }
         }
@@ -166,7 +170,7 @@ class EditTodoViewModel @Inject constructor(
         )
 
         todoRepository.updateTodo(newSchedule)
-        todoRepository.updateTodoInfo(newSchedule)
+        todoRepository.updateTodoInfo(newSchedule, currentState.restDays.toSet())
         val (hour, minute) = configRepository.getAlarmTime()
 
         currentState.originSchedule?.date?.let { originDate ->

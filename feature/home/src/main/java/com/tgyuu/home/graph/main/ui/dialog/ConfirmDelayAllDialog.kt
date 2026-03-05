@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.component.EbbingDialog
@@ -24,41 +23,17 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
-internal fun ConfirmDelayDialog(
+internal fun ConfirmDelayAllDialog(
     schedule: TodoScheduleUiModel,
     restDays: Set<DayOfWeek>,
-    expectedDateExcludingRestDays: LocalDate?,
-    expectedDateIncludingRestDays: LocalDate?,
     onDismissRequest: () -> Unit,
     onDelayClick: (includeRestDays: Boolean) -> Unit,
 ) {
     var excludeRestDays by remember { mutableStateOf(true) }
-
-    val displayedExpectedDate = if (excludeRestDays) {
-        expectedDateExcludingRestDays
-    } else {
-        expectedDateIncludingRestDays
-    }
-
-    val dateText = if (displayedExpectedDate != null) {
-        "${schedule.date.monthValue}월 ${schedule.date.dayOfMonth}일(${
-            schedule.date.dayOfWeek.getDisplayName(
-                TextStyle.SHORT, Locale.KOREAN
-            )
-        }) → " + "${displayedExpectedDate.monthValue}월 ${displayedExpectedDate.dayOfMonth}일(${
-            displayedExpectedDate.dayOfWeek.getDisplayName(
-                TextStyle.SHORT, Locale.KOREAN
-            )
-        })"
-    } else {
-        ""
-    }
-
     val restDaysText = if (restDays.isNotEmpty()) {
         val dayNames = restDays.sortedBy { it.value }
             .joinToString(", ") { it.getDisplayName(TextStyle.SHORT, Locale.KOREAN) }
@@ -75,19 +50,11 @@ internal fun ConfirmDelayDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "${schedule.title.originalText} 일정을 하루 미루시겠습니까?",
+                text = "모든 ${schedule.title.originalText} 일정을\n하루씩 미루시겠습니까?",
                 color = EbbingTheme.colors.black,
-                style = EbbingTheme.typography.headingMSB.copy(fontWeight = FontWeight.Bold),
+                style = EbbingTheme.typography.headingMSB,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp),
-            )
-
-            Text(
-                text = dateText,
-                color = EbbingTheme.colors.primaryDefault,
-                style = EbbingTheme.typography.bodyMSB,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp),
             )
 
             if (restDays.isNotEmpty()) {
@@ -119,8 +86,8 @@ internal fun ConfirmDelayDialog(
             Text(
                 text = "미룬 일정은 수정하기에서 다시 되돌릴 수 있습니다.",
                 style = EbbingTheme.typography.bodySR,
-                textAlign = TextAlign.Center,
                 color = EbbingTheme.colors.dark2,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
@@ -130,7 +97,7 @@ internal fun ConfirmDelayDialog(
                 leftButtonText = "뒤로가기",
                 rightButtonText = "미루기",
                 onLeftButtonClick = onDismissRequest,
-                onRightButtonClick = { onDelayClick(!excludeRestDays) },
+                onRightButtonClick = { onDelayClick(false) },
             )
         }
     }

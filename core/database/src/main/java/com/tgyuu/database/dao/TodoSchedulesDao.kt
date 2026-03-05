@@ -212,12 +212,13 @@ interface TodoSchedulesDao {
 
     @Query(
         """
-        SELECT 
+        SELECT
             i.id        AS id,
             i.title     AS title,
             i.tagId     AS tagId,
             i.createdAt AS createdAt,
-            i.updatedAt AS updatedAt
+            i.updatedAt AS updatedAt,
+            i.rest_days AS restDays
         FROM todo_info i
         WHERE i.updatedAt > :lastSyncTime
         """
@@ -226,15 +227,29 @@ interface TodoSchedulesDao {
 
     @Query(
         """
-    SELECT 
+    SELECT
         id,
         title,
-        tagId
+        tagId,
+        rest_days AS restDays
     FROM todo_info
     WHERE tagId = :tagId
     """
     )
     suspend fun loadTodoInfoByTagId(tagId: Int): List<TodoInfo>
+
+    @Query(
+        """
+    SELECT
+        id,
+        title,
+        tagId,
+        rest_days AS restDays
+    FROM todo_info
+    WHERE id = :infoId
+    """
+    )
+    suspend fun getTodoInfoById(infoId: Int): TodoInfo
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTodoSchedule(todoScheduleEntity: TodoScheduleEntity)

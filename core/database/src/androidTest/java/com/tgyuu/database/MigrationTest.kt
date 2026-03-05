@@ -71,6 +71,65 @@ class MigrationTest {
     }
 
     @Test
+    fun `마이그레이션_3에서4`() {
+        // given: v3 데이터베이스에 TodoInfo 삽입
+        helper.createDatabase(testDbName, 3).apply {
+            execSQL(
+                """
+                INSERT INTO todo_info (id, title, tagId, createdAt, updatedAt)
+                VALUES (1, '테스트 할일', 1, '2024-01-01', '2024-01-01 10:00:00')
+                """.trimIndent()
+            )
+            close()
+        }
+
+        // when: v4로 마이그레이션
+        val db = helper.runMigrationsAndValidate(
+            name = testDbName,
+            version = 4,
+            validateDroppedTables = true,
+            DatabaseMigrations.MIGRATION_3_TO_4
+        )
+
+        // then: rest_days 컬럼 존재 확인 및 기본값 검증
+        val cursor = db.query("SELECT rest_days FROM todo_info WHERE id = 1")
+        cursor.moveToFirst()
+        val restDays = cursor.getString(cursor.getColumnIndexOrThrow("rest_days"))
+        assert(restDays == "") { "기존 데이터의 rest_days는 빈 문자열이어야 합니다" }
+        cursor.close()
+    }
+
+    @Test
+    fun `마이그레이션_3에서4_restDays_저장_테스트`() {
+        // given: v3 데이터베이스
+        helper.createDatabase(testDbName, 3).apply {
+            close()
+        }
+
+        // when: v4로 마이그레이션 후 rest_days 포함 데이터 삽입
+        val db = helper.runMigrationsAndValidate(
+            name = testDbName,
+            version = 4,
+            validateDroppedTables = true,
+            DatabaseMigrations.MIGRATION_3_TO_4
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO todo_info (id, title, tagId, createdAt, updatedAt, rest_days)
+            VALUES (2, '운동', 1, '2024-01-01', '2024-01-01 10:00:00', '3,5')
+            """.trimIndent()
+        )
+
+        // then: rest_days 값 확인
+        val cursor = db.query("SELECT rest_days FROM todo_info WHERE id = 2")
+        cursor.moveToFirst()
+        val restDays = cursor.getString(cursor.getColumnIndexOrThrow("rest_days"))
+        assert(restDays == "3,5") { "rest_days 값이 올바르게 저장되어야 합니다" }
+        cursor.close()
+    }
+
+    @Test
     fun `마이그레이션_1에서3_전체`() {
         helper.createDatabase(testDbName, 1).close()
 
@@ -80,6 +139,20 @@ class MigrationTest {
             validateDroppedTables = true,
             DatabaseMigrations.MIGRATION_1_TO_2,
             DatabaseMigrations.MIGRATION_2_TO_3
+        )
+    }
+
+    @Test
+    fun `마이그레이션_1에서4_전체`() {
+        helper.createDatabase(testDbName, 1).close()
+
+        helper.runMigrationsAndValidate(
+            name = testDbName,
+            version = 4,
+            validateDroppedTables = true,
+            DatabaseMigrations.MIGRATION_1_TO_2,
+            DatabaseMigrations.MIGRATION_2_TO_3,
+            DatabaseMigrations.MIGRATION_3_TO_4
         )
     }
 }

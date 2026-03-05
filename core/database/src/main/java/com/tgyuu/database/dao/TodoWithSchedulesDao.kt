@@ -24,11 +24,13 @@ interface TodoWithSchedulesDao {
         tagId: Int,
         dates: List<LocalDate>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
+                restDays = restDays.joinToString(",") { it.value.toString() },
             )
         ).toInt()
 
@@ -51,11 +53,13 @@ interface TodoWithSchedulesDao {
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
+                restDays = restDays.joinToString(",") { it.value.toString() },
             )
         ).toInt()
 
@@ -75,7 +79,7 @@ interface TodoWithSchedulesDao {
     @Query(
         """
         UPDATE todo_info
-        SET title = :title, tagId = :tagId, updatedAt = :updatedAt
+        SET title = :title, tagId = :tagId, rest_days = :restDays, updatedAt = :updatedAt
         WHERE id = :id
         """
     )
@@ -83,6 +87,7 @@ interface TodoWithSchedulesDao {
         id: Int,
         title: String,
         tagId: Int,
+        restDays: String = "",
         updatedAt: LocalDateTime = LocalDateTime.now(),
     )
 

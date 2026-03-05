@@ -54,11 +54,13 @@ class LocalTodoDataSourceImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
         tagId = tagId,
         dates = dates,
         priority = priority,
+        restDays = restDays,
     )
 
     override suspend fun insertTodos(
@@ -66,13 +68,15 @@ class LocalTodoDataSourceImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?
+        priority: Int?,
+        restDays: Set<java.time.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
         priority = priority,
+        restDays = restDays,
     )
 
     override suspend fun updateSchedule(todoSchedule: TodoSchedule) =
@@ -87,11 +91,12 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync) =
         todoSchedulesDao.updateTodoSchedule(todoScheduleForSync.toEntity())
 
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
         todoWithSchedulesDao.updateInfo(
             id = todoSchedule.infoId,
             title = todoSchedule.title,
             tagId = todoSchedule.tagId,
+            restDays = restDays.joinToString(",") { it.value.toString() },
         )
 
     override suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync) =
@@ -117,6 +122,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getTodoInfosByTagId(tagId: Int): List<TodoInfo> =
         todoSchedulesDao.loadTodoInfoByTagId(tagId)
+
+    override suspend fun getTodoInfoById(infoId: Int): TodoInfo =
+        todoSchedulesDao.getTodoInfoById(infoId)
 
     override suspend fun deleteAllTodoInfos() = todoSchedulesDao.hardDeleteAllTodoInfos()
 }

@@ -1,5 +1,6 @@
 package com.tgyuu.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -26,6 +27,7 @@ data class TodoInfoEntity(
     val tagId: Int,
     val createdAt: LocalDate = LocalDate.now(),
     val updatedAt: LocalDateTime = LocalDateTime.now(),
+    @ColumnInfo(name = "rest_days") val restDays: String = "",
 )
 
 fun TodoInfoForSync.toEntity() = TodoInfoEntity(
@@ -34,4 +36,5 @@ fun TodoInfoForSync.toEntity() = TodoInfoEntity(
     tagId = this.tagId,
     createdAt = this.createdAt,
     updatedAt = this.updatedAt,
+    restDays = this.restDays,
 )

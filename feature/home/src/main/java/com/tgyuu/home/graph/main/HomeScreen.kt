@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -49,10 +51,12 @@ import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckChanged
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnSortTypeClick
 import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.home.graph.main.ui.EbbingTodoList
+import com.tgyuu.home.graph.main.ui.bottomsheet.DelayBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.SortTypeBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.UpdateBottomSheet
+import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayAllDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteMemoDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteRemainingDialog
@@ -86,47 +90,12 @@ internal fun HomeRoute(
         }
     }
 
-    if (isShowDialog && dialogType != null) {
-        when (val dt = dialogType) {
-            is ConfirmDeleteSingle -> ConfirmDeleteSingleDialog(
-                schedule = dt.schedule,
-                onDismissRequest = { isShowDialog = false },
-                onDeleteClick = {
-                    isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteSingleClick(dt.schedule))
-                },
-            )
-
-            is ConfirmDeleteRemaining -> ConfirmDeleteRemainingDialog(
-                schedule = dt.schedule,
-                onDismissRequest = { isShowDialog = false },
-                onDeleteClick = {
-                    isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteRemainingClick(dt.schedule))
-                },
-            )
-
-            is DialogType.ConfirmDelay -> ConfirmDelayDialog(
-                schedule = dt.schedule,
-                onDismissRequest = { isShowDialog = false },
-                onDelayClick = {
-                    isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDelayScheduleClick(dt.schedule))
-                },
-            )
-
-            is DialogType.ConfirmDeleteMemo -> ConfirmDeleteMemoDialog(
-                schedule = dt.schedule,
-                onDismissRequest = { isShowDialog = false },
-                onDeleteClick = {
-                    isShowDialog = false
-                    viewModel.onIntent(HomeIntent.OnDeleteMemoClick(dt.schedule))
-                },
-            )
-
-            else -> Unit
-        }
-    }
+    HandleDialogs(
+        isShowDialog = isShowDialog,
+        dialogType = dialogType,
+        onDismiss = { isShowDialog = false },
+        onIntent = viewModel::onIntent,
+    )
 
     AnimatedVisibility(state.showWidgetNudgeDialog) {
         WidgetNudgeDialog(
@@ -157,8 +126,44 @@ internal fun HomeRoute(
                         onClickDelay = { delayedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                dialogType = DialogType.ConfirmDelay(delayedSchedule)
-                                isShowDialog = true
+                                delay(200L)
+                                viewModel.onIntent(
+                                    HomeIntent.OnDelayScheduleClick {
+                                        DelayBottomSheet(
+                                            selectedSchedule = delayedSchedule,
+                                            onClickDelaySingle = {
+                                                scope.launch {
+                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                                    val (restDays, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
+                                                        delayedSchedule.infoId,
+                                                        delayedSchedule.date
+                                                    )
+                                                    dialogType = DialogType.ConfirmDelay(
+                                                        schedule = delayedSchedule,
+                                                        restDays = restDays,
+                                                        expectedDateExcludingRestDays = expectedDateExcludingRestDays,
+                                                        expectedDateIncludingRestDays = delayedSchedule.date.plusDays(1)
+                                                    )
+                                                    isShowDialog = true
+                                                }
+                                            },
+                                            onClickDelayAll = {
+                                                scope.launch {
+                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                                    val (restDays, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
+                                                        delayedSchedule.infoId,
+                                                        delayedSchedule.date
+                                                    )
+                                                    dialogType = DialogType.ConfirmDelayAll(
+                                                        schedule = delayedSchedule,
+                                                        restDays = restDays,
+                                                    )
+                                                    isShowDialog = true
+                                                }
+                                            },
+                                        )
+                                    }
+                                )
                             }
                         },
                         onClickDelete = { deletedSchedule ->
@@ -468,6 +473,93 @@ private fun TabletHomeScreen(
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             )
+        }
+    }
+}
+
+@Composable
+private fun HandleDialogs(
+    isShowDialog: Boolean,
+    dialogType: DialogType?,
+    onDismiss: () -> Unit,
+    onIntent: (HomeIntent) -> Unit,
+) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+
+    LaunchedEffect(dialogType) {
+        if (dialogType != null) {
+            val dialogTypeName = when (dialogType) {
+                is ConfirmDeleteSingle -> "confirm_delete_single"
+                is ConfirmDeleteRemaining -> "confirm_delete_remaining"
+                is DialogType.ConfirmDelay -> "confirm_delay"
+                is DialogType.ConfirmDelayAll -> "confirm_delay_all"
+                is DialogType.ConfirmDeleteMemo -> "confirm_delete_memo"
+            }
+
+            analyticsHelper.logEvent(
+                AnalyticsEvent(
+                    type = AnalyticsEvent.Types.ACTION,
+                    properties = mutableMapOf(
+                        AnalyticsEvent.PropertiesKeys.ACTION_NAME to "show_dialog",
+                        "dialog_type" to dialogTypeName,
+                    )
+                )
+            )
+        }
+    }
+
+    if (isShowDialog && dialogType != null) {
+        when (val dt = dialogType) {
+            is ConfirmDeleteSingle -> ConfirmDeleteSingleDialog(
+                schedule = dt.schedule,
+                onDismissRequest = onDismiss,
+                onDeleteClick = {
+                    onDismiss()
+                    onIntent(HomeIntent.OnDeleteSingleClick(dt.schedule))
+                },
+            )
+
+            is ConfirmDeleteRemaining -> ConfirmDeleteRemainingDialog(
+                schedule = dt.schedule,
+                onDismissRequest = onDismiss,
+                onDeleteClick = {
+                    onDismiss()
+                    onIntent(HomeIntent.OnDeleteRemainingClick(dt.schedule))
+                },
+            )
+
+            is DialogType.ConfirmDelay -> ConfirmDelayDialog(
+                schedule = dt.schedule,
+                restDays = dt.restDays,
+                expectedDateExcludingRestDays = dt.expectedDateExcludingRestDays,
+                expectedDateIncludingRestDays = dt.expectedDateIncludingRestDays,
+                onDismissRequest = onDismiss,
+                onDelayClick = { includeRestDays ->
+                    onDismiss()
+                    onIntent(HomeIntent.OnDelaySingleClick(dt.schedule, includeRestDays))
+                },
+            )
+
+            is DialogType.ConfirmDelayAll -> ConfirmDelayAllDialog(
+                schedule = dt.schedule,
+                restDays = dt.restDays,
+                onDismissRequest = onDismiss,
+                onDelayClick = { includeRestDays ->
+                    onDismiss()
+                    onIntent(HomeIntent.OnDelayAllClick(dt.schedule, includeRestDays))
+                },
+            )
+
+            is DialogType.ConfirmDeleteMemo -> ConfirmDeleteMemoDialog(
+                schedule = dt.schedule,
+                onDismissRequest = onDismiss,
+                onDeleteClick = {
+                    onDismiss()
+                    onIntent(HomeIntent.OnDeleteMemoClick(dt.schedule))
+                },
+            )
+
+            else -> Unit
         }
     }
 }

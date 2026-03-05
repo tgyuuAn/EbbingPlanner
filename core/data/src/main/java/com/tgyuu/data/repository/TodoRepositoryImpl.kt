@@ -84,11 +84,13 @@ class TodoRepositoryImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         priority: Int?,
+        restDays: Set<java.time.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
         dates = dates,
         priority = priority,
+        restDays = restDays,
     )
 
     override suspend fun addTodo(
@@ -96,13 +98,15 @@ class TodoRepositoryImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?
+        priority: Int?,
+        restDays: Set<java.time.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
         priority = priority,
+        restDays = restDays,
     )
 
     override suspend fun addRepeatCycle(intervals: List<Int>): Long {
@@ -125,8 +129,11 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo> =
         localTodoDataSource.getTodoInfosByTagId(tagId)
 
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule) =
-        localTodoDataSource.updateTodoInfo(todoSchedule)
+    override suspend fun loadTodoInfoById(infoId: Int): TodoInfo =
+        localTodoDataSource.getTodoInfoById(infoId)
+
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
+        localTodoDataSource.updateTodoInfo(todoSchedule, restDays)
 
     override suspend fun updateTodo(todoSchedule: TodoSchedule) =
         localTodoDataSource.updateSchedule(todoSchedule)
