@@ -85,6 +85,10 @@ amplitude = "1.16.8"
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
 
+## Play Core
+# https://developer.android.com/reference/com/google/android/play/core/release-notes
+playCore = "2.0.2"
+
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -163,6 +167,8 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
 
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
+
+play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playCore" }
 
 [bundles]
 

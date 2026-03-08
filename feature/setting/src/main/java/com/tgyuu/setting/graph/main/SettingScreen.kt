@@ -3,6 +3,7 @@
 package com.tgyuu.setting.graph.main
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,16 +62,33 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
+import com.tgyuu.setting.graph.main.contract.SettingSideEffect
 import com.tgyuu.setting.graph.main.contract.SettingState
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmMessageBottomSheet
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
 import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 internal fun SettingRoute(
     viewModel: SettingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                SettingSideEffect.RequestInAppReview -> {
+                    activity?.let {
+                        viewModel.inAppReviewManager.requestAndLaunchReview(it)
+                    }
+                }
+            }
+        }
+    }
 
     SettingScreen(
         state = state,
@@ -110,6 +129,7 @@ internal fun SettingRoute(
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
+        onInAppReviewClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
     )
 }
 
@@ -128,6 +148,7 @@ private fun SettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onInAppReviewClick: () -> Unit,
 ) {
     var isShowClearConfirm by remember { mutableStateOf(false) }
     if (isShowClearConfirm) {
@@ -156,6 +177,7 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
+            onInAppReviewClick = onInAppReviewClick,
         )
     } else {
         TabletSettingScreen(
@@ -172,6 +194,7 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
+            onInAppReviewClick = onInAppReviewClick,
         )
     }
 }
@@ -191,6 +214,7 @@ private fun PhoneSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onInAppReviewClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -242,6 +266,8 @@ private fun PhoneSettingScreen(
                 onTermsClick = onTermsOfUseClick,
             )
 
+            InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
+
             UpdateBody(
                 updateInfo = state.updateInfo,
                 modifier = Modifier
@@ -267,6 +293,7 @@ private fun TabletSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onInAppReviewClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -324,6 +351,8 @@ private fun TabletSettingScreen(
                     onPrivacyPolicy = onPrivacyAndPolicyClick,
                     onTermsClick = onTermsOfUseClick,
                 )
+
+                InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
 
                 UpdateBody(
                     updateInfo = state.updateInfo,
@@ -632,6 +661,30 @@ private fun InquiryBody() {
 }
 
 @Composable
+private fun InAppReviewRow(onInAppReviewClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onInAppReviewClick() },
+    ) {
+        Text(
+            text = "앱 리뷰 작성",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+}
+
+@Composable
 private fun AnnouncementBody(
     onNoticeClick: () -> Unit,
     onPrivacyPolicy: () -> Unit,
@@ -892,6 +945,7 @@ private fun PreviewSettingScreen() {
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onNotificationToggleClick = {},
+            onInAppReviewClick = {},
         )
     }
 }

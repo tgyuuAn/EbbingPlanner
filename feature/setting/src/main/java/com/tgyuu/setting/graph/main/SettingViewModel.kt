@@ -9,6 +9,7 @@ import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.inappreview.InAppReviewManager
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.RepeatCycleGraph
@@ -18,8 +19,11 @@ import com.tgyuu.navigation.TagGraph
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.AlarmMessageBottomSheetState
 import com.tgyuu.setting.graph.main.contract.SettingIntent
+import com.tgyuu.setting.graph.main.contract.SettingSideEffect
 import com.tgyuu.setting.graph.main.contract.SettingState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -33,7 +37,11 @@ class SettingViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    val inAppReviewManager: InAppReviewManager,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
+
+    private val _sideEffect = Channel<SettingSideEffect>(Channel.BUFFERED)
+    val sideEffect = _sideEffect.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -122,6 +130,7 @@ class SettingViewModel @Inject constructor(
             SettingIntent.OnAppThemeManageClick -> navigationBus.navigate(To(SettingGraph.ThemeRoute))
             SettingIntent.OnWidgetManageClick -> navigationBus.navigate(To(SettingGraph.WidgetRoute))
             SettingIntent.OnClearClick -> clearData()
+            SettingIntent.OnInAppReviewClick -> _sideEffect.send(SettingSideEffect.RequestInAppReview)
         }
     }
 
