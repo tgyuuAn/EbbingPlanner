@@ -8,12 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,7 +30,11 @@ internal fun TitleContent(
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
-    var isInputFocused by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     Text(
         text = "제목",
@@ -61,7 +64,7 @@ internal fun TitleContent(
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth()
-            .onFocusChanged { isInputFocused = it.isFocused }
+            .focusRequester(focusRequester)
             .animateScrollWhenFocus(
                 scrollState = scrollState,
                 verticalWeightPx = with(density) { -200.dp.roundToPx() },
