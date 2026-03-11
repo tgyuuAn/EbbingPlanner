@@ -282,6 +282,7 @@ private fun PhoneSettingScreen(
 
             UpdateBody(
                 updateInfo = state.updateInfo,
+                hardUpdateInfo = state.hardUpdateInfo,
                 onUpdateClick = onUpdateClick,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -370,6 +371,7 @@ private fun TabletSettingScreen(
 
                 UpdateBody(
                     updateInfo = state.updateInfo,
+                    hardUpdateInfo = state.hardUpdateInfo,
                     onUpdateClick = onUpdateClick,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -846,6 +848,7 @@ private fun ThemeBody(
 @Composable
 private fun UpdateBody(
     updateInfo: UpdateInfo?,
+    hardUpdateInfo: UpdateInfo?,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -864,15 +867,26 @@ private fun UpdateBody(
         )
 
         if (isShowUpdateButton(context, updateInfo)) {
+            val isImmediateUpdate = shouldUpdate(context, hardUpdateInfo)
+
             Image(
                 painter = painterResource(R.drawable.ic_arrow_right),
                 contentDescription = "상세 내용",
                 modifier = Modifier
                     .padding(start = 4.dp)
-                    .clickable { onUpdateClick(false) },
+                    .clickable { onUpdateClick(isImmediateUpdate) },
             )
         }
     }
+}
+
+private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {
+    if (info == null) return false
+
+    val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0)
+        .versionName ?: return false
+
+    return checkShouldUpdate(currentVersion, info.minVersion)
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
