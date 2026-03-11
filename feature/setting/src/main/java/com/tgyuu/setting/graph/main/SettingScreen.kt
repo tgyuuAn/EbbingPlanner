@@ -86,6 +86,11 @@ internal fun SettingRoute(
                         viewModel.inAppReviewManager.openPlayStoreForReview()
                     }
                 }
+                is SettingSideEffect.RequestInAppUpdate -> {
+                    activity?.let {
+                        viewModel.inAppUpdateManager.requestUpdate(it, sideEffect.isImmediateUpdate)
+                    }
+                }
             }
         }
     }
@@ -130,6 +135,9 @@ internal fun SettingRoute(
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
         onInAppReviewClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
+        onUpdateClick = { isImmediateUpdate ->
+            viewModel.onIntent(SettingIntent.OnUpdateClick(isImmediateUpdate))
+        },
     )
 }
 
@@ -149,6 +157,7 @@ private fun SettingScreen(
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     var isShowClearConfirm by remember { mutableStateOf(false) }
     if (isShowClearConfirm) {
@@ -178,6 +187,7 @@ private fun SettingScreen(
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
             onInAppReviewClick = onInAppReviewClick,
+            onUpdateClick = onUpdateClick,
         )
     } else {
         TabletSettingScreen(
@@ -195,6 +205,7 @@ private fun SettingScreen(
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
             onInAppReviewClick = onInAppReviewClick,
+            onUpdateClick = onUpdateClick,
         )
     }
 }
@@ -215,6 +226,7 @@ private fun PhoneSettingScreen(
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -270,6 +282,8 @@ private fun PhoneSettingScreen(
 
             UpdateBody(
                 updateInfo = state.updateInfo,
+                hardUpdateInfo = state.hardUpdateInfo,
+                onUpdateClick = onUpdateClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 17.dp),
@@ -294,6 +308,7 @@ private fun TabletSettingScreen(
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -356,6 +371,8 @@ private fun TabletSettingScreen(
 
                 UpdateBody(
                     updateInfo = state.updateInfo,
+                    hardUpdateInfo = state.hardUpdateInfo,
+                    onUpdateClick = onUpdateClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 17.dp),
@@ -831,6 +848,8 @@ private fun ThemeBody(
 @Composable
 private fun UpdateBody(
     updateInfo: UpdateInfo?,
+    hardUpdateInfo: UpdateInfo?,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -848,23 +867,26 @@ private fun UpdateBody(
         )
 
         if (isShowUpdateButton(context, updateInfo)) {
+            val isImmediateUpdate = shouldUpdate(context, hardUpdateInfo)
+
             Image(
                 painter = painterResource(R.drawable.ic_arrow_right),
                 contentDescription = "상세 내용",
                 modifier = Modifier
                     .padding(start = 4.dp)
-                    .clickable {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://play.google.com/store/apps/details?id=com.tgyuu.ebbingplanner".toUri(),
-                        )
-
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    },
+                    .clickable { onUpdateClick(isImmediateUpdate) },
             )
         }
     }
+}
+
+private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {
+    if (info == null) return false
+
+    val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0)
+        .versionName ?: return false
+
+    return checkShouldUpdate(currentVersion, info.minVersion)
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -946,6 +968,7 @@ private fun PreviewSettingScreen() {
             onTermsOfUseClick = {},
             onNotificationToggleClick = {},
             onInAppReviewClick = {},
+            onUpdateClick = {},
         )
     }
 }
