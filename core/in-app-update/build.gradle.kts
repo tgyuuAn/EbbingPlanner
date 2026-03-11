@@ -10,4 +10,5 @@ android {
 dependencies {
     implementation(projects.core.commonUi)
     implementation(libs.play.app.update.ktx)
+    implementation(libs.coroutines.play.services)
 }

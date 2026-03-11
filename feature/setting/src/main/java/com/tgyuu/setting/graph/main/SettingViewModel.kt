@@ -68,6 +68,12 @@ class SettingViewModel @Inject constructor(
                 }.onSuccess { setState { copy(updateInfo = it) } }
             }
 
+            launch {
+                suspendRunCatching {
+                    configRepository.getHardUpdateInfo()
+                }.onSuccess { setState { copy(hardUpdateInfo = it) } }
+            }
+
             configRepository.getNotificationEnabled()
                 .collect { setState { copy(notificationEnabled = it) } }
         }
