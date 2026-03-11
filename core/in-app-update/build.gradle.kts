@@ -4,10 +4,10 @@ plugins {
 }
 
 android {
-    namespace = "com.tgyuu.inappreview"
+    namespace = "com.tgyuu.inappupdate"
 }
 
 dependencies {
     implementation(projects.core.commonUi)
-    implementation(libs.play.review.ktx)
+    implementation(libs.play.app.update.ktx)
 }
