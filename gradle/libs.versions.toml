@@ -85,6 +85,11 @@ amplitude = "1.16.8"
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
 
+## Play Core
+# https://developer.android.com/reference/com/google/android/play/core/release-notes
+playCore = "2.0.2"
+playAppUpdate = "2.1.0"
+
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -129,6 +134,7 @@ androidx-glance-preview = { module = "androidx.glance:glance-preview", version.r
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutine" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutine" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutine" }
+coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutine" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
@@ -163,6 +169,9 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
 
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
+
+play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playCore" }
+play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "playAppUpdate" }
 
 [bundles]
 
