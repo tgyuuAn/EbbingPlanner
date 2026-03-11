@@ -6,6 +6,7 @@ import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESS
 
 data class SettingState(
     val updateInfo: UpdateInfo? = null,
+    val hardUpdateInfo: UpdateInfo? = null,
     val notificationEnabled: Boolean = true,
     val alarmHour: String = "",
     val alarmMinute: String = "",
