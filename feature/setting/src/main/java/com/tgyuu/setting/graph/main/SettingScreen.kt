@@ -3,6 +3,7 @@
 package com.tgyuu.setting.graph.main
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,16 +62,38 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
+import com.tgyuu.setting.graph.main.contract.SettingSideEffect
 import com.tgyuu.setting.graph.main.contract.SettingState
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmMessageBottomSheet
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
 import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 internal fun SettingRoute(
     viewModel: SettingViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                SettingSideEffect.RequestInAppReview -> {
+                    activity?.let {
+                        viewModel.inAppReviewManager.requestAndLaunchReview(it)
+                    }
+                }
+                is SettingSideEffect.RequestInAppUpdate -> {
+                    activity?.let {
+                        viewModel.inAppUpdateManager.requestUpdate(it, sideEffect.isImmediateUpdate)
+                    }
+                }
+            }
+        }
+    }
 
     SettingScreen(
         state = state,
@@ -110,6 +134,10 @@ internal fun SettingRoute(
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
+        onInAppReviewClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
+        onUpdateClick = { isImmediateUpdate ->
+            viewModel.onIntent(SettingIntent.OnUpdateClick(isImmediateUpdate))
+        },
     )
 }
 
@@ -128,6 +156,8 @@ private fun SettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     var isShowClearConfirm by remember { mutableStateOf(false) }
     if (isShowClearConfirm) {
@@ -156,6 +186,8 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
+            onInAppReviewClick = onInAppReviewClick,
+            onUpdateClick = onUpdateClick,
         )
     } else {
         TabletSettingScreen(
@@ -172,6 +204,8 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
+            onInAppReviewClick = onInAppReviewClick,
+            onUpdateClick = onUpdateClick,
         )
     }
 }
@@ -191,6 +225,8 @@ private fun PhoneSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -242,8 +278,12 @@ private fun PhoneSettingScreen(
                 onTermsClick = onTermsOfUseClick,
             )
 
+            InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
+
             UpdateBody(
                 updateInfo = state.updateInfo,
+                hardUpdateInfo = state.hardUpdateInfo,
+                onUpdateClick = onUpdateClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 17.dp),
@@ -267,6 +307,8 @@ private fun TabletSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -325,8 +367,12 @@ private fun TabletSettingScreen(
                     onTermsClick = onTermsOfUseClick,
                 )
 
+                InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
+
                 UpdateBody(
                     updateInfo = state.updateInfo,
+                    hardUpdateInfo = state.hardUpdateInfo,
+                    onUpdateClick = onUpdateClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 17.dp),
@@ -632,6 +678,30 @@ private fun InquiryBody() {
 }
 
 @Composable
+private fun InAppReviewRow(onInAppReviewClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp)
+            .clickable { onInAppReviewClick() },
+    ) {
+        Text(
+            text = "앱 리뷰 작성",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = "상세 내용",
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+}
+
+@Composable
 private fun AnnouncementBody(
     onNoticeClick: () -> Unit,
     onPrivacyPolicy: () -> Unit,
@@ -778,6 +848,8 @@ private fun ThemeBody(
 @Composable
 private fun UpdateBody(
     updateInfo: UpdateInfo?,
+    hardUpdateInfo: UpdateInfo?,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -795,23 +867,26 @@ private fun UpdateBody(
         )
 
         if (isShowUpdateButton(context, updateInfo)) {
+            val isImmediateUpdate = shouldUpdate(context, hardUpdateInfo)
+
             Image(
                 painter = painterResource(R.drawable.ic_arrow_right),
                 contentDescription = "상세 내용",
                 modifier = Modifier
                     .padding(start = 4.dp)
-                    .clickable {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://play.google.com/store/apps/details?id=com.tgyuu.ebbingplanner".toUri(),
-                        )
-
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    },
+                    .clickable { onUpdateClick(isImmediateUpdate) },
             )
         }
     }
+}
+
+private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {
+    if (info == null) return false
+
+    val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0)
+        .versionName ?: return false
+
+    return checkShouldUpdate(currentVersion, info.minVersion)
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -892,6 +967,8 @@ private fun PreviewSettingScreen() {
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onNotificationToggleClick = {},
+            onInAppReviewClick = {},
+            onUpdateClick = {},
         )
     }
 }
