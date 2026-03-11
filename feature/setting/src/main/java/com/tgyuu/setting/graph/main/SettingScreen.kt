@@ -29,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +67,6 @@ import com.tgyuu.setting.graph.ui.bottomsheet.AlarmMessageBottomSheet
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
 import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
 internal fun SettingRoute(
@@ -82,8 +80,8 @@ internal fun SettingRoute(
         viewModel.sideEffect.collect { sideEffect ->
             when (sideEffect) {
                 SettingSideEffect.RequestInAppReview -> {
-                    activity?.let {
-                        viewModel.inAppReviewManager.requestAndLaunchReview(it)
+                    if (activity != null) {
+                        viewModel.inAppReviewManager.requestAndLaunchReview(activity)
                     }
                 }
                 is SettingSideEffect.RequestInAppUpdate -> {
