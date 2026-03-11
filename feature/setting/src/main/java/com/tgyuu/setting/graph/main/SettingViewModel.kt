@@ -10,6 +10,7 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.inappreview.InAppReviewManager
+import com.tgyuu.inappupdate.InAppUpdateManager
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.RepeatCycleGraph
@@ -38,6 +39,7 @@ class SettingViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     val inAppReviewManager: InAppReviewManager,
+    val inAppUpdateManager: InAppUpdateManager,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
 
     private val _sideEffect = Channel<SettingSideEffect>(Channel.BUFFERED)
@@ -131,6 +133,9 @@ class SettingViewModel @Inject constructor(
             SettingIntent.OnWidgetManageClick -> navigationBus.navigate(To(SettingGraph.WidgetRoute))
             SettingIntent.OnClearClick -> clearData()
             SettingIntent.OnInAppReviewClick -> _sideEffect.send(SettingSideEffect.RequestInAppReview)
+            is SettingIntent.OnUpdateClick -> _sideEffect.send(
+                SettingSideEffect.RequestInAppUpdate(intent.isImmediateUpdate)
+            )
         }
     }
 

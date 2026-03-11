@@ -86,6 +86,11 @@ internal fun SettingRoute(
                         viewModel.inAppReviewManager.requestAndLaunchReview(it)
                     }
                 }
+                is SettingSideEffect.RequestInAppUpdate -> {
+                    activity?.let {
+                        viewModel.inAppUpdateManager.requestUpdate(it, sideEffect.isImmediateUpdate)
+                    }
+                }
             }
         }
     }
@@ -130,6 +135,9 @@ internal fun SettingRoute(
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
         onInAppReviewClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
+        onUpdateClick = { isImmediateUpdate ->
+            viewModel.onIntent(SettingIntent.OnUpdateClick(isImmediateUpdate))
+        },
     )
 }
 
@@ -149,6 +157,7 @@ private fun SettingScreen(
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     var isShowClearConfirm by remember { mutableStateOf(false) }
     if (isShowClearConfirm) {
@@ -178,6 +187,7 @@ private fun SettingScreen(
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
             onInAppReviewClick = onInAppReviewClick,
+            onUpdateClick = onUpdateClick,
         )
     } else {
         TabletSettingScreen(
@@ -195,6 +205,7 @@ private fun SettingScreen(
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
             onInAppReviewClick = onInAppReviewClick,
+            onUpdateClick = onUpdateClick,
         )
     }
 }
@@ -215,6 +226,7 @@ private fun PhoneSettingScreen(
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -270,6 +282,7 @@ private fun PhoneSettingScreen(
 
             UpdateBody(
                 updateInfo = state.updateInfo,
+                onUpdateClick = onUpdateClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 17.dp),
@@ -294,6 +307,7 @@ private fun TabletSettingScreen(
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -356,6 +370,7 @@ private fun TabletSettingScreen(
 
                 UpdateBody(
                     updateInfo = state.updateInfo,
+                    onUpdateClick = onUpdateClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 17.dp),
@@ -831,6 +846,7 @@ private fun ThemeBody(
 @Composable
 private fun UpdateBody(
     updateInfo: UpdateInfo?,
+    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -853,15 +869,7 @@ private fun UpdateBody(
                 contentDescription = "상세 내용",
                 modifier = Modifier
                     .padding(start = 4.dp)
-                    .clickable {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://play.google.com/store/apps/details?id=com.tgyuu.ebbingplanner".toUri(),
-                        )
-
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        context.startActivity(intent)
-                    },
+                    .clickable { onUpdateClick(false) },
             )
         }
     }
@@ -946,6 +954,7 @@ private fun PreviewSettingScreen() {
             onTermsOfUseClick = {},
             onNotificationToggleClick = {},
             onInAppReviewClick = {},
+            onUpdateClick = {},
         )
     }
 }
