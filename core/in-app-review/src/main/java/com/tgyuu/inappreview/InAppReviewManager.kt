@@ -3,14 +3,14 @@ package com.tgyuu.inappreview
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.util.Log
+import androidx.core.net.toUri
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
-import androidx.core.net.toUri
 
 @Singleton
 class InAppReviewManager @Inject constructor(
@@ -18,19 +18,19 @@ class InAppReviewManager @Inject constructor(
 ) {
     private val reviewManager: ReviewManager = ReviewManagerFactory.create(context)
 
-    // Fallback으로 PlayStore 열기
     suspend fun requestAndLaunchReview(activity: Activity) {
         try {
             val reviewInfo = reviewManager.requestReviewFlow().await()
-            reviewManager.launchReviewFlow(activity, reviewInfo)
-        } catch (_: Exception) {
+            reviewManager.launchReviewFlow(activity, reviewInfo).await()
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to launch in-app review, falling back to Play Store", e)
             openPlayStoreForReview()
         }
     }
 
-    private fun openPlayStoreForReview() {
+    fun openPlayStoreForReview() {
+        val packageName = context.packageName
         try {
-            val packageName = context.packageName
             val playStoreIntent = Intent(
                 Intent.ACTION_VIEW,
                 "market://details?id=$packageName".toUri()
@@ -39,7 +39,7 @@ class InAppReviewManager @Inject constructor(
             }
             context.startActivity(playStoreIntent)
         } catch (e: Exception) {
-            val packageName = context.packageName
+            Log.w(TAG, "Failed to open Play Store app, falling back to web", e)
             val webIntent = Intent(
                 Intent.ACTION_VIEW,
                 "https://play.google.com/store/apps/details?id=$packageName".toUri()
@@ -48,5 +48,9 @@ class InAppReviewManager @Inject constructor(
             }
             context.startActivity(webIntent)
         }
+    }
+
+    companion object {
+        private const val TAG = "InAppReviewManager"
     }
 }
