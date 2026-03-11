@@ -24,4 +24,8 @@ class InAppReviewManager @Inject constructor(
             context.openPlayStore()
         }
     }
+
+    companion object {
+        private const val TAG = "InAppReviewManager"
+    }
 }
