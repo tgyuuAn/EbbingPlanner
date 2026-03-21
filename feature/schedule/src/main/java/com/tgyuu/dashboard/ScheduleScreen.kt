@@ -37,8 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toRelativeDayDescription
@@ -56,7 +56,7 @@ import com.tgyuu.designsystem.model.TodoTagUiModel
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
+internal fun ScheduleRoute(viewModel: ScheduleViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {

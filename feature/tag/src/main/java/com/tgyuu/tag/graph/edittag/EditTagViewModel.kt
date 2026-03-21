@@ -2,32 +2,22 @@ package com.tgyuu.tag.graph.edittag
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.edittag.contract.EditTagIntent
 import com.tgyuu.tag.graph.edittag.contract.EditTagState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
-@HiltViewModel
-class EditTagViewModel @Inject constructor(
+class EditTagViewModel(
     private val todoRepository: TodoRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
-    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
+) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
 
     init {
         val tagId = savedStateHandle.get<Int>("tagId")
@@ -51,12 +41,7 @@ class EditTagViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditTagIntent) {
         when (intent) {
-            EditTagIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "EditTag", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            EditTagIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             is EditTagIntent.OnNameChange -> onNameChange(intent.name)
             is EditTagIntent.OnColorDropDownClick -> eventBus.sendEvent(
                 EbbingEvent.ShowBottomSheet(intent.content)
@@ -79,14 +64,6 @@ class EditTagViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "EditTag",
-                buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
-            )
-        )
-
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return

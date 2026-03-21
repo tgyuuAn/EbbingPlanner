@@ -33,8 +33,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.now
 import com.tgyuu.common.util.EbbingPageTransitionAnimation
@@ -67,7 +67,7 @@ import kotlinx.datetime.number
 
 @Composable
 internal fun AddTodoRoute(
-    viewModel: AddTodoViewModel = hiltViewModel()
+    viewModel: AddTodoViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var repeatCycleSheetKey by remember { mutableIntStateOf(0) }
@@ -403,7 +403,7 @@ private fun TodoMainFormContent(
     Text(
         text = buildAnnotatedString {
             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.day}일")
+                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
             }
             append(" 부터\n시작하는 일정을 만들어요")
         },

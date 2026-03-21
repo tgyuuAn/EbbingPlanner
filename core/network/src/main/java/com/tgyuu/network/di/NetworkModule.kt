@@ -8,69 +8,39 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.tgyuu.network.BuildConfig
+import com.tgyuu.network.source.ConfigDataSource
+import com.tgyuu.network.source.SyncDataSource
 import com.tgyuu.network.source.error.DebugErrorDataSourceImpl
 import com.tgyuu.network.source.error.ErrorDataSource
 import com.tgyuu.network.source.error.ErrorDataSourceImpl
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
-import javax.inject.Qualifier
-import javax.inject.Singleton
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object NetworkProvidesModule {
-
-    @Singleton
-    @Provides
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true
+val networkModule = module {
+    single<Json> {
+        Json { ignoreUnknownKeys = true }
     }
 
-    @Singleton
-    @Provides
-    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig = Firebase.remoteConfig.apply {
-        val configSettings = remoteConfigSettings { minimumFetchIntervalInSeconds = 3600 }
-        setConfigSettingsAsync(configSettings)
+    single<FirebaseRemoteConfig> {
+        Firebase.remoteConfig.apply {
+            val configSettings = remoteConfigSettings { minimumFetchIntervalInSeconds = 3600 }
+            setConfigSettingsAsync(configSettings)
+        }
     }
 
-    @Singleton
-    @Provides
-    fun provideFirebaseFireStore(): FirebaseFirestore = Firebase.firestore
+    single<FirebaseFirestore> { Firebase.firestore }
 
-    @Singleton
-    @Provides
-    fun provideFirebaseCrashlytics(): FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
+    single<FirebaseCrashlytics> { FirebaseCrashlytics.getInstance() }
 
-    @Provides
-    @Singleton
-    @Debug
-    fun provideDebugErrorDataSource(debugErrorDataSourceImpl: DebugErrorDataSourceImpl): ErrorDataSource =
-        debugErrorDataSourceImpl
+    single { SyncDataSource(get()) }
+    single { ConfigDataSource(get(), get()) }
 
-    @Provides
-    @Singleton
-    @Release
-    fun provideReleaseErrorDataSource(errorDataSourceImpl: ErrorDataSourceImpl): ErrorDataSource =
-        errorDataSourceImpl
+    single<ErrorDataSource>(named("debug")) { DebugErrorDataSourceImpl() }
+    single<ErrorDataSource>(named("release")) { ErrorDataSourceImpl(get()) }
 
-    @Provides
-    @Singleton
-    fun provideErrorDataSource(
-        @Debug debugErrorDataSource: ErrorDataSource,
-        @Release releaseErrorDataSource: ErrorDataSource,
-    ): ErrorDataSource {
-        return if (BuildConfig.DEBUG) debugErrorDataSource
-        else releaseErrorDataSource
+    single<ErrorDataSource> {
+        if (BuildConfig.DEBUG) get(named("debug")) else get(named("release"))
     }
 }
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class Debug
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class Release

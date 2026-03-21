@@ -24,23 +24,17 @@ import com.tgyuu.ebbingplanner.widget.util.ADD_TODO_ACTION
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.KEY_WIDGET_SOURCE
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-@AndroidEntryPoint
-class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
-    @Inject
-    lateinit var todoRepository: TodoRepository
-
-    @Inject
-    lateinit var configRepository: ConfigRepository
-
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
+class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
+    private val todoRepository: TodoRepository by inject()
+    private val configRepository: ConfigRepository by inject()
+    private val analyticsHelper: AnalyticsHelper by inject()
 
     override val glanceAppWidget: GlanceAppWidget = TodayTodoWidget()
 

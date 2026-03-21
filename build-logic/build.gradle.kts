@@ -9,15 +9,4 @@ dependencies {
     compileOnly(libs.compose.compiler.gradle.plugin)
 }
 
-gradlePlugin {
-    plugins {
-        register("androidHilt") {
-            id = "ebbing.android.hilt"
-            implementationClass = "com.tgyuu.build.logic.HiltAndroidPlugin"
-        }
-        register("kotlinHilt") {
-            id = "ebbing.kotlin.hilt"
-            implementationClass = "com.tgyuu.build.logic.HiltKotlinPlugin"
-        }
-    }
-}
+// Hilt plugins removed - migrating to Koin

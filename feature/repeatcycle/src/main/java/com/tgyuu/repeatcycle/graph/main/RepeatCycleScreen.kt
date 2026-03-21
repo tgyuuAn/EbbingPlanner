@@ -32,8 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
@@ -50,7 +50,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun RepeatCycleRoute(
-    viewModel: RepeatCycleViewModel = hiltViewModel()
+    viewModel: RepeatCycleViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

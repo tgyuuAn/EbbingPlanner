@@ -33,7 +33,6 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.inappreview.InAppReviewManager
 import com.tgyuu.navigation.SyncGraph
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
@@ -48,12 +47,10 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
-import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
@@ -90,7 +87,7 @@ class HomeViewModel @Inject constructor(
 
     suspend fun initCurrentMonthSchedules() {
         val today = LocalDate.now()
-        val start = today.copy(day = 1)
+        val start = LocalDate(today.year, today.monthNumber, 1)
         val end = today.copy(today.totalDaysInMonth())
 
         currentMonthSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
@@ -239,8 +236,8 @@ class HomeViewModel @Inject constructor(
             val triggerAtMillis = nextDate.run {
                 val dateTime = LocalDateTime(
                     year = this.year,
-                    month = this.monthNumber,
-                    day = this.day,
+                    monthNumber = this.monthNumber,
+                    dayOfMonth = this.dayOfMonth,
                     hour = hour,
                     minute = minute,
                     second = 0,
@@ -334,8 +331,8 @@ class HomeViewModel @Inject constructor(
                 val triggerAtMillis = nextDate.run {
                     val dateTime = LocalDateTime(
                         year = this.year,
-                        month = this.monthNumber,
-                        day = this.day,
+                        monthNumber = this.monthNumber,
+                        dayOfMonth = this.dayOfMonth,
                         hour = hour,
                         minute = minute,
                         second = 0,

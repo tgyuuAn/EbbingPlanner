@@ -8,14 +8,11 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import androidx.core.net.toUri
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.datetime.LocalDate
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class AlarmScheduler @Inject constructor(
-    @ApplicationContext private val context: Context,
+
+class AlarmScheduler(
+    private val context: Context,
     private val alarmManager: AlarmManager,
 ) {
     @SuppressLint("ScheduleExactAlarm")

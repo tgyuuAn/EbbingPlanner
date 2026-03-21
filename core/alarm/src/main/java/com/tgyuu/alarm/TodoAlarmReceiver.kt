@@ -9,23 +9,17 @@ import androidx.annotation.RequiresPermission
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-@AndroidEntryPoint
-class TodoAlarmReceiver : BroadcastReceiver() {
-    @Inject
-    lateinit var notificationHelper: NotificationHelper
-
-    @Inject
-    lateinit var todoRepository: TodoRepository
-
-    @Inject
-    lateinit var configRepository: ConfigRepository
+class TodoAlarmReceiver : BroadcastReceiver(), KoinComponent {
+    private val notificationHelper: NotificationHelper by inject()
+    private val todoRepository: TodoRepository by inject()
+    private val configRepository: ConfigRepository by inject()
 
     private val scope = MainScope()
 

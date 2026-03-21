@@ -2,9 +2,8 @@ package com.tgyuu.analytics
 
 import com.amplitude.android.Amplitude
 import com.amplitude.core.events.BaseEvent
-import javax.inject.Inject
 
-class AmplitudeAnalyticsHelper @Inject constructor(
+class AmplitudeAnalyticsHelper constructor(
     private val amplitude: Amplitude,
 ) : AnalyticsHelper() {
     override fun logEvent(event: AnalyticsEvent) {

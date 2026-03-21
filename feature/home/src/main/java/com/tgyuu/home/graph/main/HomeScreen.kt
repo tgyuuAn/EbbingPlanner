@@ -33,8 +33,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.LocalAnalyticsHelper
@@ -78,7 +78,7 @@ import kotlinx.datetime.plus
 internal fun HomeRoute(
     workedDate: LocalDate,
     showWidgetNudge: Boolean = false,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()

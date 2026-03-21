@@ -7,11 +7,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
-import javax.inject.Inject
-import javax.inject.Named
 
-class LocalSyncDataSourceImpl @Inject constructor(
-    @Named("sync") private val dataStore: DataStore<Preferences>,
+class LocalSyncDataSourceImpl(
+    private val dataStore: DataStore<Preferences>,
 ) : LocalSyncDataSource {
     override val uuid: Flow<String>
         get() = dataStore.data

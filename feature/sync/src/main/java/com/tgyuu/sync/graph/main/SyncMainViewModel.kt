@@ -17,18 +17,15 @@ import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
-@HiltViewModel
-class SyncMainViewModel @Inject constructor(
+class SyncMainViewModel(
     private val syncRepository: SyncRepository,
     private val networkMonitor: NetworkMonitor,
     private val navigationBus: NavigationBus,

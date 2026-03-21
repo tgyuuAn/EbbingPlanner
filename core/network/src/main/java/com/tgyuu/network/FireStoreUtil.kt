@@ -25,8 +25,8 @@ fun Timestamp?.toLocalDateTimeOrNull(): LocalDateTime? {
 
 fun LocalDate.toDate(): Date = LocalDateTime(
     year = this.year,
-    month = this.monthNumber,
-    day = this.day,
+    monthNumber = this.monthNumber,
+    dayOfMonth = this.dayOfMonth,
     hour = 0,
     minute = 0,
 ).toDate()
@@ -43,8 +43,8 @@ fun Date.toLocalDate(): LocalDate {
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     return LocalDate(
         year = localDateTime.year,
-        month = localDateTime.monthNumber,
-        day = localDateTime.dayOfMonth
+        monthNumber = localDateTime.monthNumber,
+        dayOfMonth = localDateTime.dayOfMonth
     )
 }
 

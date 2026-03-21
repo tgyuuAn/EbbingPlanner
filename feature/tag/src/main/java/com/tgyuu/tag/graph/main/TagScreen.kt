@@ -32,8 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.now
 import com.tgyuu.common.util.clickable
@@ -52,7 +52,7 @@ import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun TagRoute(
-    viewModel: TagViewModel = hiltViewModel()
+    viewModel: TagViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

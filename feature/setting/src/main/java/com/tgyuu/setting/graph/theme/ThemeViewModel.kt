@@ -1,8 +1,6 @@
 package com.tgyuu.setting.graph.theme
 
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -11,26 +9,16 @@ import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
 
-@HiltViewModel
-class ThemeViewModel @Inject constructor(
+class ThemeViewModel(
     private val configRepository: ConfigRepository,
-    private val experimentRepository: ExperimentRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-    private val analyticsHelper: AnalyticsHelper,
-) : BaseViewModel<ThemeState, ThemeIntent>(
-    ThemeState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })
-) {
+) : BaseViewModel<ThemeState, ThemeIntent>(ThemeState()) {
 
     internal suspend fun loadTheme() {
         val origin = configRepository.getAppTheme().first()
@@ -45,12 +33,7 @@ class ThemeViewModel @Inject constructor(
     override suspend fun processIntent(intent: ThemeIntent) {
         when (intent) {
             is ThemeIntent.OnThemeChange -> setTheme(intent.theme)
-            ThemeIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Theme", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            ThemeIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             ThemeIntent.OnUpdateClick -> updateTheme()
         }
     }
@@ -60,14 +43,6 @@ class ThemeViewModel @Inject constructor(
     }
 
     private fun updateTheme() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "Theme",
-                buttonName = "Apply",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
-            )
-        )
-
         viewModelScope.launch {
             currentState.selectTheme?.let { select ->
                 suspendRunCatching {

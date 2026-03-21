@@ -27,23 +27,17 @@ import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-@AndroidEntryPoint
-class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
-    @Inject
-    lateinit var todoRepository: TodoRepository
-
-    @Inject
-    lateinit var configRepository: ConfigRepository
-
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
+class CalendarWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
+    private val todoRepository: TodoRepository by inject()
+    private val configRepository: ConfigRepository by inject()
+    private val analyticsHelper: AnalyticsHelper by inject()
 
     override val glanceAppWidget: GlanceAppWidget = CalendarWidget()
 
@@ -109,8 +103,8 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
         val now = LocalDate.now()
         val allSchedules = todoRepository.loadTodoSchedulesByDateRange(
-            now.copy(day = 1),
-            now.copy(now.totalDaysInMonth())
+            LocalDate(now.year, now.monthNumber, 1),
+            LocalDate(now.year, now.monthNumber, now.totalDaysInMonth())
         )
         val byDate = buildByDateMap(allSchedules, sortType)
 

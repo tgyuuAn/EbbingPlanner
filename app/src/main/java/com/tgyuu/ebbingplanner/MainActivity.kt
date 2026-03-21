@@ -50,26 +50,18 @@ import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.sync.network.NetworkMonitor
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModel()
 
-    @Inject
-    lateinit var navigationBus: NavigationBus
-
-    @Inject
-    lateinit var eventBus: EventBus
-
-    @Inject
-    lateinit var networkMonitor: NetworkMonitor
-
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
+    private val navigationBus: NavigationBus by inject()
+    private val eventBus: EventBus by inject()
+    private val networkMonitor: NetworkMonitor by inject()
+    private val analyticsHelper: AnalyticsHelper by inject()
 
     private var isInitialized = true
 

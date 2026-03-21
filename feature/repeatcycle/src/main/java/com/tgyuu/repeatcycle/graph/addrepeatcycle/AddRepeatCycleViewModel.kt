@@ -1,4 +1,4 @@
-package com.tgyuu.memo.graph.addmemo
+package com.tgyuu.repeatcycle.graph.addrepeatcycle
 
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -9,12 +9,9 @@ import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.datetime.DayOfWeek
-import javax.inject.Inject
 
-@HiltViewModel
-class AddRepeatCycleViewModel @Inject constructor(
+class AddRepeatCycleViewModel(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,

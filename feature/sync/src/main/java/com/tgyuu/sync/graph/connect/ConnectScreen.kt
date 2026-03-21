@@ -35,8 +35,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
@@ -46,7 +46,7 @@ import com.tgyuu.sync.graph.connect.contract.ConnectState
 import com.tgyuu.sync.graph.connect.ui.dialog.ConfirmConnectDialog
 
 @Composable
-internal fun ConnectRoute(viewModel: ConnectViewModel = hiltViewModel()) {
+internal fun ConnectRoute(viewModel: ConnectViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {

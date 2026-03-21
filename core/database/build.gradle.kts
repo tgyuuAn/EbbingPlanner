@@ -1,6 +1,6 @@
 plugins {
     id("ebbing.android.library")
-    id("ebbing.android.hilt")
+    alias(libs.plugins.ksp)
     id("androidx.room")
 }
 
@@ -21,5 +21,6 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.kotlinx.datetime)
+    implementation(libs.koin.android)
     androidTestImplementation(libs.androidx.room.testing)
 }

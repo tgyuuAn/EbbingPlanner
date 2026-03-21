@@ -112,7 +112,7 @@ private fun TodoHeader(
             .padding(horizontal = 20.dp, vertical = 8.dp)
     ) {
         val dateText = if (displayDate == LocalDate.now()) "오늘"
-        else "${displayDate.monthNumber}월 ${displayDate.day}일"
+        else "${displayDate.monthNumber}월 ${displayDate.dayOfMonth}일"
         Text(
             text = "$dateText  할 일 $count",
             style = EbbingTheme.typography.body16M,
@@ -185,7 +185,7 @@ private fun TodoPage(
         }
     } else {
         Text(
-            text = "${date.monthNumber}월 ${date.day}일 스케줄이 없어요.\n" +
+            text = "${date.monthNumber}월 ${date.dayOfMonth}일 스케줄이 없어요.\n" +
                     "우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
             style = EbbingTheme.typography.body14M,
             textAlign = TextAlign.Center,

@@ -7,9 +7,8 @@ import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import kotlinx.datetime.LocalDateTime
-import javax.inject.Inject
 
-class LocalRepeatCycleDataSourceImpl @Inject constructor(
+class LocalRepeatCycleDataSourceImpl constructor(
     private val repeatCyclesDao: RepeatCyclesDao,
 ) : LocalRepeatCycleDataSource {
     override suspend fun insertRepeatCycle(intervals: List<Int>): Long =

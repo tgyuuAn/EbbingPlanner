@@ -15,14 +15,11 @@ import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.TodoRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.coroutineScope
-import javax.inject.Inject
 
-@HiltViewModel
-class ScheduleViewModel @Inject constructor(
+class ScheduleViewModel(
     private val todoRepository: TodoRepository,
     private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {

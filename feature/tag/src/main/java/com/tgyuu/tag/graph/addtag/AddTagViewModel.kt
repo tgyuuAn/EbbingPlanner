@@ -1,38 +1,22 @@
 package com.tgyuu.tag.graph.addtag
 
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
 import com.tgyuu.tag.graph.addtag.contract.AddTagState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
-
-@HiltViewModel
-class AddTagViewModel @Inject constructor(
+class AddTagViewModel(
     private val todoRepository: TodoRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
-    private val analyticsHelper: AnalyticsHelper,
-) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
+) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState()) {
 
     override suspend fun processIntent(intent: AddTagIntent) {
         when (intent) {
-            AddTagIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTag", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            AddTagIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             is AddTagIntent.OnNameChange -> onNameChange(intent.name)
             is AddTagIntent.OnColorDropDownClick -> eventBus.sendEvent(
                 EbbingEvent.ShowBottomSheet(intent.content)
@@ -55,14 +39,6 @@ class AddTagViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "AddTag",
-                buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
-            )
-        )
-
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return

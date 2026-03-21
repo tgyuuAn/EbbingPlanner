@@ -15,13 +15,10 @@ import com.tgyuu.tag.graph.main.contract.TagIntent
 import com.tgyuu.tag.graph.main.contract.TagState
 import com.tgyuu.tag.model.toDomainModel
 import com.tgyuu.tag.model.toUiModels
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class TagViewModel @Inject constructor(
+class TagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,

@@ -22,9 +22,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
-import javax.inject.Inject
 
-class SyncRepositoryImpl @Inject constructor(
+class SyncRepositoryImpl constructor(
     private val syncDataSource: SyncDataSource,
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,

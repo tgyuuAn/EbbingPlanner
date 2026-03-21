@@ -7,9 +7,8 @@ import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import kotlinx.datetime.LocalDateTime
-import javax.inject.Inject
 
-class LocalTagDataSourceImpl @Inject constructor(
+class LocalTagDataSourceImpl constructor(
     private val todoTagsDao: TodoTagsDao,
 ) : LocalTagDataSource {
     override suspend fun insertTag(tag: TodoTag) = todoTagsDao.insertTag(tag.toEntity())

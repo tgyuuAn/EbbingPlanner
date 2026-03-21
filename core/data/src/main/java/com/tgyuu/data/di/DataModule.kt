@@ -4,33 +4,18 @@ import com.tgyuu.data.repository.ConfigRepositoryImpl
 import com.tgyuu.data.repository.ErrorRepositoryImpl
 import com.tgyuu.data.repository.SyncRepositoryImpl
 import com.tgyuu.data.repository.TodoRepositoryImpl
+import com.tgyuu.domain.model.Timer
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ErrorRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class DataModule {
-
-    @Binds
-    @Singleton
-    abstract fun bindTodoRepository(todoRepositoryImpl: TodoRepositoryImpl): TodoRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindConfigRepository(configRepositoryImpl: ConfigRepositoryImpl): ConfigRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindSyncRepository(syncRepositoryImpl: SyncRepositoryImpl): SyncRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindErrorRepository(errorRepositoryImpl: ErrorRepositoryImpl): ErrorRepository
+val dataModule = module {
+    single { TodoRepositoryImpl(get(), get(), get()) } bind TodoRepository::class
+    single { ConfigRepositoryImpl(get(), get()) } bind ConfigRepository::class
+    single { SyncRepositoryImpl(get(), get(), get(), get(), get(), get()) } bind SyncRepository::class
+    single { ErrorRepositoryImpl(get()) } bind ErrorRepository::class
+    single { Timer() }
 }

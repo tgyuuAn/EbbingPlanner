@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -34,7 +34,7 @@ import com.tgyuu.repeatcycle.ui.PreviewContent
 import com.tgyuu.repeatcycle.ui.RepeatCycleContent
 
 @Composable
-internal fun EditRepeatCycleRoute(viewModel: EditRepeatCycleViewModel = hiltViewModel()) {
+internal fun EditRepeatCycleRoute(viewModel: EditRepeatCycleViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     EditRepeatCycleScreen(

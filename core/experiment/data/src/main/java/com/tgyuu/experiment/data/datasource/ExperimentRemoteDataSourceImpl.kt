@@ -5,10 +5,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.tgyuu.experiment.data.BuildConfig
 import com.tgyuu.experiment.data.datasource.ExperimentRemoteDataSource
 import kotlinx.coroutines.suspendCancellableCoroutine
-import javax.inject.Inject
 import kotlin.coroutines.resume
 
-class ExperimentRemoteDataSourceImpl @Inject constructor(
+class ExperimentRemoteDataSourceImpl constructor(
     private val remoteConfig: FirebaseRemoteConfig,
 ) : ExperimentRemoteDataSource {
 

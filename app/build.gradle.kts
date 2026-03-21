@@ -69,6 +69,10 @@ dependencies {
     implementation(projects.core.alarm)
     implementation(projects.core.analytics)
     implementation(projects.core.inAppReview)
+    implementation(projects.core.inAppUpdate)
+    implementation(projects.core.database)
+    implementation(projects.core.datastore)
+    implementation(projects.core.network)
     implementation(projects.core.experiment.data)
 
     implementation(projects.feature.onboarding)
@@ -90,4 +94,9 @@ dependencies {
     implementation(libs.androidx.glance.appwidget.preview)
     implementation(libs.kotlinx.datetime)
     implementation(libs.gson)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
 }

@@ -1,9 +1,8 @@
 package com.tgyuu.analytics
 
 import android.util.Log
-import javax.inject.Inject
 
-class DebugAnalyticsHelper @Inject constructor(
+class DebugAnalyticsHelper constructor(
     private var userId: String = "",
 ) : AnalyticsHelper() {
     override fun logEvent(event: AnalyticsEvent) {

@@ -29,7 +29,6 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.TagGraph
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
@@ -38,12 +37,10 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toInstant
-import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-@HiltViewModel
-class AddTodoViewModel @Inject constructor(
+class AddTodoViewModel(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val experimentRepository: ExperimentRepository,
@@ -243,8 +240,8 @@ class AddTodoViewModel @Inject constructor(
                 val triggerAtMillis = schedule.run {
                     val dateTime = LocalDateTime(
                         year = this.year,
-                        month = this.monthNumber,
-                        day = this.day,
+                        monthNumber = this.monthNumber,
+                        dayOfMonth = this.dayOfMonth,
                         hour = hour,
                         minute = minute,
                         second = 0,

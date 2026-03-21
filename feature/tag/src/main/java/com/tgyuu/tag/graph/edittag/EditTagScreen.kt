@@ -27,8 +27,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
@@ -44,7 +44,7 @@ import com.tgyuu.tag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
 internal fun EditTagRoute(
-    viewModel: EditTagViewModel = hiltViewModel()
+    viewModel: EditTagViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

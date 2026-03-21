@@ -27,8 +27,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
@@ -45,7 +45,7 @@ import kotlinx.datetime.LocalDateTime
 
 @Composable
 internal fun SyncMainRoute(
-    viewModel: SyncMainViewModel = hiltViewModel(),
+    viewModel: SyncMainViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()

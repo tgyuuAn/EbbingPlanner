@@ -2,17 +2,17 @@ package com.tgyuu.designsystem.component.calendar
 
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.DayOfWeek.FRIDAY
-import kotlinx.datetime.DayOfWeek.MONDAY
-import kotlinx.datetime.DayOfWeek.SATURDAY
-import kotlinx.datetime.DayOfWeek.SUNDAY
-import kotlinx.datetime.DayOfWeek.THURSDAY
-import kotlinx.datetime.DayOfWeek.TUESDAY
-import kotlinx.datetime.DayOfWeek.WEDNESDAY
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
+import java.time.DayOfWeek.FRIDAY
+import java.time.DayOfWeek.MONDAY
+import java.time.DayOfWeek.SATURDAY
+import java.time.DayOfWeek.SUNDAY
+import java.time.DayOfWeek.THURSDAY
+import java.time.DayOfWeek.TUESDAY
+import java.time.DayOfWeek.WEDNESDAY
 
 val EbbingDayOfWeek = listOf(
     SUNDAY,
@@ -107,5 +107,5 @@ fun LocalDate.totalDaysInMonth(): Int {
     val nextMonth = this.plus(1, DateTimeUnit.MONTH).run { LocalDate(year, monthNumber, 1) }
     // 다음 달 1일에서 하루 빼기 = 이번 달 마지막 날
     val lastDayOfMonth = nextMonth.minus(1, DateTimeUnit.DAY)
-    return lastDayOfMonth.day
+    return lastDayOfMonth.dayOfMonth
 }

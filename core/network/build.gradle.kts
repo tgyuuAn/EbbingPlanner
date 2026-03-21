@@ -1,6 +1,5 @@
 plugins {
     id("ebbing.android.library")
-    id("ebbing.android.hilt")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -23,4 +22,5 @@ dependencies {
     implementation(libs.firebase.config)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.koin.core)
 }

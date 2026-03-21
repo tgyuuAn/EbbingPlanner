@@ -11,9 +11,8 @@ import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import javax.inject.Inject
 
-class LocalTodoDataSourceImpl @Inject constructor(
+class LocalTodoDataSourceImpl constructor(
     private val todoSchedulesDao: TodoSchedulesDao,
     private val todoWithSchedulesDao: TodoWithSchedulesDao,
 ) : LocalTodoDataSource {

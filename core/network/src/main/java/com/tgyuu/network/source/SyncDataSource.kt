@@ -29,9 +29,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.datetime.LocalDateTime
 import java.util.Date
-import javax.inject.Inject
 
-class SyncDataSource @Inject constructor(
+class SyncDataSource constructor(
     private val firestore: FirebaseFirestore,
 ) {
     suspend fun getSyncInfo(uuid: String): SyncInfoDto {

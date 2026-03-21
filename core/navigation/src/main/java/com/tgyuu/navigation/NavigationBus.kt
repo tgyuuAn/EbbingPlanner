@@ -3,11 +3,9 @@ package com.tgyuu.navigation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.receiveAsFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class NavigationBus @Inject constructor() {
+
+class NavigationBus constructor() {
     private val _navigationFlow = Channel<NavigationEvent>(BUFFERED)
     val navigationFlow = _navigationFlow.receiveAsFlow()
 
