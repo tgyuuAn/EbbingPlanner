@@ -19,9 +19,9 @@ class CalendarState(val originSelectedDate: LocalDate = LocalDate.now()) {
 
     companion object {
         val Saver: Saver<CalendarState, *> = listSaver(
-            save = { listOf(it.originSelectedDate) },
+            save = { listOf(it.originSelectedDate.toString()) },
             restore = {
-                CalendarState(originSelectedDate = it[0])
+                CalendarState(originSelectedDate = LocalDate.parse(it[0]))
             }
         )
     }

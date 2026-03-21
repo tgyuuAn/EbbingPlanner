@@ -3,9 +3,8 @@ package com.tgyuu.data.repository
 import com.tgyuu.network.source.error.ErrorDataSource
 import com.tgyuu.network.util.isTransportError
 import com.tgyuu.domain.repository.ErrorRepository
-import javax.inject.Inject
 
-class ErrorRepositoryImpl @Inject constructor(
+class ErrorRepositoryImpl constructor(
     private val errorDataSource: ErrorDataSource,
 ) : ErrorRepository {
     override suspend fun logError(exception: Throwable) {

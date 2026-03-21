@@ -30,7 +30,6 @@ import com.tgyuu.setting.graph.main.contract.AlarmMessageBottomSheetState
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingSideEffect
 import com.tgyuu.setting.graph.main.contract.SettingState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -38,11 +37,9 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
-@HiltViewModel
-class SettingViewModel @Inject constructor(
+class SettingViewModel(
     private val configRepository: ConfigRepository,
     private val syncRepository: SyncRepository,
     private val todoRepository: TodoRepository,
@@ -334,7 +331,7 @@ class SettingViewModel @Inject constructor(
                 LocalDateTime(
                     year = year,
                     month = month,
-                    day = day,
+                    dayOfMonth = dayOfMonth,
                     hour = h,
                     minute = m,
                 )

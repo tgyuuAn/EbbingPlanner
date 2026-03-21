@@ -21,23 +21,12 @@ import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.navigation.HomeGraph.AddTodoRoute
-import com.tgyuu.navigation.HomeGraph.EditDateRoute
-import com.tgyuu.navigation.HomeGraph.EditTodoRoute
-import com.tgyuu.navigation.MemoGraph
-import com.tgyuu.navigation.NavigationBus
-import com.tgyuu.navigation.NavigationEvent.To
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentHashSet
 import kotlinx.coroutines.coroutineScope
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 
-@HiltViewModel
-class ScheduleViewModel @Inject constructor(
+class ScheduleViewModel(
     private val todoRepository: TodoRepository,
     private val analyticsHelper: AnalyticsHelper,
     private val navigationBus: NavigationBus,

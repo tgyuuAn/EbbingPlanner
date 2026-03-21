@@ -39,7 +39,6 @@ internal fun CalendarBody(
     selectedDate: LocalDate?,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     onDateSelect: (LocalDate) -> Unit,
-    startFromMonday: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val bodyDescription = stringResource(R.string.ds_cd_calendar_body)
@@ -51,43 +50,10 @@ internal fun CalendarBody(
             .fillMaxWidth()
             .semantics { contentDescription = bodyDescription },
     ) {
-        getCalendarDates(currentDate, startFromMonday).chunked(7).forEach { week ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                week.forEach { calendarDate ->
-                    CalendarDayItem(
-                        calendarDate = calendarDate,
-                        selectedDate = selectedDate,
-                        events = schedulesByDateMap[calendarDate.date] ?: emptyList(),
-                        onDateSelect = onDateSelect,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun WeekCalendarBody(
-    weekReferenceDate: LocalDate,
-    selectedDate: LocalDate,
-    schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
-    onDateSelect: (LocalDate) -> Unit,
-    startFromMonday: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val weekBodyDescription = stringResource(R.string.ds_cd_calendar_week_body)
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .semantics { contentDescription = weekBodyDescription },
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        getWeekDates(weekReferenceDate, startFromMonday).forEach { calendarDate ->
+        items(
+            items = getCalendarDates(currentDate),
+            key = { it.date.toString() },
+        ) {
             CalendarDayItem(
                 calendarDate = calendarDate,
                 selectedDate = selectedDate,

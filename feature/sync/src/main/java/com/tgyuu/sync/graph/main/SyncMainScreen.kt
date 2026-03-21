@@ -40,12 +40,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
+import org.koin.androidx.compose.koinViewModel
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.util.clickable
@@ -65,7 +62,7 @@ import kotlinx.datetime.LocalDateTime
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun SyncMainRoute(
-    viewModel: SyncMainViewModel = hiltViewModel(),
+    viewModel: SyncMainViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()

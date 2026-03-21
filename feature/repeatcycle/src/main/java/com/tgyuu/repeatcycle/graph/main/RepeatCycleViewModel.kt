@@ -17,13 +17,10 @@ import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleState
 import com.tgyuu.repeatcycle.model.toDomainModel
 import com.tgyuu.repeatcycle.model.toUiModels
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class RepeatCycleViewModel @Inject constructor(
+class RepeatCycleViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,

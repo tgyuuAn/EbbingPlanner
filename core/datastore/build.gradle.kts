@@ -1,6 +1,5 @@
 plugins {
     id("ebbing.android.library")
-    id("ebbing.android.hilt")
 }
 
 android {
@@ -17,4 +16,5 @@ dependencies {
 
     implementation(libs.androidx.datastore)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.koin.android)
 }

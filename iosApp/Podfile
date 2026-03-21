@@ -1,0 +1,13 @@
+# Firebase is temporarily disabled due to gRPC compatibility issues
+# Uncomment when needed:
+#
+# platform :ios, '15.0'
+#
+# target 'iosApp' do
+#   use_frameworks!
+#
+#   pod 'FirebaseCore'
+#   pod 'FirebaseFirestore'
+#   pod 'FirebaseAnalytics'
+#   pod 'FirebaseCrashlytics'
+# end

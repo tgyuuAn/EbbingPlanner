@@ -51,9 +51,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.LocalAnalyticsHelper
@@ -85,7 +84,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
+internal fun ScheduleRoute(viewModel: ScheduleViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val analyticsHelper = LocalAnalyticsHelper.current
 

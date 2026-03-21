@@ -13,11 +13,9 @@ import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Named
 
-class LocalUserConfigDataSourceImpl @Inject constructor(
-    @Named("config") private val dataStore: DataStore<Preferences>,
+class LocalUserConfigDataSourceImpl(
+    private val dataStore: DataStore<Preferences>,
 ) : LocalUserConfigDataSource {
     override val clearSyncFlag: Flow<Boolean>
         get() = dataStore.data

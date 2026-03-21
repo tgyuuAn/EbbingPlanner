@@ -1,7 +1,5 @@
 package com.tgyuu.tag.graph.addtag
 
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -12,34 +10,15 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
 import com.tgyuu.tag.graph.addtag.contract.AddTagState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-
-@HiltViewModel
-class AddTagViewModel @Inject constructor(
+class AddTagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState()) {
-
-    init {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.View(
-                screenName = "AddTag",
-            )
-        )
-    }
 
     override suspend fun processIntent(intent: AddTagIntent) {
         when (intent) {
-            AddTagIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTag", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            AddTagIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             is AddTagIntent.OnNameChange -> onNameChange(intent.name)
             is AddTagIntent.OnColorDropDownClick -> eventBus.sendEvent(
                 EbbingEvent.ShowBottomSheet(intent.content)
@@ -62,13 +41,6 @@ class AddTagViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "AddTag",
-                buttonName = "Save",
-            )
-        )
-
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_required_fields)))
             return

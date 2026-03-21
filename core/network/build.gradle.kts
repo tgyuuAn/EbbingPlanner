@@ -2,7 +2,6 @@ import java.util.Properties
 
 plugins {
     id("ebbing.android.library")
-    id("ebbing.android.hilt")
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -32,6 +31,5 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.firebase.config)
     implementation(libs.firebase.storage)
-    implementation(libs.supabase.postgrest)
-    implementation(libs.ktor.client.android)
+    implementation(libs.koin.core)
 }

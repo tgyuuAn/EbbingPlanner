@@ -1,7 +1,6 @@
-@file:OptIn(ExperimentalTime::class)
-
 package com.tgyuu.common
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -11,8 +10,6 @@ import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.absoluteValue
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * 현재 시스템 날짜/시간 가져오기
@@ -26,18 +23,18 @@ fun LocalDateTime.Companion.now(): LocalDateTime =
 fun LocalDate.copy(
     year: Int = this.year,
     month: Int = this.monthNumber,
-    day: Int = this.day,
-): LocalDate = LocalDate(year, month, day)
+    dayOfMonth: Int = this.dayOfMonth,
+): LocalDate = LocalDate(year, month, dayOfMonth)
 
 fun LocalDateTime.copy(
     year: Int = this.year,
     month: Int = this.monthNumber,
-    day: Int = this.day,
+    dayOfMonth: Int = this.dayOfMonth,
     hour: Int = this.hour,
     minute: Int = this.minute,
     second: Int = this.second,
     nanoSecond: Int = this.nanosecond,
-): LocalDateTime = LocalDateTime(year, month, day, hour, minute, second, nanoSecond)
+): LocalDateTime = LocalDateTime(year, month, dayOfMonth, hour, minute, second, nanoSecond)
 
 
 /**
@@ -46,7 +43,7 @@ fun LocalDateTime.copy(
 fun LocalDate.toFormattedString(): String {
     return "${year.toString().padStart(4, '0')}-${
         month.number.toString().padStart(2, '0')
-    }-${day.toString().padStart(2, '0')}"
+    }-${dayOfMonth.toString().padStart(2, '0')}"
 }
 
 /**
@@ -66,7 +63,7 @@ fun String.toLocalDateOrThrow(): LocalDate {
 fun LocalDateTime.toFormattedString(): String {
     return "${year.toString().padStart(4, '0')}-${
         month.number.toString().padStart(2, '0')
-    }-${day.toString().padStart(2, '0')} " +
+    }-${dayOfMonth.toString().padStart(2, '0')} " +
             "${hour.toString().padStart(2, '0')}:${
                 minute.toString().padStart(2, '0')
             }:${second.toString().padStart(2, '0')}"
@@ -74,10 +71,13 @@ fun LocalDateTime.toFormattedString(): String {
 
 /**
  * 문자열 -> LocalDateTime 변환
+ * "yyyy-MM-dd HH:mm:ss" 또는 ISO-8601 "yyyy-MM-ddTHH:mm:ss" 형식 지원
  */
 fun String.toLocalDateTimeOrThrow(): LocalDateTime {
     return try {
-        LocalDateTime.parse(this)
+        // DB에 저장된 형식("yyyy-MM-dd HH:mm:ss")을 ISO-8601 형식으로 변환
+        val isoFormatted = this.replace(' ', 'T')
+        LocalDateTime.parse(isoFormatted)
     } catch (e: Exception) {
         throw IllegalArgumentException("날짜 시간 형식이 올바르지 않습니다: $this", e)
     }

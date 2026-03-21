@@ -2,8 +2,6 @@ package com.tgyuu.repeatcycle.graph.editrepeatcycle
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -15,19 +13,14 @@ import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EditRepeatCycleViewModel @Inject constructor(
+class EditRepeatCycleViewModel(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
-    private val resourceProvider: ResourceProvider,
-) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState(resourceProvider = resourceProvider)) {
+) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState()) {
 
     init {
         analyticsHelper.logEvent(
@@ -54,12 +47,7 @@ class EditRepeatCycleViewModel @Inject constructor(
     override suspend fun processIntent(intent: EditRepeatCycleIntent) {
         when (intent) {
             is EditRepeatCycleIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            EditRepeatCycleIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "EditRepeatCycle", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            EditRepeatCycleIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             EditRepeatCycleIntent.OnUpdateClick -> updateRepeatCycle()
         }
     }
@@ -71,13 +59,6 @@ class EditRepeatCycleViewModel @Inject constructor(
     }
 
     private suspend fun updateRepeatCycle() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "EditRepeatCycle",
-                buttonName = "Save",
-            )
-        )
-
         if (currentState.intervals.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_required)))
             return

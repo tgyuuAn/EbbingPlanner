@@ -5,23 +5,29 @@ import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.common.initializer.Initializer
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.common.util.MemoryAnimationController
-import dagger.hilt.android.HiltAndroidApp
+import com.tgyuu.ebbingplanner.di.appModules
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
-@HiltAndroidApp
 class EbbingPlannerApplication : Application() {
     private val applicationScope = MainScope()
 
-    @Inject
-    lateinit var notificationHelper: NotificationHelper
-
-    @Inject
-    lateinit var initializers: Set<@JvmSuppressWildcards Initializer>
+    private val notificationHelper: NotificationHelper by inject()
+    private val initializers: Set<Initializer> by inject()
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@EbbingPlannerApplication)
+            modules(appModules)
+        }
+
         notificationHelper.createNotificationChannel(this)
         initialize()
     }

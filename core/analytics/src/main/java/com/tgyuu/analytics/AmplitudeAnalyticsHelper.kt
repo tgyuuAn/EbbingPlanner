@@ -2,10 +2,8 @@ package com.tgyuu.analytics
 
 import com.amplitude.android.Amplitude
 import com.amplitude.core.events.BaseEvent
-import com.tgyuu.deviceinfo.DeviceInfoProvider
-import javax.inject.Inject
 
-class AmplitudeAnalyticsHelper @Inject constructor(
+class AmplitudeAnalyticsHelper constructor(
     private val amplitude: Amplitude,
     private val deviceInfoProvider: DeviceInfoProvider,
 ) : AnalyticsHelper() {

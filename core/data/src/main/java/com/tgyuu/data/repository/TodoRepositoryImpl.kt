@@ -15,9 +15,8 @@ import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import javax.inject.Inject
 
-class TodoRepositoryImpl @Inject constructor(
+class TodoRepositoryImpl constructor(
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
     private val localRepeatCycleDataSource: LocalRepeatCycleDataSource,

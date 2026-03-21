@@ -1,8 +1,6 @@
 package com.tgyuu.setting.graph.widget
 
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -15,21 +13,14 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.setting.graph.widget.contract.WidgetIntent
 import com.tgyuu.setting.graph.widget.contract.WidgetState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class WidgetViewModel @Inject constructor(
+class WidgetViewModel(
     private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
-) : BaseViewModel<WidgetState, WidgetIntent>(
-    WidgetState()
-) {
+) : BaseViewModel<WidgetState, WidgetIntent>(WidgetState()) {
 
     init {
         analyticsHelper.logEvent(
@@ -41,12 +32,7 @@ class WidgetViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: WidgetIntent) {
         when (intent) {
-            WidgetIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Widget", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            WidgetIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             WidgetIntent.OnSaveClick -> saveWidgetConfigure()
             is WidgetIntent.OnBackgroundAlphaChange -> setBackgroundAlpha(intent.alpha)
             is WidgetIntent.OnTextAlphaChange -> setTextAlpha(intent.alpha)
@@ -97,13 +83,6 @@ class WidgetViewModel @Inject constructor(
     }
 
     private fun saveWidgetConfigure() = viewModelScope.launch {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "Widget",
-                buttonName = "Apply",
-            )
-        )
-
         currentState.selectedBackgroundAlpha ?: return@launch
         currentState.selectedTextAlpha ?: return@launch
         currentState.selectedTheme ?: return@launch

@@ -1,0 +1,51 @@
+name: EbbingPlanner
+options:
+  bundleIdPrefix: com.tgyuu
+  deploymentTarget:
+    iOS: "15.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+        excludes:
+          - "**/*.xcodeproj"
+          - "**/*.xcworkspace"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tgyuu.ebbingplanner
+        INFOPLIST_FILE: iosApp/Info.plist
+        PRODUCT_NAME: EbbingPlanner
+        SWIFT_VERSION: "5.9"
+        ENABLE_PREVIEWS: YES
+        FRAMEWORK_SEARCH_PATHS:
+          - "$(inherited)"
+          - "$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework"
+          - "$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework"
+        OTHER_LDFLAGS:
+          - "$(inherited)"
+          - "-framework"
+          - "shared"
+    dependencies:
+      - framework: ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework
+        embed: true
+        codeSign: false
+    preBuildScripts:
+      - name: "Build Shared Framework"
+        script: |
+          cd "$SRCROOT/.."
+          if [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
+            ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+          else
+            ./gradlew :shared:linkDebugFrameworkIosArm64
+          fi
+        basedOnDependencyAnalysis: false

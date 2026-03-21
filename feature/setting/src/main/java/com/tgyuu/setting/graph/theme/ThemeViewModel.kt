@@ -1,8 +1,6 @@
 package com.tgyuu.setting.graph.theme
 
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -15,21 +13,14 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ThemeViewModel @Inject constructor(
+class ThemeViewModel(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
-) : BaseViewModel<ThemeState, ThemeIntent>(
-    ThemeState()
-) {
+) : BaseViewModel<ThemeState, ThemeIntent>(ThemeState()) {
 
     init {
         analyticsHelper.logEvent(
@@ -52,12 +43,7 @@ class ThemeViewModel @Inject constructor(
     override suspend fun processIntent(intent: ThemeIntent) {
         when (intent) {
             is ThemeIntent.OnThemeChange -> setTheme(intent.theme)
-            ThemeIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Theme", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            ThemeIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             ThemeIntent.OnUpdateClick -> updateTheme()
         }
     }
@@ -67,13 +53,6 @@ class ThemeViewModel @Inject constructor(
     }
 
     private fun updateTheme() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "Theme",
-                buttonName = "Apply",
-            )
-        )
-
         viewModelScope.launch {
             currentState.selectTheme?.let { select ->
                 suspendRunCatching {

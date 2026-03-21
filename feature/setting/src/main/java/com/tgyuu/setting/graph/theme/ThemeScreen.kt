@@ -35,8 +35,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
@@ -68,7 +68,7 @@ import com.tgyuu.setting.graph.ui.animateEbbingColors
 import java.time.LocalDate
 
 @Composable
-internal fun ThemeRoute(viewModel: ThemeViewModel = hiltViewModel()) {
+internal fun ThemeRoute(viewModel: ThemeViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {

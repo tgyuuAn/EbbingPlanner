@@ -19,23 +19,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.designsystem.R
-import com.tgyuu.memo.graph.addmemo.AddRepeatCycleViewModel
+import com.tgyuu.repeatcycle.graph.addrepeatcycle.AddRepeatCycleViewModel
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.ui.PreviewContent
 import com.tgyuu.repeatcycle.ui.RepeatCycleContent
 
 @Composable
-internal fun AddRepeatCycleRoute(viewModel: AddRepeatCycleViewModel = hiltViewModel()) {
+internal fun AddRepeatCycleRoute(viewModel: AddRepeatCycleViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AddRepeatCycleScreen(
