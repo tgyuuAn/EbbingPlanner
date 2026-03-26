@@ -70,19 +70,19 @@ struct TagRowView: View {
 struct AddTagView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var tagName = ""
-    @State private var selectedColor: Int32 = 0xFFBBE1FA
+    @State private var selectedColor: Int32 = Int32(bitPattern: 0xFFBBE1FA)
 
     let onAdd: (String, Int32) -> Void
 
     private let colors: [Int32] = [
-        0xFFBBE1FA, // Blue
-        0xFFFFB6C1, // Pink
-        0xFF98FB98, // Green
-        0xFFFFD700, // Gold
-        0xFFDDA0DD, // Plum
-        0xFFFFA07A, // Salmon
-        0xFF87CEEB, // Sky Blue
-        0xFFE6E6FA, // Lavender
+        Int32(bitPattern: 0xFFBBE1FA), // Blue
+        Int32(bitPattern: 0xFFFFB6C1), // Pink
+        Int32(bitPattern: 0xFF98FB98), // Green
+        Int32(bitPattern: 0xFFFFD700), // Gold
+        Int32(bitPattern: 0xFFDDA0DD), // Plum
+        Int32(bitPattern: 0xFFFFA07A), // Salmon
+        Int32(bitPattern: 0xFF87CEEB), // Sky Blue
+        Int32(bitPattern: 0xFFE6E6FA), // Lavender
     ]
 
     var body: some View {
