@@ -5,7 +5,7 @@ struct SettingView: View {
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
 
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
                 Section("알림") {
                     Toggle("알림 활성화", isOn: $notificationEnabled)

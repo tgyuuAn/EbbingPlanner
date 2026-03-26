@@ -4,7 +4,11 @@ import shared
 @MainActor
 class HomeViewModel: ObservableObject {
     @Published var currentDisplayDate = Date()
-    @Published var selectedDate = Date()
+    @Published var selectedDate = Date() {
+        didSet {
+            updateSelectedDateSchedules()
+        }
+    }
     @Published var schedulesByDate: [Date: [TodoScheduleWrapper]] = [:]
     @Published var selectedDateSchedules: [TodoScheduleWrapper] = []
 
@@ -48,6 +52,7 @@ class HomeViewModel: ObservableObject {
     func toggleScheduleDone(schedule: TodoScheduleWrapper) {
         Task {
             do {
+                let now = currentKotlinxLocalDateTime()
                 // Update in database
                 try await koinHelper.todoWithSchedulesDao.updateSchedule(
                     id: schedule.id,
@@ -55,7 +60,7 @@ class HomeViewModel: ObservableObject {
                     memo: schedule.memo,
                     priority: schedule.priority,
                     isDone: !schedule.isDone,
-                    updatedAt: DateUtilKt.now(Kotlinx_datetimeLocalDateTime.companion)
+                    updatedAt: now
                 )
 
                 // Reload schedules

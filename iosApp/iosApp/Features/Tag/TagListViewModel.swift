@@ -6,10 +6,10 @@ struct TodoTagWrapper: Identifiable {
     let name: String
     let color: Int32
 
-    init(from tag: TodoTag) {
-        self.id = tag.id
-        self.name = tag.name
-        self.color = tag.color
+    init(from entity: TodoTagEntity) {
+        self.id = entity.id
+        self.name = entity.name
+        self.color = entity.color
     }
 }
 
@@ -21,7 +21,7 @@ class TagListViewModel: ObservableObject {
 
     func loadTags() async {
         do {
-            let tagEntities = try await koinHelper.tagsDao.loadAllTags()
+            let tagEntities = try await koinHelper.tagsDao.getTags()
             tags = tagEntities.map { TodoTagWrapper(from: $0) }
         } catch {
             print("Failed to load tags: \(error)")
@@ -31,16 +31,17 @@ class TagListViewModel: ObservableObject {
     func addTag(name: String, color: Int32) {
         Task {
             do {
-                _ = try await koinHelper.tagsDao.insertTag(
-                    tag: TodoTagEntity(
-                        id: 0, // Auto-generated
-                        name: name,
-                        color: color,
-                        createdAt: DateUtilKt.now(Kotlinx_datetimeLocalDate.companion),
-                        updatedAt: DateUtilKt.now(Kotlinx_datetimeLocalDateTime.companion),
-                        isDeleted: false
-                    )
+                let now = currentKotlinxLocalDateTime()
+                let today = currentKotlinxLocalDate()
+                let entity = TodoTagEntity(
+                    id: 0,
+                    name: name,
+                    color: color,
+                    createdAt: today,
+                    isDeleted: false,
+                    updatedAt: now
                 )
+                _ = try await koinHelper.tagsDao.insertTag(tag: entity)
                 await loadTags()
             } catch {
                 print("Failed to add tag: \(error)")
@@ -53,10 +54,8 @@ class TagListViewModel: ObservableObject {
             for index in indexSet {
                 let tag = tags[index]
                 do {
-                    try await koinHelper.tagsDao.softDeleteTag(
-                        id: tag.id,
-                        updatedAt: DateUtilKt.now(Kotlinx_datetimeLocalDateTime.companion)
-                    )
+                    let now = currentKotlinxLocalDateTime()
+                    try await koinHelper.tagsDao.softDeleteTag(tagId: tag.id, updatedAt: now)
                 } catch {
                     print("Failed to delete tag: \(error)")
                 }

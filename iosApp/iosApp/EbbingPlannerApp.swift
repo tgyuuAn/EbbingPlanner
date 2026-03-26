@@ -5,7 +5,7 @@ import shared
 struct EbbingPlannerApp: App {
     init() {
         // Initialize Koin
-        IosModuleKt.initKoin()
+        IosModuleKt.doInitKoin()
     }
 
     var body: some Scene {
