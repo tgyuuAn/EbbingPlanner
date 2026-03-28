@@ -92,7 +92,7 @@ interface TodoWithSchedulesDao {
     )
 
     @Query(
-        """ 
+        """
         UPDATE schedule
         SET date = :date, memo = :memo, priority = :priority, isDone = :isDone, updatedAt = :updatedAt
         WHERE id = :id AND isDeleted = 0
@@ -106,4 +106,27 @@ interface TodoWithSchedulesDao {
         isDone: Boolean,
         updatedAt: LocalDateTime = LocalDateTime.now(),
     )
+
+    @Transaction
+    suspend fun updateSchedules(schedules: List<ScheduleUpdateParams>) {
+        val now = LocalDateTime.now()
+        schedules.forEach { params ->
+            updateSchedule(
+                id = params.id,
+                date = params.date,
+                memo = params.memo,
+                priority = params.priority,
+                isDone = params.isDone,
+                updatedAt = now,
+            )
+        }
+    }
 }
+
+data class ScheduleUpdateParams(
+    val id: Int,
+    val date: LocalDate,
+    val memo: String,
+    val priority: Int,
+    val isDone: Boolean,
+)

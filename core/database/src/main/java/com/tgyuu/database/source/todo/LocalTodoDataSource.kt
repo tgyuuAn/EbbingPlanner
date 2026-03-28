@@ -47,6 +47,7 @@ interface LocalTodoDataSource {
     suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync)
     suspend fun updateSchedule(todoSchedule: TodoSchedule)
     suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync)
+    suspend fun updateSchedules(schedules: List<TodoSchedule>)
 
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)
     suspend fun softDeleteTodoByTodoInfo(id: Int)
