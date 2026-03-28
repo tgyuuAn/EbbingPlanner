@@ -34,10 +34,20 @@ import com.tgyuu.memo.graph.addmemo.contract.AddMemoIntent
 import com.tgyuu.memo.graph.addmemo.contract.AddMemoState
 import com.tgyuu.memo.ui.MemoContent
 import com.tgyuu.memo.ui.PreviewContent
+import com.tgyuu.memo.ui.dialog.SaveMemoDialog
 
 @Composable
 internal fun AddMemoRoute(viewModel: AddMemoViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    if (state.showSaveDialog) {
+        SaveMemoDialog(
+            relatedCount = state.relatedScheduleCount,
+            onDismissRequest = { viewModel.onIntent(AddMemoIntent.OnDismissSaveDialog) },
+            onSaveToAllClick = { viewModel.onIntent(AddMemoIntent.OnSaveToAllRelatedClick) },
+            onSaveToSingleClick = { viewModel.onIntent(AddMemoIntent.OnSaveToSingleClick) },
+        )
+    }
 
     AddMemoScreen(
         state = state,

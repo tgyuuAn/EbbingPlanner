@@ -6,4 +6,7 @@ sealed interface EditMemoIntent : UiIntent {
     data object OnBackClick : EditMemoIntent
     data class OnMemoChange(val memo: String) : EditMemoIntent
     data object OnUpdateClick : EditMemoIntent
+    data object OnDismissSaveDialog : EditMemoIntent
+    data object OnSaveToAllRelatedClick : EditMemoIntent
+    data object OnSaveToSingleClick : EditMemoIntent
 }
