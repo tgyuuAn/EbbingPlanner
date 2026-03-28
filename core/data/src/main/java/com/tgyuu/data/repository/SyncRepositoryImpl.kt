@@ -187,7 +187,7 @@ class SyncRepositoryImpl @Inject constructor(
 
         response.todoInfos.forEach { dto ->
             val todoInfo = dto.toDomain()
-            val local = localTodoDataSource.getTodoScheduleEntity(todoInfo.id)
+            val local = localTodoDataSource.getTodoInfoEntity(todoInfo.id)
 
             if (local == null) {
                 localTodoDataSource.insertTodoInfo(todoInfo)

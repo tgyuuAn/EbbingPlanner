@@ -12,6 +12,7 @@ import com.tgyuu.network.model.sync.ConnectDto
 import com.tgyuu.network.model.sync.RepeatCycleDto
 import com.tgyuu.network.model.sync.SyncDataDto
 import com.tgyuu.network.model.sync.SyncInfoDto
+import com.tgyuu.network.FirestoreBatchHelper
 import com.tgyuu.network.model.sync.TodoInfoDto
 import com.tgyuu.network.model.sync.TodoScheduleDto
 import com.tgyuu.network.model.sync.TodoTagDto
@@ -49,41 +50,46 @@ class SyncDataSource @Inject constructor(
         tags: List<TodoTagForSync>,
     ): ZonedDateTime = coroutineScope {
         val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
+        val batchHelper = FirestoreBatchHelper(firestore)
 
         val schedulesJob = launch {
-            schedules.forEach { schedule ->
-                userDoc.collection(COLLECTION_SCHEDULES)
-                    .document(schedule.id.toString())
-                    .set(schedule.toDto())
-                    .await()
-            }
+            batchHelper.batchSet(
+                items = schedules,
+                documentRefProvider = { schedule ->
+                    userDoc.collection(COLLECTION_SCHEDULES).document(schedule.id.toString())
+                },
+                dataProvider = { it.toDto() }
+            )
         }
 
         val todoInfosJob = launch {
-            infos.forEach { info ->
-                userDoc.collection(COLLECTION_TODO_INFOS)
-                    .document(info.id.toString())
-                    .set(info.toDto())
-                    .await()
-            }
+            batchHelper.batchSet(
+                items = infos,
+                documentRefProvider = { info ->
+                    userDoc.collection(COLLECTION_TODO_INFOS).document(info.id.toString())
+                },
+                dataProvider = { it.toDto() }
+            )
         }
 
         val repeatCyclesJob = launch {
-            repeatCycles.forEach { repeat ->
-                userDoc.collection(COLLECTION_REPEAT_CYCLES)
-                    .document(repeat.id.toString())
-                    .set(repeat)
-                    .await()
-            }
+            batchHelper.batchSet(
+                items = repeatCycles,
+                documentRefProvider = { repeat ->
+                    userDoc.collection(COLLECTION_REPEAT_CYCLES).document(repeat.id.toString())
+                },
+                dataProvider = { it.toDto() }
+            )
         }
 
         val tagsJob = launch {
-            tags.forEach { tag ->
-                userDoc.collection(COLLECTION_TAGS)
-                    .document(tag.id.toString())
-                    .set(tag.toDto())
-                    .await()
-            }
+            batchHelper.batchSet(
+                items = tags,
+                documentRefProvider = { tag ->
+                    userDoc.collection(COLLECTION_TAGS).document(tag.id.toString())
+                },
+                dataProvider = { it.toDto() }
+            )
         }
 
         repeatCyclesJob.join()
