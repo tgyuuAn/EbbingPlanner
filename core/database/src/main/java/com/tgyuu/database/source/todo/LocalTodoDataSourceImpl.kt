@@ -2,6 +2,7 @@ package com.tgyuu.database.source.todo
 
 import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
+import com.tgyuu.database.model.TodoInfoEntity
 import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoInfo
@@ -42,6 +43,9 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getTodoScheduleEntity(id: Int): TodoScheduleEntity? =
         todoSchedulesDao.loadTodoScheduleEntity(id)
+
+    override suspend fun getTodoInfoEntity(id: Int): TodoInfoEntity? =
+        todoSchedulesDao.loadTodoInfoEntity(id)
 
     override suspend fun insertSchedule(scheduleForSync: TodoScheduleForSync) =
         todoSchedulesDao.insertTodoSchedule(scheduleForSync.toEntity())

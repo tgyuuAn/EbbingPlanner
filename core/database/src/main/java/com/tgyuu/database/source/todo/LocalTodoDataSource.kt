@@ -1,5 +1,6 @@
 package com.tgyuu.database.source.todo
 
+import com.tgyuu.database.model.TodoInfoEntity
 import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
@@ -23,6 +24,7 @@ interface LocalTodoDataSource {
     fun subscribeTodoSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>>
 
     suspend fun getTodoScheduleEntity(id: Int): TodoScheduleEntity?
+    suspend fun getTodoInfoEntity(id: Int): TodoInfoEntity?
 
     suspend fun insertSchedule(scheduleForSync: TodoScheduleForSync)
     suspend fun insertTodoInfo(todoInfoForSync: TodoInfoForSync)
