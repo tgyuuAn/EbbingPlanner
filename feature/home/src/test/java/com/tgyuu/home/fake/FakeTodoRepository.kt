@@ -163,6 +163,10 @@ class FakeTodoRepository : TodoRepository {
         }
     }
 
+    override suspend fun updateTodos(todoSchedules: List<TodoSchedule>) {
+        todoSchedules.forEach { updateTodo(it) }
+    }
+
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) {
         schedules.removeIf { it.id == todoSchedule.id }
     }
