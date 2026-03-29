@@ -103,7 +103,7 @@ class SyncMainViewModel @Inject constructor(
             }
         }.onFailure { error ->
             errorBus.sendError(error)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("동기화에 실패하였습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(error.message ?: "동기화에 실패하였습니다."))
         }.also {
             setState { copy(isNetworkLoading = false) }
         }
