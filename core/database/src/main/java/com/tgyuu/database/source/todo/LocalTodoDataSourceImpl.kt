@@ -1,5 +1,6 @@
 package com.tgyuu.database.source.todo
 
+import com.tgyuu.database.dao.ScheduleUpdateParams
 import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
 import com.tgyuu.database.model.TodoInfoEntity
@@ -94,6 +95,19 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync) =
         todoSchedulesDao.updateTodoSchedule(todoScheduleForSync.toEntity())
+
+    override suspend fun updateSchedules(schedules: List<TodoSchedule>) =
+        todoWithSchedulesDao.updateSchedules(
+            schedules.map { schedule ->
+                ScheduleUpdateParams(
+                    id = schedule.id,
+                    date = schedule.date,
+                    memo = schedule.memo,
+                    priority = schedule.priority,
+                    isDone = schedule.isDone,
+                )
+            }
+        )
 
     override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
         todoWithSchedulesDao.updateInfo(

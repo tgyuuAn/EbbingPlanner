@@ -30,8 +30,14 @@ class AddMemoViewModel @Inject constructor(
 
         viewModelScope.launch {
             val originSchedule = todoRepository.loadSchedule(scheduleId)
+            val relatedSchedules = todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId)
 
-            setState { copy(originSchedule = originSchedule) }
+            setState {
+                copy(
+                    originSchedule = originSchedule,
+                    relatedScheduleCount = relatedSchedules.size,
+                )
+            }
         }
     }
 
@@ -39,7 +45,10 @@ class AddMemoViewModel @Inject constructor(
         when (intent) {
             is AddMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
             AddMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            AddMemoIntent.OnSaveClick -> saveMemo()
+            AddMemoIntent.OnSaveClick -> onSaveClick()
+            AddMemoIntent.OnDismissSaveDialog -> dismissSaveDialog()
+            AddMemoIntent.OnSaveToAllRelatedClick -> saveMemoToAllRelated()
+            AddMemoIntent.OnSaveToSingleClick -> saveMemoToSingle()
         }
     }
 
@@ -47,19 +56,47 @@ class AddMemoViewModel @Inject constructor(
         setState { copy(memo = memo) }
     }
 
-    private suspend fun saveMemo() {
+    private suspend fun onSaveClick() {
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return
         }
 
-        todoRepository.updateTodo(
-            currentState.originSchedule?.copy(memo = currentState.memo) ?: return
-        )
+        if (currentState.relatedScheduleCount <= 1) {
+            saveMemoToSingle()
+        } else {
+            setState { copy(showSaveDialog = true) }
+        }
+    }
+
+    private fun dismissSaveDialog() {
+        setState { copy(showSaveDialog = false) }
+    }
+
+    private suspend fun saveMemoToSingle() {
+        setState { copy(showSaveDialog = false) }
+        val schedule = currentState.originSchedule ?: return
+        todoRepository.updateTodo(schedule.copy(memo = currentState.memo))
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 추가하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
-                route = HomeRoute(currentState.originSchedule!!.date.toFormattedString()),
+                route = HomeRoute(schedule.date.toFormattedString()),
+                popUpTo = true,
+            )
+        )
+    }
+
+    private suspend fun saveMemoToAllRelated() {
+        setState { copy(showSaveDialog = false) }
+        val originSchedule = currentState.originSchedule ?: return
+        val relatedSchedules = todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId)
+
+        todoRepository.updateTodos(relatedSchedules.map { it.copy(memo = currentState.memo) })
+
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("현재 일정 포함 ${relatedSchedules.size}개에 메모를 추가하였습니다"))
+        navigationBus.navigate(
+            NavigationEvent.To(
+                route = HomeRoute(originSchedule.date.toFormattedString()),
                 popUpTo = true,
             )
         )
