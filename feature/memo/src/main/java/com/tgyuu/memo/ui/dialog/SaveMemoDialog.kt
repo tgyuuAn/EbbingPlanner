@@ -15,14 +15,14 @@ internal fun SaveMemoDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "메모 저장 방법을 선택해주세요",
-                subText = "관련 일정에 모두 추가하거나\n선택한 일정에만 추가할 수 있습니다."
+                title = "메모 저장 범위를 선택하세요",
+                subText = "한 일정만 또는 관련 일정 전체에\n저장할 수 있어요"
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "선택한 일정에만",
-                rightButtonText = "관련 일정 ${relatedCount}개 모두",
+                leftButtonText = "선택한 일정만",
+                rightButtonText = "관련 일정 모두 (${relatedCount}개)",
                 onLeftButtonClick = onSaveToSingleClick,
                 onRightButtonClick = onSaveToAllClick,
             )
