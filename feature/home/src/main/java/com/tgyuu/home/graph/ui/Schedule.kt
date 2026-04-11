@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,15 +39,16 @@ internal fun ScheduleContent(
                 modifier = Modifier.padding(top = 32.dp),
             )
 
-            Column(
+            LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(max = 400.dp)
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(EbbingTheme.colors.light3)
             ) {
-                schedules.forEachIndexed { idx, item ->
+                itemsIndexed(schedules) { idx, item ->
                     ScheduleCard(
                         idx = idx + 1,
                         schedule = item,
@@ -113,15 +117,16 @@ internal fun ScheduleCheckContent(
 
             )
 
-            Column(
+            LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(max = 400.dp)
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(EbbingTheme.colors.light3)
             ) {
-                schedules.forEachIndexed { idx, item ->
+                itemsIndexed(schedules) { idx, item ->
                     ScheduleCheckCard(
                         idx = idx + 1,
                         isChecked = isDoneSchedules[idx],

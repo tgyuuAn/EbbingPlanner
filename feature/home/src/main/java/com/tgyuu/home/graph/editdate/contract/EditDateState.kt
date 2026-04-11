@@ -2,8 +2,10 @@ package com.tgyuu.home.graph.editdate.contract
 
 import androidx.compose.runtime.Immutable
 import com.tgyuu.common.base.UiState
+import com.tgyuu.common.generateDailySchedules
 import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
+import com.tgyuu.domain.model.RepeatCycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -22,10 +24,18 @@ data class EditDateState(
 ) : UiState {
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
-            generateValidSchedules(
-                baseDate = selectedDate,
-                intervals = it.intervals.toList(),
-                restDays = restDays.toSet()
-            )
+            if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
+                generateDailySchedules(
+                    baseDate = selectedDate,
+                    intervals = it.intervals.toList(),
+                    restDays = restDays.toSet()
+                )
+            } else {
+                generateValidSchedules(
+                    baseDate = selectedDate,
+                    intervals = it.intervals.toList(),
+                    restDays = restDays.toSet()
+                )
+            }
         } ?: emptyList()
 }

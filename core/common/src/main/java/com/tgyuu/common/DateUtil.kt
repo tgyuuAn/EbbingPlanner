@@ -70,6 +70,16 @@ fun generateValidSchedules(
     }
 }
 
+fun generateDailySchedules(
+    baseDate: LocalDate,
+    intervals: List<Int>,
+    restDays: Set<DayOfWeek>
+): List<LocalDate> {
+    return intervals
+        .map { interval -> baseDate.plusDays(interval.toLong()) }
+        .filter { date -> date.dayOfWeek !in restDays }
+}
+
 private fun LocalDate.nextValidDate(restDays: Set<DayOfWeek>): LocalDate {
     var date = this
     while (date.dayOfWeek in restDays) {

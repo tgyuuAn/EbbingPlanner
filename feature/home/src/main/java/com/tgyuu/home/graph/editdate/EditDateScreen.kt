@@ -16,7 +16,9 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +55,7 @@ internal fun EditDateRoute(
     viewModel: EditDateViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var repeatCycleSheetKey by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(viewModel) {
         viewModel.loadNewRepeatCycle()
@@ -78,12 +81,15 @@ internal fun EditDateRoute(
             )
         },
         onRepeatCycleDropDownClick = {
+            repeatCycleSheetKey++
             viewModel.onIntent(
                 EditDateIntent.OnRepeatCycleDropDownClick(
                     {
                         RepeatCycleBottomSheet(
                             repeatCycleList = state.repeatCycleList,
                             originRepeatCycle = state.repeatCycle,
+                            selectedDate = state.selectedDate,
+                            openKey = repeatCycleSheetKey,
                             onAddRepeatCycleClick = {
                                 viewModel.onIntent(EditDateIntent.OnAddRepeatCycleClick)
                             },

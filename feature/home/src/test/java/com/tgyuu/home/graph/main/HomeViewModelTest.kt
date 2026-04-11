@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.main
 
+import com.tgyuu.analytics.NoOpAnalyticsHelper
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.fake.FakeConfigRepository
@@ -44,7 +45,8 @@ class HomeViewModelTest {
             configRepository = configRepository,
             navigationBus = navigationBus,
             alarmScheduler = null,
-            eventBus = eventBus
+            analyticsHelper = NoOpAnalyticsHelper(),
+            eventBus = eventBus,
         )
     }
 

@@ -65,7 +65,6 @@ import com.tgyuu.home.graph.main.ui.dialog.DialogType
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteRemaining
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteSingle
 import com.tgyuu.home.graph.main.ui.dialog.WidgetNudgeDialog
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -126,7 +125,7 @@ internal fun HomeRoute(
                         onClickDelay = { delayedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                delay(200L)
+                                viewModel.eventBus.awaitBottomSheetHidden()
                                 viewModel.onIntent(
                                     HomeIntent.OnDelayScheduleClick {
                                         DelayBottomSheet(
@@ -169,7 +168,7 @@ internal fun HomeRoute(
                         onClickDelete = { deletedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                delay(200L)
+                                viewModel.eventBus.awaitBottomSheetHidden()
                                 viewModel.onIntent(
                                     HomeIntent.OnDeleteScheduleClick {
                                         DeleteBottomSheet(
@@ -198,7 +197,7 @@ internal fun HomeRoute(
                         onClickUpdate = { updatedSchedule ->
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                delay(200L)
+                                viewModel.eventBus.awaitBottomSheetHidden()
                                 viewModel.onIntent(
                                     HomeIntent.OnUpdateScheduleClick {
                                         UpdateBottomSheet(
