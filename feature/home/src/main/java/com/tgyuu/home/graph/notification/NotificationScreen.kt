@@ -125,9 +125,7 @@ private fun NotificationScreenPhone(
         analyticsHelper.logEvent(
             AnalyticsEvent(
                 type = NotificationAnalytics.SCREEN_VIEW,
-                properties = mutableMapOf(
-                    NotificationAnalytics.PARAM_NUDGE_TEXT_VARIANT to state.nudgeTextVariant.key
-                )
+                properties = mutableMapOf()
             )
         )
     }
@@ -248,9 +246,7 @@ private fun NotificationScreenTablet(
         analyticsHelper.logEvent(
             AnalyticsEvent(
                 type = NotificationAnalytics.SCREEN_VIEW,
-                properties = mutableMapOf(
-                    NotificationAnalytics.PARAM_NUDGE_TEXT_VARIANT to state.nudgeTextVariant.key
-                )
+                properties = mutableMapOf()
             )
         )
     }
@@ -380,7 +376,6 @@ private fun NotificationTopBar(
                                 type = NotificationAnalytics.SAVE_CLICK,
                                 properties = mutableMapOf(
                                     NotificationAnalytics.PARAM_NOTIFICATION_ENABLED to state.notificationEnabled,
-                                    NotificationAnalytics.PARAM_NUDGE_TEXT_VARIANT to state.nudgeTextVariant.key,
                                 )
                             )
                         )

@@ -7,7 +7,6 @@ internal object NotificationAnalytics {
     const val TIME_CLICK = "notification_nudge_time_click"
     const val RESET_CLICK = "notification_nudge_reset_click"
 
-    const val PARAM_NUDGE_TEXT_VARIANT = "nudge_text_variant"
     const val PARAM_NOTIFICATION_ENABLED = "notification_enabled"
     const val PARAM_DESIRED_ON = "desired_on"
 }

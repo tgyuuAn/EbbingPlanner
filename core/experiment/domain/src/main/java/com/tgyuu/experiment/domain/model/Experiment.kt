@@ -20,8 +20,6 @@ sealed class Experiment<V>(
     }
 
     companion object {
-        val ALL: List<Experiment<*>> = listOf(
-            NotificationNudgeText,
-        )
+        val ALL: List<Experiment<*>> = emptyList()
     }
 }
