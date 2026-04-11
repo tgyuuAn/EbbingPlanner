@@ -20,6 +20,7 @@ fun EbbingCalendar(
     calendarState: CalendarState,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     modifier: Modifier = Modifier,
+    showSyncButton: Boolean = true,
     onSelectDate: (LocalDate) -> Unit = {},
     onSyncClick: () -> Unit = {},
 ) {
@@ -50,6 +51,7 @@ fun EbbingCalendar(
                     onSelectDate(LocalDate.now())
                 }
             },
+            showSyncButton = showSyncButton,
             onSyncClick = onSyncClick,
         )
 

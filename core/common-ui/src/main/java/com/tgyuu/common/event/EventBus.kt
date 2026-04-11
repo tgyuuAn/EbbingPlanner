@@ -14,8 +14,18 @@ class EventBus @Inject constructor() {
     private val _eventFlow = Channel<EbbingEvent>(BUFFERED)
     val eventFlow = _eventFlow.receiveAsFlow()
 
+    private val _bottomSheetHidden = Channel<Unit>(BUFFERED)
+
     suspend fun sendEvent(event: EbbingEvent) {
         _eventFlow.send(event)
+    }
+
+    suspend fun notifyBottomSheetHidden() {
+        _bottomSheetHidden.send(Unit)
+    }
+
+    suspend fun awaitBottomSheetHidden() {
+        _bottomSheetHidden.receive()
     }
 }
 

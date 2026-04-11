@@ -2,9 +2,11 @@ package com.tgyuu.home.graph.addtodo.contract
 
 import androidx.compose.runtime.Immutable
 import com.tgyuu.common.base.UiState
+import com.tgyuu.common.generateDailySchedules
 import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
+import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.experiment.domain.model.Experiment.NotificationNudgeText
 import kotlinx.collections.immutable.ImmutableList
@@ -31,11 +33,19 @@ data class AddTodoState(
     val isModified = title.isNotEmpty() || !priority.isNullOrEmpty() || restDays.isNotEmpty()
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
-            generateValidSchedules(
-                baseDate = selectedDate,
-                intervals = it.intervals.toList(),
-                restDays = restDays.toSet()
-            )
+            if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
+                generateDailySchedules(
+                    baseDate = selectedDate,
+                    intervals = it.intervals.toList(),
+                    restDays = restDays.toSet()
+                )
+            } else {
+                generateValidSchedules(
+                    baseDate = selectedDate,
+                    intervals = it.intervals.toList(),
+                    restDays = restDays.toSet()
+                )
+            }
         } ?: emptyList()
 
     enum class Page {

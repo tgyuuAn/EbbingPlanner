@@ -113,7 +113,7 @@ class EditDateViewModel @Inject constructor(
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-
+        eventBus.awaitBottomSheetHidden()
         setState { copy(repeatCycle = repeatCycle) }
     }
 

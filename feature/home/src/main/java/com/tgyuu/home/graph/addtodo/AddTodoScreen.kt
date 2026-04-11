@@ -17,6 +17,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,6 +62,7 @@ internal fun AddTodoRoute(
     viewModel: AddTodoViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var repeatCycleSheetKey by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(viewModel) {
         viewModel.loadNewTag()
@@ -108,12 +110,15 @@ internal fun AddTodoRoute(
                     )
                 },
                 onRepeatCycleDropDownClick = {
+                    repeatCycleSheetKey++
                     viewModel.onIntent(
                         AddTodoIntent.OnRepeatCycleDropDownClick(
                             {
                                 RepeatCycleBottomSheet(
                                     repeatCycleList = state.repeatCycleList,
                                     originRepeatCycle = state.repeatCycle,
+                                    selectedDate = state.selectedDate,
+                                    openKey = repeatCycleSheetKey,
                                     onAddRepeatCycleClick = {
                                         viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
                                     },

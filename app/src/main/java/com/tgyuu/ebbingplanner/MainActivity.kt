@@ -244,12 +244,18 @@ class MainActivity : ComponentActivity() {
                 eventBus.eventFlow.collect { event ->
                     when (event) {
                         is EbbingEvent.ShowBottomSheet -> scope.launch {
+                            if (bottomSheetState.state.isVisible) {
+                                bottomSheetState.hide()
+                            }
                             bottomSheetState.setBottomSheetContent(event.content)
                             focusManager.clearFocus()
                             bottomSheetState.show()
                         }
 
-                        EbbingEvent.HideBottomSheet -> scope.launch { bottomSheetState.hide() }
+                        EbbingEvent.HideBottomSheet -> scope.launch {
+                            bottomSheetState.hide()
+                            eventBus.notifyBottomSheetHidden()
+                        }
                         is EbbingEvent.ShowSnackBar -> scope.launch {
                             snackBarHostState.currentSnackbarData?.dismiss()
                             snackBarHostState.showSnackbar(event.msg)

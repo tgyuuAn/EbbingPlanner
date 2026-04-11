@@ -29,6 +29,7 @@ internal fun CalendarController(
     currentDate: LocalDate,
     onGotoTodayClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showSyncButton: Boolean = true,
     onSyncClick: () -> Unit = {},
 ) {
     Row(
@@ -59,18 +60,22 @@ internal fun CalendarController(
             color = EbbingTheme.colors.black,
         )
 
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(40.dp)
-                .clickable(onClick = onSyncClick),
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_link),
-                contentDescription = "데이터 동기화",
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
-                modifier = Modifier.size(28.dp),
-            )
+        if (showSyncButton) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable(onClick = onSyncClick),
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_link),
+                    contentDescription = "데이터 동기화",
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.size(40.dp))
         }
     }
 }
