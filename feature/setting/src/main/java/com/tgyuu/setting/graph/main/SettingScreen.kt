@@ -83,7 +83,8 @@ internal fun SettingRoute(
                     if (activity != null) {
                         viewModel.inAppReviewManager.requestAndLaunchReview(activity)
                     } else {
-                        viewModel.inAppReviewManager.openPlayStoreForReview()
+                        viewModel.inAppReviewManager.
+                        openPlayStoreForReview()
                     }
                 }
                 is SettingSideEffect.RequestInAppUpdate -> {
