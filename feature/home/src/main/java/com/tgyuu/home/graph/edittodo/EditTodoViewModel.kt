@@ -71,6 +71,11 @@ class EditTodoViewModel @Inject constructor(
                 )
             }
         }
+
+        viewModelScope.launch {
+            configRepository.getMondayStart()
+                .collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     internal fun loadTags() = viewModelScope.launch {

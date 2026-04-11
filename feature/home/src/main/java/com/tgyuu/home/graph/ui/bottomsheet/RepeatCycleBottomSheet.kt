@@ -41,6 +41,7 @@ internal fun RepeatCycleBottomSheet(
     originRepeatCycle: RepeatCycleUiModel?,
     selectedDate: LocalDate,
     openKey: Int,
+    startFromMonday: Boolean = false,
     updateRepeatCycle: (RepeatCycleUiModel) -> Unit,
     onAddRepeatCycleClick: () -> Unit,
 ) {
@@ -114,6 +115,7 @@ internal fun RepeatCycleBottomSheet(
                     calendarState = calendarState,
                     schedulesByDateMap = emptyMap(),
                     showSyncButton = false,
+                    startFromMonday = startFromMonday,
                     onSelectDate = { date ->
                         if (!date.isBefore(selectedDate)) {
                             dailyEndDate = date

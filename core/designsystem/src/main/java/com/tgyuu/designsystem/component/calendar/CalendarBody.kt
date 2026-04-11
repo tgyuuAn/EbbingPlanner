@@ -45,6 +45,7 @@ internal fun CalendarBody(
     selectedDate: LocalDate?,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     onDateSelect: (LocalDate) -> Unit,
+    startFromMonday: Boolean,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -53,7 +54,7 @@ internal fun CalendarBody(
         modifier = modifier.semantics { contentDescription = "달력 바디" },
     ) {
         items(
-            items = getCalendarDates(currentDate),
+            items = getCalendarDates(currentDate, startFromMonday),
             key = { it.date },
         ) {
             CalendarDayItem(

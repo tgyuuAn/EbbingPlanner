@@ -72,6 +72,7 @@ internal fun EditDateRoute(
                         SelectedDateBottomSheet(
                             originSelectedDate = state.selectedDate,
                             schedulesByDateMap = emptyMap(),
+                            startFromMonday = state.mondayStart,
                             updateSelectedDate = {
                                 viewModel.onIntent(EditDateIntent.OnSelectedDateChange(it))
                             },
@@ -90,6 +91,7 @@ internal fun EditDateRoute(
                             originRepeatCycle = state.repeatCycle,
                             selectedDate = state.selectedDate,
                             openKey = repeatCycleSheetKey,
+                            startFromMonday = state.mondayStart,
                             onAddRepeatCycleClick = {
                                 viewModel.onIntent(EditDateIntent.OnAddRepeatCycleClick)
                             },

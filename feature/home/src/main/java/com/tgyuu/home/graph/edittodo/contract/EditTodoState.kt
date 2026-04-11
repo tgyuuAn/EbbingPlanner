@@ -28,6 +28,7 @@ data class EditTodoState(
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
+    val mondayStart: Boolean = false,
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
     val schedules: List<LocalDate>

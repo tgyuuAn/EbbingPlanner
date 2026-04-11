@@ -46,6 +46,7 @@ import com.google.gson.reflect.TypeToken
 import com.tgyuu.designsystem.component.calendar.CalendarDate
 import com.tgyuu.designsystem.component.calendar.EbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.getCalendarDates
+import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -56,6 +57,7 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
@@ -81,8 +83,10 @@ class CalendarWidget : GlanceAppWidget() {
             val schedulesByDateMap: Map<LocalDate, List<TodoSchedule>> =
                 GsonProvider.gson.fromJson(rawJson, type)
 
+            val mondayStart: Boolean = prefs[WIDGET_MONDAY_START] ?: false
+
             val today = LocalDate.now()
-            val calendarDates = getCalendarDates(today)
+            val calendarDates = getCalendarDates(today, mondayStart)
 
             val selectedDateString = prefs[SELECTED_DATE]
             val selectedDate = selectedDateString?.let { LocalDate.parse(it) } ?: today
@@ -96,6 +100,7 @@ class CalendarWidget : GlanceAppWidget() {
                     schedulesByDateMap = schedulesByDateMap,
                     selectedDate = selectedDate,
                     calendarDates = calendarDates,
+                    mondayStart = mondayStart,
                 )
             }
         }
@@ -108,6 +113,7 @@ private fun CalendarWidgetContent(
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     calendarDates: List<CalendarDate>,
     selectedDate: LocalDate,
+    mondayStart: Boolean,
 ) {
     val selectedDateTodoLists = schedulesByDateMap[selectedDate] ?: emptyList()
     val todoListsDoneSize = selectedDateTodoLists.filter { it.isDone }.size
@@ -128,7 +134,7 @@ private fun CalendarWidgetContent(
             )
             .padding(4.dp)
     ) {
-        CalendarWidgetHeader()
+        CalendarWidgetHeader(mondayStart = mondayStart)
 
         CalendarWidgetBody(
             calendarDates = calendarDates,
@@ -147,7 +153,7 @@ private fun CalendarWidgetContent(
 }
 
 @Composable
-private fun CalendarWidgetHeader() {
+private fun CalendarWidgetHeader(mondayStart: Boolean) {
     val today = LocalDate.now()
     Column(modifier = GlanceModifier.fillMaxWidth()) {
         Row(
@@ -184,7 +190,7 @@ private fun CalendarWidgetHeader() {
         }
 
         Row(modifier = GlanceModifier.fillMaxWidth()) {
-            EbbingDayOfWeek.forEach {
+            getEbbingDayOfWeek(mondayStart).forEach {
                 Text(
                     text = it.toKorean(),
                     style = TextStyle(

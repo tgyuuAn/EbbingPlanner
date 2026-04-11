@@ -58,6 +58,11 @@ class AddTodoViewModel @Inject constructor(
             )
         }
         initNotificationState()
+
+        viewModelScope.launch {
+            configRepository.getMondayStart()
+                .collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     private fun initNotificationState() = viewModelScope.launch {
