@@ -8,7 +8,6 @@ import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
-import com.tgyuu.experiment.domain.model.Experiment.NotificationNudgeText
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -61,12 +60,8 @@ data class NotificationState(
     val alarmMinute: Int = 0,
     val message: String = DEFAULT_ALARM_MESSAGE,
     val originMessage: String = DEFAULT_ALARM_MESSAGE,
-    val nudgeTextVariant: NotificationNudgeText.Variant = NotificationNudgeText.Variant.CONTROL,
 ) {
-    val nudgeText: String = when (nudgeTextVariant) {
-        NotificationNudgeText.Variant.CONTROL -> "다음 복습일을 놓치지 않도록\n알려드릴까요?"
-        NotificationNudgeText.Variant.TREATMENT -> "바쁜 날에도\n복습일을 자동으로 챙겨드릴게요"
-    }
+    val nudgeText: String = "바쁜 날에도\n복습일을 자동으로 챙겨드릴게요"
     private val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
 
     val isValidPlaceholder: Boolean = placeholderCount <= 1

@@ -18,8 +18,6 @@ import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.model.toUiModel
@@ -42,7 +40,6 @@ import javax.inject.Inject
 class AddTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
@@ -66,7 +63,6 @@ class AddTodoViewModel @Inject constructor(
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
         val message = configRepository.getAlarmMessage()
-        val nudgeTextVariant = experimentRepository.getVariant(Experiment.NotificationNudgeText)
 
         setState {
             copy(
@@ -75,7 +71,6 @@ class AddTodoViewModel @Inject constructor(
                     alarmMinute = minute,
                     message = message,
                     originMessage = message,
-                    nudgeTextVariant = nudgeTextVariant,
                 )
             )
         }
