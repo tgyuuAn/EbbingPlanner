@@ -17,6 +17,7 @@ import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.analytics.AnalyticsEvent
@@ -97,6 +98,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
         val backgroundAlpha = configRepository.getWidgetBackgroundAlpha().firstOrNull() ?: 1f
         val textAlpha = configRepository.getWidgetTextAlpha().firstOrNull() ?: 1f
+        val mondayStart = configRepository.getMondayStart().firstOrNull() ?: false
         val sortType = configRepository.getSortType()
 
         val now = LocalDate.now()
@@ -119,6 +121,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
                     this[THEME] = theme.name
                     this[BACKGROUND_ALPHA] = backgroundAlpha
                     this[TEXT_ALPHA] = textAlpha
+                    this[WIDGET_MONDAY_START] = mondayStart
                 }
             }
 

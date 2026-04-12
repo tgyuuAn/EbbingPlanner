@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.widget.designsystem.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceTheme
@@ -113,3 +114,4 @@ fun EbbingWidgetTheme(
 internal val THEME = stringPreferencesKey("theme")
 internal val BACKGROUND_ALPHA = floatPreferencesKey("background_alpha")
 internal val TEXT_ALPHA = floatPreferencesKey("text_alpha")
+internal val WIDGET_MONDAY_START = booleanPreferencesKey("monday_start")

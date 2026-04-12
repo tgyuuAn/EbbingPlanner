@@ -12,6 +12,7 @@ data class SettingState(
     val alarmMinute: String = "",
     val alarmMessage: String = DEFAULT_ALARM_MESSAGE,
     val alarmMessageBottomSheet: AlarmMessageBottomSheetState = AlarmMessageBottomSheetState(),
+    val mondayStart: Boolean = false,
 ) : UiState
 
 data class AlarmMessageBottomSheetState(

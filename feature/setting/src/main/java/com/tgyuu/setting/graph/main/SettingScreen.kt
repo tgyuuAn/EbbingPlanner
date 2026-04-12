@@ -135,6 +135,7 @@ internal fun SettingRoute(
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
+        onMondayStartToggleClick = { viewModel.onIntent(SettingIntent.OnMondayStartToggleClick) },
         onInAppReviewClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
         onUpdateClick = { isImmediateUpdate ->
             viewModel.onIntent(SettingIntent.OnUpdateClick(isImmediateUpdate))
@@ -157,6 +158,7 @@ private fun SettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onMondayStartToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
@@ -187,6 +189,7 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
+            onMondayStartToggleClick = onMondayStartToggleClick,
             onInAppReviewClick = onInAppReviewClick,
             onUpdateClick = onUpdateClick,
         )
@@ -205,6 +208,7 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
+            onMondayStartToggleClick = onMondayStartToggleClick,
             onInAppReviewClick = onInAppReviewClick,
             onUpdateClick = onUpdateClick,
         )
@@ -226,6 +230,7 @@ private fun PhoneSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onMondayStartToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
@@ -259,6 +264,11 @@ private fun PhoneSettingScreen(
             TagRepeatCycleBody(
                 onTagManageClick = onTagManageClick,
                 onRepeatCycleManageClick = onRepeatCycleManageClick,
+            )
+
+            CalendarStartDayBody(
+                mondayStart = state.mondayStart,
+                onMondayStartToggleClick = onMondayStartToggleClick,
             )
 
             DataBody(
@@ -308,6 +318,7 @@ private fun TabletSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
+    onMondayStartToggleClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
@@ -340,6 +351,11 @@ private fun TabletSettingScreen(
                 TagRepeatCycleBody(
                     onTagManageClick = onTagManageClick,
                     onRepeatCycleManageClick = onRepeatCycleManageClick,
+                )
+
+                CalendarStartDayBody(
+                    mondayStart = state.mondayStart,
+                    onMondayStartToggleClick = onMondayStartToggleClick,
                 )
 
                 DataBody(
@@ -509,6 +525,51 @@ private fun NotificationBody(
         modifier = Modifier.padding(vertical = 16.dp),
         thickness = 1.dp,
         color = EbbingTheme.colors.light2
+    )
+}
+
+@Composable
+private fun CalendarStartDayBody(
+    mondayStart: Boolean,
+    onMondayStartToggleClick: () -> Unit,
+) {
+    Text(
+        text = "달력",
+        style = EbbingTheme.typography.bodySM,
+        color = EbbingTheme.colors.dark2,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp),
+    ) {
+        Text(
+            text = "달력 시작 요일",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Text(
+            text = if (mondayStart) "월" else "일",
+            style = EbbingTheme.typography.headingSM,
+            color = if (mondayStart) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark2,
+            modifier = Modifier.padding(end = 12.dp),
+        )
+
+        EbbingToggle(
+            checked = mondayStart,
+            onCheckedChange = { onMondayStartToggleClick() },
+        )
+    }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.light2,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp),
     )
 }
 
@@ -968,6 +1029,7 @@ private fun PreviewSettingScreen() {
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onNotificationToggleClick = {},
+            onMondayStartToggleClick = {},
             onInAppReviewClick = {},
             onUpdateClick = {},
         )

@@ -20,6 +20,7 @@ import java.time.LocalDate
 internal fun SelectedDateBottomSheet(
     originSelectedDate: LocalDate,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
+    startFromMonday: Boolean = false,
     updateSelectedDate: (LocalDate) -> Unit,
 ) {
     var newSelectedDate by remember(originSelectedDate) { mutableStateOf(originSelectedDate) }
@@ -31,6 +32,7 @@ internal fun SelectedDateBottomSheet(
         EbbingCalendar(
             calendarState = calendarState,
             schedulesByDateMap = schedulesByDateMap,
+            startFromMonday = startFromMonday,
             onSelectDate = { newSelectedDate = it },
             modifier = Modifier
                 .fillMaxWidth()

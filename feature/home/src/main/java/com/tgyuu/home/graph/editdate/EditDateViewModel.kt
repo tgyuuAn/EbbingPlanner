@@ -65,6 +65,11 @@ class EditDateViewModel @Inject constructor(
 
             originSchedules = result
         }
+
+        viewModelScope.launch {
+            configRepository.getMondayStart()
+                .collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     internal fun loadNewRepeatCycle() {

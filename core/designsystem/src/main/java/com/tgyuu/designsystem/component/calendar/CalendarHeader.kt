@@ -11,13 +11,16 @@ import androidx.compose.ui.text.style.TextAlign
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
 @Composable
-internal fun CalendarHeader(modifier: Modifier = Modifier) {
+internal fun CalendarHeader(
+    startFromMonday: Boolean,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .semantics { contentDescription = "달력 헤더" },
     ) {
-        EbbingDayOfWeek.forEachIndexed { idx, weekday ->
+        getEbbingDayOfWeek(startFromMonday).forEachIndexed { idx, weekday ->
             val weekDayText = weekday.toKorean()
 
             Text(

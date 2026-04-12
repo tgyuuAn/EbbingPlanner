@@ -75,4 +75,9 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun markFirstTodoAdded(): Boolean =
         localUserConfigDataSource.markFirstTodoAdded()
+
+    override fun getMondayStart(): Flow<Boolean> = localUserConfigDataSource.mondayStart
+
+    override suspend fun setMondayStart(enabled: Boolean) =
+        localUserConfigDataSource.setMondayStart(enabled)
 }

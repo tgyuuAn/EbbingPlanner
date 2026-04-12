@@ -21,6 +21,7 @@ fun EbbingCalendar(
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     modifier: Modifier = Modifier,
     showSyncButton: Boolean = true,
+    startFromMonday: Boolean = false,
     onSelectDate: (LocalDate) -> Unit = {},
     onSyncClick: () -> Unit = {},
 ) {
@@ -55,7 +56,7 @@ fun EbbingCalendar(
             onSyncClick = onSyncClick,
         )
 
-        CalendarHeader()
+        CalendarHeader(startFromMonday = startFromMonday)
 
         HorizontalPager(
             state = pagerState,
@@ -65,6 +66,7 @@ fun EbbingCalendar(
                 currentDate = calendarState.currentDisplayDate,
                 selectedDate = calendarState.selectedDate,
                 schedulesByDateMap = schedulesByDateMap,
+                startFromMonday = startFromMonday,
                 onDateSelect = { selectedDate ->
                     val selectedOffset = yearMonthDiff(
                         from = calendarState.originSelectedDate,

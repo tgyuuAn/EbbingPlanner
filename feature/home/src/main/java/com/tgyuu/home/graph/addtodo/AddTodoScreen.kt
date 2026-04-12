@@ -83,6 +83,7 @@ internal fun AddTodoRoute(
                                 SelectedDateBottomSheet(
                                     originSelectedDate = state.selectedDate,
                                     schedulesByDateMap = emptyMap(),
+                                    startFromMonday = state.mondayStart,
                                     updateSelectedDate = {
                                         viewModel.onIntent(
                                             AddTodoIntent.OnSelectedDateChange(it)
@@ -119,6 +120,7 @@ internal fun AddTodoRoute(
                                     originRepeatCycle = state.repeatCycle,
                                     selectedDate = state.selectedDate,
                                     openKey = repeatCycleSheetKey,
+                                    startFromMonday = state.mondayStart,
                                     onAddRepeatCycleClick = {
                                         viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
                                     },

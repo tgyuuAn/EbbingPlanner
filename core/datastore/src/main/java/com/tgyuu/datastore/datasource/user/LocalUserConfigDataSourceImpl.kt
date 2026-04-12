@@ -126,6 +126,14 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[WIDGET_TEXT_ALPHA] = alpha }
     }
 
+    override val mondayStart: Flow<Boolean>
+        get() = dataStore.data
+            .map { prefs -> prefs[MONDAY_START] ?: false }
+
+    override suspend fun setMondayStart(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[MONDAY_START] = enabled }
+    }
+
     override suspend fun markFirstTodoAdded(): Boolean {
         var isFirstTime = false
         dataStore.edit { prefs ->
@@ -150,5 +158,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val WIDGET_BACKGROUND_ALPHA = floatPreferencesKey("WIDGET_BACKGROUND_ALPHA")
         private val WIDGET_TEXT_ALPHA = floatPreferencesKey("WIDGET_TEXT_ALPHA")
         private val HAS_EVER_ADDED_TODO = booleanPreferencesKey("HAS_EVER_ADDED_TODO")
+        private val MONDAY_START = booleanPreferencesKey("MONDAY_START")
     }
 }

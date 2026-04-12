@@ -74,6 +74,11 @@ class SettingViewModel @Inject constructor(
                 }.onSuccess { setState { copy(hardUpdateInfo = it) } }
             }
 
+            launch {
+                configRepository.getMondayStart()
+                    .collect { setState { copy(mondayStart = it) } }
+            }
+
             configRepository.getNotificationEnabled()
                 .collect { setState { copy(notificationEnabled = it) } }
         }
@@ -142,6 +147,9 @@ class SettingViewModel @Inject constructor(
             is SettingIntent.OnUpdateClick -> _sideEffect.send(
                 SettingSideEffect.RequestInAppUpdate(intent.isImmediateUpdate)
             )
+
+            SettingIntent.OnMondayStartToggleClick ->
+                configRepository.setMondayStart(!currentState.mondayStart)
         }
     }
 

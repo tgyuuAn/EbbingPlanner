@@ -57,6 +57,11 @@ class HomeViewModel @Inject constructor(
             val sortType = configRepository.getSortType()
             setState { copy(sortType = sortType) }
         }
+
+        viewModelScope.launch {
+            configRepository.getMondayStart()
+                .collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     suspend fun initCurrentMonthSchedules() {
