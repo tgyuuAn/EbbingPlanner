@@ -5,11 +5,13 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Named
@@ -126,6 +128,14 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[WIDGET_TEXT_ALPHA] = alpha }
     }
 
+    override suspend fun getLastVersion(): Int {
+        return dataStore.data.map { prefs -> prefs[LAST_VERSION] ?: 0 }.first()
+    }
+
+    override suspend fun setLastVersion(versionCode: Int) {
+        dataStore.edit { prefs -> prefs[LAST_VERSION] = versionCode }
+    }
+
     override suspend fun markFirstTodoAdded(): Boolean {
         var isFirstTime = false
         dataStore.edit { prefs ->
@@ -150,5 +160,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val WIDGET_BACKGROUND_ALPHA = floatPreferencesKey("WIDGET_BACKGROUND_ALPHA")
         private val WIDGET_TEXT_ALPHA = floatPreferencesKey("WIDGET_TEXT_ALPHA")
         private val HAS_EVER_ADDED_TODO = booleanPreferencesKey("HAS_EVER_ADDED_TODO")
+        private val LAST_VERSION = intPreferencesKey("LAST_VERSION")
     }
 }

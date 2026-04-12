@@ -75,4 +75,10 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun markFirstTodoAdded(): Boolean =
         localUserConfigDataSource.markFirstTodoAdded()
+
+    override suspend fun getLastVersion(): Int =
+        localUserConfigDataSource.getLastVersion()
+
+    override suspend fun setLastVersion(versionCode: Int) =
+        localUserConfigDataSource.setLastVersion(versionCode)
 }

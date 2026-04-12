@@ -29,6 +29,8 @@ interface ConfigRepository {
 
     suspend fun getClearSyncFlag(): Boolean
     suspend fun markFirstTodoAdded(): Boolean
+    suspend fun getLastVersion(): Int
+    suspend fun setLastVersion(versionCode: Int)
 
     companion object {
         const val DEFAULT_ALARM_MESSAGE: String = "{할일} 을 확인하고, 잊지 말고 복습하세요!"
