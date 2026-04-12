@@ -498,12 +498,10 @@ private fun HandleDialogs(
             }
 
             analyticsHelper.logEvent(
-                AnalyticsEvent(
-                    type = AnalyticsEvent.Types.ACTION,
-                    properties = mutableMapOf(
-                        AnalyticsEvent.PropertiesKeys.ACTION_NAME to "show_dialog",
-                        "dialog_type" to dialogTypeName,
-                    )
+                AnalyticsEvent.Action(
+                    screenName = "Home",
+                    actionName = "show_dialog",
+                    properties = mapOf("dialog_type" to dialogTypeName),
                 )
             )
         }

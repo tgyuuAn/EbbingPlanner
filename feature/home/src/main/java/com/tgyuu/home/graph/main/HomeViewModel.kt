@@ -3,9 +3,6 @@ package com.tgyuu.home.graph.main
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.ACTION_NAME
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.ACTION_RESULT
-import com.tgyuu.analytics.AnalyticsEvent.Types.ACTION
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
@@ -88,8 +85,16 @@ class HomeViewModel @Inject constructor(
             )
 
             is HomeIntent.OnDelayScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
-            is HomeIntent.OnDelaySingleClick -> onDelaySchedule(intent.schedule.toDomainModel(), intent.includeRestDays)
-            is HomeIntent.OnDelayAllClick -> onDelayAllSchedules(intent.schedule.toDomainModel(), intent.includeRestDays)
+            is HomeIntent.OnDelaySingleClick -> onDelaySchedule(
+                intent.schedule.toDomainModel(),
+                intent.includeRestDays
+            )
+
+            is HomeIntent.OnDelayAllClick -> onDelayAllSchedules(
+                intent.schedule.toDomainModel(),
+                intent.includeRestDays
+            )
+
             is HomeIntent.OnMemoClick -> onClickMemo(intent.schedule.toDomainModel())
             is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
@@ -237,17 +242,17 @@ class HomeViewModel @Inject constructor(
         }
 
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = ACTION,
-                properties = mutableMapOf(
-                    ACTION_NAME to "delay_single_schedule",
-                    ACTION_RESULT to "success",
+            AnalyticsEvent.Action(
+                screenName = "Home",
+                actionName = "delay_single_schedule",
+                actionResult = "success",
+                properties = mapOf(
                     "schedule_id" to schedule.id,
                     "original_date" to schedule.date.toString(),
                     "next_date" to nextDate.toString(),
                     "include_rest_days" to includeRestDays,
                     "rest_days_count" to restDays.size,
-                )
+                ),
             )
         )
 
@@ -255,7 +260,10 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
     }
 
-    private suspend fun onDelayAllSchedules(schedule: TodoSchedule, includeRestDays: Boolean = false) {
+    private suspend fun onDelayAllSchedules(
+        schedule: TodoSchedule,
+        includeRestDays: Boolean = false
+    ) {
         val todoInfo = todoRepository.loadTodoInfoById(schedule.infoId)
         val restDays = if (includeRestDays) emptySet() else todoInfo.restDays
 
@@ -266,13 +274,11 @@ class HomeViewModel @Inject constructor(
 
         if (futureSchedules.isEmpty()) {
             analyticsHelper.logEvent(
-                AnalyticsEvent(
-                    type = ACTION,
-                    properties = mutableMapOf(
-                        ACTION_NAME to "delay_all_schedules",
-                        ACTION_RESULT to "no_schedules",
-                        "schedule_id" to schedule.id,
-                    )
+                AnalyticsEvent.Action(
+                    screenName = "Home",
+                    actionName = "delay_all_schedules",
+                    actionResult = "no_schedules",
+                    properties = mapOf("schedule_id" to schedule.id),
                 )
             )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("미룰 일정이 없습니다."))
@@ -286,7 +292,8 @@ class HomeViewModel @Inject constructor(
             var nextDate = scheduleToDelay.date.plusDays(1).nextValidDate(restDays)
 
             while (updatedDates.values.contains(nextDate) ||
-                   cachedSchedules.any { it.infoId == schedule.infoId && it.date == nextDate && it.id != scheduleToDelay.id }) {
+                cachedSchedules.any { it.infoId == schedule.infoId && it.date == nextDate && it.id != scheduleToDelay.id }
+            ) {
                 nextDate = nextDate.plusDays(1).nextValidDate(restDays)
             }
 
@@ -329,16 +336,16 @@ class HomeViewModel @Inject constructor(
         }
 
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = ACTION,
-                properties = mutableMapOf(
-                    ACTION_NAME to "delay_all_schedules",
-                    ACTION_RESULT to "success",
+            AnalyticsEvent.Action(
+                screenName = "Home",
+                actionName = "delay_all_schedules",
+                actionResult = "success",
+                properties = mapOf(
                     "schedule_id" to schedule.id,
                     "schedules_count" to futureSchedules.size,
                     "include_rest_days" to includeRestDays,
                     "rest_days_count" to restDays.size,
-                )
+                ),
             )
         )
 
@@ -432,7 +439,10 @@ class HomeViewModel @Inject constructor(
             .distinctBy { it.id }
     }
 
-    suspend fun calculateDelayInfo(infoId: Int, currentDate: LocalDate): Pair<Set<DayOfWeek>, LocalDate> {
+    suspend fun calculateDelayInfo(
+        infoId: Int,
+        currentDate: LocalDate
+    ): Pair<Set<DayOfWeek>, LocalDate> {
         val todoInfo = todoRepository.loadTodoInfoById(infoId)
         val restDays = todoInfo.restDays
 

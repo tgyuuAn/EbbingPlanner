@@ -48,7 +48,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        logWidgetEvent("calendar_widget_added")
+        logWidgetEvent("added")
     }
 
     override fun onUpdate(
@@ -57,7 +57,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        logWidgetEvent("calendar_widget_update")
+        logWidgetEvent("update")
         updateData(context)
     }
 
@@ -66,13 +66,13 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> {
-                logWidgetEvent("calendar_widget_refresh")
+                logWidgetEvent("refresh")
                 updateData(context)
             }
             CheckTodoAction.CHECK_TODO_ACTION -> {
                 val todoId = intent.extras?.getInt(TODO_ID)
                 todoId ?: return
-                logWidgetEvent("calendar_widget_check_todo", mapOf("todoId" to todoId))
+                logWidgetEvent("check_todo", mapOf("todoId" to todoId))
                 checkTodo(todoId, context)
             }
         }
@@ -85,11 +85,15 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         updateData(context)
     }
 
-    private fun logWidgetEvent(eventName: String, properties: Map<String, Any?> = emptyMap()) {
+    private fun logWidgetEvent(
+        actionName: String,
+        properties: Map<String, Any?>? = null,
+    ) {
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = eventName,
-                properties = properties.toMutableMap()
+            AnalyticsEvent.Action(
+                screenName = "CalendarWidget",
+                actionName = actionName,
+                properties = properties,
             )
         )
     }

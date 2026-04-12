@@ -17,7 +17,23 @@ class AmplitudeAnalyticsHelper @Inject constructor(
     }
 
     private fun AnalyticsEvent.toAmplitudeEvent(): BaseEvent = BaseEvent().apply {
-        this.eventType = type
-        this.eventProperties = properties
+        when (val event = this@toAmplitudeEvent) {
+            is AnalyticsEvent.View -> {
+                eventType = "View_${event.screenName}"
+            }
+
+            is AnalyticsEvent.Click -> {
+                eventType = "Click_${event.buttonName}_${event.screenName}"
+                eventProperties = event.properties?.toMutableMap()
+            }
+
+            is AnalyticsEvent.Action -> {
+                eventType = buildString {
+                    append("Action_${event.actionName}_${event.screenName}")
+                    event.actionResult?.let { append("_$it") }
+                }
+                eventProperties = event.properties?.toMutableMap()
+            }
+        }
     }
 }

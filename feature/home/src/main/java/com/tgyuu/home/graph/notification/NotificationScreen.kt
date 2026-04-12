@@ -122,12 +122,7 @@ private fun NotificationScreenPhone(
 
     TrackScreenViewEvent(key = Unit, screenName = "NotificationNudgeScreen")
     LaunchedEffect(Unit) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = NotificationAnalytics.SCREEN_VIEW,
-                properties = mutableMapOf()
-            )
-        )
+        analyticsHelper.logEvent(AnalyticsEvent.View(screenName = "NotificationNudge"))
     }
 
     LaunchedEffect(permissionState?.status) {
@@ -243,12 +238,7 @@ private fun NotificationScreenTablet(
 
     TrackScreenViewEvent(key = Unit, screenName = "NotificationNudgeScreen")
     LaunchedEffect(Unit) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = NotificationAnalytics.SCREEN_VIEW,
-                properties = mutableMapOf()
-            )
-        )
+        analyticsHelper.logEvent(AnalyticsEvent.View(screenName = "NotificationNudge"))
     }
 
     LaunchedEffect(permissionState?.status) {
@@ -372,11 +362,10 @@ private fun NotificationTopBar(
                     .align(Alignment.CenterEnd)
                     .throttledClickable(throttleTime = 1500L) {
                         analyticsHelper.logEvent(
-                            AnalyticsEvent(
-                                type = NotificationAnalytics.SAVE_CLICK,
-                                properties = mutableMapOf(
-                                    NotificationAnalytics.PARAM_NOTIFICATION_ENABLED to state.notificationEnabled,
-                                )
+                            AnalyticsEvent.Click(
+                                screenName = "NotificationNudge",
+                                buttonName = "save",
+                                properties = mapOf("notification_enabled" to state.notificationEnabled),
                             )
                         )
                         onSaveClick()
@@ -430,9 +419,10 @@ private fun NotificationToggleSection(
             checked = checked,
             onCheckedChange = { desiredOn ->
                 analyticsHelper.logEvent(
-                    AnalyticsEvent(
-                        type = NotificationAnalytics.TOGGLE_CLICK,
-                        properties = mutableMapOf(NotificationAnalytics.PARAM_DESIRED_ON to desiredOn)
+                    AnalyticsEvent.Click(
+                        screenName = "NotificationNudge",
+                        buttonName = "toggle",
+                        properties = mapOf("desired_on" to desiredOn),
                     )
                 )
                 onToggleClick(desiredOn)
@@ -512,9 +502,9 @@ private fun AlarmTimeRow(
             color = EbbingTheme.colors.primaryDefault,
             modifier = Modifier.clickable {
                 analyticsHelper.logEvent(
-                    AnalyticsEvent(
-                        type = NotificationAnalytics.TIME_CLICK,
-                        properties = mutableMapOf()
+                    AnalyticsEvent.Click(
+                        screenName = "NotificationNudge",
+                        buttonName = "time",
                     )
                 )
                 onTimeClick()
@@ -637,9 +627,9 @@ private fun ResetButton(
         modifier = Modifier
             .clickable {
                 analyticsHelper.logEvent(
-                    AnalyticsEvent(
-                        type = NotificationAnalytics.RESET_CLICK,
-                        properties = mutableMapOf()
+                    AnalyticsEvent.Click(
+                        screenName = "NotificationNudge",
+                        buttonName = "reset",
                     )
                 )
                 onResetClick()

@@ -45,7 +45,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        logWidgetEvent("today_todo_widget_added")
+        logWidgetEvent("added")
     }
 
     override fun onUpdate(
@@ -62,13 +62,13 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> {
-                logWidgetEvent("today_todo_widget_refresh")
+                logWidgetEvent("refresh")
                 updateData(context)
             }
             CheckTodoAction.CHECK_TODO_ACTION -> {
                 val todoId = intent.extras?.getInt(TODO_ID)
                 todoId ?: return
-                logWidgetEvent("today_todo_widget_check_todo", mapOf("todoId" to todoId))
+                logWidgetEvent("check_todo", mapOf("todoId" to todoId))
                 checkTodo(todoId, context)
             }
         }
@@ -81,11 +81,15 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         updateData(context)
     }
 
-    private fun logWidgetEvent(eventName: String, properties: Map<String, Any?> = emptyMap()) {
+    private fun logWidgetEvent(
+        actionName: String,
+        properties: Map<String, Any?>? = null,
+    ) {
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = eventName,
-                properties = properties.toMutableMap()
+            AnalyticsEvent.Action(
+                screenName = "TodayTodoWidget",
+                actionName = actionName,
+                properties = properties,
             )
         )
     }
