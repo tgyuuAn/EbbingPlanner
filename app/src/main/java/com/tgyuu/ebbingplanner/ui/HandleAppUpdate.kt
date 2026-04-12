@@ -157,7 +157,11 @@ private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {
 private fun checkShouldUpdate(currentVersion: String, minVersion: String): Boolean {
     val current = normalizeVersion(currentVersion)
     val min = normalizeVersion(minVersion)
-    return current.zip(min).any { (cur, min) -> cur < min }
+    for ((cur, m) in current.zip(min)) {
+        if (cur < m) return true
+        if (cur > m) return false
+    }
+    return false
 }
 
 private fun normalizeVersion(version: String): List<Int> = version.split('.')
