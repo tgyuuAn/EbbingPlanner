@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }
@@ -36,11 +38,32 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.collections.immutable)
 
+            // Compose Multiplatform
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.components.resources)
+
+            // Decompose Navigation
+            implementation(libs.decompose)
+            implementation(libs.decompose.compose)
+
+            // KMP ViewModel
+            implementation(libs.lifecycle.viewmodel.kmp)
+            implementation(libs.lifecycle.viewmodel.compose.kmp)
+
             // Koin
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel.kmp)
 
             // Room KMP
             implementation(libs.androidx.room.runtime)
+
+            // Ktor HTTP Client
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.json)
         }
 
         commonTest.dependencies {
@@ -50,10 +73,13 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.koin.android)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.okhttp)
         }
 
         iosMain.dependencies {
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
@@ -77,7 +103,6 @@ room {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)

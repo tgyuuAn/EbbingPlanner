@@ -1,13 +1,18 @@
-# Firebase is temporarily disabled due to gRPC compatibility issues
-# Uncomment when needed:
-#
-# platform :ios, '15.0'
-#
-# target 'iosApp' do
-#   use_frameworks!
-#
-#   pod 'FirebaseCore'
-#   pod 'FirebaseFirestore'
-#   pod 'FirebaseAnalytics'
-#   pod 'FirebaseCrashlytics'
-# end
+platform :ios, '16.0'
+
+target 'iosApp' do
+  use_frameworks!
+
+  pod 'FirebaseCore', '~> 11.6'
+  pod 'FirebaseFirestore', '~> 11.6'
+  pod 'FirebaseAnalytics', '~> 11.6'
+  pod 'FirebaseCrashlytics', '~> 11.6'
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+    end
+  end
+end

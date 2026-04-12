@@ -88,12 +88,17 @@ fun String.toLocalDateTimeOrThrow(): LocalDateTime {
  * 기준일(referenceDate, 기본값: 오늘)로부터 이 날짜(this)가
  * 같으면 "오늘", 미래면 "N일 후", 과거면 "N일 전"을 반환
  */
-fun LocalDate.toRelativeDayDescription(referenceDate: LocalDate = LocalDate.now()): String {
-    val diff = this.daysUntil(referenceDate)
-    return when {
-        diff == 0 -> "오늘"
-        diff > 0 -> "${diff}일 후"
-        else -> "${diff.absoluteValue}일 전"
+fun LocalDate.toRelativeDayDescription(referenceDate: LocalDate? = null): String {
+    return try {
+        val ref = referenceDate ?: LocalDate.now()
+        val diff = this.daysUntil(ref)
+        when {
+            diff == 0 -> "오늘"
+            diff > 0 -> "${diff}일 전"
+            else -> "${diff.absoluteValue}일 후"
+        }
+    } catch (e: Exception) {
+        ""
     }
 }
 
