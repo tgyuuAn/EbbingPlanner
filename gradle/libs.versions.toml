@@ -83,6 +83,9 @@ metricsPerformance = "1.0.0-beta02"
 # https://amplitude.com/docs/sdks/analytics/android
 amplitude = "1.21.3"
 
+## Ktor
+ktor = "3.1.1"
+
 ## Accompanist
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
@@ -97,6 +100,18 @@ playAppUpdate = "2.1.0"
 # https://insert-koin.io/
 koin = "4.0.0"
 koinComposeMultiplatform = "4.0.0"
+
+## Compose Multiplatform
+# https://github.com/JetBrains/compose-multiplatform
+composeMultiplatform = "1.7.0"
+
+## Decompose (KMP Navigation)
+# https://github.com/arkivanov/Decompose
+decompose = "3.0.0"
+
+## KMP Lifecycle ViewModel
+# https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-viewmodel.html
+lifecycleViewModelKmp = "2.8.0"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -178,6 +193,12 @@ firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" 
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
 
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
@@ -194,6 +215,18 @@ koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmo
 # Room KMP
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.5.0" }
+
+# Decompose (KMP Navigation)
+decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
+decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
+
+# KMP Lifecycle ViewModel
+lifecycle-viewmodel-kmp = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleViewModelKmp" }
+lifecycle-viewmodel-compose-kmp = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelKmp" }
+
+# Koin Compose Multiplatform
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinComposeMultiplatform" }
+koin-compose-viewmodel-kmp = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koinComposeMultiplatform" }
 
 [bundles]
 
@@ -213,3 +246,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }

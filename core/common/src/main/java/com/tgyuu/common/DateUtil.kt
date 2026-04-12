@@ -91,8 +91,8 @@ fun LocalDate.toRelativeDayDescription(referenceDate: LocalDate = LocalDate.now(
     val diff = this.daysUntil(referenceDate)
     return when {
         diff == 0 -> "오늘"
-        diff > 0 -> "${diff}일 후"
-        else -> "${diff.absoluteValue}일 전"
+        diff > 0 -> "${diff}일 전"
+        else -> "${diff.absoluteValue}일 후"
     }
 }
 

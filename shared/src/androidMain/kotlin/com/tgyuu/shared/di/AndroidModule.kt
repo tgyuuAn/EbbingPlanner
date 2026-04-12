@@ -2,6 +2,7 @@ package com.tgyuu.shared.di
 
 import com.tgyuu.shared.database.EbbingDatabase
 import com.tgyuu.shared.database.createEbbingDatabase
+import com.tgyuu.shared.platform.Settings
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -10,6 +11,7 @@ import org.koin.dsl.module
  */
 val androidModule = module {
     single<EbbingDatabase> { createEbbingDatabase(androidContext()) }
+    single { Settings(androidContext()) }
 }
 
 /**

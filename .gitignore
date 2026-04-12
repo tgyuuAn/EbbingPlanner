@@ -16,3 +16,4 @@ keystore.properties
 obfuscated-stacktrace.txt
 app/google-services.json
 **/.idea/**
+iosApp/iosApp/GoogleService-Info.plist

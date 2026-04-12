@@ -2,7 +2,7 @@ name: EbbingPlanner
 options:
   bundleIdPrefix: com.tgyuu
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "16.0"
   xcodeVersion: "15.0"
   createIntermediateGroups: true
 
@@ -39,6 +39,7 @@ targets:
       - framework: ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework
         embed: true
         codeSign: false
+      - target: EbbingPlannerWidget
     preBuildScripts:
       - name: "Build Shared Framework"
         script: |
@@ -49,3 +50,24 @@ targets:
             ./gradlew :shared:linkDebugFrameworkIosArm64
           fi
         basedOnDependencyAnalysis: false
+    entitlements:
+      path: iosApp/EbbingPlanner.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tgyuu.ebbingplanner
+
+  EbbingPlannerWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: EbbingPlannerWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tgyuu.ebbingplanner.widget
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: EbbingPlannerWidget/Info.plist
+    entitlements:
+      path: EbbingPlannerWidget/EbbingPlannerWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tgyuu.ebbingplanner
