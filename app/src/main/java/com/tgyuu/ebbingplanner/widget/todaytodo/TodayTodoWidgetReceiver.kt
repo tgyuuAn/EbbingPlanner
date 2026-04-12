@@ -54,7 +54,6 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        logWidgetEvent("today_todo_widget_update")
         updateData(context)
     }
 

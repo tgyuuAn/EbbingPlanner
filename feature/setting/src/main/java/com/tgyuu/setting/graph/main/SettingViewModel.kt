@@ -148,8 +148,13 @@ class SettingViewModel @Inject constructor(
                 SettingSideEffect.RequestInAppUpdate(intent.isImmediateUpdate)
             )
 
-            SettingIntent.OnMondayStartToggleClick ->
-                configRepository.setMondayStart(!currentState.mondayStart)
+            is SettingIntent.OnStartDayClick ->
+                eventBus.sendEvent(EbbingEvent.ShowBottomSheet(intent.content))
+
+            is SettingIntent.OnUpdateStartDay -> {
+                configRepository.setMondayStart(intent.mondayStart)
+                eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+            }
         }
     }
 

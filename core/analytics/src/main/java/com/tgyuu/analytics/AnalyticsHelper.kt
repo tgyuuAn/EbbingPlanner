@@ -9,7 +9,6 @@ import androidx.navigation.NavHostController
 import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.BUTTON_NAME
 import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.SCREEN_NAME
 import com.tgyuu.analytics.AnalyticsEvent.Types.BUTTON_CLICK
-import com.tgyuu.analytics.AnalyticsEvent.Types.SCREEN_VIEW
 
 abstract class AnalyticsHelper {
     abstract fun logEvent(event: AnalyticsEvent)
@@ -32,14 +31,9 @@ fun TrackNavigationDestination(navController: NavHostController) {
     LifecycleStartEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val route = destination.route.orEmpty()
-            val screenName = extractScreenName(route)
+            val screenName = mapScreenName(route)
 
-            analyticsHelper.logEvent(
-                AnalyticsEvent(
-                    type = SCREEN_VIEW,
-                    properties = mutableMapOf(SCREEN_NAME to screenName)
-                )
-            )
+            analyticsHelper.logEvent(AnalyticsEvent(type = "View_$screenName"))
         }
 
         navController.addOnDestinationChangedListener(listener)
@@ -54,14 +48,7 @@ fun TrackScreenViewEvent(
     analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
 ) = LaunchedEffect(key) {
     if (screenName != null) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = SCREEN_VIEW,
-                properties = mutableMapOf(
-                    SCREEN_NAME to screenName,
-                ),
-            ),
-        )
+        analyticsHelper.logEvent(AnalyticsEvent(type = "View_$screenName"))
     }
 }
 
