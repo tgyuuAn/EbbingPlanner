@@ -30,27 +30,37 @@ class RepeatCycleViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: RepeatCycleIntent) {
         when (intent) {
-            RepeatCycleIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "RepeatCycle", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
-            is RepeatCycleIntent.OnDeleteClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "RepeatCycle", buttonName = "DeleteRepeatCycle")
-                )
-                deleteRepeatCycle(intent.repeatCycle)
-            }
-            is RepeatCycleIntent.OnEditClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "RepeatCycle", buttonName = "EditRepeatCycle")
-                )
-                navigationBus.navigate(
-                    NavigationEvent.To(RepeatCycleGraph.EditRepeatCycleRoute(intent.repeatCycle.id))
-                )
-            }
+            RepeatCycleIntent.OnBackClick -> onBackClick()
+            is RepeatCycleIntent.OnDeleteClick -> onDeleteClick(intent.repeatCycle)
+            is RepeatCycleIntent.OnEditClick -> onEditClick(intent.repeatCycle)
         }
+    }
+
+    private suspend fun onBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
+        )
+        navigationBus.navigate(NavigationEvent.Up)
+    }
+
+    private suspend fun onDeleteClick(repeatCycle: RepeatCycleUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteRepeatCycle")
+        )
+        deleteRepeatCycle(repeatCycle)
+    }
+
+    private suspend fun onEditClick(repeatCycle: RepeatCycleUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditRepeatCycle")
+        )
+        navigationBus.navigate(
+            NavigationEvent.To(RepeatCycleGraph.EditRepeatCycleRoute(repeatCycle.id))
+        )
+    }
+
+    companion object {
+        private const val SCREEN_NAME = "RepeatCycle"
     }
 
     internal fun loadTags() = viewModelScope.launch {

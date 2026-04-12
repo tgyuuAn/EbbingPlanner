@@ -30,27 +30,37 @@ class TagViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: TagIntent) {
         when (intent) {
-            TagIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Tag", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
-            is TagIntent.OnDeleteClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Tag", buttonName = "DeleteTag")
-                )
-                deleteTag(intent.tag)
-            }
-            is TagIntent.OnEditClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Tag", buttonName = "EditTag")
-                )
-                navigationBus.navigate(
-                    NavigationEvent.To(TagGraph.EditTagRoute(intent.tag.id))
-                )
-            }
+            TagIntent.OnBackClick -> onBackClick()
+            is TagIntent.OnDeleteClick -> onDeleteClick(intent.tag)
+            is TagIntent.OnEditClick -> onEditClick(intent.tag)
         }
+    }
+
+    private suspend fun onBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
+        )
+        navigationBus.navigate(NavigationEvent.Up)
+    }
+
+    private suspend fun onDeleteClick(tag: TodoTagUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteTag")
+        )
+        deleteTag(tag)
+    }
+
+    private suspend fun onEditClick(tag: TodoTagUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditTag")
+        )
+        navigationBus.navigate(
+            NavigationEvent.To(TagGraph.EditTagRoute(tag.id))
+        )
+    }
+
+    companion object {
+        private const val SCREEN_NAME = "Tag"
     }
 
     internal fun loadTags() = viewModelScope.launch {

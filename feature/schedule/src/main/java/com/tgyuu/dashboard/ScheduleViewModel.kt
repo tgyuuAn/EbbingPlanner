@@ -78,25 +78,31 @@ class ScheduleViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: ScheduleIntent) {
         when (intent) {
-            is ScheduleIntent.OnTagClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Tag")
-                )
-                setSelectedTag(intent.tag)
-            }
-            is ScheduleIntent.OnInfoClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Info")
-                )
-                setSelectedTodoInfo(intent.todoInfo)
-            }
-            is ScheduleIntent.OnScheduleClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Schedule")
-                )
-                onCheckedChange(intent.schedule)
-            }
+            is ScheduleIntent.OnTagClick -> onTagClick(intent.tag)
+            is ScheduleIntent.OnInfoClick -> onInfoClick(intent.todoInfo)
+            is ScheduleIntent.OnScheduleClick -> onScheduleClick(intent.schedule)
         }
+    }
+
+    private fun onTagClick(tag: TodoTagUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Tag")
+        )
+        setSelectedTag(tag)
+    }
+
+    private fun onInfoClick(todoInfo: TodoInfoUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Info")
+        )
+        setSelectedTodoInfo(todoInfo)
+    }
+
+    private suspend fun onScheduleClick(schedule: TodoScheduleUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Schedule")
+        )
+        onCheckedChange(schedule)
     }
 
     private fun setSelectedTag(tag: TodoTagUiModel) {

@@ -74,49 +74,69 @@ class SyncMainViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: SyncIntent) {
         when (intent) {
-            SyncIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
-            SyncIntent.OnSyncUpClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Sync")
-                )
-                syncUpData()
-            }
-            SyncIntent.OnConnectClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Connect")
-                )
-                navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
-            }
-            SyncIntent.OnDisconnectClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Disconnect")
-                )
-                disconnectAnother()
-            }
-            SyncIntent.OnSyncDialogBackClick -> analyticsHelper.logEvent(
-                AnalyticsEvent.Click(screenName = "SyncDialog", buttonName = "Back")
-            )
-            SyncIntent.OnSyncDialogSyncClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "SyncDialog", buttonName = "Sync")
-                )
-                syncUpData()
-            }
-            SyncIntent.OnDisconnectDialogBackClick -> analyticsHelper.logEvent(
-                AnalyticsEvent.Click(screenName = "DisconnectDialog", buttonName = "Back")
-            )
-            SyncIntent.OnDisconnectDialogDisconnectClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "DisconnectDialog", buttonName = "Disconnect")
-                )
-                disconnectAnother()
-            }
+            SyncIntent.OnBackClick -> onBackClick()
+            SyncIntent.OnSyncUpClick -> onSyncUpClick()
+            SyncIntent.OnConnectClick -> onConnectClick()
+            SyncIntent.OnDisconnectClick -> onDisconnectClick()
+            SyncIntent.OnSyncDialogBackClick -> onSyncDialogBackClick()
+            SyncIntent.OnSyncDialogSyncClick -> onSyncDialogSyncClick()
+            SyncIntent.OnDisconnectDialogBackClick -> onDisconnectDialogBackClick()
+            SyncIntent.OnDisconnectDialogDisconnectClick -> onDisconnectDialogDisconnectClick()
         }
+    }
+
+    private suspend fun onBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
+        )
+        navigationBus.navigate(NavigationEvent.Up)
+    }
+
+    private fun onSyncUpClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Sync")
+        )
+        syncUpData()
+    }
+
+    private suspend fun onConnectClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Connect")
+        )
+        navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
+    }
+
+    private fun onDisconnectClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Disconnect")
+        )
+        disconnectAnother()
+    }
+
+    private fun onSyncDialogBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SYNC_DIALOG, buttonName = "Back")
+        )
+    }
+
+    private fun onSyncDialogSyncClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SYNC_DIALOG, buttonName = "Sync")
+        )
+        syncUpData()
+    }
+
+    private fun onDisconnectDialogBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = DISCONNECT_DIALOG, buttonName = "Back")
+        )
+    }
+
+    private fun onDisconnectDialogDisconnectClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = DISCONNECT_DIALOG, buttonName = "Disconnect")
+        )
+        disconnectAnother()
     }
 
     private fun syncUpData() = viewModelScope.launch {
@@ -179,6 +199,9 @@ class SyncMainViewModel @Inject constructor(
     }
 
     companion object {
+        private const val SCREEN_NAME = "SyncMain"
+        private const val SYNC_DIALOG = "SyncDialog"
+        private const val DISCONNECT_DIALOG = "DisconnectDialog"
         private const val SYNC_UP_COOL_TIME = 10_000L
     }
 }
