@@ -2,6 +2,8 @@ package com.tgyuu.tag.graph.edittag
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -19,6 +21,7 @@ class EditTagViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
 
@@ -41,7 +44,12 @@ class EditTagViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditTagIntent) {
         when (intent) {
-            EditTagIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            EditTagIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "EditTag", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             is EditTagIntent.OnNameChange -> onNameChange(intent.name)
             is EditTagIntent.OnColorDropDownClick -> eventBus.sendEvent(
                 EbbingEvent.ShowBottomSheet(intent.content)
@@ -64,6 +72,10 @@ class EditTagViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "EditTag", buttonName = "Save")
+        )
+
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return

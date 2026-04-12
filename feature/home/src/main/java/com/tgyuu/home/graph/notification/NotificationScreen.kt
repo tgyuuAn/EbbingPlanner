@@ -48,7 +48,6 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.LocalAnalyticsHelper
-import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.component.EbbingSubTopBar
@@ -120,7 +119,6 @@ private fun NotificationScreenPhone(
     var pendingNotificationEnable by remember { mutableStateOf(false) }
     var isShowTimeDialog by remember { mutableStateOf(false) }
 
-    TrackScreenViewEvent(key = Unit, screenName = "NotificationNudgeScreen")
     LaunchedEffect(Unit) {
         analyticsHelper.logEvent(AnalyticsEvent.View(screenName = "NotificationNudge"))
     }
@@ -236,7 +234,6 @@ private fun NotificationScreenTablet(
     var pendingNotificationEnable by remember { mutableStateOf(false) }
     var isShowTimeDialog by remember { mutableStateOf(false) }
 
-    TrackScreenViewEvent(key = Unit, screenName = "NotificationNudgeScreen")
     LaunchedEffect(Unit) {
         analyticsHelper.logEvent(AnalyticsEvent.View(screenName = "NotificationNudge"))
     }

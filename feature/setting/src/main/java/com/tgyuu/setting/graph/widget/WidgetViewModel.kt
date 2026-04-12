@@ -1,6 +1,8 @@
 package com.tgyuu.setting.graph.widget
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -21,11 +23,17 @@ class WidgetViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<WidgetState, WidgetIntent>(WidgetState()) {
 
     override suspend fun processIntent(intent: WidgetIntent) {
         when (intent) {
-            WidgetIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            WidgetIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "Widget", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             WidgetIntent.OnSaveClick -> saveWidgetConfigure()
             is WidgetIntent.OnBackgroundAlphaChange -> setBackgroundAlpha(intent.alpha)
             is WidgetIntent.OnTextAlphaChange -> setTextAlpha(intent.alpha)
@@ -76,6 +84,10 @@ class WidgetViewModel @Inject constructor(
     }
 
     private fun saveWidgetConfigure() = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Widget", buttonName = "Apply")
+        )
+
         currentState.selectedBackgroundAlpha ?: return@launch
         currentState.selectedTextAlpha ?: return@launch
         currentState.selectedTheme ?: return@launch

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
@@ -13,6 +15,7 @@ import com.tgyuu.designsystem.model.TodoScheduleUiModel
 @Composable
 internal fun ConfirmDeleteRemainingDialog(
     schedule: TodoScheduleUiModel,
+    analyticsHelper: AnalyticsHelper,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -33,8 +36,24 @@ internal fun ConfirmDeleteRemainingDialog(
             EbbingDialogBottom(
                 leftButtonText = "뒤로",
                 rightButtonText = "삭제",
-                onLeftButtonClick = onDismissRequest,
-                onRightButtonClick = onDeleteClick,
+                onLeftButtonClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = "DeleteAllDialog",
+                            buttonName = "Back",
+                        )
+                    )
+                    onDismissRequest()
+                },
+                onRightButtonClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = "DeleteAllDialog",
+                            buttonName = "Delete",
+                        )
+                    )
+                    onDeleteClick()
+                },
             )
         },
         onDismissRequest = onDismissRequest,

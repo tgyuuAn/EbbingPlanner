@@ -59,12 +59,12 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
-import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
+import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
-import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
+import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
 import java.time.LocalDate
 
 class CalendarWidget : GlanceAppWidget() {
@@ -355,9 +355,9 @@ private fun ColumnScope.SelectedDateTodoList(
             modifier = GlanceModifier
                 .size(20.dp)
                 .clickable(
-                    actionStartActivity<MainActivity>(
+                    actionRunCallback<AddTodoFromWidgetAction>(
                         actionParametersOf(
-                            destinationKey to ADD_TODO,
+                            widgetSourceKey to "CalendarWidget",
                             selectedDateKey to selectedDate.toString()
                         )
                     )

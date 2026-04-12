@@ -1,5 +1,7 @@
 package com.tgyuu.tag.graph.addtag
 
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -16,11 +18,17 @@ class AddTagViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState()) {
 
     override suspend fun processIntent(intent: AddTagIntent) {
         when (intent) {
-            AddTagIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            AddTagIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "AddTag", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             is AddTagIntent.OnNameChange -> onNameChange(intent.name)
             is AddTagIntent.OnColorDropDownClick -> eventBus.sendEvent(
                 EbbingEvent.ShowBottomSheet(intent.content)
@@ -43,6 +51,10 @@ class AddTagViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "AddTag", buttonName = "Save")
+        )
+
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return

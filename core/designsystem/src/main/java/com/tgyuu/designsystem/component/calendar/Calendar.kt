@@ -23,6 +23,7 @@ fun EbbingCalendar(
     showSyncButton: Boolean = true,
     startFromMonday: Boolean = false,
     onSelectDate: (LocalDate) -> Unit = {},
+    onGotoTodayClick: () -> Unit = {},
     onSyncClick: () -> Unit = {},
 ) {
     val initialPage = Int.MAX_VALUE / 2
@@ -46,6 +47,7 @@ fun EbbingCalendar(
         CalendarController(
             currentDate = calendarState.currentDisplayDate,
             onGotoTodayClick = {
+                onGotoTodayClick()
                 scope.launch {
                     pagerState.animateScrollToPage(initialPage)
                     calendarState.onDateSelect(LocalDate.now())

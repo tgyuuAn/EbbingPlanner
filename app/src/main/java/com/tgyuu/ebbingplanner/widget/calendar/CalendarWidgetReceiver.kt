@@ -48,7 +48,9 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        logWidgetEvent("added")
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "CalendarWidget", buttonName = "Set")
+        )
     }
 
     override fun onUpdate(
@@ -57,7 +59,6 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        logWidgetEvent("update")
         updateData(context)
     }
 
@@ -66,13 +67,21 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> {
-                logWidgetEvent("refresh")
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "CalendarWidget", buttonName = "Refresh")
+                )
                 updateData(context)
             }
             CheckTodoAction.CHECK_TODO_ACTION -> {
                 val todoId = intent.extras?.getInt(TODO_ID)
                 todoId ?: return
-                logWidgetEvent("check_todo", mapOf("todoId" to todoId))
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(
+                        screenName = "CalendarWidget",
+                        buttonName = "CheckTodo",
+                        properties = mapOf("todoId" to todoId),
+                    )
+                )
                 checkTodo(todoId, context)
             }
         }
@@ -83,19 +92,6 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
         todoRepository.updateTodo(updatedTodo)
         updateData(context)
-    }
-
-    private fun logWidgetEvent(
-        actionName: String,
-        properties: Map<String, Any?>? = null,
-    ) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Action(
-                screenName = "CalendarWidget",
-                actionName = actionName,
-                properties = properties,
-            )
-        )
     }
 
     private fun updateData(context: Context) = scope.launch {

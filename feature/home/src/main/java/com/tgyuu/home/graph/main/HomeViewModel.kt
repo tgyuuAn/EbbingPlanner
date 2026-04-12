@@ -101,7 +101,12 @@ class HomeViewModel @Inject constructor(
             is HomeIntent.OnDeleteScheduleClick -> onDeleteScheduleClick(intent.content)
             is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule.toDomainModel())
             is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule.toDomainModel())
-            HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            HomeIntent.OnSyncClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "Home", buttonName = "Sync")
+                )
+                navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            }
             is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
             HomeIntent.OnWidgetNudgeDismiss -> setState { copy(showWidgetNudgeDialog = false) }
         }
@@ -271,6 +276,9 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onDelaySchedule(schedule: TodoSchedule, includeRestDays: Boolean = false) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "SaveDelaySingle")
+        )
         val todoInfo = todoRepository.loadTodoInfoById(schedule.infoId)
         val restDays = if (includeRestDays) emptySet() else todoInfo.restDays
 
@@ -336,6 +344,9 @@ class HomeViewModel @Inject constructor(
         schedule: TodoSchedule,
         includeRestDays: Boolean = false
     ) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "SaveDelayAll")
+        )
         val todoInfo = todoRepository.loadTodoInfoById(schedule.infoId)
         val restDays = if (includeRestDays) emptySet() else todoInfo.restDays
 
@@ -428,6 +439,9 @@ class HomeViewModel @Inject constructor(
 
 
     private suspend fun deleteMemo(schedule: TodoSchedule) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "DeleteMemo")
+        )
         val updated = schedule.copy(memo = "")
         todoRepository.updateTodo(updated)
 

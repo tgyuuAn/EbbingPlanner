@@ -50,13 +50,13 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
-import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
+import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
+import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
 import java.time.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
@@ -171,8 +171,8 @@ private fun TodayTodoWidgetContent(
                 modifier = GlanceModifier
                     .size(20.dp)
                     .clickable(
-                        actionStartActivity<MainActivity>(
-                            actionParametersOf(destinationKey to ADD_TODO)
+                        actionRunCallback<AddTodoFromWidgetAction>(
+                            actionParametersOf(widgetSourceKey to "TodoWidget")
                         )
                     ),
             )

@@ -1,6 +1,8 @@
 package com.tgyuu.sync.graph.main
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -29,6 +31,7 @@ class SyncMainViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val errorBus: ErrorBus,
     internal val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
     internal suspend fun loadInitData() = coroutineScope {
@@ -71,10 +74,48 @@ class SyncMainViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: SyncIntent) {
         when (intent) {
-            SyncIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            SyncIntent.OnSyncUpClick -> syncUpData()
-            SyncIntent.OnConnectClick -> navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
-            SyncIntent.OnDisconnectClick -> disconnectAnother()
+            SyncIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
+            SyncIntent.OnSyncUpClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Sync")
+                )
+                syncUpData()
+            }
+            SyncIntent.OnConnectClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Connect")
+                )
+                navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
+            }
+            SyncIntent.OnDisconnectClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "SyncMain", buttonName = "Disconnect")
+                )
+                disconnectAnother()
+            }
+            SyncIntent.OnSyncDialogBackClick -> analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = "SyncDialog", buttonName = "Back")
+            )
+            SyncIntent.OnSyncDialogSyncClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "SyncDialog", buttonName = "Sync")
+                )
+                syncUpData()
+            }
+            SyncIntent.OnDisconnectDialogBackClick -> analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = "DisconnectDialog", buttonName = "Back")
+            )
+            SyncIntent.OnDisconnectDialogDisconnectClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "DisconnectDialog", buttonName = "Disconnect")
+                )
+                disconnectAnother()
+            }
         }
     }
 

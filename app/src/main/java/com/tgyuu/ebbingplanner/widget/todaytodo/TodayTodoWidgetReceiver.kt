@@ -19,7 +19,9 @@ import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
+import com.tgyuu.ebbingplanner.widget.util.ADD_TODO_ACTION
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.KEY_WIDGET_SOURCE
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
@@ -45,7 +47,9 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        logWidgetEvent("added")
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "TodoWidget", buttonName = "Set")
+        )
     }
 
     override fun onUpdate(
@@ -62,14 +66,28 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> {
-                logWidgetEvent("refresh")
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "TodoWidget", buttonName = "Refresh")
+                )
                 updateData(context)
             }
             CheckTodoAction.CHECK_TODO_ACTION -> {
                 val todoId = intent.extras?.getInt(TODO_ID)
                 todoId ?: return
-                logWidgetEvent("check_todo", mapOf("todoId" to todoId))
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(
+                        screenName = "TodoWidget",
+                        buttonName = "Check",
+                        properties = mapOf("todoId" to todoId),
+                    )
+                )
                 checkTodo(todoId, context)
+            }
+            ADD_TODO_ACTION -> {
+                val source = intent.extras?.getString(KEY_WIDGET_SOURCE) ?: "TodoWidget"
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = source, buttonName = "AddTodo")
+                )
             }
         }
     }
@@ -79,19 +97,6 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
         todoRepository.updateTodo(updatedTodo)
         updateData(context)
-    }
-
-    private fun logWidgetEvent(
-        actionName: String,
-        properties: Map<String, Any?>? = null,
-    ) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Action(
-                screenName = "TodayTodoWidget",
-                actionName = actionName,
-                properties = properties,
-            )
-        )
     }
 
     private fun updateData(context: Context) = scope.launch {

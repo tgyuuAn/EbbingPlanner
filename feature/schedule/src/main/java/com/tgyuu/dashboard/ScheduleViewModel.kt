@@ -1,5 +1,7 @@
 package com.tgyuu.dashboard
 
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.dashboard.contract.ScheduleIntent
@@ -22,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
     internal suspend fun loadTodoSchedules() = coroutineScope {
@@ -75,9 +78,24 @@ class ScheduleViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: ScheduleIntent) {
         when (intent) {
-            is ScheduleIntent.OnTagClick -> setSelectedTag(intent.tag)
-            is ScheduleIntent.OnInfoClick -> setSelectedTodoInfo(intent.todoInfo)
-            is ScheduleIntent.OnScheduleClick -> onCheckedChange(intent.schedule)
+            is ScheduleIntent.OnTagClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Tag")
+                )
+                setSelectedTag(intent.tag)
+            }
+            is ScheduleIntent.OnInfoClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Info")
+                )
+                setSelectedTodoInfo(intent.todoInfo)
+            }
+            is ScheduleIntent.OnScheduleClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Schedule")
+                )
+                onCheckedChange(intent.schedule)
+            }
         }
     }
 
@@ -96,6 +114,10 @@ class ScheduleViewModel @Inject constructor(
         if (todoInfo == currentState.selectedTodoInfo) return
 
         setState { copy(selectedTodoInfo = todoInfo) }
+    }
+
+    companion object {
+        private const val SCREEN_NAME = "Schedule"
     }
 
     private suspend fun onCheckedChange(schedule: TodoScheduleUiModel) {

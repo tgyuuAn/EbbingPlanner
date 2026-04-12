@@ -1,6 +1,8 @@
 package com.tgyuu.sync.graph.connect
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -28,6 +30,7 @@ class ConnectViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val errorBus: ErrorBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val timer: Timer,
 ) : BaseViewModel<ConnectState, ConnectIntent>(ConnectState()) {
     private var timerJob: Job? = null
@@ -64,7 +67,12 @@ class ConnectViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: ConnectIntent) {
         when (intent) {
-            ConnectIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            ConnectIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "Connect", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             ConnectIntent.OnClickConnectAnother -> connectAnother()
             ConnectIntent.OnClickGenerateCode -> generateCode()
             is ConnectIntent.OnMyCodeChange -> setMyCode(intent.code)
@@ -97,6 +105,10 @@ class ConnectViewModel @Inject constructor(
     }
 
     private suspend fun generateCode() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Connect", buttonName = "GenerateCode")
+        )
+
         if (currentState.myCode.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드는 비어있을 수 없습니다."))
             return
@@ -127,6 +139,10 @@ class ConnectViewModel @Inject constructor(
     }
 
     private suspend fun connectAnother() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Connect", buttonName = "ConnectCode")
+        )
+
         if (currentState.anotherCode.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드는 비어있을 수 없습니다."))
             return

@@ -65,6 +65,10 @@ internal fun SyncMainRoute(
         },
         onConnectClick = { viewModel.onIntent(SyncIntent.OnConnectClick) },
         onDisconnectClick = { viewModel.onIntent(SyncIntent.OnDisconnectClick) },
+        onSyncDialogBackClick = { viewModel.onIntent(SyncIntent.OnSyncDialogBackClick) },
+        onSyncDialogSyncClick = { viewModel.onIntent(SyncIntent.OnSyncDialogSyncClick) },
+        onDisconnectDialogBackClick = { viewModel.onIntent(SyncIntent.OnDisconnectDialogBackClick) },
+        onDisconnectDialogDisconnectClick = { viewModel.onIntent(SyncIntent.OnDisconnectDialogDisconnectClick) },
     )
 }
 
@@ -75,6 +79,10 @@ internal fun SyncMainScreen(
     onSyncUpClick: () -> Unit,
     onConnectClick: () -> Unit,
     onDisconnectClick: () -> Unit,
+    onSyncDialogBackClick: () -> Unit,
+    onSyncDialogSyncClick: () -> Unit,
+    onDisconnectDialogBackClick: () -> Unit,
+    onDisconnectDialogDisconnectClick: () -> Unit,
     showSyncedAlreadySnackBar: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -83,9 +91,12 @@ internal fun SyncMainScreen(
 
     if (isShowSyncDialog) {
         ConfirmSyncUpDialog(
-            onDismissRequest = { isShowSyncDialog = false },
+            onDismissRequest = {
+                onSyncDialogBackClick()
+                isShowSyncDialog = false
+            },
             onAcceptClick = {
-                onSyncUpClick()
+                onSyncDialogSyncClick()
                 isShowSyncDialog = false
             },
         )
@@ -93,9 +104,12 @@ internal fun SyncMainScreen(
 
     if (isShowDisconnectDialog) {
         ConfirmDisconnectDialog(
-            onDismissRequest = { isShowDisconnectDialog = false },
+            onDismissRequest = {
+                onDisconnectDialogBackClick()
+                isShowDisconnectDialog = false
+            },
             onAcceptClick = {
-                onDisconnectClick()
+                onDisconnectDialogDisconnectClick()
                 isShowDisconnectDialog = false
             },
         )

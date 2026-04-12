@@ -4,6 +4,8 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -37,6 +39,7 @@ class EditTodoViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
@@ -94,12 +97,17 @@ class EditTodoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditTodoIntent) {
         when (intent) {
-            EditTodoIntent.OnBackClick -> navigationBus.navigate(
-                NavigationEvent.To(
-                    route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),
-                    popUpTo = true,
+            EditTodoIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "EditTodo", buttonName = "Back")
                 )
-            )
+                navigationBus.navigate(
+                    NavigationEvent.To(
+                        route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),
+                        popUpTo = true,
+                    )
+                )
+            }
 
             is EditTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)

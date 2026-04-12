@@ -2,6 +2,8 @@ package com.tgyuu.setting.graph.main
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -38,6 +40,7 @@ class SettingViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
     val inAppReviewManager: InAppReviewManager,
     val inAppUpdateManager: InAppUpdateManager,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
@@ -86,80 +89,168 @@ class SettingViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: SettingIntent) {
         when (intent) {
-            SettingIntent.OnNoticeClick -> navigateToWebView(
-                "공지사항", BuildConfig.EBBING_NOTICE_URL
-            )
-
-            SettingIntent.OnPrivacyAndPolicyClick -> navigateToWebView(
-                "개인정보처리방침", BuildConfig.EBBING_PRIVACY_AND_POLICY_URL
-            )
-
-            SettingIntent.OnTermsOfUseClick -> navigateToWebView(
-                "이용약관", BuildConfig.EBBING_TERMS_OF_USE_URL
-            )
-
+            SettingIntent.OnNoticeClick -> onNoticeClick()
+            SettingIntent.OnPrivacyAndPolicyClick -> onPrivacyAndPolicyClick()
+            SettingIntent.OnTermsOfUseClick -> onTermsOfUseClick()
             SettingIntent.OnNotificationToggleClick -> onNotificationToggleClick()
-            is SettingIntent.OnAlarmTimeClick -> eventBus.sendEvent(
-                EbbingEvent.ShowBottomSheet(
-                    intent.content
-                )
-            )
-
-            is SettingIntent.OnAlarmMessageClick -> {
-                setState {
-                    copy(
-                        alarmMessageBottomSheet = AlarmMessageBottomSheetState(
-                            message = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
-                            originMessage = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
-                        )
-                    )
-                }
-                eventBus.sendEvent(EbbingEvent.ShowBottomSheet(intent.content))
-            }
-
-            is SettingIntent.OnAlarmMessageChange -> {
-                setState {
-                    copy(alarmMessageBottomSheet = alarmMessageBottomSheet.copy(message = intent.message))
-                }
-            }
-
-            SettingIntent.OnAlarmMessageReset -> {
-                setState {
-                    copy(
-                        alarmMessageBottomSheet = alarmMessageBottomSheet.copy(
-                            message = DEFAULT_ALARM_MESSAGE
-                        )
-                    )
-                }
-            }
-
+            is SettingIntent.OnAlarmTimeClick -> onAlarmTimeClick(intent.content)
+            is SettingIntent.OnAlarmMessageClick -> onAlarmMessageClick(intent.content)
+            is SettingIntent.OnAlarmMessageChange -> onAlarmMessageChange(intent.message)
+            SettingIntent.OnAlarmMessageReset -> onAlarmMessageReset()
             SettingIntent.OnApplyAlarmMessage -> applyAlarmMessage()
-
-            SettingIntent.OnTagManageClick -> navigationBus.navigate(To(TagGraph.TagRoute))
+            SettingIntent.OnTagManageClick -> onTagManageClick()
             is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
-            SettingIntent.OnRepeatCycleManageClick -> navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
-
-            SettingIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
-            SettingIntent.OnAppThemeManageClick -> navigationBus.navigate(To(SettingGraph.ThemeRoute))
-            SettingIntent.OnWidgetManageClick -> navigationBus.navigate(To(SettingGraph.WidgetRoute))
-            SettingIntent.OnClearClick -> clearData()
-            SettingIntent.OnInAppReviewClick -> _sideEffect.send(SettingSideEffect.RequestInAppReview)
-            is SettingIntent.OnUpdateClick -> _sideEffect.send(
-                SettingSideEffect.RequestInAppUpdate(intent.isImmediateUpdate)
-            )
-
-            is SettingIntent.OnStartDayClick ->
-                eventBus.sendEvent(EbbingEvent.ShowBottomSheet(intent.content))
-
-            is SettingIntent.OnUpdateStartDay -> {
-                configRepository.setMondayStart(intent.mondayStart)
-                eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-            }
+            SettingIntent.OnRepeatCycleManageClick -> onRepeatCycleManageClick()
+            SettingIntent.OnSyncClick -> onSyncClick()
+            SettingIntent.OnAppThemeManageClick -> onAppThemeManageClick()
+            SettingIntent.OnWidgetManageClick -> onWidgetManageClick()
+            SettingIntent.OnClearClick -> onClearClick()
+            SettingIntent.OnInAppReviewClick -> onInAppReviewClick()
+            is SettingIntent.OnUpdateClick -> onUpdateClick(intent.isImmediateUpdate)
+            is SettingIntent.OnStartDayClick -> onStartDayClick(intent.content)
+            is SettingIntent.OnUpdateStartDay -> onUpdateStartDay(intent.mondayStart)
         }
     }
 
+    private suspend fun onNoticeClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Notice")
+        )
+        navigateToWebView("공지사항", BuildConfig.EBBING_NOTICE_URL)
+    }
+
+    private suspend fun onPrivacyAndPolicyClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "PrivacyAndPolicy")
+        )
+        navigateToWebView("개인정보처리방침", BuildConfig.EBBING_PRIVACY_AND_POLICY_URL)
+    }
+
+    private suspend fun onTermsOfUseClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "TermsOfUse")
+        )
+        navigateToWebView("이용약관", BuildConfig.EBBING_TERMS_OF_USE_URL)
+    }
+
     private suspend fun onNotificationToggleClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "NotificationNudge_Toggle")
+        )
         configRepository.setNotificationEnabled(!currentState.notificationEnabled)
+    }
+
+    private suspend fun onAlarmTimeClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "NotificationNudge_Time")
+        )
+        eventBus.sendEvent(EbbingEvent.ShowBottomSheet(content))
+    }
+
+    private suspend fun onAlarmMessageClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "NotificationMessage")
+        )
+        setState {
+            copy(
+                alarmMessageBottomSheet = AlarmMessageBottomSheetState(
+                    message = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
+                    originMessage = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
+                )
+            )
+        }
+        eventBus.sendEvent(EbbingEvent.ShowBottomSheet(content))
+    }
+
+    private fun onAlarmMessageChange(message: String) {
+        setState {
+            copy(alarmMessageBottomSheet = alarmMessageBottomSheet.copy(message = message))
+        }
+    }
+
+    private fun onAlarmMessageReset() {
+        setState {
+            copy(
+                alarmMessageBottomSheet = alarmMessageBottomSheet.copy(
+                    message = DEFAULT_ALARM_MESSAGE
+                )
+            )
+        }
+    }
+
+    private suspend fun onTagManageClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "ManageTag")
+        )
+        navigationBus.navigate(To(TagGraph.TagRoute))
+    }
+
+    private suspend fun onRepeatCycleManageClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "ManageRepeatCycle")
+        )
+        navigationBus.navigate(To(RepeatCycleGraph.RepeatCycleRoute))
+    }
+
+    private suspend fun onSyncClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "SyncData")
+        )
+        navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+    }
+
+    private suspend fun onAppThemeManageClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditAppTheme")
+        )
+        navigationBus.navigate(To(SettingGraph.ThemeRoute))
+    }
+
+    private suspend fun onWidgetManageClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditWidgetTheme")
+        )
+        navigationBus.navigate(To(SettingGraph.WidgetRoute))
+    }
+
+    private fun onClearClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "ClearData")
+        )
+        clearData()
+    }
+
+    private suspend fun onInAppReviewClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "InAppReview")
+        )
+        _sideEffect.send(SettingSideEffect.RequestInAppReview)
+    }
+
+    private suspend fun onUpdateClick(isImmediateUpdate: Boolean) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Update")
+        )
+        _sideEffect.send(SettingSideEffect.RequestInAppUpdate(isImmediateUpdate))
+    }
+
+    private suspend fun onStartDayClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "StartDay")
+        )
+        eventBus.sendEvent(EbbingEvent.ShowBottomSheet(content))
+    }
+
+    private suspend fun onUpdateStartDay(mondayStart: Boolean) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = SCREEN_NAME,
+                buttonName = "ApplyStartDay",
+                properties = mapOf("monday_start" to mondayStart),
+            )
+        )
+        configRepository.setMondayStart(mondayStart)
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 
     private suspend fun navigateToWebView(title: String, url: String) =
@@ -195,6 +286,10 @@ class SettingViewModel @Inject constructor(
         setState { copy(alarmMessage = message) }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 메시지를 변경했어요"))
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+    }
+
+    companion object {
+        private const val SCREEN_NAME = "Setting"
     }
 
     private fun clearData() = viewModelScope.launch {

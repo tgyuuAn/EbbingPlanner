@@ -1,5 +1,7 @@
 package com.tgyuu.memo.graph.addmemo
 
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -18,12 +20,18 @@ class AddRepeatCycleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState()) {
 
     override suspend fun processIntent(intent: AddRepeatCycleIntent) {
         when (intent) {
             is AddRepeatCycleIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            AddRepeatCycleIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            AddRepeatCycleIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "AddRepeatCycle", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             AddRepeatCycleIntent.OnSaveClick -> saveRepeatCycle()
         }
     }
@@ -46,6 +54,9 @@ class AddRepeatCycleViewModel @Inject constructor(
                 return
             }
 
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = "AddRepeatCycle", buttonName = "SaveRepeatCycle")
+            )
             todoRepository.addRepeatCycle(intervals = intervals)
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 추가하였습니다"))
             navigationBus.navigate(NavigationEvent.Up)
