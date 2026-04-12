@@ -6,10 +6,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.BUTTON_NAME
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.SCREEN_NAME
-import com.tgyuu.analytics.AnalyticsEvent.Types.BUTTON_CLICK
-import com.tgyuu.analytics.AnalyticsEvent.Types.SCREEN_VIEW
 
 abstract class AnalyticsHelper {
     abstract fun logEvent(event: AnalyticsEvent)
@@ -32,14 +28,9 @@ fun TrackNavigationDestination(navController: NavHostController) {
     LifecycleStartEffect(navController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val route = destination.route.orEmpty()
-            val screenName = extractScreenName(route)
+            val screenName = mapScreenName(route)
 
-            analyticsHelper.logEvent(
-                AnalyticsEvent(
-                    type = SCREEN_VIEW,
-                    properties = mutableMapOf(SCREEN_NAME to screenName)
-                )
-            )
+            analyticsHelper.logEvent(AnalyticsEvent.View(screenName = screenName))
         }
 
         navController.addOnDestinationChangedListener(listener)
@@ -54,14 +45,7 @@ fun TrackScreenViewEvent(
     analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
 ) = LaunchedEffect(key) {
     if (screenName != null) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = SCREEN_VIEW,
-                properties = mutableMapOf(
-                    SCREEN_NAME to screenName,
-                ),
-            ),
-        )
+        analyticsHelper.logEvent(AnalyticsEvent.View(screenName = screenName))
     }
 }
 
@@ -70,20 +54,14 @@ fun TrackClickEvent(
     key: Any?,
     screenName: String,
     buttonName: String,
-    properties: MutableMap<String, Any?>? = null,
+    properties: Map<String, Any?>? = null,
     analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
 ) = LaunchedEffect(key) {
-    val eventProperties = mutableMapOf<String, Any?>(
-        SCREEN_NAME to screenName,
-        BUTTON_NAME to buttonName,
-    )
-
-    properties?.let { eventProperties.putAll(it) }
-
     analyticsHelper.logEvent(
-        AnalyticsEvent(
-            type = BUTTON_CLICK,
-            properties = eventProperties
+        AnalyticsEvent.Click(
+            screenName = screenName,
+            buttonName = buttonName,
+            properties = properties,
         )
     )
 }

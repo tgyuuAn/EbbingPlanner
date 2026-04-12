@@ -3,13 +3,11 @@ package com.tgyuu.home.graph.main
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.ACTION_NAME
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.ACTION_RESULT
-import com.tgyuu.analytics.AnalyticsEvent.Types.ACTION
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
+import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
@@ -78,32 +76,103 @@ class HomeViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.OnAddTodoClick -> navigationBus.navigate(
-                To(AddTodoRoute(intent.selectedDate.toFormattedString()))
-            )
-
+            is HomeIntent.OnAddTodoClick -> onAddTodoClick(intent.selectedDate)
             is HomeIntent.OnCheckChanged -> onCheckedChange(intent.schedule.toDomainModel())
-            is HomeIntent.OnEditScheduleClick -> eventBus.sendEvent(
-                ShowBottomSheet(intent.content)
+            is HomeIntent.OnEditScheduleClick -> onEditScheduleClick(intent.content)
+
+            is HomeIntent.OnDelayScheduleClick -> onDelayScheduleClick(intent.content)
+            is HomeIntent.OnDelaySingleClick -> onDelaySchedule(
+                intent.schedule.toDomainModel(),
+                intent.includeRestDays
             )
 
-            is HomeIntent.OnDelayScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
-            is HomeIntent.OnDelaySingleClick -> onDelaySchedule(intent.schedule.toDomainModel(), intent.includeRestDays)
-            is HomeIntent.OnDelayAllClick -> onDelayAllSchedules(intent.schedule.toDomainModel(), intent.includeRestDays)
-            is HomeIntent.OnMemoClick -> onClickMemo(intent.schedule.toDomainModel())
-            is HomeIntent.OnSortTypeClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnDelayAllClick -> onDelayAllSchedules(
+                intent.schedule.toDomainModel(),
+                intent.includeRestDays
+            )
+
+            is HomeIntent.OnMemoClick -> onMemoClick(intent.schedule.toDomainModel())
+            is HomeIntent.OnSortTypeClick -> onSortTypeClick(intent.content)
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
-            is HomeIntent.OnUpdateScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
-            is HomeIntent.OnUpdateInfoClick -> navigateToUpdateInfo(intent.schedule.id)
-            is HomeIntent.OnUpdateDateClick -> navigateToUpdateDate(intent.schedule.infoId)
+            is HomeIntent.OnUpdateScheduleClick -> onUpdateScheduleClick(intent.content)
+            is HomeIntent.OnUpdateInfoClick -> onUpdateInfoClick(intent.schedule.id)
+            is HomeIntent.OnUpdateDateClick -> onUpdateDateClick(intent.schedule.infoId)
             is HomeIntent.OnDeleteMemoClick -> deleteMemo(intent.schedule.toDomainModel())
-            is HomeIntent.OnDeleteScheduleClick -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is HomeIntent.OnDeleteScheduleClick -> onDeleteScheduleClick(intent.content)
             is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule.toDomainModel())
             is HomeIntent.OnDeleteRemainingClick -> onDeleteRemainingSchedule(intent.schedule.toDomainModel())
-            HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            HomeIntent.OnSyncClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "Home", buttonName = "Sync")
+                )
+                navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+            }
             is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
             HomeIntent.OnWidgetNudgeDismiss -> setState { copy(showWidgetNudgeDialog = false) }
         }
+    }
+
+    private suspend fun onAddTodoClick(selectedDate: LocalDate) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "AddSchedule")
+        )
+        navigationBus.navigate(To(AddTodoRoute(selectedDate.toFormattedString())))
+    }
+
+    private suspend fun onEditScheduleClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "OptionSchedule")
+        )
+        eventBus.sendEvent(ShowBottomSheet(content))
+    }
+
+    private suspend fun onUpdateScheduleClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "EditSchedule")
+        )
+        eventBus.sendEvent(ShowBottomSheet(content))
+    }
+
+    private suspend fun onDeleteScheduleClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "DeleteSchedule")
+        )
+        eventBus.sendEvent(ShowBottomSheet(content))
+    }
+
+    private suspend fun onDelayScheduleClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "DelaySchedule")
+        )
+        eventBus.sendEvent(ShowBottomSheet(content))
+    }
+
+    private suspend fun onMemoClick(schedule: TodoSchedule) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "AddMemo")
+        )
+
+        val destination = if (schedule.memo.isEmpty()) MemoGraph.AddMemoRoute(schedule.id)
+        else MemoGraph.EditMemoRoute(schedule.id)
+
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(destination))
+    }
+
+    private suspend fun onUpdateDateClick(infoId: Int) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "EditAllDate")
+        )
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(HomeGraph.EditDateRoute(infoId)))
+    }
+
+    private suspend fun onUpdateInfoClick(infoId: Int) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "EditSingleDate")
+        )
+        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+        navigationBus.navigate(To(EditTodoRoute(infoId)))
     }
 
     private fun loadSchedules(currentDate: LocalDate) = viewModelScope.launch {
@@ -126,6 +195,13 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun onCheckedChange(schedule: TodoSchedule) {
         val newSchedule = schedule.copy(isDone = !schedule.isDone)
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "Home",
+                buttonName = "CheckTodo",
+                properties = mapOf("is_done" to newSchedule.isDone),
+            )
+        )
         todoRepository.updateTodo(newSchedule)
 
         currentMonthSchedules = currentMonthSchedules.map {
@@ -146,6 +222,9 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onDeleteSingleSchedule(schedule: TodoSchedule) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "DeleteSingleSchedule")
+        )
         todoRepository.deleteTodo(schedule)
 
         currentMonthSchedules = currentMonthSchedules.filterNot { it.id == schedule.id }
@@ -167,6 +246,9 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onDeleteRemainingSchedule(schedule: TodoSchedule) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "DeleteAllSchedule")
+        )
         val futureSchedulesToDelete = todoRepository
             .loadSchedulesByTodoInfo(schedule.infoId)
             .filter { it.date >= schedule.date }
@@ -194,6 +276,9 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun onDelaySchedule(schedule: TodoSchedule, includeRestDays: Boolean = false) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "SaveDelaySingle")
+        )
         val todoInfo = todoRepository.loadTodoInfoById(schedule.infoId)
         val restDays = if (includeRestDays) emptySet() else todoInfo.restDays
 
@@ -237,17 +322,17 @@ class HomeViewModel @Inject constructor(
         }
 
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = ACTION,
-                properties = mutableMapOf(
-                    ACTION_NAME to "delay_single_schedule",
-                    ACTION_RESULT to "success",
+            AnalyticsEvent.Action(
+                screenName = "Home",
+                actionName = "delay_single_schedule",
+                actionResult = "success",
+                properties = mapOf(
                     "schedule_id" to schedule.id,
                     "original_date" to schedule.date.toString(),
                     "next_date" to nextDate.toString(),
                     "include_rest_days" to includeRestDays,
                     "rest_days_count" to restDays.size,
-                )
+                ),
             )
         )
 
@@ -255,7 +340,13 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
     }
 
-    private suspend fun onDelayAllSchedules(schedule: TodoSchedule, includeRestDays: Boolean = false) {
+    private suspend fun onDelayAllSchedules(
+        schedule: TodoSchedule,
+        includeRestDays: Boolean = false
+    ) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "SaveDelayAll")
+        )
         val todoInfo = todoRepository.loadTodoInfoById(schedule.infoId)
         val restDays = if (includeRestDays) emptySet() else todoInfo.restDays
 
@@ -266,13 +357,11 @@ class HomeViewModel @Inject constructor(
 
         if (futureSchedules.isEmpty()) {
             analyticsHelper.logEvent(
-                AnalyticsEvent(
-                    type = ACTION,
-                    properties = mutableMapOf(
-                        ACTION_NAME to "delay_all_schedules",
-                        ACTION_RESULT to "no_schedules",
-                        "schedule_id" to schedule.id,
-                    )
+                AnalyticsEvent.Action(
+                    screenName = "Home",
+                    actionName = "delay_all_schedules",
+                    actionResult = "no_schedules",
+                    properties = mapOf("schedule_id" to schedule.id),
                 )
             )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("미룰 일정이 없습니다."))
@@ -286,7 +375,8 @@ class HomeViewModel @Inject constructor(
             var nextDate = scheduleToDelay.date.plusDays(1).nextValidDate(restDays)
 
             while (updatedDates.values.contains(nextDate) ||
-                   cachedSchedules.any { it.infoId == schedule.infoId && it.date == nextDate && it.id != scheduleToDelay.id }) {
+                cachedSchedules.any { it.infoId == schedule.infoId && it.date == nextDate && it.id != scheduleToDelay.id }
+            ) {
                 nextDate = nextDate.plusDays(1).nextValidDate(restDays)
             }
 
@@ -329,16 +419,16 @@ class HomeViewModel @Inject constructor(
         }
 
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = ACTION,
-                properties = mutableMapOf(
-                    ACTION_NAME to "delay_all_schedules",
-                    ACTION_RESULT to "success",
+            AnalyticsEvent.Action(
+                screenName = "Home",
+                actionName = "delay_all_schedules",
+                actionResult = "success",
+                properties = mapOf(
                     "schedule_id" to schedule.id,
                     "schedules_count" to futureSchedules.size,
                     "include_rest_days" to includeRestDays,
                     "rest_days_count" to restDays.size,
-                )
+                ),
             )
         )
 
@@ -346,25 +436,12 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("${futureSchedules.size}개 일정을 미뤘습니다."))
     }
 
-    private suspend fun navigateToUpdateInfo(infoId: Int) {
-        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(To(EditTodoRoute(infoId)))
-    }
 
-    private suspend fun navigateToUpdateDate(infoId: Int) {
-        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(To(HomeGraph.EditDateRoute(infoId)))
-    }
-
-    private suspend fun onClickMemo(schedule: TodoSchedule) {
-        val destination = if (schedule.memo.isEmpty()) MemoGraph.AddMemoRoute(schedule.id)
-        else MemoGraph.EditMemoRoute(schedule.id)
-
-        eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        navigationBus.navigate(To(destination))
-    }
 
     private suspend fun deleteMemo(schedule: TodoSchedule) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "DeleteMemo")
+        )
         val updated = schedule.copy(memo = "")
         todoRepository.updateTodo(updated)
 
@@ -390,7 +467,21 @@ class HomeViewModel @Inject constructor(
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 제거하였습니다"))
     }
 
+    private suspend fun onSortTypeClick(content: BottomSheetContent) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "Home", buttonName = "OrderSchedule")
+        )
+        eventBus.sendEvent(ShowBottomSheet(content))
+    }
+
     private suspend fun onUpdateSortType(sortType: SortType) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "Home",
+                buttonName = "SaveOrderSchedule",
+                properties = mapOf("sort_type" to sortType.name),
+            )
+        )
         configRepository.setSortType(sortType)
 
         val byDate = buildByDateMap(cachedSchedules, sortType)
@@ -432,7 +523,10 @@ class HomeViewModel @Inject constructor(
             .distinctBy { it.id }
     }
 
-    suspend fun calculateDelayInfo(infoId: Int, currentDate: LocalDate): Pair<Set<DayOfWeek>, LocalDate> {
+    suspend fun calculateDelayInfo(
+        infoId: Int,
+        currentDate: LocalDate
+    ): Pair<Set<DayOfWeek>, LocalDate> {
         val todoInfo = todoRepository.loadTodoInfoById(infoId)
         val restDays = todoInfo.restDays
 

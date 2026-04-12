@@ -65,6 +65,7 @@ import com.tgyuu.setting.graph.main.contract.SettingSideEffect
 import com.tgyuu.setting.graph.main.contract.SettingState
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmMessageBottomSheet
 import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
+import com.tgyuu.setting.graph.ui.bottomsheet.CalendarStartDayBottomSheet
 import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
 import kotlinx.coroutines.launch
 
@@ -135,7 +136,16 @@ internal fun SettingRoute(
         onPrivacyAndPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyAndPolicyClick) },
         onTermsOfUseClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
         onNotificationToggleClick = { viewModel.onIntent(SettingIntent.OnNotificationToggleClick) },
-        onMondayStartToggleClick = { viewModel.onIntent(SettingIntent.OnMondayStartToggleClick) },
+        onStartDayClick = {
+            viewModel.onIntent(SettingIntent.OnStartDayClick {
+                CalendarStartDayBottomSheet(
+                    originMondayStart = state.mondayStart,
+                    onUpdateClick = { mondayStart ->
+                        viewModel.onIntent(SettingIntent.OnUpdateStartDay(mondayStart))
+                    },
+                )
+            })
+        },
         onInAppReviewClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
         onUpdateClick = { isImmediateUpdate ->
             viewModel.onIntent(SettingIntent.OnUpdateClick(isImmediateUpdate))
@@ -158,7 +168,7 @@ private fun SettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
-    onMondayStartToggleClick: () -> Unit,
+    onStartDayClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
@@ -189,7 +199,7 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
-            onMondayStartToggleClick = onMondayStartToggleClick,
+            onStartDayClick = onStartDayClick,
             onInAppReviewClick = onInAppReviewClick,
             onUpdateClick = onUpdateClick,
         )
@@ -208,7 +218,7 @@ private fun SettingScreen(
             onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
             onTermsOfUseClick = onTermsOfUseClick,
             onNotificationToggleClick = onNotificationToggleClick,
-            onMondayStartToggleClick = onMondayStartToggleClick,
+            onStartDayClick = onStartDayClick,
             onInAppReviewClick = onInAppReviewClick,
             onUpdateClick = onUpdateClick,
         )
@@ -230,7 +240,7 @@ private fun PhoneSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
-    onMondayStartToggleClick: () -> Unit,
+    onStartDayClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
@@ -261,14 +271,14 @@ private fun PhoneSettingScreen(
                 onAlarmMessageClick = onAlarmMessageClick,
             )
 
+            CalendarStartDayBody(
+                mondayStart = state.mondayStart,
+                onStartDayClick = onStartDayClick,
+            )
+
             TagRepeatCycleBody(
                 onTagManageClick = onTagManageClick,
                 onRepeatCycleManageClick = onRepeatCycleManageClick,
-            )
-
-            CalendarStartDayBody(
-                mondayStart = state.mondayStart,
-                onMondayStartToggleClick = onMondayStartToggleClick,
             )
 
             DataBody(
@@ -318,7 +328,7 @@ private fun TabletSettingScreen(
     onPrivacyAndPolicyClick: () -> Unit,
     onTermsOfUseClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
-    onMondayStartToggleClick: () -> Unit,
+    onStartDayClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
 ) {
@@ -348,14 +358,14 @@ private fun TabletSettingScreen(
                     onAlarmMessageClick = onAlarmMessageClick,
                 )
 
+                CalendarStartDayBody(
+                    mondayStart = state.mondayStart,
+                    onStartDayClick = onStartDayClick,
+                )
+
                 TagRepeatCycleBody(
                     onTagManageClick = onTagManageClick,
                     onRepeatCycleManageClick = onRepeatCycleManageClick,
-                )
-
-                CalendarStartDayBody(
-                    mondayStart = state.mondayStart,
-                    onMondayStartToggleClick = onMondayStartToggleClick,
                 )
 
                 DataBody(
@@ -531,7 +541,7 @@ private fun NotificationBody(
 @Composable
 private fun CalendarStartDayBody(
     mondayStart: Boolean,
-    onMondayStartToggleClick: () -> Unit,
+    onStartDayClick: () -> Unit,
 ) {
     Text(
         text = "달력",
@@ -554,15 +564,15 @@ private fun CalendarStartDayBody(
         )
 
         Text(
-            text = if (mondayStart) "월" else "일",
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                    append(if (mondayStart) "월요일" else "일요일")
+                }
+            },
+            textAlign = TextAlign.End,
             style = EbbingTheme.typography.headingSM,
-            color = if (mondayStart) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark2,
-            modifier = Modifier.padding(end = 12.dp),
-        )
-
-        EbbingToggle(
-            checked = mondayStart,
-            onCheckedChange = { onMondayStartToggleClick() },
+            color = EbbingTheme.colors.primaryDefault,
+            modifier = Modifier.clickable { onStartDayClick() },
         )
     }
 
@@ -1029,7 +1039,7 @@ private fun PreviewSettingScreen() {
             onPrivacyAndPolicyClick = {},
             onTermsOfUseClick = {},
             onNotificationToggleClick = {},
-            onMondayStartToggleClick = {},
+            onStartDayClick = {},
             onInAppReviewClick = {},
             onUpdateClick = {},
         )

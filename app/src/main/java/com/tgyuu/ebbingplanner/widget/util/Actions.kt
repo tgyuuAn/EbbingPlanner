@@ -18,10 +18,13 @@ import java.time.LocalDate
 const val KEY_DESTINATION = "destination"
 const val KEY_SELECTED_DATE = "selectedDate"
 const val ADD_TODO = "addTodo"
+const val ADD_TODO_ACTION = "addTodoAction"
+const val KEY_WIDGET_SOURCE = "widgetSource"
 
 internal val destinationKey = ActionParameters.Key<String>(KEY_DESTINATION)
 internal val todoIdKey = ActionParameters.Key<Int>(TODO_ID)
 internal val selectedDateKey = ActionParameters.Key<String>(KEY_SELECTED_DATE)
+internal val widgetSourceKey = ActionParameters.Key<String>(KEY_WIDGET_SOURCE)
 
 class RefreshAction : ActionCallback {
     override suspend fun onAction(
@@ -96,5 +99,29 @@ class SelectDateAction : ActionCallback {
 
     companion object {
         val SELECTED_DATE = stringPreferencesKey("selectedDate")
+    }
+}
+
+class AddTodoFromWidgetAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        val widgetSource = parameters[widgetSourceKey] ?: "TodoWidget"
+        val selectedDate = parameters[selectedDateKey]
+
+        val broadcastIntent = Intent(context, TodayTodoWidgetReceiver::class.java).apply {
+            action = ADD_TODO_ACTION
+            putExtra(KEY_WIDGET_SOURCE, widgetSource)
+        }
+        context.sendBroadcast(broadcastIntent)
+
+        val activityIntent = Intent(context, MainActivity::class.java).apply {
+            putExtra(KEY_DESTINATION, ADD_TODO)
+            if (selectedDate != null) putExtra(KEY_SELECTED_DATE, selectedDate)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(activityIntent)
     }
 }

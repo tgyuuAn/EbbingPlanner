@@ -291,6 +291,7 @@ private fun PhoneHomeScreen(
     onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
     val localDensity = LocalDensity.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -331,6 +332,11 @@ private fun PhoneHomeScreen(
                         }
                     }
                 },
+                onGotoTodayClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(screenName = "Home", buttonName = "ReturnToToday")
+                    )
+                },
                 onSyncClick = onSyncClick,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -356,7 +362,15 @@ private fun PhoneHomeScreen(
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally)
-                    .throttledClickable(500L) { isExpanded = !isExpanded },
+                    .throttledClickable(500L) {
+                        analyticsHelper.logEvent(
+                            AnalyticsEvent.Click(
+                                screenName = "Home",
+                                buttonName = if (isExpanded) "FoldList" else "ExpandList",
+                            )
+                        )
+                        isExpanded = !isExpanded
+                    },
             )
 
             if (state.isLoading) {
@@ -409,6 +423,7 @@ private fun TabletHomeScreen(
     onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
     val scope = rememberCoroutineScope()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
@@ -432,6 +447,11 @@ private fun TabletHomeScreen(
                         selectedDate = it
                     }
                 }
+            },
+            onGotoTodayClick = {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "Home", buttonName = "ReturnToToday")
+                )
             },
             onSyncClick = onSyncClick,
             modifier = Modifier
@@ -498,12 +518,10 @@ private fun HandleDialogs(
             }
 
             analyticsHelper.logEvent(
-                AnalyticsEvent(
-                    type = AnalyticsEvent.Types.ACTION,
-                    properties = mutableMapOf(
-                        AnalyticsEvent.PropertiesKeys.ACTION_NAME to "show_dialog",
-                        "dialog_type" to dialogTypeName,
-                    )
+                AnalyticsEvent.Action(
+                    screenName = "Home",
+                    actionName = "show_dialog",
+                    properties = mapOf("dialog_type" to dialogTypeName),
                 )
             )
         }
@@ -513,6 +531,7 @@ private fun HandleDialogs(
         when (val dt = dialogType) {
             is ConfirmDeleteSingle -> ConfirmDeleteSingleDialog(
                 schedule = dt.schedule,
+                analyticsHelper = analyticsHelper,
                 onDismissRequest = onDismiss,
                 onDeleteClick = {
                     onDismiss()
@@ -522,6 +541,7 @@ private fun HandleDialogs(
 
             is ConfirmDeleteRemaining -> ConfirmDeleteRemainingDialog(
                 schedule = dt.schedule,
+                analyticsHelper = analyticsHelper,
                 onDismissRequest = onDismiss,
                 onDeleteClick = {
                     onDismiss()

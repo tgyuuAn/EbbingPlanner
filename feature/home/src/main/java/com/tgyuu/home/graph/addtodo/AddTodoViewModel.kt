@@ -5,6 +5,8 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -43,6 +45,7 @@ class AddTodoViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
 
@@ -112,12 +115,17 @@ class AddTodoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
-            AddTodoIntent.OnBackClick -> navigationBus.navigate(
-                NavigationEvent.To(
-                    route = HomeRoute(currentState.selectedDate.toFormattedString()),
-                    popUpTo = true,
+            AddTodoIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "Back")
                 )
-            )
+                navigationBus.navigate(
+                    NavigationEvent.To(
+                        route = HomeRoute(currentState.selectedDate.toFormattedString()),
+                        popUpTo = true,
+                    )
+                )
+            }
 
             is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
@@ -267,6 +275,13 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onNotificationToggleClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "NotificationNudge",
+                buttonName = "NotificationNudge_Toggle",
+            )
+        )
+
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -277,6 +292,13 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onAlarmTimeChange(hour: Int, minute: Int) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "NotificationNudge",
+                buttonName = "NotificationNudge_Toggle",
+            )
+        )
+
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -322,6 +344,12 @@ class AddTodoViewModel @Inject constructor(
             configRepository.updateAlarmMessage(notificationState.message)
         }
 
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "NotificationNudge",
+                buttonName = "SaveNotification",
+            )
+        )
         saveTodoAndNavigateHome()
     }
 

@@ -2,6 +2,8 @@ package com.tgyuu.repeatcycle.graph.editrepeatcycle
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -20,6 +22,7 @@ class EditRepeatCycleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState()) {
 
@@ -42,7 +45,12 @@ class EditRepeatCycleViewModel @Inject constructor(
     override suspend fun processIntent(intent: EditRepeatCycleIntent) {
         when (intent) {
             is EditRepeatCycleIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            EditRepeatCycleIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            EditRepeatCycleIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "EditRepeatCycle", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             EditRepeatCycleIntent.OnUpdateClick -> updateRepeatCycle()
         }
     }
@@ -54,6 +62,10 @@ class EditRepeatCycleViewModel @Inject constructor(
     }
 
     private suspend fun updateRepeatCycle() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "EditRepeatCycle", buttonName = "Save")
+        )
+
         if (currentState.intervals.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return

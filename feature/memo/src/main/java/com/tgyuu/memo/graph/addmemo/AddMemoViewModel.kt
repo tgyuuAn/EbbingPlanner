@@ -2,6 +2,8 @@ package com.tgyuu.memo.graph.addmemo
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -21,6 +23,7 @@ class AddMemoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddMemoState, AddMemoIntent>(AddMemoState()) {
 
@@ -44,7 +47,12 @@ class AddMemoViewModel @Inject constructor(
     override suspend fun processIntent(intent: AddMemoIntent) {
         when (intent) {
             is AddMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
-            AddMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            AddMemoIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "AddMemo", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             AddMemoIntent.OnSaveClick -> onSaveClick()
             AddMemoIntent.OnDismissSaveDialog -> dismissSaveDialog()
             AddMemoIntent.OnSaveToAllRelatedClick -> saveMemoToAllRelated()
@@ -76,6 +84,9 @@ class AddMemoViewModel @Inject constructor(
     private suspend fun saveMemoToSingle() {
         setState { copy(showSaveDialog = false) }
         val schedule = currentState.originSchedule ?: return
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "AddMemo", buttonName = "SaveMemoSingle")
+        )
         todoRepository.updateTodo(schedule.copy(memo = currentState.memo))
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 추가하였습니다"))
         navigationBus.navigate(
@@ -89,6 +100,9 @@ class AddMemoViewModel @Inject constructor(
     private suspend fun saveMemoToAllRelated() {
         setState { copy(showSaveDialog = false) }
         val originSchedule = currentState.originSchedule ?: return
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "AddMemo", buttonName = "SaveMemoAll")
+        )
         val relatedSchedules = todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId)
 
         todoRepository.updateTodos(relatedSchedules.map { it.copy(memo = currentState.memo) })

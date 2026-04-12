@@ -1,19 +1,18 @@
 package com.tgyuu.analytics
 
-data class AnalyticsEvent(
-    val type: String,
-    val properties: MutableMap<String, Any?>? = null,
-) {
-    object Types {
-        const val SCREEN_VIEW = "screen_view"
-        const val BUTTON_CLICK = "button_click"
-        const val ACTION = "action"
-    }
+sealed interface AnalyticsEvent {
+    data class View(val screenName: String) : AnalyticsEvent
 
-    object PropertiesKeys {
-        const val SCREEN_NAME = "screen_name"
-        const val ACTION_NAME = "action_name"
-        const val ACTION_RESULT = "action_result"
-        const val BUTTON_NAME = "button_name"
-    }
+    data class Click(
+        val screenName: String,
+        val buttonName: String,
+        val properties: Map<String, Any?>? = null,
+    ) : AnalyticsEvent
+
+    data class Action(
+        val screenName: String,
+        val actionName: String,
+        val actionResult: String? = null,
+        val properties: Map<String, Any?>? = null,
+    ) : AnalyticsEvent
 }

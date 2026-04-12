@@ -2,6 +2,8 @@ package com.tgyuu.memo.graph.editmemo
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -21,6 +23,7 @@ class EditMemoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditMemoState, EditMemoIntent>(EditMemoState()) {
 
@@ -45,7 +48,12 @@ class EditMemoViewModel @Inject constructor(
     override suspend fun processIntent(intent: EditMemoIntent) {
         when (intent) {
             is EditMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
-            EditMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            EditMemoIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "EditMemo", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             EditMemoIntent.OnUpdateClick -> onUpdateClick()
             EditMemoIntent.OnDismissSaveDialog -> dismissSaveDialog()
             EditMemoIntent.OnSaveToAllRelatedClick -> saveMemoToAllRelated()

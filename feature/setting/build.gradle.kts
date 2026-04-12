@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(projects.core.common)
+    implementation(projects.core.analytics)
     implementation(projects.core.alarm)
     implementation(projects.core.inAppReview)
     implementation(projects.core.inAppUpdate)

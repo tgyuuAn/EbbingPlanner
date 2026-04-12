@@ -1,6 +1,8 @@
 package com.tgyuu.repeatcycle.graph.main
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -23,15 +25,31 @@ class RepeatCycleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<RepeatCycleState, RepeatCycleIntent>(RepeatCycleState()) {
 
     override suspend fun processIntent(intent: RepeatCycleIntent) {
         when (intent) {
-            RepeatCycleIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            is RepeatCycleIntent.OnDeleteClick -> deleteRepeatCycle(intent.repeatCycle)
-            is RepeatCycleIntent.OnEditClick -> navigationBus.navigate(
-                NavigationEvent.To(RepeatCycleGraph.EditRepeatCycleRoute(intent.repeatCycle.id))
-            )
+            RepeatCycleIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "RepeatCycle", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
+            is RepeatCycleIntent.OnDeleteClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "RepeatCycle", buttonName = "DeleteRepeatCycle")
+                )
+                deleteRepeatCycle(intent.repeatCycle)
+            }
+            is RepeatCycleIntent.OnEditClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "RepeatCycle", buttonName = "EditRepeatCycle")
+                )
+                navigationBus.navigate(
+                    NavigationEvent.To(RepeatCycleGraph.EditRepeatCycleRoute(intent.repeatCycle.id))
+                )
+            }
         }
     }
 
