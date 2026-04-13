@@ -118,15 +118,16 @@ private fun OnboardingPageContent(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(200.dp)
+                .size(300.dp)
                 .clip(CircleShape)
-                .background(EbbingTheme.colors.light3),
+                .background(EbbingTheme.colors.light3)
+                .padding(vertical = 66.dp),
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = EbbingTheme.colors.primaryDefault,
-                modifier = Modifier.size(100.dp),
+                modifier = Modifier.size(120.dp),
             )
         }
 
@@ -169,7 +170,7 @@ private fun OnboardingIndicator(
                         width = if (isSelected) 20.dp else 8.dp,
                         height = 8.dp,
                     )
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(CircleShape)
                     .background(
                         if (isSelected) EbbingTheme.colors.dark2
                         else EbbingTheme.colors.light1

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingMainTopBar
+import com.tgyuu.shared.designsystem.component.EbbingToggle
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 
 @Composable
@@ -65,6 +66,14 @@ fun SettingScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
         ) {
+            // Notification Section
+            NotificationBody(
+                isEnabled = state.isNotificationEnabled,
+                alarmTime = state.alarmTime,
+                onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) },
+                onNotificationClick = { viewModel.onIntent(SettingIntent.OnNotificationClick) },
+            )
+
             // Tag / Repeat Cycle Section
             TagRepeatCycleBody(
                 onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
@@ -87,6 +96,16 @@ fun SettingScreen(
                 onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) },
                 onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
             )
+
+            // Inquiry Section
+            InquiryBody()
+
+            // In-App Review
+            InAppReviewRow(
+                onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
+            )
+
+            SectionDivider()
 
             // Version
             VersionRow(version = state.appVersion)
@@ -182,7 +201,7 @@ private fun VersionRow(
             .padding(vertical = 17.dp),
     ) {
         Text(
-            text = "버전 $version",
+            text = "v$version",
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark3,
         )
@@ -237,6 +256,90 @@ private fun SectionDivider(modifier: Modifier = Modifier) {
         thickness = 1.dp,
         color = EbbingTheme.colors.light2,
     )
+}
+
+@Composable
+private fun NotificationBody(
+    isEnabled: Boolean,
+    alarmTime: String,
+    onToggle: (Boolean) -> Unit,
+    onNotificationClick: () -> Unit,
+) {
+    SectionHeader(text = "알림")
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp),
+    ) {
+        Text(
+            text = "알림",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Text(
+            text = if (isEnabled) "ON" else "OFF",
+            style = EbbingTheme.typography.headingSSB,
+            color = if (isEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark2,
+            modifier = Modifier.padding(end = 8.dp),
+        )
+
+        EbbingToggle(
+            checked = isEnabled,
+            onCheckedChange = onToggle,
+        )
+    }
+
+    if (isEnabled) {
+        SettingRow(
+            title = "알림 시간: $alarmTime",
+            onClick = onNotificationClick,
+        )
+    }
+
+    SectionDivider()
+}
+
+@Composable
+private fun InquiryBody() {
+    SectionHeader(text = "문의")
+
+    SettingRow(
+        title = "문의하기",
+        onClick = { /* TODO: Open email or contact form */ },
+    )
+
+    SectionDivider()
+}
+
+@Composable
+private fun InAppReviewRow(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 17.dp),
+    ) {
+        Text(
+            text = "앱 리뷰 남기기",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = EbbingTheme.colors.dark3,
+        )
+    }
 }
 
 @Composable

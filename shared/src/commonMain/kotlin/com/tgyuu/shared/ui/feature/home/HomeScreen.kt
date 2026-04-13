@@ -41,6 +41,7 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomS
 import com.tgyuu.shared.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.shared.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.throttledClickable
 import com.tgyuu.shared.ui.feature.home.bottomsheet.DelayBottomSheet
 import com.tgyuu.shared.ui.feature.home.bottomsheet.DeleteBottomSheet
 import com.tgyuu.shared.ui.feature.home.bottomsheet.OptionsBottomSheet
@@ -356,7 +357,8 @@ private fun PhoneHomeScreen(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                onSyncClick = onSyncClick,
+                modifier = Modifier.fillMaxWidth(),
             )
 
             HorizontalDivider(
@@ -378,7 +380,7 @@ private fun PhoneHomeScreen(
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally)
-                    .clickable { isExpanded = !isExpanded },
+                    .throttledClickable(throttleTime = 500L) { isExpanded = !isExpanded },
             )
 
             if (state.isLoading) {
@@ -454,10 +456,11 @@ private fun TabletHomeScreen(
                     }
                 }
             },
+            onSyncClick = onSyncClick,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(0.8f)
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 20.dp),
         )
 
         if (state.isLoading) {

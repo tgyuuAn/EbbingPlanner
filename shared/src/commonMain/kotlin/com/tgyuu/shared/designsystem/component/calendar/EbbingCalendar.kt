@@ -54,6 +54,7 @@ fun EbbingCalendar(
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     modifier: Modifier = Modifier,
     onSelectDate: (LocalDate) -> Unit = {},
+    onSyncClick: (() -> Unit)? = null,
 ) {
     val initialPage = Int.MAX_VALUE / 2
     val pagerState = rememberPagerState(
@@ -85,6 +86,7 @@ fun EbbingCalendar(
                     onSelectDate(LocalDate.now())
                 }
             },
+            onSyncClick = onSyncClick,
         )
 
         CalendarHeader()
@@ -123,6 +125,7 @@ fun EbbingCalendar(
 private fun CalendarController(
     currentDate: LocalDate,
     onGotoTodayClick: () -> Unit,
+    onSyncClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -152,8 +155,18 @@ private fun CalendarController(
             color = EbbingTheme.colors.black,
         )
 
-        // Empty spacer for balance
-        Spacer(modifier = Modifier.size(40.dp))
+        if (onSyncClick != null) {
+            IconButton(onClick = onSyncClick) {
+                Icon(
+                    imageVector = Icons.Filled.Refresh,
+                    contentDescription = "동기화",
+                    tint = EbbingTheme.colors.black,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.size(40.dp))
+        }
     }
 }
 
