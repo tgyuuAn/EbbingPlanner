@@ -81,12 +81,7 @@ internal fun SettingRoute(
         viewModel.sideEffect.collect { sideEffect ->
             when (sideEffect) {
                 SettingSideEffect.RequestInAppReview -> {
-                    if (activity != null) {
-                        viewModel.inAppReviewManager.requestAndLaunchReview(activity)
-                    } else {
-                        viewModel.inAppReviewManager.
-                        openPlayStoreForReview()
-                    }
+                    viewModel.inAppReviewManager.openPlayStoreForReview()
                 }
                 is SettingSideEffect.RequestInAppUpdate -> {
                     activity?.let {
