@@ -8,6 +8,8 @@ import com.tgyuu.shared.base.UiState
 data class SettingState(
     val isLoading: Boolean = false,
     val appVersion: String = "1.0.0",
+    val isNotificationEnabled: Boolean = true,
+    val alarmTime: String = "오후 6시 30분",
 ) : UiState
 
 sealed class SettingIntent : UiIntent {
@@ -18,6 +20,10 @@ sealed class SettingIntent : UiIntent {
     data object OnClearDataClick : SettingIntent()
     data object OnClearDataConfirm : SettingIntent()
     data object OnThemeClick : SettingIntent()
+    data object OnNotificationClick : SettingIntent()
+    data class OnNotificationToggle(val enabled: Boolean) : SettingIntent()
+    data object OnInAppReviewClick : SettingIntent()
     data object OnPrivacyPolicyClick : SettingIntent()
     data object OnTermsOfUseClick : SettingIntent()
+    data object OnWidgetClick : SettingIntent()
 }

@@ -77,6 +77,15 @@ fun MemoScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Memo Input
+            MemoContent(
+                memo = state.memo,
+                onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
+                onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             // Preview Content
             state.originSchedule?.let { schedule ->
                 PreviewContent(
@@ -85,14 +94,7 @@ fun MemoScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Memo Input
-            MemoContent(
-                memo = state.memo,
-                onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
-                onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
-            )
+            Spacer(modifier = Modifier.height(60.dp))
         }
     }
 }

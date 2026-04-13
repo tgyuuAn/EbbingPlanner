@@ -3,6 +3,9 @@ package com.tgyuu.shared.ui.feature.home.addtodo
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -28,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
+import com.tgyuu.shared.designsystem.util.throttledClickable
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomSheet
 import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
@@ -158,72 +162,140 @@ fun AddTodoScreen(
                     else EbbingTheme.colors.dark3,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .clickable(enabled = state.isSaveEnabled) {
-                            viewModel.onIntent(AddTodoIntent.OnSaveClick)
-                        },
+                        .throttledClickable(
+                            throttleTime = 1500L,
+                            enabled = state.isSaveEnabled,
+                        ) { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
                 )
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(20.dp)
-                .imePadding(),
-        ) {
-            // Header with date (clickable to change date)
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val isWide = maxWidth > 600.dp
+
+            if (isWide) {
+                // Tablet: two columns
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .verticalScroll(scrollState)
+                            .padding(20.dp),
+                    ) {
+                        AddTodoFormContent(
+                            state = state,
+                            viewModel = viewModel,
+                            onDateClick = {
+                                currentBottomSheetType = BottomSheetType.DATE
+                                scope.launch { bottomSheetState.show() }
+                            },
+                            onTagClick = {
+                                currentBottomSheetType = BottomSheetType.TAG
+                                scope.launch { bottomSheetState.show() }
+                            },
+                            onRepeatCycleClick = {
+                                currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
+                                scope.launch { bottomSheetState.show() }
+                            },
+                        )
                     }
-                    append(" 부터\n시작하는 일정을 만들어요")
-                },
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.clickable {
-                    currentBottomSheetType = BottomSheetType.DATE
-                    scope.launch { bottomSheetState.show() }
-                },
-            )
 
-            TitleContent(
-                title = state.title,
-                onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
-            )
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .verticalScroll(rememberScrollState())
+                            .padding(20.dp),
+                    ) {
+                        ScheduleContent(schedules = state.schedules)
+                        Spacer(modifier = Modifier.height(60.dp))
+                    }
+                }
+            } else {
+                // Phone: single column
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .padding(20.dp)
+                        .imePadding(),
+                ) {
+                    AddTodoFormContent(
+                        state = state,
+                        viewModel = viewModel,
+                        onDateClick = {
+                            currentBottomSheetType = BottomSheetType.DATE
+                            scope.launch { bottomSheetState.show() }
+                        },
+                        onTagClick = {
+                            currentBottomSheetType = BottomSheetType.TAG
+                            scope.launch { bottomSheetState.show() }
+                        },
+                        onRepeatCycleClick = {
+                            currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
+                            scope.launch { bottomSheetState.show() }
+                        },
+                    )
 
-            TagContent(
-                tag = state.tag,
-                onTagDropDownClick = {
-                    currentBottomSheetType = BottomSheetType.TAG
-                    scope.launch { bottomSheetState.show() }
-                },
-            )
+                    ScheduleContent(schedules = state.schedules)
 
-            PriorityContent(
-                priority = state.priority,
-                onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
-            )
-
-            RepeatCycleContent(
-                repeatCycle = state.repeatCycle,
-                onRepeatCycleDropDownClick = {
-                    currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
-                    scope.launch { bottomSheetState.show() }
-                },
-            )
-
-            RestDayContent(
-                restDays = state.restDays,
-                onRestDayChange = { viewModel.onIntent(AddTodoIntent.OnRestDayChange(it)) },
-            )
-
-            ScheduleContent(schedules = state.schedules)
-
-            Spacer(modifier = Modifier.height(60.dp))
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun AddTodoFormContent(
+    state: AddTodoState,
+    viewModel: AddTodoViewModel,
+    onDateClick: () -> Unit,
+    onTagClick: () -> Unit,
+    onRepeatCycleClick: () -> Unit,
+) {
+    // Header with date (clickable to change date)
+    Text(
+        text = buildAnnotatedString {
+            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
+            }
+            append(" 부터\n시작하는 일정을 만들어요")
+        },
+        style = EbbingTheme.typography.headingLSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.clickable(onClick = onDateClick),
+    )
+
+    TitleContent(
+        title = state.title,
+        onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
+    )
+
+    TagContent(
+        tag = state.tag,
+        onTagDropDownClick = onTagClick,
+    )
+
+    PriorityContent(
+        priority = state.priority,
+        onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
+    )
+
+    RepeatCycleContent(
+        repeatCycle = state.repeatCycle,
+        onRepeatCycleDropDownClick = onRepeatCycleClick,
+    )
+
+    RestDayContent(
+        restDays = state.restDays,
+        onRestDayChange = { viewModel.onIntent(AddTodoIntent.OnRestDayChange(it)) },
+    )
 }
 
 @Composable

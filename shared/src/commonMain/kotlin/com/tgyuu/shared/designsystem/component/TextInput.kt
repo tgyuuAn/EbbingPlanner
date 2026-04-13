@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import kotlinx.datetime.Clock
 
 @Composable
 fun EbbingTextInputDefault(
@@ -52,6 +53,7 @@ fun EbbingTextInputDefault(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
+    var lastDoneTime by remember { mutableStateOf(0L) }
 
     BasicTextField(
         value = value,
@@ -66,9 +68,13 @@ fun EbbingTextInputDefault(
         ),
         keyboardActions = KeyboardActions(
             onDone = {
-                keyboardController?.hide()
-                onDone()
-                focusManager.clearFocus()
+                val now = Clock.System.now().toEpochMilliseconds()
+                if (now - lastDoneTime >= 2000L) {
+                    lastDoneTime = now
+                    keyboardController?.hide()
+                    onDone()
+                    focusManager.clearFocus()
+                }
             },
         ),
         textStyle = EbbingTheme.typography.bodyMM.copy(color = EbbingTheme.colors.black),

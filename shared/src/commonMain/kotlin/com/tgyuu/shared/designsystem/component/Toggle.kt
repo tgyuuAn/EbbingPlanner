@@ -4,8 +4,8 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.throttledClickable
 
 @Composable
 fun EbbingToggle(
@@ -47,10 +48,11 @@ fun EbbingToggle(
             .size(width = 34.dp, height = 20.dp)
             .clip(RoundedCornerShape(999.dp))
             .background(if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.light1)
-            .clickable { onCheckedChange(!checked) }
+            .throttledClickable(throttleTime = 1000L) { onCheckedChange(!checked) }
     ) {
         Box(
             modifier = Modifier
+                .padding(horizontal = 2.dp)
                 .graphicsLayer { translationX = thumbXOffset.x.toFloat() }
                 .size(SwitchDefaults.IconSize)
                 .clip(CircleShape)

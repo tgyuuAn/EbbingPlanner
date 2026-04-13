@@ -28,6 +28,7 @@ interface RootComponent {
     fun navigateToTheme()
     fun navigateToWebView(title: String, url: String)
     fun navigateToNotification()
+    fun navigateToWidget()
 
     sealed class Child {
         class Home(val component: HomeComponent) : Child()
@@ -50,6 +51,7 @@ interface RootComponent {
         data object ThemeChild : Child()
         class WebView(val title: String, val url: String) : Child()
         data object Notification : Child()
+        data object Widget : Child()
     }
 }
 
@@ -117,4 +119,7 @@ sealed interface Configuration {
 
     @Serializable
     data object Notification : Configuration
+
+    @Serializable
+    data object Widget : Configuration
 }

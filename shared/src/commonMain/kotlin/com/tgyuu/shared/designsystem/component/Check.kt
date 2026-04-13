@@ -41,7 +41,7 @@ fun EbbingCheck(
             imageVector = Icons.Default.Check,
             tint = EbbingTheme.colors.background,
             contentDescription = null,
-            modifier = Modifier.padding(4.dp),
+            modifier = Modifier.padding(8.dp),
         )
     }
 }

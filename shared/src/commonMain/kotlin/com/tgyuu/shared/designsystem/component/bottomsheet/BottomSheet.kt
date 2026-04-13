@@ -55,19 +55,7 @@ fun EbbingModalBottomSheet(
             contentColor = EbbingTheme.colors.black,
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
             dragHandle = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(28.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .size(width = 40.dp, height = 4.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(EbbingTheme.colors.light1)
-                    )
-                }
+                Spacer(modifier = Modifier.height(28.dp))
             },
             modifier = modifier,
         ) {
@@ -170,13 +158,13 @@ fun EbbingBottomSheetListItemDefault(
                 tint = EbbingTheme.colors.primaryDefault,
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .size(24.dp),
+                    .size(32.dp),
             )
         } else {
             Spacer(
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .size(24.dp),
+                    .size(32.dp),
             )
         }
     }

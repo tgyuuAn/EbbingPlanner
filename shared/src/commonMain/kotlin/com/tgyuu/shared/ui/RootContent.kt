@@ -130,11 +130,14 @@ fun RootContent(
     val settingViewModel = remember {
         SettingViewModel(
             todoRepository = todoRepository,
+            configRepository = configRepository,
             onNavigateBack = { component.navigateToHome() },
             onNavigateToTag = { component.navigateToTag() },
             onNavigateToRepeatCycle = { component.navigateToRepeatCycle() },
             onNavigateToSync = { component.navigateToSync() },
             onNavigateToTheme = { component.navigateToTheme() },
+            onNavigateToNotification = { component.navigateToNotification() },
+            onNavigateToWidget = { component.navigateToWidget() },
             onOpenUrl = { url ->
                 val title = when {
                     url.contains("privacy") -> "개인정보 처리방침"
@@ -225,6 +228,7 @@ fun RootContent(
                         is RootComponent.Child.ThemeChild -> ThemeScreenWrapper(component)
                         is RootComponent.Child.WebView -> WebViewScreenWrapper(component, instance.title, instance.url)
                         is RootComponent.Child.Notification -> NotificationScreenWrapper(component)
+                        is RootComponent.Child.Widget -> WidgetScreenWrapper(component)
                     }
                 }
             }
@@ -530,4 +534,16 @@ private fun NotificationScreenWrapper(component: RootComponent) {
         )
     }
     com.tgyuu.shared.ui.feature.home.notification.NotificationScreen(viewModel = viewModel)
+}
+
+@Composable
+private fun WidgetScreenWrapper(component: RootComponent) {
+    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val viewModel = remember {
+        com.tgyuu.shared.ui.feature.setting.widget.WidgetViewModel(
+            configRepository = configRepository,
+            onNavigateBack = { component.onBack() },
+        )
+    }
+    com.tgyuu.shared.ui.feature.setting.widget.WidgetScreen(viewModel = viewModel)
 }

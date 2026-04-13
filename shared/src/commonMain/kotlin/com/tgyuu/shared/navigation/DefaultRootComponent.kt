@@ -72,6 +72,7 @@ class DefaultRootComponent(
             is Configuration.Theme -> RootComponent.Child.ThemeChild
             is Configuration.WebView -> RootComponent.Child.WebView(config.title, config.url)
             is Configuration.Notification -> RootComponent.Child.Notification
+            is Configuration.Widget -> RootComponent.Child.Widget
         }
 
     override fun onBack() {
@@ -156,5 +157,9 @@ class DefaultRootComponent(
 
     override fun navigateToNotification() {
         navigation.pushNew(Configuration.Notification)
+    }
+
+    override fun navigateToWidget() {
+        navigation.pushNew(Configuration.Widget)
     }
 }
