@@ -16,7 +16,7 @@ class InAppReviewManager @Inject constructor(
 ) {
     private val reviewManager: ReviewManager = ReviewManagerFactory.create(context)
 
-    suspend fun requestAndLaunchReview(activity: Activity) {
+    suspend fun requestInAppReview(activity: Activity) {
         try {
             val reviewInfo = reviewManager.requestReviewFlow().await()
             reviewManager.launchReviewFlow(activity, reviewInfo)
@@ -27,9 +27,5 @@ class InAppReviewManager @Inject constructor(
 
     fun openPlayStoreForReview() {
         context.openPlayStore()
-    }
-
-    companion object {
-        private const val TAG = "InAppReviewManager"
     }
 }
