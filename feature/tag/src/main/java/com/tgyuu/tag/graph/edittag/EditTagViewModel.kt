@@ -8,22 +8,26 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.experiment.domain.model.Experiment
+import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.edittag.contract.EditTagIntent
 import com.tgyuu.tag.graph.edittag.contract.EditTagState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class EditTagViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
+) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
         val tagId = savedStateHandle.get<Int>("tagId")
@@ -73,7 +77,11 @@ class EditTagViewModel @Inject constructor(
 
     private suspend fun onSaveClick() {
         analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = "EditTag", buttonName = "Save")
+            AnalyticsEvent.Click(
+                screenName = "EditTag",
+                buttonName = "Save",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+            )
         )
 
         if (!currentState.isSaveEnabled) {

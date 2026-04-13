@@ -50,6 +50,7 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.throttledClickable
+import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingToggle
@@ -62,6 +63,7 @@ import com.tgyuu.home.graph.notification.ui.dialog.AlarmTimeDialog
 internal fun NotificationScreen(
     state: NotificationState,
     modifier: Modifier = Modifier,
+    isTreatment: Boolean = false,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
@@ -74,6 +76,7 @@ internal fun NotificationScreen(
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         NotificationScreenPhone(
             state = state,
+            isTreatment = isTreatment,
             modifier = modifier,
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
@@ -100,6 +103,7 @@ internal fun NotificationScreen(
 @Composable
 private fun NotificationScreenPhone(
     state: NotificationState,
+    isTreatment: Boolean,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
@@ -142,10 +146,11 @@ private fun NotificationScreenPhone(
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().imePadding()) {
         NotificationTopBar(
             analyticsHelper = analyticsHelper,
             state = state,
+            isTreatment = isTreatment,
             onBackClick = onBackClick,
             onSaveClick = {
                 onSaveClick()
@@ -155,9 +160,9 @@ private fun NotificationScreenPhone(
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
-                .padding(vertical = 20.dp)
-                .imePadding(),
+                .padding(vertical = 20.dp),
         ) {
             NotificationHeader(nudgeText = state.nudgeText)
 
@@ -207,6 +212,27 @@ private fun NotificationScreenPhone(
                     showDivider = true,
                 )
             }
+        }
+
+        if (isTreatment) {
+            EbbingSolidButton(
+                label = "저장",
+                onClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = "NotificationNudge",
+                            buttonName = "save",
+                            properties = mapOf("notification_enabled" to state.notificationEnabled),
+                        )
+                    )
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }
@@ -344,6 +370,7 @@ private fun NotificationScreenTablet(
 private fun NotificationTopBar(
     analyticsHelper: AnalyticsHelper,
     state: NotificationState,
+    isTreatment: Boolean = false,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
 ) {
@@ -351,23 +378,25 @@ private fun NotificationTopBar(
         title = "알림 설정",
         onNavigationClick = onBackClick,
         rightComponent = {
-            Text(
-                text = "저장",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.primaryDefault,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .throttledClickable(throttleTime = 1500L) {
-                        analyticsHelper.logEvent(
-                            AnalyticsEvent.Click(
-                                screenName = "NotificationNudge",
-                                buttonName = "save",
-                                properties = mapOf("notification_enabled" to state.notificationEnabled),
+            if (!isTreatment) {
+                Text(
+                    text = "저장",
+                    style = EbbingTheme.typography.bodyMSB,
+                    color = EbbingTheme.colors.primaryDefault,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .throttledClickable(throttleTime = 1500L) {
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(
+                                    screenName = "NotificationNudge",
+                                    buttonName = "save",
+                                    properties = mapOf("notification_enabled" to state.notificationEnabled),
+                                )
                             )
-                        )
-                        onSaveClick()
-                    },
-            )
+                            onSaveClick()
+                        },
+                )
+            }
         },
         modifier = Modifier.padding(horizontal = 20.dp),
     )

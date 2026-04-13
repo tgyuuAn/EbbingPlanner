@@ -11,20 +11,26 @@ import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
+import com.tgyuu.experiment.domain.model.Experiment
+import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class ThemeViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
+    private val experimentRepository: ExperimentRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
-) : BaseViewModel<ThemeState, ThemeIntent>(ThemeState()) {
+) : BaseViewModel<ThemeState, ThemeIntent>(
+    ThemeState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })
+) {
 
     internal suspend fun loadTheme() {
         val origin = configRepository.getAppTheme().first()
@@ -55,7 +61,11 @@ class ThemeViewModel @Inject constructor(
 
     private fun updateTheme() {
         analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = "Theme", buttonName = "Apply")
+            AnalyticsEvent.Click(
+                screenName = "Theme",
+                buttonName = "Apply",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+            )
         )
 
         viewModelScope.launch {
