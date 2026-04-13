@@ -41,7 +41,7 @@ internal fun AppBottomBar(
     val black = EbbingTheme.colors.black
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(71.dp)
             .drawBehind {
                 val shadowHeight = 3.dp.toPx()
@@ -62,7 +62,7 @@ internal fun AppBottomBar(
     ) {
         NavigationBar(
             containerColor = EbbingTheme.colors.background,
-            modifier = modifier
+            modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .height(68.dp),
         ) {

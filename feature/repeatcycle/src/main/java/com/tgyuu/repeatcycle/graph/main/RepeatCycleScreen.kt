@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -104,6 +105,7 @@ private fun RepeatCycleScreen(
             if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 LazyColumn(
                     state = listState,
+                    contentPadding = PaddingValues(bottom = 100.dp),
                     modifier = Modifier
                         .padding(20.dp)
                         .imePadding(),
@@ -125,6 +127,7 @@ private fun RepeatCycleScreen(
                     state = gridListState,
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    contentPadding = PaddingValues(bottom = 100.dp),
                     modifier = Modifier
                         .padding(20.dp)
                         .imePadding(),

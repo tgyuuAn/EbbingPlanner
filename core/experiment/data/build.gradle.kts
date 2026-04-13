@@ -22,4 +22,7 @@ dependencies {
 
     implementation(libs.firebase.config)
     implementation(libs.androidx.datastore)
+
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.coroutines.test)
 }

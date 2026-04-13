@@ -45,6 +45,7 @@ import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.HorizontalBackgroundSlider
 import com.tgyuu.designsystem.component.HorizontalTextSlider
@@ -140,33 +141,36 @@ private fun PhoneWidgetScreen(
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
+    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().imePadding()) {
         EbbingSubTopBar(
             title = "위젯 테마 변경",
             onNavigationClick = onBackClick,
             rightComponent = {
-                Text(
-                    text = "적용",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = state.isSaveEnabled,
-                            onClick = onSaveClick,
-                        ),
-                )
+                if (!state.isTreatment) {
+                    Text(
+                        text = "적용",
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(
+                                throttleTime = 1500L,
+                                enabled = state.isSaveEnabled,
+                                onClick = onSaveClick,
+                            ),
+                    )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
-                .padding(20.dp)
-                .imePadding(),
+                .padding(20.dp),
         ) {
             Text(
                 text = "위젯 테마를 변경해요.",
@@ -199,6 +203,21 @@ private fun PhoneWidgetScreen(
             }
 
             Spacer(modifier = Modifier.height(60.dp))
+        }
+
+        if (state.isTreatment) {
+            EbbingSolidButton(
+                label = "적용",
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

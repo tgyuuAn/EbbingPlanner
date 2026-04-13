@@ -1,10 +1,12 @@
 package com.tgyuu.home.graph.editdate
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -35,6 +37,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
@@ -161,31 +164,37 @@ private fun EditDateScreenPhone(
         mutableStateListOf(*List(state.schedules.size) { false }.toTypedArray())
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding(),
+    ) {
         EbbingSubTopBar(
             title = "일정 수정",
             onNavigationClick = onBackClick,
             rightComponent = {
-                Text(
-                    text = "저장",
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.primaryDefault,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(throttleTime = 1500L) {
-                            onSaveClick(isDoneSchedules)
-                            focusManager.clearFocus()
-                        },
-                )
+                if (!state.isTreatment) {
+                    Text(
+                        text = "저장",
+                        style = EbbingTheme.typography.bodyMSB,
+                        color = EbbingTheme.colors.primaryDefault,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(throttleTime = 1500L) {
+                                onSaveClick(isDoneSchedules)
+                                focusManager.clearFocus()
+                            },
+                    )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
-                .padding(20.dp)
-                .imePadding(),
+                .padding(20.dp),
         ) {
             EditDateMainFormContent(
                 state = state,
@@ -210,6 +219,20 @@ private fun EditDateScreenPhone(
             DescriptionBody()
 
             Spacer(modifier = Modifier.height(60.dp))
+        }
+
+        if (state.isTreatment) {
+            EbbingSolidButton(
+                label = "저장",
+                onClick = {
+                    onSaveClick(isDoneSchedules)
+                    focusManager.clearFocus()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

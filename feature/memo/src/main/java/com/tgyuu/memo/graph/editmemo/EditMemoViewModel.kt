@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
+import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.memo.graph.editmemo.contract.EditMemoIntent
 import com.tgyuu.memo.graph.editmemo.contract.EditMemoState
 import com.tgyuu.navigation.HomeGraph.HomeRoute
@@ -16,16 +18,18 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class EditMemoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val experimentRepository: ExperimentRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<EditMemoState, EditMemoIntent>(EditMemoState()) {
+) : BaseViewModel<EditMemoState, EditMemoIntent>(EditMemoState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
         val scheduleId = savedStateHandle.get<Int>("scheduleId")
@@ -66,6 +70,14 @@ class EditMemoViewModel @Inject constructor(
     }
 
     private suspend fun onUpdateClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "EditMemo",
+                buttonName = "Save",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return

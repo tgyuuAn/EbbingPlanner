@@ -20,6 +20,8 @@ import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.experiment.domain.model.Experiment
+import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.model.toUiModel
@@ -32,6 +34,7 @@ import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -42,24 +45,24 @@ import javax.inject.Inject
 class AddTodoViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
+    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
+) : BaseViewModel<AddTodoState, AddTodoIntent>(
+    AddTodoState(
+        selectedDate = (savedStateHandle.get<String>("selectedDate")
+            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")).toLocalDateOrThrow(),
+        tag = DefaultTodoTag.toUiModel(),
+        repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+        saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) },
+    )
+) {
 
     init {
-        val dateStr = savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
 
-        setState {
-            copy(
-                selectedDate = dateStr.toLocalDateOrThrow(),
-                tag = DefaultTodoTag.toUiModel(),
-                repeatCycle = DefaultRepeatCycles.first().toUiModel(),
-            )
-        }
         initNotificationState()
 
         viewModelScope.launch {
@@ -216,6 +219,14 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "AddTodo",
+                buttonName = "Save",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
             return

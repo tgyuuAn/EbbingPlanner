@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.edittodo
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
@@ -107,56 +109,60 @@ private fun EditTodoScreen(
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        EbbingSubTopBar(
-            title = "일정 수정",
-            onNavigationClick = onBackClick,
-            rightComponent = {
-                Text(
-                    text = "저장",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
-                )
-            },
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
+    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(20.dp)
+            modifier = modifier
+                .fillMaxSize()
                 .imePadding(),
         ) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+            EbbingSubTopBar(
+                title = "일정 수정",
+                onNavigationClick = onBackClick,
+                rightComponent = {
+                    if (!state.isTreatment) {
+                        Text(
+                            text = "저장",
+                            style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .throttledClickable(
+                                    throttleTime = 1500L,
+                                    enabled = state.isSaveEnabled
+                                ) {
+                                    onSaveClick()
+                                    focusManager.clearFocus()
+                                },
+                        )
                     }
-                    append(" 에\n진행하는 걸로 바꿀래요")
                 },
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            TitleContent(
-                scrollState = scrollState,
-                title = state.title,
-                onTitleChange = onTitleChange,
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(20.dp),
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                        }
+                        append(" 에\n진행하는 걸로 바꿀래요")
+                    },
+                    style = EbbingTheme.typography.headingLSB,
+                    color = EbbingTheme.colors.black,
+                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                )
 
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+                TitleContent(
+                    scrollState = scrollState,
+                    title = state.title,
+                    onTitleChange = onTitleChange,
+                )
+
                 TagContent(
                     tag = state.tag,
                     onTagDropDownClick = onTagDropDownClick,
@@ -168,7 +174,73 @@ private fun EditTodoScreen(
                 )
 
                 Spacer(modifier = Modifier.height(60.dp))
-            } else {
+            }
+
+            if (state.isTreatment) {
+                EbbingSolidButton(
+                    label = "저장",
+                    onClick = {
+                        onSaveClick()
+                        focusManager.clearFocus()
+                    },
+                    enabled = state.isSaveEnabled,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(EbbingTheme.colors.background)
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                )
+            }
+        }
+    } else {
+        Column(
+            modifier = modifier.fillMaxSize(),
+        ) {
+            EbbingSubTopBar(
+                title = "일정 수정",
+                onNavigationClick = onBackClick,
+                rightComponent = {
+                    Text(
+                        text = "저장",
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(
+                                throttleTime = 1500L,
+                                enabled = state.isSaveEnabled
+                            ) {
+                                onSaveClick()
+                                focusManager.clearFocus()
+                            },
+                    )
+                },
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
+
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(20.dp)
+                    .imePadding(),
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                        }
+                        append(" 에\n진행하는 걸로 바꿀래요")
+                    },
+                    style = EbbingTheme.typography.headingLSB,
+                    color = EbbingTheme.colors.black,
+                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                )
+
+                TitleContent(
+                    scrollState = scrollState,
+                    title = state.title,
+                    onTitleChange = onTitleChange,
+                )
+
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(40.dp),
                     modifier = Modifier.fillMaxWidth()

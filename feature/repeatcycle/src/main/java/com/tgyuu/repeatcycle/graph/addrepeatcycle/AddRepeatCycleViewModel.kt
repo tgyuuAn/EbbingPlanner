@@ -6,22 +6,26 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.experiment.domain.model.Experiment
+import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.runBlocking
 import java.time.DayOfWeek
 import javax.inject.Inject
 
 @HiltViewModel
 class AddRepeatCycleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
+    private val experimentRepository: ExperimentRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
-) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState()) {
+) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     override suspend fun processIntent(intent: AddRepeatCycleIntent) {
         when (intent) {
@@ -55,7 +59,11 @@ class AddRepeatCycleViewModel @Inject constructor(
             }
 
             analyticsHelper.logEvent(
-                AnalyticsEvent.Click(screenName = "AddRepeatCycle", buttonName = "SaveRepeatCycle")
+                AnalyticsEvent.Click(
+                    screenName = "AddRepeatCycle",
+                    buttonName = "SaveRepeatCycle",
+                    properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                )
             )
             todoRepository.addRepeatCycle(intervals = intervals)
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 추가하였습니다"))

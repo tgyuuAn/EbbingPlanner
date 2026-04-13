@@ -34,6 +34,7 @@ import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -76,33 +77,35 @@ private fun EditTagScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().imePadding()) {
         EbbingSubTopBar(
             title = "태그 수정",
             onNavigationClick = onBackClick,
             rightComponent = {
-                Text(
-                    text = "저장",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
-                )
+                if (!state.isTreatment) {
+                    Text(
+                        text = "저장",
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(
+                                throttleTime = 1500L,
+                                enabled = state.isSaveEnabled
+                            ) {
+                                onSaveClick()
+                                focusManager.clearFocus()
+                            },
+                    )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Column(
             modifier = Modifier
-                .padding(20.dp)
-                .imePadding(),
+                .weight(1f)
+                .padding(20.dp),
         ) {
             Text(
                 text = "${state.originTag?.name} 태그를 수정해요",
@@ -118,6 +121,21 @@ private fun EditTagScreen(
             ColorContent(
                 colorValue = state.colorValue,
                 onColorDropDownClick = onColorDropDownClick,
+            )
+        }
+
+        if (state.isTreatment) {
+            EbbingSolidButton(
+                label = "저장",
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
             )
         }
     }
