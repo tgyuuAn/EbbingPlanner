@@ -1,5 +1,8 @@
 package com.tgyuu.experiment.domain.model
 
+import com.tgyuu.experiment.domain.model.Experiment.ExperimentKey.CONTROL_KEY
+import com.tgyuu.experiment.domain.model.Experiment.ExperimentKey.TREATMENT_KEY
+
 sealed class Experiment<V>(
     val key: String,
     val variants: Array<V>,
@@ -8,18 +11,25 @@ sealed class Experiment<V>(
 
     fun parseVariant(value: String): V = variants.find { it.key == value } ?: defaultVariant
 
-    data object NotificationNudgeText : Experiment<NotificationNudgeText.Variant>(
-        key = "experiment_notification_nudge_text",
+    data object SaveButtonPosition : Experiment<SaveButtonPosition.Variant>(
+        key = "experiment_save_button_position",
         variants = Variant.entries.toTypedArray(),
         defaultVariant = Variant.CONTROL,
     ) {
         enum class Variant(override val key: String) : ExperimentVariant {
-            CONTROL("control"),
-            TREATMENT("treatment"),
+            CONTROL(CONTROL_KEY),
+            TREATMENT(TREATMENT_KEY),
         }
     }
 
     companion object {
-        val ALL: List<Experiment<*>> = emptyList()
+        val ALL: List<Experiment<*>> = listOf(
+            SaveButtonPosition,
+        )
+    }
+
+    object ExperimentKey {
+        const val CONTROL_KEY = "CONTROL"
+        const val TREATMENT_KEY = "TREATMENT"
     }
 }

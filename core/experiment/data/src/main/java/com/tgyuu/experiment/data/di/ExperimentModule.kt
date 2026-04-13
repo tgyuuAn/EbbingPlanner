@@ -7,6 +7,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.tgyuu.common.initializer.Initializer
 import com.tgyuu.experiment.data.datasource.ExperimentLocalDataSource
 import com.tgyuu.experiment.data.datasource.ExperimentLocalDataSourceImpl
+import com.tgyuu.experiment.data.datasource.ExperimentMemoryDataSource
+import com.tgyuu.experiment.data.datasource.ExperimentMemoryDataSourceImpl
 import com.tgyuu.experiment.data.datasource.ExperimentRemoteDataSource
 import com.tgyuu.experiment.data.datasource.ExperimentRemoteDataSourceImpl
 import com.tgyuu.experiment.data.initializer.ExperimentInitializer
@@ -61,6 +63,12 @@ abstract class ExperimentBindsModule {
     abstract fun bindExperimentLocalDataSource(
         impl: ExperimentLocalDataSourceImpl,
     ): ExperimentLocalDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindExperimentMemoryDataSource(
+        impl: ExperimentMemoryDataSourceImpl,
+    ): ExperimentMemoryDataSource
 
     @Binds
     @IntoSet
