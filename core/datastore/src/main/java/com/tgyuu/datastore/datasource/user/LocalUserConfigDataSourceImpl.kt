@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
@@ -145,6 +146,15 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         return isFirstTime
     }
 
+    override suspend fun incrementAndGetTodoRegisteredCount(): Int {
+        var count = 0
+        dataStore.edit { prefs ->
+            count = (prefs[TODO_REGISTERED_COUNT] ?: 0) + 1
+            prefs[TODO_REGISTERED_COUNT] = count
+        }
+        return count
+    }
+
     companion object {
         private val CLEAR_SYNC_FLAG = booleanPreferencesKey("CLEAR_SYNC_FLAG")
         private val SORT_TYPE = stringPreferencesKey("SORT_TYPE")
@@ -158,6 +168,7 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val WIDGET_BACKGROUND_ALPHA = floatPreferencesKey("WIDGET_BACKGROUND_ALPHA")
         private val WIDGET_TEXT_ALPHA = floatPreferencesKey("WIDGET_TEXT_ALPHA")
         private val HAS_EVER_ADDED_TODO = booleanPreferencesKey("HAS_EVER_ADDED_TODO")
+        private val TODO_REGISTERED_COUNT = intPreferencesKey("TODO_REGISTERED_COUNT")
         private val MONDAY_START = booleanPreferencesKey("MONDAY_START")
     }
 }

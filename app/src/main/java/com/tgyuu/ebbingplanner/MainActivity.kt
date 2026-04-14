@@ -26,6 +26,7 @@ import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.inappreview.InAppReviewManager
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.util.LocalAnimationsEnabled
 import com.tgyuu.common.util.MemoryAnimationController
@@ -70,6 +71,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
+
+    @Inject
+    lateinit var inAppReviewManager: InAppReviewManager
 
     private var isInitialized = true
 
@@ -262,6 +266,10 @@ class MainActivity : ComponentActivity() {
                         }
 
                         EbbingEvent.HideSnackBar -> snackBarHostState.currentSnackbarData?.dismiss()
+
+                        EbbingEvent.RequestInAppReview -> scope.launch {
+                            inAppReviewManager.requestInAppReview(this@MainActivity)
+                        }
                     }
                 }
             }

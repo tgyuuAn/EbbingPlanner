@@ -34,4 +34,5 @@ sealed class EbbingEvent {
     data object HideSnackBar : EbbingEvent()
     data class ShowBottomSheet(val content: BottomSheetContent) : EbbingEvent()
     data object HideBottomSheet : EbbingEvent()
+    data object RequestInAppReview : EbbingEvent()
 }

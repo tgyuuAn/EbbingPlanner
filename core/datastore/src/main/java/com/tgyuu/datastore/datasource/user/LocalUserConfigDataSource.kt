@@ -25,6 +25,7 @@ interface LocalUserConfigDataSource {
     suspend fun setWidgetBackgroundAlpha(alpha: Float)
     suspend fun setWidgetTextAlpha(alpha: Float)
     suspend fun markFirstTodoAdded(): Boolean
+    suspend fun incrementAndGetTodoRegisteredCount(): Int
     val mondayStart: Flow<Boolean>
     suspend fun setMondayStart(enabled: Boolean)
 }
