@@ -53,7 +53,7 @@ interface TodoRepository {
     suspend fun updateRepeatCycle(repeatCycle: RepeatCycle)
     suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle)
 
-    suspend fun loadSchedule(id: Int): TodoSchedule
+    suspend fun loadSchedule(id: Int): TodoSchedule?
     suspend fun loadTag(id: Int): TodoTag
     suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun loadTodoInfoById(infoId: Int): TodoInfo

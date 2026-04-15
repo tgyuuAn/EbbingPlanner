@@ -36,7 +36,10 @@ class AddMemoViewModel @Inject constructor(
             ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
         viewModelScope.launch {
-            val originSchedule = todoRepository.loadSchedule(scheduleId)
+            val originSchedule = todoRepository.loadSchedule(scheduleId) ?: run {
+                navigationBus.navigate(NavigationEvent.Up)
+                return@launch
+            }
             val relatedSchedules = todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId)
 
             setState {
