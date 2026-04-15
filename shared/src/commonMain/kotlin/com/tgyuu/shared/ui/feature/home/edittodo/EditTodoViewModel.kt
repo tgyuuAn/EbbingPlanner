@@ -1,6 +1,8 @@
 package com.tgyuu.shared.ui.feature.home.edittodo
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
@@ -17,11 +19,13 @@ class EditTodoViewModel(
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
+    private val experimentRepository: ExperimentRepository? = null,
     private val onShowTagBottomSheet: (() -> Unit)? = null,
     private val onShowDateBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
     init {
+        loadExperimentVariant()
         loadScheduleData()
     }
 
@@ -151,4 +155,12 @@ class EditTodoViewModel(
         createdAt = createdAt,
         infoCreatedAt = infoCreatedAt,
     )
+
+    private fun loadExperimentVariant() {
+        safeScope.launch {
+            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
+                ?: Experiment.SaveButtonPosition.Variant.CONTROL
+            setState { copy(saveButtonPositionVariant = variant) }
+        }
+    }
 }

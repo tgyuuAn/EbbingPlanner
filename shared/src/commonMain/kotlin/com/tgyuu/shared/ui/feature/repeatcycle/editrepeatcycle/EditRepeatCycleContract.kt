@@ -2,6 +2,7 @@ package com.tgyuu.shared.ui.feature.repeatcycle.editrepeatcycle
 
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
+import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.model.RepeatCycle
 import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.parsingIntervals
 import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.toPreviewIntervals
@@ -9,7 +10,9 @@ import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.toPreviewIntervals
 data class EditRepeatCycleState(
     val originRepeatCycle: RepeatCycle? = null,
     val intervals: String = "",
+    val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
+    val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val previewRepeatCycle: String = parsingIntervals(intervals)
         .getOrDefault(emptyList())
         .toPreviewIntervals()

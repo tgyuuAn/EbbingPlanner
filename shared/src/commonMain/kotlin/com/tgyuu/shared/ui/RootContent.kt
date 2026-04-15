@@ -89,6 +89,7 @@ fun RootContent(
     val activeChild = childStack.active.instance
     val todoRepository = koinInject<TodoRepository>()
     val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
 
     // Check if first app open → show onboarding
     LaunchedEffect(Unit) {
@@ -299,12 +300,14 @@ private fun MemoScreenWrapper(
     scheduleId: Int,
 ) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember(scheduleId) {
         MemoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { component.navigateToHome() },
+            experimentRepository = experimentRepository,
         )
     }
     MemoScreen(viewModel = viewModel)
@@ -360,6 +363,7 @@ private fun AddTodoScreenWrapper(
             LocalDate.now()
         }
     }
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember(selectedDate) {
         AddTodoViewModel(
             selectedDate = selectedDate,
@@ -368,6 +372,7 @@ private fun AddTodoScreenWrapper(
             onNavigateToHome = { date -> component.navigateToHome() },
             onNavigateToAddTag = { component.navigateToAddTag() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
+            experimentRepository = experimentRepository,
         )
     }
     AddTodoScreen(viewModel = viewModel)
@@ -379,12 +384,14 @@ private fun EditTodoScreenWrapper(
     scheduleId: Int,
 ) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember(scheduleId) {
         EditTodoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
+            experimentRepository = experimentRepository,
         )
     }
     EditTodoScreen(viewModel = viewModel)
@@ -396,12 +403,14 @@ private fun EditDateScreenWrapper(
     infoId: Int,
 ) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember(infoId) {
         EditDateViewModel(
             infoId = infoId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
+            experimentRepository = experimentRepository,
         )
     }
     EditDateScreen(viewModel = viewModel)
@@ -410,10 +419,12 @@ private fun EditDateScreenWrapper(
 @Composable
 private fun AddTagScreenWrapper(component: RootComponent) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember {
         AddTagViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            experimentRepository = experimentRepository,
         )
     }
     AddTagScreen(viewModel = viewModel)
@@ -422,10 +433,12 @@ private fun AddTagScreenWrapper(component: RootComponent) {
 @Composable
 private fun AddRepeatCycleScreenWrapper(component: RootComponent) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember {
         AddRepeatCycleViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            experimentRepository = experimentRepository,
         )
     }
     AddRepeatCycleScreen(viewModel = viewModel)
@@ -437,11 +450,13 @@ private fun EditTagScreenWrapper(
     tagId: Int,
 ) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember(tagId) {
         EditTagViewModel(
             tagId = tagId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            experimentRepository = experimentRepository,
         )
     }
     EditTagScreen(viewModel = viewModel)
@@ -453,11 +468,13 @@ private fun EditRepeatCycleScreenWrapper(
     repeatCycleId: Int,
 ) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember(repeatCycleId) {
         EditRepeatCycleViewModel(
             repeatCycleId = repeatCycleId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            experimentRepository = experimentRepository,
         )
     }
     EditRepeatCycleScreen(viewModel = viewModel)
@@ -481,12 +498,14 @@ private fun EditMemoScreenWrapper(
     scheduleId: Int,
 ) {
     val todoRepository = koinInject<TodoRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember(scheduleId) {
         MemoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { component.navigateToHome() },
+            experimentRepository = experimentRepository,
         )
     }
     MemoScreen(viewModel = viewModel)
@@ -495,10 +514,12 @@ private fun EditMemoScreenWrapper(
 @Composable
 private fun ThemeScreenWrapper(component: RootComponent) {
     val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember {
         ThemeViewModel(
             configRepository = configRepository,
             onNavigateBack = { component.onBack() },
+            experimentRepository = experimentRepository,
         )
     }
     ThemeScreen(viewModel = viewModel)
@@ -539,10 +560,12 @@ private fun NotificationScreenWrapper(component: RootComponent) {
 @Composable
 private fun WidgetScreenWrapper(component: RootComponent) {
     val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember {
         com.tgyuu.shared.ui.feature.setting.widget.WidgetViewModel(
             configRepository = configRepository,
             onNavigateBack = { component.onBack() },
+            experimentRepository = experimentRepository,
         )
     }
     com.tgyuu.shared.ui.feature.setting.widget.WidgetScreen(viewModel = viewModel)

@@ -45,6 +45,7 @@ fun EditTagScreen(
             title = "태그 수정",
             onNavigationClick = { viewModel.onIntent(EditTagIntent.OnBackClick) },
             rightComponent = {
+                if (!state.isTreatment) {
                 Text(
                     text = "저장",
                     style = EbbingTheme.typography.headingSSB,
@@ -56,6 +57,7 @@ fun EditTagScreen(
                             viewModel.onIntent(EditTagIntent.OnUpdateClick)
                         },
                 )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
@@ -86,6 +88,18 @@ fun EditTagScreen(
             ColorContent(
                 colorValue = state.colorValue,
                 onColorClick = { viewModel.onIntent(EditTagIntent.OnColorDropDownClick) },
+            )
+        }
+
+        if (state.isTreatment) {
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = "저장",
+                onClick = { viewModel.onIntent(EditTagIntent.OnUpdateClick) },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
             )
         }
     }

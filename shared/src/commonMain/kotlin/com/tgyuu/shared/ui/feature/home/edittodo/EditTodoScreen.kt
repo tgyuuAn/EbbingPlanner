@@ -1,9 +1,11 @@
 package com.tgyuu.shared.ui.feature.home.edittodo
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -39,24 +41,27 @@ fun EditTodoScreen(
             title = "일정 수정",
             onNavigationClick = { viewModel.onIntent(EditTodoIntent.OnBackClick) },
             rightComponent = {
-                Text(
-                    text = "저장",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
-                    else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickable(enabled = state.isSaveEnabled) {
-                            viewModel.onIntent(EditTodoIntent.OnSaveClick)
-                        },
-                )
+                if (!state.isTreatment) {
+                    Text(
+                        text = "저장",
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
+                        else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
+                        else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clickable(enabled = state.isSaveEnabled) {
+                                viewModel.onIntent(EditTodoIntent.OnSaveClick)
+                            },
+                    )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
                 .padding(20.dp)
                 .imePadding(),
@@ -92,6 +97,18 @@ fun EditTodoScreen(
             )
 
             Spacer(modifier = Modifier.height(60.dp))
+        }
+
+        if (state.isTreatment) {
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = "저장",
+                onClick = { viewModel.onIntent(EditTodoIntent.OnSaveClick) },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

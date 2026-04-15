@@ -1,6 +1,8 @@
 package com.tgyuu.shared.ui.feature.home.editdate
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
 import com.tgyuu.shared.domain.model.TodoSchedule
 import com.tgyuu.shared.domain.repository.TodoRepository
@@ -17,6 +19,7 @@ class EditDateViewModel(
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
+    private val experimentRepository: ExperimentRepository? = null,
     private val onShowDateBottomSheet: (() -> Unit)? = null,
     private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
@@ -24,6 +27,7 @@ class EditDateViewModel(
     private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
+        loadExperimentVariant()
         loadInitialData()
     }
 
@@ -125,5 +129,13 @@ class EditDateViewModel(
             intervals = intervals.toImmutableList(),
             displayName = toDisplayName(),
         )
+    }
+
+    private fun loadExperimentVariant() {
+        safeScope.launch {
+            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
+                ?: Experiment.SaveButtonPosition.Variant.CONTROL
+            setState { copy(saveButtonPositionVariant = variant) }
+        }
     }
 }

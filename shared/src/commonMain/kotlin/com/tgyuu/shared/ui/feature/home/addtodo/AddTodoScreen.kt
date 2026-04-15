@@ -1,7 +1,9 @@
 package com.tgyuu.shared.ui.feature.home.addtodo
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -154,24 +156,26 @@ fun AddTodoScreen(
                 else viewModel.onIntent(AddTodoIntent.OnBackClick)
             },
             rightComponent = {
-                Text(
-                    text = "저장",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
-                    else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = state.isSaveEnabled,
-                        ) { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
-                )
+                if (!state.isTreatment) {
+                    Text(
+                        text = "저장",
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
+                        else EbbingTheme.typography.bodyMM,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
+                        else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(
+                                throttleTime = 1500L,
+                                enabled = state.isSaveEnabled,
+                            ) { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
+                    )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        BoxWithConstraints(modifier = Modifier.weight(1f)) {
             val isWide = maxWidth > 600.dp
 
             if (isWide) {
@@ -247,6 +251,18 @@ fun AddTodoScreen(
                     Spacer(modifier = Modifier.height(60.dp))
                 }
             }
+        }
+
+        if (state.isTreatment) {
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = "저장",
+                onClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

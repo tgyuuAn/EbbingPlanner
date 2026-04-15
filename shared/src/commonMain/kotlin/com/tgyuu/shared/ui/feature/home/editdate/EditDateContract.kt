@@ -3,6 +3,7 @@ package com.tgyuu.shared.ui.feature.home.editdate
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
+import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.common.generateValidSchedules
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
@@ -22,7 +23,9 @@ data class EditDateState(
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
     val isLoading: Boolean = false,
+    val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
+    val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             generateValidSchedules(

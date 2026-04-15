@@ -1,6 +1,8 @@
 package com.tgyuu.shared.ui.feature.memo
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -11,9 +13,11 @@ class MemoViewModel(
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
+    private val experimentRepository: ExperimentRepository? = null,
 ) : BaseViewModel<MemoState, MemoIntent>(MemoState()) {
 
     init {
+        loadExperimentVariant()
         loadSchedule()
     }
 
@@ -58,6 +62,14 @@ class MemoViewModel(
             onNavigateToHome(originSchedule.date)
         } catch (e: Exception) {
             onShowSnackbar("메모 저장에 실패했습니다")
+        }
+    }
+
+    private fun loadExperimentVariant() {
+        safeScope.launch {
+            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
+                ?: Experiment.SaveButtonPosition.Variant.CONTROL
+            setState { copy(saveButtonPositionVariant = variant) }
         }
     }
 }

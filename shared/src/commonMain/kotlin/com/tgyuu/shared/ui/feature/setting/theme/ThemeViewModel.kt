@@ -1,6 +1,8 @@
 package com.tgyuu.shared.ui.feature.setting.theme
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.first
@@ -10,9 +12,11 @@ class ThemeViewModel(
     private val configRepository: ConfigRepository? = null,
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
+    private val experimentRepository: ExperimentRepository? = null,
 ) : BaseViewModel<ThemeState, ThemeIntent>(ThemeState()) {
 
     init {
+        loadExperimentVariant()
         loadTheme()
     }
 
@@ -46,6 +50,14 @@ class ThemeViewModel(
             onNavigateBack()
         } catch (e: Exception) {
             onShowSnackbar("테마 변경에 실패했습니다")
+        }
+    }
+
+    private fun loadExperimentVariant() {
+        safeScope.launch {
+            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
+                ?: Experiment.SaveButtonPosition.Variant.CONTROL
+            setState { copy(saveButtonPositionVariant = variant) }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.tgyuu.shared.ui.feature.home.edittodo
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
+import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.domain.model.TodoSchedule
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
@@ -27,8 +28,10 @@ data class EditTodoState(
     val tagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
     val isLoading: Boolean = false,
+    val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
     val isSaveEnabled: Boolean = title.isNotEmpty()
+    val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
 }
 
 sealed class EditTodoIntent : UiIntent {
