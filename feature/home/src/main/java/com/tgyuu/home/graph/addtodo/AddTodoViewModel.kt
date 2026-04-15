@@ -272,6 +272,7 @@ class AddTodoViewModel @Inject constructor(
         }
 
         val isFirstTodo = configRepository.markFirstTodoAdded()
+        configRepository.incrementTodoRegisteredCount()
 
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
         navigationBus.navigate(

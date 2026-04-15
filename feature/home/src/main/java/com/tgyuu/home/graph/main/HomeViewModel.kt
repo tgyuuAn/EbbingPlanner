@@ -26,11 +26,13 @@ import com.tgyuu.navigation.HomeGraph.EditTodoRoute
 import com.tgyuu.navigation.MemoGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
+import com.tgyuu.inappreview.InAppReviewManager
 import com.tgyuu.navigation.SyncGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -46,6 +48,7 @@ class HomeViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler?,
     private val analyticsHelper: AnalyticsHelper,
     internal val eventBus: EventBus,
+    internal val inAppReviewManager: InAppReviewManager,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
     private var currentMonthSchedules: List<TodoSchedule> = emptyList()
     private var cachedSchedules: List<TodoSchedule> = emptyList()
@@ -60,6 +63,15 @@ class HomeViewModel @Inject constructor(
             configRepository.getMondayStart()
                 .collect { setState { copy(mondayStart = it) } }
         }
+
+        viewModelScope.launch {
+            configRepository.getTodoRegisteredCount().first { it >= 3 }
+            setState { copy(showInAppReviewDialog = true) }
+        }
+    }
+
+    fun dismissInAppReviewDialog() {
+        setState { copy(showInAppReviewDialog = false) }
     }
 
     suspend fun initCurrentMonthSchedules() {

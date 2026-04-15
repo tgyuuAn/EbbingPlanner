@@ -29,6 +29,8 @@ interface ConfigRepository {
 
     suspend fun getClearSyncFlag(): Boolean
     suspend fun markFirstTodoAdded(): Boolean
+    suspend fun incrementTodoRegisteredCount()
+    fun getTodoRegisteredCount(): Flow<Int>
     fun getMondayStart(): Flow<Boolean>
     suspend fun setMondayStart(enabled: Boolean)
 
