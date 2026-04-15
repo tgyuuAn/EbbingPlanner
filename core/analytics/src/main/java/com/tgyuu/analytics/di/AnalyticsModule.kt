@@ -25,6 +25,8 @@ object AnalyticsModule {
         Configuration(
             apiKey = BuildConfig.AMPLITUDE_API_KEY,
             context = context,
+            flushQueueSize = 30,
+            flushIntervalMillis = 30000,
         )
     )
 

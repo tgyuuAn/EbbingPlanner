@@ -79,7 +79,7 @@ metricsPerformance = "1.0.0-beta02"
 
 ## Amplitude
 # https://amplitude.com/docs/sdks/analytics/android
-amplitude = "1.16.8"
+amplitude = "1.21.3"
 
 ## Accompanist
 # https://github.com/google/accompanist
