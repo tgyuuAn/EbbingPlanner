@@ -1,6 +1,8 @@
 package com.tgyuu.shared.ui.feature.home.addtodo
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
 import com.tgyuu.shared.domain.model.DefaultTodoTag
 import com.tgyuu.shared.domain.repository.TodoRepository
@@ -20,11 +22,13 @@ class AddTodoViewModel(
     private val onNavigateToAddTag: () -> Unit = {},
     private val onNavigateToAddRepeatCycle: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
+    private val experimentRepository: ExperimentRepository? = null,
     private val onShowTagBottomSheet: (() -> Unit)? = null,
     private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState(selectedDate = selectedDate)) {
 
     init {
+        loadExperimentVariant()
         loadInitialData()
     }
 
@@ -142,5 +146,13 @@ class AddTodoViewModel(
             intervals = intervals.toImmutableList(),
             displayName = toDisplayName(),
         )
+    }
+
+    private fun loadExperimentVariant() {
+        safeScope.launch {
+            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
+                ?: Experiment.SaveButtonPosition.Variant.CONTROL
+            setState { copy(saveButtonPositionVariant = variant) }
+        }
     }
 }

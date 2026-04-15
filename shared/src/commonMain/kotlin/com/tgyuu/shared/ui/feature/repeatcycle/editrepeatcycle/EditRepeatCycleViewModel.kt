@@ -1,6 +1,8 @@
 package com.tgyuu.shared.ui.feature.repeatcycle.editrepeatcycle
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.RepeatCycle
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.parsingIntervals
@@ -11,9 +13,11 @@ class EditRepeatCycleViewModel(
     private val todoRepository: TodoRepository,
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
+    private val experimentRepository: ExperimentRepository? = null,
 ) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState()) {
 
     init {
+        loadExperimentVariant()
         loadRepeatCycle()
     }
 
@@ -71,6 +75,14 @@ class EditRepeatCycleViewModel(
             }
         }.onFailure {
             onShowSnackbar("반복 주기가 적절하지 않습니다.")
+        }
+    }
+
+    private fun loadExperimentVariant() {
+        safeScope.launch {
+            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
+                ?: Experiment.SaveButtonPosition.Variant.CONTROL
+            setState { copy(saveButtonPositionVariant = variant) }
         }
     }
 }

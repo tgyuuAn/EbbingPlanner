@@ -3,6 +3,7 @@ package com.tgyuu.shared.ui.feature.tag.edittag
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
+import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.model.TodoTag
 
 @Immutable
@@ -10,7 +11,9 @@ data class EditTagState(
     val originTag: TodoTag? = null,
     val name: String = "",
     val colorValue: Int = DEFAULT_TAG_COLOR,
+    val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
+    val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val isSaveEnabled: Boolean
         get() = name.isNotBlank() && (name != originTag?.name || colorValue != originTag.color)
 

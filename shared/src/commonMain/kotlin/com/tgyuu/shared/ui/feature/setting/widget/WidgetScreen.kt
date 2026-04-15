@@ -45,6 +45,7 @@ fun WidgetScreen(
             title = "위젯 설정",
             onNavigationClick = { viewModel.onIntent(WidgetIntent.OnBackClick) },
             rightComponent = {
+                if (!state.isTreatment) {
                 Text(
                     text = "저장",
                     style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
@@ -57,12 +58,14 @@ fun WidgetScreen(
                             viewModel.onIntent(WidgetIntent.OnSaveClick)
                         },
                 )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
                 .padding(20.dp),
         ) {
@@ -184,6 +187,18 @@ fun WidgetScreen(
             }
 
             Spacer(modifier = Modifier.height(60.dp))
+        }
+
+        if (state.isTreatment) {
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = "저장",
+                onClick = { viewModel.onIntent(WidgetIntent.OnSaveClick) },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

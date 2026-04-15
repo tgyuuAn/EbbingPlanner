@@ -42,6 +42,7 @@ fun ThemeScreen(
             title = "테마",
             onNavigationClick = { viewModel.onIntent(ThemeIntent.OnBackClick) },
             rightComponent = {
+                if (!state.isTreatment) {
                 Text(
                     text = "적용",
                     style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
@@ -54,12 +55,14 @@ fun ThemeScreen(
                             viewModel.onIntent(ThemeIntent.OnUpdateClick)
                         },
                 )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
                 .padding(20.dp),
         ) {
@@ -79,6 +82,18 @@ fun ThemeScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             ThemePreview(theme = state.selectTheme ?: Theme.NORMAL)
+        }
+
+        if (state.isTreatment) {
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = "적용",
+                onClick = { viewModel.onIntent(ThemeIntent.OnUpdateClick) },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

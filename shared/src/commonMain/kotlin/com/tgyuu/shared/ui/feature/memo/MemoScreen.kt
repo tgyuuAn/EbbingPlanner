@@ -49,17 +49,19 @@ fun MemoScreen(
             title = "메모 ${if (state.originSchedule?.memo.isNullOrEmpty()) "추가" else "수정"}",
             onNavigationClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
             rightComponent = {
-                Text(
-                    text = "저장",
-                    style = EbbingTheme.typography.headingSSB,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickable(enabled = state.isSaveEnabled) {
-                            viewModel.onIntent(MemoIntent.OnSaveClick)
-                        },
-                )
+                if (!state.isTreatment) {
+                    Text(
+                        text = "저장",
+                        style = EbbingTheme.typography.headingSSB,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
+                        else EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clickable(enabled = state.isSaveEnabled) {
+                                viewModel.onIntent(MemoIntent.OnSaveClick)
+                            },
+                    )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
@@ -95,6 +97,18 @@ fun MemoScreen(
             }
 
             Spacer(modifier = Modifier.height(60.dp))
+        }
+
+        if (state.isTreatment) {
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = "저장",
+                onClick = { viewModel.onIntent(MemoIntent.OnSaveClick) },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

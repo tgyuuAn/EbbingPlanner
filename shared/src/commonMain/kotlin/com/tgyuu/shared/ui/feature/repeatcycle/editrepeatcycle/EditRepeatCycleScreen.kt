@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.repeatcycle.editrepeatcycle
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,7 @@ fun EditRepeatCycleScreen(
             title = "반복 주기 수정",
             onNavigationClick = { viewModel.onIntent(EditRepeatCycleIntent.OnBackClick) },
             rightComponent = {
+                if (!state.isTreatment) {
                 Text(
                     text = "저장",
                     style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
@@ -52,12 +54,14 @@ fun EditRepeatCycleScreen(
                             viewModel.onIntent(EditRepeatCycleIntent.OnUpdateClick)
                         },
                 )
+                }
             },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
                 .padding(20.dp)
                 .imePadding(),
@@ -129,6 +133,18 @@ fun EditRepeatCycleScreen(
             )
 
             Spacer(modifier = Modifier.height(60.dp))
+        }
+
+        if (state.isTreatment) {
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = "저장",
+                onClick = { viewModel.onIntent(EditRepeatCycleIntent.OnUpdateClick) },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

@@ -2,11 +2,14 @@ package com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle
 
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
+import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.model.RepeatCycle
 
 data class AddRepeatCycleState(
     val intervals: String = "",
+    val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
+    val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val previewRepeatCycle: String = parsingIntervals(intervals)
         .getOrDefault(emptyList())
         .toPreviewIntervals()
