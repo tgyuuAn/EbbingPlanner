@@ -88,7 +88,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
     }
 
     private fun checkTodo(todoId: Int, context: Context) = scope.launch {
-        val selectedTodo = todoRepository.loadSchedule(todoId)
+        val selectedTodo = todoRepository.loadSchedule(todoId) ?: return@launch
         val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
         todoRepository.updateTodo(updatedTodo)
         updateData(context)

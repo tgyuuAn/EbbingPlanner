@@ -52,7 +52,10 @@ class EditTodoViewModel @Inject constructor(
             ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
         viewModelScope.launch {
-            val originSchedule = todoRepository.loadSchedule(scheduleId)
+            val originSchedule = todoRepository.loadSchedule(scheduleId) ?: run {
+                navigationBus.navigate(NavigationEvent.Up)
+                return@launch
+            }
 
             val originTagDeferred = async { todoRepository.loadTag(originSchedule.tagId) }
             val sameInfoSchedulesDeferred =
