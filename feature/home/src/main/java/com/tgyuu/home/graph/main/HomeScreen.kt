@@ -28,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onGloballyPositioned
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -64,6 +66,7 @@ import com.tgyuu.home.graph.main.ui.dialog.ConfirmDeleteSingleDialog
 import com.tgyuu.home.graph.main.ui.dialog.DialogType
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteRemaining
 import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteSingle
+import com.tgyuu.home.graph.main.ui.dialog.InAppReviewDialog
 import com.tgyuu.home.graph.main.ui.dialog.WidgetNudgeDialog
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -76,6 +79,7 @@ internal fun HomeRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val activity = LocalContext.current as? Activity
     var isShowDialog by remember { mutableStateOf(false) }
     var dialogType by remember { mutableStateOf<DialogType?>(null) }
 
@@ -99,6 +103,18 @@ internal fun HomeRoute(
     AnimatedVisibility(state.showWidgetNudgeDialog) {
         WidgetNudgeDialog(
             onDismiss = { viewModel.onIntent(HomeIntent.OnWidgetNudgeDismiss) }
+        )
+    }
+
+    if (state.showInAppReviewDialog) {
+        InAppReviewDialog(
+            onDismiss = { viewModel.dismissInAppReviewDialog() },
+            onReviewClick = {
+                viewModel.dismissInAppReviewDialog()
+                scope.launch {
+                    activity?.let { viewModel.inAppReviewManager.requestInAppReview(it) }
+                }
+            },
         )
     }
 

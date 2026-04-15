@@ -115,7 +115,7 @@ fun EbbingDialogDefaultTop(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(top = 40.dp, bottom = 12.dp),
+        modifier = Modifier.padding(top = 34.dp, bottom = 24.dp),
     ) {
         Text(
             text = title,
@@ -127,7 +127,7 @@ fun EbbingDialogDefaultTop(
         Text(
             text = subText,
             color = EbbingTheme.colors.dark2,
-            style = EbbingTheme.typography.bodySM,
+            style = EbbingTheme.typography.bodyMM,
             textAlign = TextAlign.Center,
         )
 

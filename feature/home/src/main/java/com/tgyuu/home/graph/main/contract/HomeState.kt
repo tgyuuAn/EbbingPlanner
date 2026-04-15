@@ -16,5 +16,6 @@ data class HomeState(
     val schedulesByTodoInfo: ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> = persistentMapOf(),
     val sortType: SortType = SortType.CREATED,
     val showWidgetNudgeDialog: Boolean = false,
+    val showInAppReviewDialog: Boolean = false,
     val mondayStart: Boolean = false,
 ) : UiState
