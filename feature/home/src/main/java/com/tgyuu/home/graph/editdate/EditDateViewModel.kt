@@ -166,7 +166,10 @@ class EditDateViewModel @Inject constructor(
             )
         )
 
-        if (currentState.tagId == null) return
+        val tagId = currentState.tagId ?: run {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
+            return
+        }
 
         if (currentState.schedules.isEmpty()) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장할 일정이 없습니다"))
@@ -183,7 +186,7 @@ class EditDateViewModel @Inject constructor(
             title = currentState.title,
             dates = currentState.schedules,
             isDoneSchedules = isDoneSchedules,
-            tagId = currentState.tagId!!,
+            tagId = tagId,
             priority = originSchedules.firstOrNull()?.priority,
             restDays = currentState.restDays.toSet(),
         )
