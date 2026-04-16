@@ -24,7 +24,7 @@ internal fun ConfirmDeleteRemainingDialog(
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
                     append("${schedule.title.originalText} 와 연계된 ${schedule.date.monthValue}월 ${schedule.date.dayOfMonth}일 이후 일정을 모두 ")
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append("삭제")
                     }
                     append(" 하시겠습니까?")

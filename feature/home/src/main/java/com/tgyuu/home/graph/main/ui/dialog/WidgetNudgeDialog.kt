@@ -48,16 +48,16 @@ internal fun WidgetNudgeDialog(
             )
             Text(
                 text = "첫 일정 등록 완료!",
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
+                style = EbbingTheme.typography.body14M,
+                color = EbbingTheme.colors.textDisabled,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             Text(
                 text = "에빙플래너 위젯으로도\n일정을 간편하게 체크해보세요.",
                 textAlign = TextAlign.Center,
-                style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading18B,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier
                     .padding(top = 6.dp, bottom = 24.dp)
                     .padding(horizontal = 16.dp),
@@ -69,7 +69,7 @@ internal fun WidgetNudgeDialog(
                     .fillMaxWidth()
                     .clip(shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
                     .wrapContentHeight()
-                    .background(color = EbbingTheme.colors.light3),
+                    .background(color = EbbingTheme.colors.fillNormal),
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_widget_nudge),

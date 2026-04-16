@@ -92,16 +92,16 @@ fun EbbingDialogDefaultTop(
     ) {
         Text(
             text = title,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             textAlign = TextAlign.Center,
-            style = EbbingTheme.typography.headingMSB,
+            style = EbbingTheme.typography.heading20B,
         )
 
         Text(
             text = subText,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.textDisabled,
             textAlign = TextAlign.Center,
-            style = EbbingTheme.typography.bodySM,
+            style = EbbingTheme.typography.body14M,
         )
     }
 }
@@ -119,15 +119,15 @@ fun EbbingDialogDefaultTop(
     ) {
         Text(
             text = title,
-            color = EbbingTheme.colors.black,
-            style = EbbingTheme.typography.headingMSB,
+            color = EbbingTheme.colors.textOnBackground,
+            style = EbbingTheme.typography.heading20B,
             textAlign = TextAlign.Center,
         )
 
         Text(
             text = subText,
-            color = EbbingTheme.colors.dark2,
-            style = EbbingTheme.typography.bodyMM,
+            color = EbbingTheme.colors.textDisabled,
+            style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
         )
 
@@ -150,16 +150,16 @@ fun EbbingDialogDefaultTop(
     ) {
         Text(
             text = title,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             textAlign = TextAlign.Center,
-            style = EbbingTheme.typography.headingMSB,
+            style = EbbingTheme.typography.heading20B,
         )
 
         Text(
             text = subText,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.textDisabled,
             textAlign = TextAlign.Center,
-            style = EbbingTheme.typography.bodySM,
+            style = EbbingTheme.typography.body14M,
         )
 
         descriptionComposable?.let {
@@ -184,7 +184,7 @@ fun EbbingDialogIconTop(
         Image(
             painter = painterResource(iconId),
             contentDescription = contentDescription,
-            colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
             modifier = Modifier
                 .padding(bottom = 8.dp)
                 .size(40.dp),
@@ -192,8 +192,8 @@ fun EbbingDialogIconTop(
 
         Text(
             text = title,
-            color = EbbingTheme.colors.black,
-            style = EbbingTheme.typography.headingMSB,
+            color = EbbingTheme.colors.textOnBackground,
+            style = EbbingTheme.typography.heading20B,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 12.dp),
         )
@@ -201,8 +201,8 @@ fun EbbingDialogIconTop(
         subText?.let {
             Text(
                 text = subText,
-                color = EbbingTheme.colors.dark2,
-                style = EbbingTheme.typography.bodySM,
+                color = EbbingTheme.colors.textDisabled,
+                style = EbbingTheme.typography.body14M,
                 textAlign = TextAlign.Center,
             )
         }
@@ -213,7 +213,7 @@ fun EbbingDialogIconTop(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(EbbingTheme.colors.light3)
+                    .background(EbbingTheme.colors.fillNormal)
                     .padding(vertical = 12.dp),
             ) {
                 descriptionComposable()
@@ -285,12 +285,12 @@ fun PreviewDialog2() {
                     descriptionComposable = {
                         Text(
                             text = AnnotatedString("This is an icon subtitle"),
-                            color = EbbingTheme.colors.dark3,
-                            style = EbbingTheme.typography.bodySM,
+                            color = EbbingTheme.colors.textDisabled,
+                            style = EbbingTheme.typography.body14M,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(EbbingTheme.colors.light3)
+                                .background(EbbingTheme.colors.fillNormal)
                         )
                     },
                     contentDescription = "Icon Description"

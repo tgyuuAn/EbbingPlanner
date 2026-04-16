@@ -55,20 +55,20 @@ fun NetworkBanner(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp)
-                    .background(EbbingTheme.colors.error)
+                    .background(EbbingTheme.colors.statusError)
                     .padding(horizontal = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "네트워크가 연결되지 않았습니다.",
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.white,
+                    style = EbbingTheme.typography.heading14SB,
+                    color = EbbingTheme.colors.textOnPrimary,
                     modifier = Modifier.weight(1f),
                 )
                 Text(
                     text = "연결하기",
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.white,
+                    style = EbbingTheme.typography.heading14SB,
+                    color = EbbingTheme.colors.textOnPrimary,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
                         .padding(start = 12.dp)
@@ -88,14 +88,14 @@ fun NetworkBanner(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(60.dp)
-                    .background(EbbingTheme.colors.success)
+                    .background(EbbingTheme.colors.statusSuccess)
                     .padding(horizontal = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "네트워크에 연결되었습니다.",
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.white,
+                    style = EbbingTheme.typography.heading14SB,
+                    color = EbbingTheme.colors.textOnPrimary,
                     modifier = Modifier.weight(1f),
                 )
             }

@@ -20,11 +20,11 @@ fun ConfirmConnectDialog(
                 title = "해당 ID로 연동할까요?",
                 subText = buildAnnotatedString {
                     append("현재 기기에 있는 데이터는 ")
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.statusError)) {
                         append("업로드된 데이터로 모두 대체")
                     }
                     append("됩니다.\n중요한 데이터는 ")
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.statusError)) {
                         append("연동 전에 반드시 확인")
                     }
                     append("해주세요.")

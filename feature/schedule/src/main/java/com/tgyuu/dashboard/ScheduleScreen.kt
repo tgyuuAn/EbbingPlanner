@@ -109,7 +109,7 @@ private fun PhoneScheduleScreen(
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.light2,
+            color = EbbingTheme.colors.fillStrong,
             thickness = 1.dp,
             modifier = Modifier.padding(bottom = 16.dp),
         )
@@ -129,7 +129,7 @@ private fun PhoneScheduleScreen(
                 )
 
                 HorizontalDivider(
-                    color = EbbingTheme.colors.light2,
+                    color = EbbingTheme.colors.fillStrong,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
@@ -151,7 +151,7 @@ private fun PhoneScheduleScreen(
                 )
 
                 HorizontalDivider(
-                    color = EbbingTheme.colors.light2,
+                    color = EbbingTheme.colors.fillStrong,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
@@ -211,7 +211,7 @@ private fun TabletScheduleScreen(
                 EbbingVisibleAnimation(visible = state.selectedTag != null) {
                     Column {
                         HorizontalDivider(
-                            color = EbbingTheme.colors.light2,
+                            color = EbbingTheme.colors.fillStrong,
                             thickness = 1.dp,
                             modifier = Modifier.padding(vertical = 16.dp)
                         )
@@ -269,18 +269,18 @@ private fun TagsBody(
             Text(
                 text = buildAnnotatedString {
                     append("태그 ")
-                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append(tags.size.toString())
                     }
                 },
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
             )
 
             Text(
                 text = "달성률",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(end = 20.dp),
             )
         }
@@ -290,11 +290,11 @@ private fun TagsBody(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(EbbingTheme.colors.light3)
+                .background(EbbingTheme.colors.fillNormal)
                 .padding(vertical = 12.dp, horizontal = 16.dp)
                 .verticalScrollbar(
                     state = listState,
-                    color = EbbingTheme.colors.light1,
+                    color = EbbingTheme.colors.fillDisabled,
                 )
         ) {
             items(
@@ -335,14 +335,14 @@ private fun TodoInfosBody(
             Text(
                 text = buildAnnotatedString {
                     append("${selectedTag.name} 태그 하위 일정 ")
-                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append(todoInfos.size.toString())
                     }
                 },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .weight(1f, false),
@@ -350,8 +350,8 @@ private fun TodoInfosBody(
 
             Text(
                 text = "달성률",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(end = 20.dp),
             )
         }
@@ -364,11 +364,11 @@ private fun TodoInfosBody(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(EbbingTheme.colors.light3)
+                    .background(EbbingTheme.colors.fillNormal)
                     .padding(vertical = 12.dp, horizontal = 16.dp)
                     .verticalScrollbar(
                         state = listState,
-                        color = EbbingTheme.colors.light1,
+                        color = EbbingTheme.colors.fillDisabled,
                     )
             ) {
                 items(
@@ -409,14 +409,14 @@ private fun SchedulesBody(
             Text(
                 text = buildAnnotatedString {
                     append("${selectedTodoInfo?.title ?: "선택한"} 일정 주기 ")
-                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append(todoSchedules.size.toString())
                     }
                 },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .weight(1f, false),
@@ -425,12 +425,12 @@ private fun SchedulesBody(
             Text(
                 text = buildAnnotatedString {
                     append("달성률 ")
-                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append("${Math.round(achievementRate * 100)}%")
                     }
                 },
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
             )
         }
 
@@ -442,11 +442,11 @@ private fun SchedulesBody(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(EbbingTheme.colors.light3)
+                    .background(EbbingTheme.colors.fillNormal)
                     .padding(vertical = 12.dp, horizontal = 16.dp)
                     .verticalScrollbar(
                         state = listState,
-                        color = EbbingTheme.colors.light1,
+                        color = EbbingTheme.colors.fillDisabled,
                     )
             ) {
                 items(
@@ -474,8 +474,8 @@ private fun ContentItemCard(
     isSelected: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val textStyle = if (isSelected) EbbingTheme.typography.bodyMSB
-    else EbbingTheme.typography.bodyMM
+    val textStyle = if (isSelected) EbbingTheme.typography.body16M
+    else EbbingTheme.typography.body16M
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -493,7 +493,7 @@ private fun ContentItemCard(
                     if (isSelected) {
                         Modifier.border(
                             width = 1.dp,
-                            color = EbbingTheme.colors.primaryDefault,
+                            color = EbbingTheme.colors.primaryNormal,
                             shape = CircleShape
                         )
                     } else {
@@ -505,7 +505,7 @@ private fun ContentItemCard(
         Text(
             text = value,
             style = textStyle,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -516,7 +516,7 @@ private fun ContentItemCard(
         Text(
             text = "${Math.round(achievementRate * 100)} %",
             style = textStyle,
-            color = EbbingTheme.colors.primaryDefault,
+            color = EbbingTheme.colors.primaryNormal,
         )
     }
 }
@@ -541,16 +541,16 @@ private fun ScheduleCard(
 
         Text(
             text = "${schedule.date.toFormattedString()} (${schedule.date.dayOfWeek.toKorean()})",
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Text(
             text = schedule.date.toRelativeDayDescription(),
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
     }
 }
@@ -559,13 +559,13 @@ private fun ScheduleCard(
 private fun NoContentCard(modifier: Modifier = Modifier) {
     Text(
         text = "선택한 항목의 하위 요소가 없습니다.",
-        style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         textAlign = TextAlign.Center,
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(EbbingTheme.colors.light3)
+            .background(EbbingTheme.colors.fillNormal)
             .padding(vertical = 24.dp, horizontal = 16.dp)
     )
 }

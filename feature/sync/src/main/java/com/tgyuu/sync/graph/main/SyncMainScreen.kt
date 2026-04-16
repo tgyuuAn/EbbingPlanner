@@ -268,15 +268,15 @@ internal fun UuidBody(
 ) {
     Text(
         text = "해당 디바이스의 고유 ID :",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
     Text(
         text = uuid,
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.primaryDefault,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
@@ -284,8 +284,8 @@ internal fun UuidBody(
 
     Text(
         text = "해당 기기의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
@@ -293,8 +293,8 @@ internal fun UuidBody(
 
     Text(
         text = lastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.primaryDefault,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
@@ -302,8 +302,8 @@ internal fun UuidBody(
 
     Text(
         text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
@@ -311,15 +311,15 @@ internal fun UuidBody(
 
     Text(
         text = lastUpdatedAt?.toLocalDateTime()?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.primaryDefault,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
     )
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -333,15 +333,15 @@ internal fun LinkedUuidBody(
 ) {
     Text(
         text = "연동 되어있는 ID :",
-        style = EbbingTheme.typography.bodySSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.heading14SB,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
     Text(
         text = linkedUuid,
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.primaryDefault,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
@@ -349,8 +349,8 @@ internal fun LinkedUuidBody(
 
     Text(
         text = "해당 기기의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
@@ -358,8 +358,8 @@ internal fun LinkedUuidBody(
 
     Text(
         text = lastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.primaryDefault,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
@@ -367,8 +367,8 @@ internal fun LinkedUuidBody(
 
     Text(
         text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
@@ -376,15 +376,15 @@ internal fun LinkedUuidBody(
 
     Text(
         text = lastUpdatedAt?.toLocalDateTime()?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
-        style = EbbingTheme.typography.bodySR,
-        color = EbbingTheme.colors.primaryDefault,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
     )
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -400,8 +400,8 @@ private fun SyncUpBody(
 ) {
     Text(
         text = "데이터 동기화 / 다른 기기와 연동",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -414,9 +414,9 @@ private fun SyncUpBody(
     ) {
         Text(
             text = "서버와 내 기기 동기화하기",
-            style = EbbingTheme.typography.headingSSB,
-            color = if (isSyncUpEnabled) EbbingTheme.colors.dark1
-            else EbbingTheme.colors.dark1.copy(alpha = 0.5f),
+            style = EbbingTheme.typography.heading18B,
+            color = if (isSyncUpEnabled) EbbingTheme.colors.textSub
+            else EbbingTheme.colors.textSub.copy(alpha = 0.5f),
             modifier = Modifier.weight(1f),
         )
 
@@ -437,8 +437,8 @@ private fun SyncUpBody(
         ) {
             Text(
                 text = "연동 해제하기",
-                style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.dark1,
+                style = EbbingTheme.typography.heading18B,
+                color = EbbingTheme.colors.textSub,
                 modifier = Modifier.weight(1f),
             )
 
@@ -458,8 +458,8 @@ private fun SyncUpBody(
         ) {
             Text(
                 text = "다른 기기와 연동하기",
-                style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.dark1,
+                style = EbbingTheme.typography.heading18B,
+                color = EbbingTheme.colors.textSub,
                 modifier = Modifier.weight(1f),
             )
 
@@ -472,7 +472,7 @@ private fun SyncUpBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -484,19 +484,19 @@ private fun DescriptionBody() {
         text = buildAnnotatedString {
             append("- 동기화는 기기의 변경 사항을 서버에 반영하고, 서버의 최신 데이터를 가져오는  양방향 동기화 방식입니다.\n")
             append("- ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
                 append("수정한 데이터")
             }
             append("는 이 과정을 거쳐야 다른 기기와 공유됩니다.\n")
             append("- 동기화 시 서로 다른 기기에서 수정한 내용이 있는 경우 ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
                 append("최근 수정된 데이터로 반영")
             }
             append("됩니다.\n")
             append("- 동기화 전 반드시 중요한 데이터를 백업하거나 최신 상태를 확인해주세요.")
         },
         textAlign = TextAlign.Start,
-        style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.dark1,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textSub,
     )
 }

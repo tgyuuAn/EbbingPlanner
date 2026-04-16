@@ -45,7 +45,7 @@ internal fun CalendarController(
                 Image(
                     painter = painterResource(R.drawable.ic_return),
                     contentDescription = "이전 달",
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                     modifier = Modifier.size(16.dp),
                 )
             } else {
@@ -56,8 +56,8 @@ internal fun CalendarController(
         Text(
             text = "${currentDate.year}년 ${currentDate.monthValue}월",
             textAlign = TextAlign.Center,
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         if (showSyncButton) {
@@ -70,7 +70,7 @@ internal fun CalendarController(
                 Image(
                     painter = painterResource(R.drawable.ic_link),
                     contentDescription = "데이터 동기화",
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                     modifier = Modifier.size(28.dp),
                 )
             }

@@ -34,8 +34,8 @@ internal fun UpdateBottomSheet(
         ) {
             Text(
                 text = "일정 정보 수정하기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -46,8 +46,8 @@ internal fun UpdateBottomSheet(
 
             Text(
                 text = "연관된 일정 반복 주기 재설정하기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

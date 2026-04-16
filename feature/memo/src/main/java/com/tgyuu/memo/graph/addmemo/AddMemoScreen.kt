@@ -80,8 +80,8 @@ private fun AddMemoScreen(
                     if (!state.isTreatment) {
                         Text(
                             text = "저장",
-                            style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .throttledClickable(
@@ -110,8 +110,8 @@ private fun AddMemoScreen(
                         }
                         append(" 일정에\n메모를 추가해요")
                     },
-                    style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
+                    style = EbbingTheme.typography.heading24B,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
 
                 MemoContent(
@@ -154,8 +154,8 @@ private fun AddMemoScreen(
                 rightComponent = {
                     Text(
                         text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .throttledClickable(
@@ -187,8 +187,8 @@ private fun AddMemoScreen(
                             }
                             append(" 일정에\n메모를 추가해요")
                         },
-                        style = EbbingTheme.typography.headingLSB,
-                        color = EbbingTheme.colors.black,
+                        style = EbbingTheme.typography.heading24B,
+                        color = EbbingTheme.colors.textOnBackground,
                     )
 
                     MemoContent(

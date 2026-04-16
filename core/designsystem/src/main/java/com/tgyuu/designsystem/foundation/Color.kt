@@ -3,173 +3,250 @@ package com.tgyuu.designsystem.foundation
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-val PrimaryDefault = Color(0xFF0F4C75)
-private val PrimaryMiddle = Color(0xFF3282B8)
-val PrimaryLight = Color(0xFFBBE1FA)
-val LightBackground = Color(0xFFFFFFFF)
-val DarkBackground = Color(0xFF262729)
-private val Black = Color(0xFF1B1A2A)
-private val Dark1 = Color(0xFF484B4D)
-private val Dark2 = Color(0xFF6C7073)
-private val Dark3 = Color(0xFF909599)
-private val Light1 = Color(0xFFCBD1D9)
-private val Light2 = Color(0xFFE8EBF0)
-private val Light3 = Color(0xFFF4F6FA)
-private val White = Color(0xFFFFFFFF)
-private val Error = Color(0xFFFF3059)
-private val Success = Color(0xFF5DB441)
+// =============================================================
+// Color_Base / Greyscale
+// =============================================================
+private val Greyscale000 = Color(0xFF070808)
+private val Greyscale100 = Color(0xFF131416)
+private val Greyscale200 = Color(0xFF4B4F5D)
+private val Greyscale300 = Color(0xFF5B5F72)
+private val Greyscale400 = Color(0xFF788198)
+private val Greyscale500 = Color(0xFF8994A8)
+private val Greyscale600 = Color(0xFFA1AAB8)
+private val Greyscale700 = Color(0xFFBCC6D4)
+private val Greyscale800 = Color(0xFFE8EBF0)
+private val Greyscale900 = Color(0xFFF4F6FA)
+private val Greyscale950 = Color(0xFFFFFFFF)
+
+// =============================================================
+// Color_Base / Bluescale
+// =============================================================
+private val Bluescale000 = Color(0xFF091F31)
+private val Bluescale100 = Color(0xFF194467)
+private val Bluescale200 = Color(0xFF0F4C75)
+private val Bluescale300 = Color(0xFF0E5F96)
+private val Bluescale400 = Color(0xFF1077B9)
+private val Bluescale500 = Color(0xFF1D95DA)
+private val Bluescale600 = Color(0xFF82C0E2)
+private val Bluescale700 = Color(0xFFB1D7EE)
+private val Bluescale800 = Color(0xFFCBE5F5)
+private val Bluescale900 = Color(0xFFF1F8FE)
+
+// =============================================================
+// Color_Base / Greenscale (Forest)
+// =============================================================
+private val Greenscale000 = Color(0xFF0D120E)
+private val Greenscale100 = Color(0xFF1A4520)
+private val Greenscale200 = Color(0xFF2D6830)
+private val Greenscale300 = Color(0xFF2E8439)
+private val Greenscale400 = Color(0xFF388E3C)
+private val Greenscale500 = Color(0xFF46A14B)
+private val Greenscale600 = Color(0xFF74C278)
+private val Greenscale700 = Color(0xFF9DD89F)
+private val Greenscale800 = Color(0xFFC8E6C9)
+private val Greenscale900 = Color(0xFFF0F6F0)
+private val Greenscale950 = Color(0xFFFBFEFB)
+
+// =============================================================
+// Color_Base / Sunsetscale
+// =============================================================
+private val Sunsetscale000 = Color(0xFFBF360C)
+private val Sunsetscale100 = Color(0xFFD84315)
+private val Sunsetscale200 = Color(0xFFE64A19)
+private val Sunsetscale300 = Color(0xFFF4511E)
+private val Sunsetscale400 = Color(0xFFFF5722)
+private val Sunsetscale500 = Color(0xFFFF7043)
+private val Sunsetscale600 = Color(0xFFFF8A65)
+private val Sunsetscale700 = Color(0xFFFFAB91)
+private val Sunsetscale800 = Color(0xFFFFCCBC)
+private val Sunsetscale900 = Color(0xFFFFF3E0)
+
+// =============================================================
+// Color_Base / Marinescale
+// =============================================================
+private val Marinescale000 = Color(0xFF2E4B64)
+private val Marinescale100 = Color(0xFF5B7A9C)
+private val Marinescale200 = Color(0xFFA4C2E1)
+private val Marinescale700 = Color(0xFFD3E7F2)
+private val Marinescale800 = Color(0xFFCAE4F3)
+private val Marinescale900 = Color(0xFFC1E1F5)
+
+// =============================================================
+// Color_Base / Lilacscale
+// =============================================================
+private val Lilacscale000 = Color(0xFF3B2A75)
+private val Lilacscale100 = Color(0xFF5D4BA3)
+private val Lilacscale200 = Color(0xFF7F6CD1)
+private val Lilacscale700 = Color(0xFFE9E3FF)
+private val Lilacscale800 = Color(0xFFDDD0FF)
+private val Lilacscale900 = Color(0xFFEBE6FF)
+
+// =============================================================
+// Color_Semantic / Status
+// =============================================================
+private val StatusError   = Color(0xFFFF3059)
+private val StatusSuccess = Color(0xFF5DB441)
+
+// =============================================================
+// Color_Semantic Schemes
+// =============================================================
 
 val normalLightColorScheme = EbbingColors(
-    background = LightBackground,
-    primaryDefault = PrimaryDefault,
-    primaryMiddle = PrimaryMiddle,
-    primaryLight = PrimaryLight,
-    black = Black,
-    dark1 = Dark1,
-    dark2 = Dark2,
-    dark3 = Dark3,
-    light1 = Light1,
-    light2 = Light2,
-    light3 = Light3,
-    white = White,
-    error = Error,
-    success = Success,
+    background        = Greyscale950,
+    primaryNormal     = Bluescale200,
+    primaryDeep       = Bluescale500,
+    primaryContainer  = Bluescale800,
+    statusError       = StatusError,
+    statusSuccess    = StatusSuccess,
+    textOnBackground = Greyscale000,
+    textSub          = Greyscale200,
+    textDisabled     = Greyscale400,
+    textOnPrimary    = Greyscale950,
+    textPrimary      = Bluescale200,
+    textError        = StatusError,
+    fillNormal       = Greyscale900,
+    fillStrong       = Greyscale800,
+    fillDisabled     = Greyscale700,
 )
+
 val normalDarkColorScheme = EbbingColors(
-    background = DarkBackground,
-    primaryDefault = PrimaryLight,
-    primaryMiddle = PrimaryMiddle,
-    primaryLight = PrimaryDefault,
-    black = White,
-    white = Black,
-    dark1 = Light1,
-    dark2 = Light2,
-    dark3 = Dark3,
-    light1 = Light1,
-    light2 = Light2,
-    light3 = Dark2,
-    error = Error,
-    success = Success,
+    background        = Greyscale000,
+    primaryNormal     = Bluescale200,
+    primaryDeep       = Bluescale500,
+    primaryContainer  = Bluescale200,
+    statusError       = StatusError,
+    statusSuccess    = StatusSuccess,
+    textOnBackground = Greyscale950,
+    textSub          = Greyscale700,
+    textDisabled     = Greyscale500,
+    textOnPrimary    = Greyscale950,
+    textPrimary      = Bluescale500,
+    textError        = StatusError,
+    fillNormal       = Greyscale100,
+    fillStrong       = Greyscale200,
+    fillDisabled     = Greyscale300,
 )
 
-val forestLightColorScheme = EbbingColors(
-    background = Color(0xFFE8F5E9),
-    primaryDefault = Color(0xFF2E7D32),
-    primaryMiddle = Color(0xFF388E3C),
-    primaryLight = Color(0xFF81C784),
-    black = Black,
-    white = White,
-    dark1 = Dark1,
-    dark2 = Color(0xFF4CAF50),
-    dark3 = Color(0xFF66BB6A),
-    light1 = Color(0xFFC3E6C5),
-    light2 = Color(0xFFAEDBB0),
-    light3 = Color(0xFFD8EDD9),
-    error = Error,
-    success = Success,
-)
-val forestDarkColorScheme = EbbingColors(
-    primaryDefault = Color(0xFF81C784),
-    primaryMiddle = Color(0xFF4CAF50),
-    primaryLight = Color(0xFF2E7D32),
-    background = Color(0xFF1B5E20),
-    black = White,
-    white = Black,
-    dark1 = Light1,
-    dark2 = Color(0xFF4CAF50),
-    dark3 = Color(0xFF388E3C),
-    light1 = Color(0xFF2E7D32),
-    light2 = Color(0xFF1B5E20),
-    light3 = Color(0xFF0D3B12),
-    error = Error,
-    success = Success,
+val forestLightColorScheme = normalLightColorScheme.copy(
+    background        = Greenscale950,
+    primaryNormal     = Greenscale300,
+    primaryDeep       = Greenscale500,
+    primaryContainer  = Greenscale800,
+    textOnBackground = Greenscale000,
+    textSub          = Greenscale200,
+    textDisabled     = Color(0xFF7CAE7E),
+    textOnPrimary    = Greenscale950,
+    textPrimary      = Greenscale300,
+    fillNormal       = Greenscale900,
+    fillStrong       = Color(0xFFD1EDD0),
+    fillDisabled     = Greenscale700,
 )
 
-val sunsetLightColorScheme = EbbingColors(
-    primaryDefault = Color(0xFFF4511E),
-    primaryMiddle = Color(0xFFFF8A65),
-    primaryLight = Color(0xFFFFCCBC),
-    background = Color(0xFFFFF3E0),
-    black = Black,
-    white = White,
-    dark1 = Dark1,
-    dark2 = Color(0xFFE64A19),
-    dark3 = Color(0xFFFB8C00),
-    light1 = Color(0xFFFFAB91),
-    light2 = Color(0xFFFFD7B0),
-    light3 = Color(0xFFFFE0B2),
-    error = Error,
-    success = Success,
+val forestDarkColorScheme = normalDarkColorScheme.copy(
+    background        = Greenscale000,
+    primaryNormal     = Greenscale700,
+    primaryDeep       = Greenscale500,
+    primaryContainer  = Greenscale300,
+    textOnBackground = Greenscale950,
+    textSub          = Color(0xFFB5DDB7),
+    textDisabled     = Greenscale600,
+    textOnPrimary    = Greenscale000,
+    textPrimary      = Greenscale700,
+    fillNormal       = Color(0xFF182D1B),
+    fillStrong       = Color(0xFF1A3D1E),
+    fillDisabled     = Greenscale200,
 )
-val sunsetDarkColorScheme = EbbingColors(
-    primaryDefault = Color(0xFFFFAB91),
-    primaryMiddle = Color(0xFFFF8A65),
-    primaryLight = Color(0xFFF4511E),
-    background = Color(0xFF4E342E),
-    black = White,
-    white = Black,
-    dark1 = Light1,
-    dark2 = Color(0xFFF4511E),
-    dark3 = Color(0xFFD84315),
-    light1 = Color(0xFFBF360C),
-    light2 = Color(0xFF4E342E),
-    light3 = Color(0xFF2E1F1C),
-    error = Error,
-    success = Success,
+
+val sunsetLightColorScheme = normalLightColorScheme.copy(
+    background       = Sunsetscale900,
+    primaryNormal    = Sunsetscale200,
+    primaryDeep      = Sunsetscale500,
+    primaryContainer = Sunsetscale800,
+    textPrimary   = Sunsetscale200,
+    fillNormal    = Sunsetscale900,
+    fillStrong    = Sunsetscale800,
+    fillDisabled  = Sunsetscale700,
+)
+
+val sunsetDarkColorScheme = normalDarkColorScheme.copy(
+    background       = Sunsetscale000,
+    primaryNormal    = Sunsetscale700,
+    primaryDeep      = Sunsetscale400,
+    primaryContainer = Sunsetscale200,
+    textPrimary   = Sunsetscale700,
+    fillNormal    = Sunsetscale100,
+    fillStrong    = Sunsetscale200,
+    fillDisabled  = Sunsetscale300,
 )
 
 val marineLightColorScheme = normalLightColorScheme.copy(
-    background = Color(0xFFEAF3F8),
-    light1 = Color(0xFFD3E7F2),
-    light2 = Color(0xFFCAE4F3),
-    light3 = Color(0xFFC1E1F5),
-    primaryDefault = Color(0xFFA4C2E1),
-    primaryMiddle = Color(0xFF5B7A9C),
-    primaryLight = Color(0xFF2E4B64),
+    background       = Color(0xFFEAF3F8),
+    primaryNormal    = Marinescale200,
+    primaryDeep      = Marinescale100,
+    primaryContainer = Marinescale700,
+    textPrimary   = Marinescale200,
+    fillNormal    = Marinescale900,
+    fillStrong    = Marinescale800,
+    fillDisabled  = Marinescale700,
 )
+
 val marineDarkColorScheme = normalDarkColorScheme.copy(
-    background = Color(0xFF263444),
-    primaryLight = Color(0xFFD3E7F2),
-    primaryMiddle = Color(0xFFA7CDEF),
-    primaryDefault = Color(0xFF5EB4E1),
-    light1 = Color(0xFFA4C2E1),
-    light2 = Color(0xFF5B7A9C),
-    light3 = Color(0xFF2E4B64),
+    background       = Color(0xFF263444),
+    primaryNormal    = Color(0xFF5EB4E1),
+    primaryDeep      = Color(0xFFA7CDEF),
+    primaryContainer = Marinescale000,
+    textPrimary   = Color(0xFF5EB4E1),
+    fillNormal    = Marinescale000,
+    fillStrong    = Marinescale100,
+    fillDisabled  = Marinescale200,
 )
 
 val lilacLightColorScheme = normalLightColorScheme.copy(
-    background = Color(0xFFF2F0FF),
-    light1 = Color(0xFFE9E3FF),
-    light2 = Color(0xFFDDD0FF),
-    light3 = Color(0xFFEBE6FF),
-    primaryLight = Color(0xFF7F6CD1),
-    primaryMiddle = Color(0xFF5D4BA3),
-    primaryDefault = Color(0xFF3B2A75),
+    background       = Color(0xFFF2F0FF),
+    primaryNormal    = Lilacscale000,
+    primaryDeep      = Lilacscale100,
+    primaryContainer = Lilacscale700,
+    textPrimary   = Lilacscale000,
+    fillNormal    = Lilacscale900,
+    fillStrong    = Lilacscale800,
+    fillDisabled  = Lilacscale700,
 )
+
 val lilacDarkColorScheme = normalDarkColorScheme.copy(
-    background = Color(0xFF1F1D2E),
-    light1 = Color(0xFF7F6CD1),
-    light2 = Color(0xFF5D4BA3),
-    light3 = Color(0xFF3B2A75),
-    primaryLight = Color(0xFFE9E3FF),
-    primaryMiddle = Color(0xFFDDD0FF),
-    primaryDefault = Color(0xFFEBE6FF),
+    background       = Color(0xFF1F1D2E),
+    primaryNormal    = Lilacscale900,
+    primaryDeep      = Lilacscale800,
+    primaryContainer = Lilacscale200,
+    textPrimary   = Lilacscale900,
+    fillNormal    = Lilacscale000,
+    fillStrong    = Lilacscale100,
+    fillDisabled  = Lilacscale200,
 )
+
+// =============================================================
+// Color_Semantic Data Class
+// =============================================================
 
 @Immutable
 data class EbbingColors(
+    // Semantic / Background
     val background: Color,
-    val primaryDefault: Color,
-    val primaryMiddle: Color,
-    val primaryLight: Color,
-    val black: Color,
-    val dark1: Color,
-    val dark2: Color,
-    val dark3: Color,
-    val light1: Color,
-    val light2: Color,
-    val light3: Color,
-    val white: Color,
-    val error: Color,
-    val success: Color,
+    // Semantic / Primary
+    val primaryNormal: Color,
+    val primaryDeep: Color,
+    val primaryContainer: Color,
+    // Semantic / Status
+    val statusError: Color,
+    val statusSuccess: Color,
+    // Semantic / Text
+    val textOnBackground: Color,
+    val textSub: Color,
+    val textDisabled: Color,
+    val textOnPrimary: Color,
+    val textPrimary: Color,
+    val textError: Color,
+    // Semantic / Fill
+    val fillNormal: Color,
+    val fillStrong: Color,
+    val fillDisabled: Color,
 )

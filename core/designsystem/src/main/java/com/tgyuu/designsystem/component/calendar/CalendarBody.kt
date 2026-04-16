@@ -76,7 +76,7 @@ private fun CalendarDayItem(
     modifier: Modifier = Modifier,
 ) {
     val dayItemColor = ebbingAnimateColorAsState(
-        targetValue = if (calendarDate.date == selectedDate) EbbingTheme.colors.black
+        targetValue = if (calendarDate.date == selectedDate) EbbingTheme.colors.textOnBackground
         else Color.Transparent
     )
 
@@ -94,9 +94,9 @@ private fun CalendarDayItem(
         ) {
             var isOverflow by remember { mutableStateOf(false) }
             val textColor = when {
-                !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
-                calendarDate.date == selectedDate -> EbbingTheme.colors.white
-                else -> EbbingTheme.colors.black
+                !calendarDate.isCurrentMonth -> EbbingTheme.colors.textDisabled
+                calendarDate.date == selectedDate -> EbbingTheme.colors.textOnPrimary
+                else -> EbbingTheme.colors.textOnBackground
             }
 
             if (isOverflow) {
@@ -109,7 +109,7 @@ private fun CalendarDayItem(
             } else {
                 Text(
                     text = if (calendarDate.date == LocalDate.now()) "Today" else "",
-                    style = EbbingTheme.typography.captionM,
+                    style = EbbingTheme.typography.caption12R,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -120,7 +120,7 @@ private fun CalendarDayItem(
 
             Text(
                 text = calendarDate.dayOfMonth.toString(),
-                style = EbbingTheme.typography.bodyMM,
+                style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
                 color = textColor,
             )

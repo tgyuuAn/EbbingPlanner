@@ -19,7 +19,7 @@ internal fun DeleteDialog(
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
                     append("선택하신 반복 주기를 ")
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append("삭제")
                     }
                     append(" 하시겠습니까?")

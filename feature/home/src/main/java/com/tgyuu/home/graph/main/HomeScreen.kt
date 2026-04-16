@@ -359,7 +359,7 @@ private fun PhoneHomeScreen(
 
             HorizontalDivider(
                 thickness = 8.dp,
-                color = EbbingTheme.colors.light3,
+                color = EbbingTheme.colors.fillNormal,
             )
         }
 
@@ -374,7 +374,7 @@ private fun PhoneHomeScreen(
                     if (!isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
                 ),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally)
@@ -397,7 +397,7 @@ private fun PhoneHomeScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
-                        color = EbbingTheme.colors.primaryDefault,
+                        color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier.size(40.dp)
                     )
                 }
@@ -484,7 +484,7 @@ private fun TabletHomeScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator(
-                    color = EbbingTheme.colors.primaryDefault,
+                    color = EbbingTheme.colors.primaryNormal,
                     modifier = Modifier.size(40.dp)
                 )
             }

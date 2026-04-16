@@ -47,13 +47,13 @@ fun AlarmMessageBottomSheet(
 
         Text(
             text = buildAnnotatedString {
-                withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault, fontWeight = FontWeight.Bold)) {
+                withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal, fontWeight = FontWeight.Bold)) {
                     append("{할일}")
                 }
                 append("은 할 일 제목으로 자동 변환됩니다 (최대 1번)")
             },
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark2,
+            style = EbbingTheme.typography.body14M,
+            color = EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
@@ -72,15 +72,15 @@ fun AlarmMessageBottomSheet(
         ) {
             Text(
                 text = state.errorMessage,
-                style = EbbingTheme.typography.captionM,
-                color = EbbingTheme.colors.error,
+                style = EbbingTheme.typography.caption12R,
+                color = EbbingTheme.colors.statusError,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
                 text = state.lengthText,
-                style = EbbingTheme.typography.captionM,
-                color = if (state.isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error,
+                style = EbbingTheme.typography.caption12R,
+                color = if (state.isValidLength) EbbingTheme.colors.textDisabled else EbbingTheme.colors.statusError,
             )
         }
 
@@ -91,21 +91,21 @@ fun AlarmMessageBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = EbbingTheme.colors.light3,
+                        color = EbbingTheme.colors.fillNormal,
                         shape = RoundedCornerShape(8.dp),
                     )
                     .padding(12.dp),
             ) {
                 Text(
                     text = "미리보기",
-                    style = EbbingTheme.typography.captionM,
-                    color = EbbingTheme.colors.dark2,
+                    style = EbbingTheme.typography.caption12R,
+                    color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
                 Text(
                     text = state.previewMessage,
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark1,
+                    style = EbbingTheme.typography.body16M,
+                    color = EbbingTheme.colors.textSub,
                 )
             }
 
@@ -115,8 +115,8 @@ fun AlarmMessageBottomSheet(
         if (state.shouldShowResetButton) {
             Text(
                 text = "기본값으로 복원",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.primaryDefault,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier
                     .clickable { onResetClick() }
                     .padding(vertical = 8.dp),

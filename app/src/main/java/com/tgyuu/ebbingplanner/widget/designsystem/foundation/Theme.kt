@@ -47,32 +47,32 @@ fun EbbingWidgetTheme(
             dark.background.copy(alpha = alpha)
         ),
         primary = ColorProvider(
-            light.primaryDefault.copy(alpha = alpha),
-            dark.primaryDefault.copy(alpha = alpha)
+            light.primaryNormal.copy(alpha = alpha),
+            dark.primaryNormal.copy(alpha = alpha)
         ),
         primaryContainer = ColorProvider(
-            light.light2.copy(alpha = alpha),
-            dark.light2.copy(alpha = alpha)
+            light.fillStrong.copy(alpha = alpha),
+            dark.fillStrong.copy(alpha = alpha)
         ),
         surface = ColorProvider(
-            light.black.copy(alpha = alpha),
-            dark.black.copy(alpha = alpha)
+            light.textOnBackground.copy(alpha = alpha),
+            dark.textOnBackground.copy(alpha = alpha)
         ),
         inverseSurface = ColorProvider(
-            light.white.copy(alpha = alpha),
-            dark.white.copy(alpha = alpha)
+            light.textOnPrimary.copy(alpha = alpha),
+            dark.textOnPrimary.copy(alpha = alpha)
         ),
         surfaceVariant = ColorProvider(
-            light.light1.copy(alpha = alpha),
-            dark.light1.copy(alpha = alpha)
+            light.fillDisabled.copy(alpha = alpha),
+            dark.fillDisabled.copy(alpha = alpha)
         ),
         secondary = ColorProvider(
-            light.primaryLight.copy(alpha = alpha),
-            dark.primaryLight.copy(alpha = alpha)
+            light.primaryContainer.copy(alpha = alpha),
+            dark.primaryContainer.copy(alpha = alpha)
         ),
         tertiary = ColorProvider(
-            light.dark3.copy(alpha = alpha),
-            dark.dark3.copy(alpha = alpha)
+            light.textDisabled.copy(alpha = alpha),
+            dark.textDisabled.copy(alpha = alpha)
         ),
 
         // textAlpha가 지정되지 않은 백그라운드
@@ -81,8 +81,8 @@ fun EbbingWidgetTheme(
             dark.background,
         ),
         onSurfaceVariant = ColorProvider(
-            light.light1,
-            dark.light1,
+            light.fillDisabled,
+            dark.fillDisabled,
         ),
 
         // 아래는 여전히 사용하지 않는 색상으로 유지

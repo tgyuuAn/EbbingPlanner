@@ -63,7 +63,7 @@ fun TodoListCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(EbbingTheme.colors.light3)
+                        .background(EbbingTheme.colors.fillNormal)
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
                     Column(
@@ -72,16 +72,16 @@ fun TodoListCard(
                     ) {
                         EbbingClickableText(
                             clickableText = todo.title,
-                            style = EbbingTheme.typography.bodyMSB,
-                            color = EbbingTheme.colors.black,
+                            style = EbbingTheme.typography.body16M,
+                            color = EbbingTheme.colors.textOnBackground,
                             maxLines = 3,
                             overflow = TextOverflow.Ellipsis,
                         )
 
                         Text(
                             text = todo.name,
-                            style = EbbingTheme.typography.bodyMM,
-                            color = EbbingTheme.colors.dark1,
+                            style = EbbingTheme.typography.body16M,
+                            color = EbbingTheme.colors.textSub,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -104,8 +104,8 @@ fun TodoListCard(
 
                             Text(
                                 text = "우선도 : ${todo.priority}",
-                                style = EbbingTheme.typography.bodySSB,
-                                color = EbbingTheme.colors.dark1,
+                                style = EbbingTheme.typography.heading14SB,
+                                color = EbbingTheme.colors.textSub,
                                 maxLines = 1,
                                 textAlign = TextAlign.End,
                                 overflow = TextOverflow.Ellipsis,
@@ -117,7 +117,7 @@ fun TodoListCard(
                     Image(
                         painter = painterResource(R.drawable.ic_3dots),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
                         modifier = Modifier
                             .size(20.dp)
                             .clickable { onEditScheduleClick(todo) },
@@ -149,14 +149,14 @@ private fun TodoListMemoContent(
         Image(
             painter = painterResource(R.drawable.ic_memo),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
             modifier = Modifier.size(16.dp),
         )
 
         EbbingClickableText(
             clickableText = memo,
-            style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading14SB,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
     }

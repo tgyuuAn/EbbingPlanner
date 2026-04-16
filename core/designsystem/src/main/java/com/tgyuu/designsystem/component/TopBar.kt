@@ -28,7 +28,7 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 fun EbbingMainTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    titleColor: Color = EbbingTheme.colors.black,
+    titleColor: Color = EbbingTheme.colors.textOnBackground,
     rightComponent: @Composable () -> Unit = {},
 ) {
     Row(
@@ -39,7 +39,7 @@ fun EbbingMainTopBar(
     ) {
         Text(
             text = title,
-            style = EbbingTheme.typography.headingMSB,
+            style = EbbingTheme.typography.heading20B,
             color = titleColor,
         )
 
@@ -64,7 +64,7 @@ fun EbbingSubTopBar(
         Image(
             painter = painterResource(R.drawable.ic_arrow_left),
             contentDescription = "뒤로 가기 버튼",
-            colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .clickable { onNavigationClick() }
@@ -72,8 +72,8 @@ fun EbbingSubTopBar(
 
         Text(
             text = title,
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.align(Alignment.Center)
         )
 
@@ -92,7 +92,7 @@ fun PreviewTopBar() {
                 Image(
                     painter = painterResource(R.drawable.ic_close),
                     contentDescription = "오른쪽 버튼",
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .size(32.dp),
@@ -100,7 +100,7 @@ fun PreviewTopBar() {
             },
             modifier = Modifier
                 .padding(vertical = 20.dp)
-                .background(EbbingTheme.colors.white),
+                .background(EbbingTheme.colors.textOnPrimary),
         )
     }
 }

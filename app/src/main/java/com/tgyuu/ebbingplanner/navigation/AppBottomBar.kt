@@ -38,7 +38,7 @@ internal fun AppBottomBar(
     navigateToBottomBarDestination: (Route) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val black = EbbingTheme.colors.black
+    val black = EbbingTheme.colors.textOnBackground
 
     Box(
         modifier = modifier
@@ -82,17 +82,17 @@ internal fun AppBottomBar(
 
                             Text(
                                 text = topLevelRoute.title,
-                                style = EbbingTheme.typography.captionM,
+                                style = EbbingTheme.typography.caption12R,
                             )
                         }
                     },
                     alwaysShowLabel = false,
                     selected = currentDestination.isRouteInHierarchy(topLevelRoute.route),
                     colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                        selectedIconColor = EbbingTheme.colors.black,
-                        unselectedIconColor = EbbingTheme.colors.dark3,
-                        selectedTextColor = EbbingTheme.colors.black,
-                        unselectedTextColor = EbbingTheme.colors.dark3,
+                        selectedIconColor = EbbingTheme.colors.textOnBackground,
+                        unselectedIconColor = EbbingTheme.colors.textDisabled,
+                        selectedTextColor = EbbingTheme.colors.textOnBackground,
+                        unselectedTextColor = EbbingTheme.colors.textDisabled,
                         indicatorColor = Color.Transparent,
                     ),
                     interactionSource = remember { NoRippleInteractionSource() },

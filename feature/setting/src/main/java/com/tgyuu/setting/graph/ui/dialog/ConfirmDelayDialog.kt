@@ -19,7 +19,7 @@ internal fun ConfirmClearDialog(
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
                     append("데이터를 ")
-                    withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+                    withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
                         append("초기화")
                     }
                     append(" 하시겠습니까?")

@@ -18,8 +18,8 @@ internal fun RepeatCycleContent(
 ) {
     Text(
         text = "반복 주기",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 

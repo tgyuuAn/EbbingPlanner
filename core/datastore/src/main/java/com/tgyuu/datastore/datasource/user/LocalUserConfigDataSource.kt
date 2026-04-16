@@ -16,6 +16,7 @@ interface LocalUserConfigDataSource {
     val widgetTextAlpha: Flow<Float>
     suspend fun consumeIsFirstAppOpen(): Boolean
     suspend fun consumeHasSeenNotificationNudgeScreen(): Boolean
+    suspend fun consumeInAppReview(): Boolean
     suspend fun setSortType(sortType: SortType)
     suspend fun setNotificationEnabled(enabled: Boolean)
     suspend fun setAlarmTime(hour: String, minute: String)

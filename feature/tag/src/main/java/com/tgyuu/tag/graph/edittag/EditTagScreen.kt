@@ -85,8 +85,8 @@ private fun EditTagScreen(
                 if (!state.isTreatment) {
                     Text(
                         text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .throttledClickable(
@@ -109,8 +109,8 @@ private fun EditTagScreen(
         ) {
             Text(
                 text = "${state.originTag?.name} 태그를 수정해요",
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading24B,
+                color = EbbingTheme.colors.textOnBackground,
             )
 
             NameContent(
@@ -151,8 +151,8 @@ private fun NameContent(
 
     Text(
         text = "태그 이름",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -197,8 +197,8 @@ private fun ColorContent(
     ) {
         Text(
             text = "색상",
-            style = EbbingTheme.typography.headingSM,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.body18M,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Spacer(

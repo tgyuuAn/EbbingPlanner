@@ -89,8 +89,8 @@ private fun SoftUpdateDialog(
                 descriptionComposable = {
                     Text(
                         text = "업데이트 내용 보러가기",
-                        color = EbbingTheme.colors.primaryMiddle,
-                        style = EbbingTheme.typography.bodySM,
+                        color = EbbingTheme.colors.primaryDeep,
+                        style = EbbingTheme.typography.body14M,
                         textDecoration = TextDecoration.Underline,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.clickable { onClickUpdateInfo() },
@@ -124,8 +124,8 @@ private fun HardUpdateDialog(
                 descriptionComposable = {
                     Text(
                         text = "업데이트 내용 보러가기",
-                        color = EbbingTheme.colors.primaryMiddle,
-                        style = EbbingTheme.typography.bodySM,
+                        color = EbbingTheme.colors.primaryDeep,
+                        style = EbbingTheme.typography.body14M,
                         textDecoration = TextDecoration.Underline,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.clickable { onClickUpdateInfo() },

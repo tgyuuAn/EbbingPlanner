@@ -140,8 +140,8 @@ private fun PhoneThemeLayout(
                 if (!state.isTreatment) {
                     Text(
                         text = "적용",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .throttledClickable(
@@ -165,8 +165,8 @@ private fun PhoneThemeLayout(
         ) {
             Text(
                 text = "앱 테마를 변경해요.",
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading24B,
+                color = EbbingTheme.colors.textOnBackground,
             )
 
             state.selectTheme?.let {
@@ -218,8 +218,8 @@ private fun TabletThemeLayout(
             rightComponent = {
                 Text(
                     text = "적용",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
@@ -245,8 +245,8 @@ private fun TabletThemeLayout(
             ) {
                 Text(
                     text = "앱 테마를 변경해요.",
-                    style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
+                    style = EbbingTheme.typography.heading24B,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
 
                 state.selectTheme?.let {
@@ -277,8 +277,8 @@ internal fun ThemeBody(
 ) {
     Text(
         text = "테마",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -307,7 +307,7 @@ internal fun ThemeBody(
                     Image(
                         painter = painterResource(R.drawable.ic_check),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.white),
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnPrimary),
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -334,8 +334,8 @@ internal fun PreviewBody(
 
     Text(
         text = "미리보기",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -368,7 +368,7 @@ private fun TodoListCard(
             modifier = modifier
                 .background(EbbingTheme.colors.background, shape = RoundedCornerShape(12.dp))
                 .border(
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                     width = 0.5.dp,
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -406,14 +406,14 @@ private fun TodoListCard(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(EbbingTheme.colors.light3)
+                            .background(EbbingTheme.colors.fillNormal)
                             .padding(vertical = 12.dp, horizontal = 16.dp)
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = "에빙 플래너 미리보기",
-                                style = EbbingTheme.typography.bodyMSB,
-                                color = EbbingTheme.colors.black,
+                                style = EbbingTheme.typography.body16M,
+                                color = EbbingTheme.colors.textOnBackground,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.padding(bottom = 4.dp),
@@ -421,8 +421,8 @@ private fun TodoListCard(
 
                             Text(
                                 text = "에빙 플래너 미리보기",
-                                style = EbbingTheme.typography.bodyMM,
-                                color = EbbingTheme.colors.dark1,
+                                style = EbbingTheme.typography.body16M,
+                                color = EbbingTheme.colors.textSub,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.padding(bottom = 4.dp),
@@ -441,8 +441,8 @@ private fun TodoListCard(
 
                                 Text(
                                     text = "우선도 : 0",
-                                    style = EbbingTheme.typography.bodySSB,
-                                    color = EbbingTheme.colors.dark1,
+                                    style = EbbingTheme.typography.heading14SB,
+                                    color = EbbingTheme.colors.textSub,
                                     maxLines = 1,
                                     textAlign = TextAlign.End,
                                     overflow = TextOverflow.Ellipsis,
@@ -454,7 +454,7 @@ private fun TodoListCard(
                         Image(
                             painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_3dots),
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                            colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -475,14 +475,14 @@ private fun TodoListCard(
                 Image(
                     painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_memo),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
                     modifier = Modifier.size(16.dp),
                 )
 
                 Text(
                     text = "에빙 플래너 미리보기",
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.dark1,
+                    style = EbbingTheme.typography.heading14SB,
+                    color = EbbingTheme.colors.textSub,
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -490,8 +490,8 @@ private fun TodoListCard(
 
         Text(
             text = if (isDarkMode) "다크" else "라이트",
-            style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.heading14SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 8.dp, end = 20.dp)

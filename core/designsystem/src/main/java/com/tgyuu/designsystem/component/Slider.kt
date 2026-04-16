@@ -26,10 +26,10 @@ fun HorizontalBackgroundSlider(
         },
         steps = 0,
         colors = SliderDefaults.colors(
-            thumbColor = EbbingTheme.colors.primaryDefault,
-            activeTrackColor = EbbingTheme.colors.primaryDefault,
-            activeTickColor = EbbingTheme.colors.primaryDefault,
-            inactiveTrackColor = EbbingTheme.colors.light1,
+            thumbColor = EbbingTheme.colors.primaryNormal,
+            activeTrackColor = EbbingTheme.colors.primaryNormal,
+            activeTickColor = EbbingTheme.colors.primaryNormal,
+            inactiveTrackColor = EbbingTheme.colors.fillDisabled,
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -48,10 +48,10 @@ fun HorizontalTextSlider(
         valueRange = 0.1f..1f,
         onValueChange = { onValueChange(it) },
         colors = SliderDefaults.colors(
-            thumbColor = EbbingTheme.colors.primaryDefault,
-            activeTrackColor = EbbingTheme.colors.primaryDefault,
-            activeTickColor = EbbingTheme.colors.primaryDefault,
-            inactiveTrackColor = EbbingTheme.colors.light1,
+            thumbColor = EbbingTheme.colors.primaryNormal,
+            activeTrackColor = EbbingTheme.colors.primaryNormal,
+            activeTickColor = EbbingTheme.colors.primaryNormal,
+            inactiveTrackColor = EbbingTheme.colors.fillDisabled,
         ),
         modifier = modifier
             .fillMaxWidth()

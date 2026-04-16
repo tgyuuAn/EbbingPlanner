@@ -381,8 +381,8 @@ private fun NotificationTopBar(
             if (!isTreatment) {
                 Text(
                     text = "저장",
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.primaryDefault,
+                    style = EbbingTheme.typography.body16M,
+                    color = EbbingTheme.colors.primaryNormal,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(throttleTime = 1500L) {
@@ -406,15 +406,15 @@ private fun NotificationTopBar(
 private fun NotificationHeader(nudgeText: String) {
     Text(
         text = nudgeText,
-        style = EbbingTheme.typography.headingLSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.heading24B,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(horizontal = 20.dp),
     )
 
     Text(
         text = "알림을 설정하면 다음 복습일에 일정을 알려드려요.\n알림은 언제든 설정 탭에서 변경할 수 있어요.",
-        style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.dark3,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier
             .padding(top = 12.dp)
             .padding(horizontal = 20.dp),
@@ -436,8 +436,8 @@ private fun NotificationToggleSection(
     ) {
         Text(
             text = "알림 받기",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.padding(end = 8.dp),
         )
 
@@ -479,7 +479,7 @@ private fun NotificationDetailSection(
                     .padding(vertical = 28.dp)
                     .fillMaxWidth()
                     .height(6.dp)
-                    .background(color = EbbingTheme.colors.light2)
+                    .background(color = EbbingTheme.colors.fillStrong)
             )
         }
 
@@ -513,8 +513,8 @@ private fun AlarmTimeRow(
     ) {
         Text(
             text = "알림 시간",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.padding(end = 8.dp),
         )
 
@@ -524,8 +524,8 @@ private fun AlarmTimeRow(
                     append(formattedTime)
                 }
             },
-            style = EbbingTheme.typography.headingSM,
-            color = EbbingTheme.colors.primaryDefault,
+            style = EbbingTheme.typography.body18M,
+            color = EbbingTheme.colors.primaryNormal,
             modifier = Modifier.clickable {
                 analyticsHelper.logEvent(
                     AnalyticsEvent.Click(
@@ -553,8 +553,8 @@ private fun AlarmMessageSection(
     ) {
         Text(
             text = "알림 메시지",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.padding(bottom = 6.dp),
         )
 
@@ -562,7 +562,7 @@ private fun AlarmMessageSection(
             text = buildAnnotatedString {
                 withStyle(
                     SpanStyle(
-                        color = EbbingTheme.colors.primaryDefault,
+                        color = EbbingTheme.colors.primaryNormal,
                         fontWeight = FontWeight.Bold
                     )
                 ) {
@@ -570,8 +570,8 @@ private fun AlarmMessageSection(
                 }
                 append("은 할 일 제목으로 자동 변환됩니다 (최대 1번)")
             },
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark2,
+            style = EbbingTheme.typography.body14M,
+            color = EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
@@ -592,15 +592,15 @@ private fun AlarmMessageSection(
         ) {
             Text(
                 text = state.errorMessage,
-                style = EbbingTheme.typography.captionM,
-                color = EbbingTheme.colors.error,
+                style = EbbingTheme.typography.caption12R,
+                color = EbbingTheme.colors.statusError,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
                 text = state.lengthText,
-                style = EbbingTheme.typography.captionM,
-                color = if (state.isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error,
+                style = EbbingTheme.typography.caption12R,
+                color = if (state.isValidLength) EbbingTheme.colors.textDisabled else EbbingTheme.colors.statusError,
             )
         }
 
@@ -622,21 +622,21 @@ private fun MessagePreview(previewMessage: String) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = EbbingTheme.colors.light3,
+                color = EbbingTheme.colors.fillNormal,
                 shape = RoundedCornerShape(16.dp),
             )
             .padding(vertical = 12.dp, horizontal = 16.dp),
     ) {
         Text(
             text = "미리보기",
-            style = EbbingTheme.typography.captionM,
-            color = EbbingTheme.colors.dark2,
+            style = EbbingTheme.typography.caption12R,
+            color = EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(bottom = 4.dp),
         )
         Text(
             text = previewMessage,
-            style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.body16M,
+            color = EbbingTheme.colors.textSub,
         )
     }
 }
@@ -648,8 +648,8 @@ private fun ResetButton(
 ) {
     Text(
         text = "알림 메시지 기본값으로 복원",
-        style = EbbingTheme.typography.bodySSB,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.heading14SB,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier
             .clickable {
                 analyticsHelper.logEvent(

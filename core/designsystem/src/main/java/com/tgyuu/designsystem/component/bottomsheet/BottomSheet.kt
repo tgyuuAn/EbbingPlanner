@@ -77,8 +77,8 @@ fun EbbingBottomSheetHeader(
         ) {
             Text(
                 text = title,
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading24B,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(top = 10.dp),
             )
 
@@ -88,8 +88,8 @@ fun EbbingBottomSheetHeader(
         subTitle?.let {
             Text(
                 text = subTitle,
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
+                style = EbbingTheme.typography.body14M,
+                color = EbbingTheme.colors.textDisabled,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
         }
@@ -123,7 +123,7 @@ fun EbbingBottomSheetListItemDefault(
                         if (checked) {
                             Modifier.border(
                                 width = 1.dp,
-                                color = EbbingTheme.colors.primaryDefault,
+                                color = EbbingTheme.colors.primaryNormal,
                                 shape = CircleShape
                             )
                         } else {
@@ -133,13 +133,13 @@ fun EbbingBottomSheetListItemDefault(
             )
         }
 
-        val textColor = if (!enabled) EbbingTheme.colors.dark3
-        else if (checked) EbbingTheme.colors.primaryDefault
-        else EbbingTheme.colors.black
+        val textColor = if (!enabled) EbbingTheme.colors.textDisabled
+        else if (checked) EbbingTheme.colors.primaryNormal
+        else EbbingTheme.colors.textOnBackground
 
         BasicText(
             text = label,
-            style = if (checked) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+            style = if (checked) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
             color = { textColor },
             autoSize = TextAutoSize.StepBased(
                 minFontSize = 8.sp,
@@ -154,7 +154,7 @@ fun EbbingBottomSheetListItemDefault(
             Image(
                 painter = painterResource(R.drawable.ic_textinput_check),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(color = EbbingTheme.colors.primaryDefault),
+                colorFilter = ColorFilter.tint(color = EbbingTheme.colors.primaryNormal),
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .size(32.dp),

@@ -34,8 +34,8 @@ internal fun ScheduleContent(
         Column(modifier = modifier) {
             Text(
                 text = "${schedules.size} 개의 학습 일정",
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading20B,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(top = 32.dp),
             )
 
@@ -46,7 +46,7 @@ internal fun ScheduleContent(
                     .heightIn(max = 400.dp)
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(EbbingTheme.colors.light3)
+                    .background(EbbingTheme.colors.fillNormal)
             ) {
                 itemsIndexed(schedules) { idx, item ->
                     ScheduleCard(
@@ -78,23 +78,23 @@ private fun ScheduleCard(
     ) {
         Text(
             text = idx.toString(),
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Text(
             text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Text(
             text = schedule.toRelativeDayDescription(),
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
     }
 }
@@ -111,8 +111,8 @@ internal fun ScheduleCheckContent(
         Column(modifier = modifier) {
             Text(
                 text = "${schedules.size} 개의 학습 일정",
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading20B,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(top = 32.dp)
 
             )
@@ -124,7 +124,7 @@ internal fun ScheduleCheckContent(
                     .heightIn(max = 400.dp)
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(EbbingTheme.colors.light3)
+                    .background(EbbingTheme.colors.fillNormal)
             ) {
                 itemsIndexed(schedules) { idx, item ->
                     ScheduleCheckCard(
@@ -166,23 +166,23 @@ private fun ScheduleCheckCard(
         ) {
             Text(
                 text = idx.toString(),
-                style = EbbingTheme.typography.bodyMSB,
+                style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
             )
 
             Text(
                 text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
-                style = EbbingTheme.typography.bodyMSB,
+                style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
             )
 
             Text(
                 text = schedule.toRelativeDayDescription(),
-                style = EbbingTheme.typography.bodyMSB,
+                style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
             )
         }
 

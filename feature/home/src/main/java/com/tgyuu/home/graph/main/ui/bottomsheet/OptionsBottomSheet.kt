@@ -40,8 +40,8 @@ internal fun OptionsBottomSheet(
         ) {
             Text(
                 text = "수정하기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -52,8 +52,8 @@ internal fun OptionsBottomSheet(
 
             Text(
                 text = "삭제하기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -64,8 +64,8 @@ internal fun OptionsBottomSheet(
 
             Text(
                 text = "내일로 미루기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -76,8 +76,8 @@ internal fun OptionsBottomSheet(
 
             Text(
                 text = if (selectedSchedule.memo.originalText.isEmpty()) "메모 추가하기" else "메모 수정하기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -89,8 +89,8 @@ internal fun OptionsBottomSheet(
             if (selectedSchedule.memo.originalText.isNotEmpty()) {
                 Text(
                     text = "메모 지우기",
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.black,
+                    style = EbbingTheme.typography.body16M,
+                    color = EbbingTheme.colors.textOnBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
