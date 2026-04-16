@@ -118,8 +118,8 @@ class FakeTodoRepository : TodoRepository {
         return schedules.firstOrNull { it.id == id }
     }
 
-    override suspend fun loadTag(id: Int): TodoTag {
-        return tags.first { it.id == id }
+    override suspend fun loadTag(id: Int): TodoTag? {
+        return tags.firstOrNull { it.id == id }
     }
 
     override suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo> {

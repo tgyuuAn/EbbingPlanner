@@ -125,7 +125,7 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadSchedule(id: Int): TodoSchedule? =
         localTodoDataSource.getTodoSchedule(id)
 
-    override suspend fun loadTag(id: Int): TodoTag = localTagDataSource.getTag(id)!!.toDomain()
+    override suspend fun loadTag(id: Int): TodoTag? = localTagDataSource.getTag(id)?.toDomain()
     override suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo> =
         localTodoDataSource.getTodoInfosByTagId(tagId)
 
