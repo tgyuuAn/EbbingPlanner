@@ -85,16 +85,16 @@ fun EbbingTextInputDefault(
                 }
             }
         ),
-        textStyle = EbbingTheme.typography.bodyMM.copy(color = EbbingTheme.colors.black),
-        cursorBrush = SolidColor(EbbingTheme.colors.black),
+        textStyle = EbbingTheme.typography.body16M.copy(color = EbbingTheme.colors.textOnBackground),
+        cursorBrush = SolidColor(EbbingTheme.colors.textOnBackground),
         decorationBox = { innerTextField ->
             Row {
                 Box(modifier = Modifier.weight(1f)) {
                     if (value.isEmpty() && !isFocused) {
                         Text(
                             text = hint,
-                            style = EbbingTheme.typography.bodyMM,
-                            color = EbbingTheme.colors.dark2,
+                            style = EbbingTheme.typography.body16M,
+                            color = EbbingTheme.colors.textDisabled,
                             modifier = Modifier.align(Alignment.CenterStart)
                         )
                     }
@@ -109,8 +109,8 @@ fun EbbingTextInputDefault(
             .height(52.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(
-                if (readOnly) EbbingTheme.colors.light2
-                else EbbingTheme.colors.light3
+                if (readOnly) EbbingTheme.colors.fillStrong
+                else EbbingTheme.colors.fillNormal
             )
             .padding(horizontal = 16.dp, vertical = 14.dp)
             .onFocusChanged { focusState ->
@@ -133,7 +133,7 @@ fun EbbingTextInputDropDown(
         modifier = modifier
             .height(52.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(EbbingTheme.colors.light3)
+            .background(EbbingTheme.colors.fillNormal)
             .padding(horizontal = 16.dp, vertical = 14.dp)
             .clickable { onDropDownClick() },
     ) {
@@ -149,8 +149,8 @@ fun EbbingTextInputDropDown(
 
         Text(
             text = value.ifEmpty { hint },
-            style = EbbingTheme.typography.bodyMM,
-            color = if (value.isEmpty()) EbbingTheme.colors.dark2 else EbbingTheme.colors.black,
+            style = EbbingTheme.typography.body16M,
+            color = if (value.isEmpty()) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
@@ -159,7 +159,7 @@ fun EbbingTextInputDropDown(
         Image(
             painter = painterResource(R.drawable.ic_arrow_down),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
             modifier = Modifier.size(24.dp),
         )
     }

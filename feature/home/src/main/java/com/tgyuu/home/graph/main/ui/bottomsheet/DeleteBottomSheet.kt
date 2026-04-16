@@ -34,8 +34,8 @@ internal fun DeleteBottomSheet(
         ) {
             Text(
                 text = "해당 일정만 삭제하기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -46,8 +46,8 @@ internal fun DeleteBottomSheet(
 
             Text(
                 text = "연계된 이후 일정 전부 삭제",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

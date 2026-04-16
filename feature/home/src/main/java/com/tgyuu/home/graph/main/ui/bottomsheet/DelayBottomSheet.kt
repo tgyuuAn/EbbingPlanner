@@ -34,8 +34,8 @@ internal fun DelayBottomSheet(
         ) {
             Text(
                 text = "이 일정만 미루기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -46,8 +46,8 @@ internal fun DelayBottomSheet(
 
             Text(
                 text = "이후 일정 모두 미루기",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

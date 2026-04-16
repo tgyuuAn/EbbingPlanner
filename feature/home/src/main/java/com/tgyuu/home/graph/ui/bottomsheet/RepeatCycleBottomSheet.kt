@@ -62,7 +62,7 @@ internal fun RepeatCycleBottomSheet(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
-                        tint = EbbingTheme.colors.black,
+                        tint = EbbingTheme.colors.textOnBackground,
                         modifier = Modifier
                             .size(32.dp)
                             .clickable { onAddRepeatCycleClick() },
@@ -79,7 +79,7 @@ internal fun RepeatCycleBottomSheet(
                     .padding(top = 12.dp)
                     .verticalScrollbar(
                         state = listState,
-                        color = EbbingTheme.colors.light1,
+                        color = EbbingTheme.colors.fillDisabled,
                     ),
             ) {
                 items(
@@ -106,8 +106,8 @@ internal fun RepeatCycleBottomSheet(
             Column {
                 Text(
                     text = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일부터 언제까지 반복할까요?",
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark2,
+                    style = EbbingTheme.typography.body16M,
+                    color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(top = 8.dp),
                 )
 
@@ -134,15 +134,15 @@ internal fun RepeatCycleBottomSheet(
                 if (exceedsMax) {
                     Text(
                         text = "최대 ${RepeatCycle.MAX_DAILY_REPEAT_DAYS}일까지 설정할 수 있습니다",
-                        style = EbbingTheme.typography.bodySM,
-                        color = EbbingTheme.colors.error,
+                        style = EbbingTheme.typography.body14M,
+                        color = EbbingTheme.colors.statusError,
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 } else if (dayCount != null) {
                     Text(
                         text = "총 ${dayCount + 1}일간 매일 반복",
-                        style = EbbingTheme.typography.bodySM,
-                        color = EbbingTheme.colors.primaryDefault,
+                        style = EbbingTheme.typography.body14M,
+                        color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }

@@ -28,6 +28,7 @@ interface ConfigRepository {
     suspend fun getHardUpdateInfo(): UpdateInfo
 
     suspend fun getClearSyncFlag(): Boolean
+    suspend fun consumeInAppReview(): Boolean
     suspend fun markFirstTodoAdded(): Boolean
     suspend fun incrementTodoRegisteredCount()
     fun getTodoRegisteredCount(): Flow<Int>

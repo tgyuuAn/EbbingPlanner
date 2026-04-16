@@ -112,7 +112,7 @@ internal fun ColorBottomSheet(
                 .heightIn(max = 228.dp)
                 .verticalScrollbar(
                     state = listState,
-                    color = EbbingTheme.colors.light1,
+                    color = EbbingTheme.colors.fillDisabled,
                 ),
         ) {
             items(colorOptions) { colorValue ->

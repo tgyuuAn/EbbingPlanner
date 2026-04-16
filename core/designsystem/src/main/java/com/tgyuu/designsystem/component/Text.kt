@@ -22,7 +22,7 @@ fun EbbingClickableText(
     overflow: TextOverflow = TextOverflow.Clip,
 ) {
     val context = LocalContext.current
-    val linkColor = EbbingTheme.colors.primaryDefault
+    val linkColor = EbbingTheme.colors.primaryNormal
     val annotatedString = clickableText.toAnnotatedString(linkColor)
 
     ClickableText(

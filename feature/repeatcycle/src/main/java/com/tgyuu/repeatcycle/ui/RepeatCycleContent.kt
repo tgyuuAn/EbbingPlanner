@@ -23,8 +23,8 @@ internal fun RepeatCycleContent(
 ) {
     Text(
         text = "반복 주기",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -53,8 +53,8 @@ internal fun RepeatCycleContent(
 
     Text(
         text = "' , '를 기준으로 숫자를 분리해주세요\n당일을 포함하려면 0을 기입해주세요\n1000 미만의 숫자만 입력하실 수 있습니다.\n ex) 0, 1, 3, 7, 15",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         textAlign = TextAlign.Start,
         modifier = Modifier
             .padding(top = 8.dp, start = 8.dp)
@@ -68,15 +68,15 @@ internal fun PreviewContent(
 ) {
     Text(
         text = "예상 반복 주기",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
     Text(
         text = preview,
-        style = EbbingTheme.typography.bodySSB,
-        color = if (preview == DISPLAY_ERROR) EbbingTheme.colors.error else EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.heading14SB,
+        color = if (preview == DISPLAY_ERROR) EbbingTheme.colors.statusError else EbbingTheme.colors.textDisabled,
         textAlign = TextAlign.Start,
         modifier = Modifier
             .padding(top = 8.dp)

@@ -22,8 +22,8 @@ internal fun RestDayContent(
 ) {
     Text(
         text = "쉬는 날",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 

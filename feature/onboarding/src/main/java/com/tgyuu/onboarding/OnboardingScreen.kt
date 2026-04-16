@@ -145,7 +145,7 @@ private fun OnboardingPageContent(
             Image(
                 painter = painterResource(imageRes),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.primaryDefault),
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.primaryNormal),
                 contentScale = ContentScale.Inside,
                 modifier = Modifier
                     .padding(vertical = 66.dp)
@@ -156,16 +156,16 @@ private fun OnboardingPageContent(
             Text(
                 text = title,
                 textAlign = TextAlign.Start,
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading24B,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
 
             Text(
                 text = description,
                 textAlign = TextAlign.Start,
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark3,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textDisabled,
             )
         }
     }
@@ -188,14 +188,14 @@ private fun OnboardingIndicator(
                     modifier = Modifier
                         .size(width = 20.dp, height = 8.dp)
                         .clip(CircleShape)
-                        .background(EbbingTheme.colors.dark2)
+                        .background(EbbingTheme.colors.textDisabled)
                 )
             } else {
                 Spacer(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(EbbingTheme.colors.light1)
+                        .background(EbbingTheme.colors.fillDisabled)
                 )
             }
         }

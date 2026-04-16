@@ -197,11 +197,11 @@ private fun TabletContent(
             ) {
                 val navigationItemColor = NavigationSuiteDefaults.itemColors(
                     navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-                        selectedIconColor = EbbingTheme.colors.white,
-                        unselectedIconColor = EbbingTheme.colors.dark3,
-                        selectedTextColor = EbbingTheme.colors.white,
-                        unselectedTextColor = EbbingTheme.colors.dark3,
-                        selectedContainerColor = EbbingTheme.colors.primaryDefault,
+                        selectedIconColor = EbbingTheme.colors.textOnPrimary,
+                        unselectedIconColor = EbbingTheme.colors.textDisabled,
+                        selectedTextColor = EbbingTheme.colors.textOnPrimary,
+                        unselectedTextColor = EbbingTheme.colors.textDisabled,
+                        selectedContainerColor = EbbingTheme.colors.primaryNormal,
                     )
                 )
 
@@ -209,7 +209,7 @@ private fun TabletContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
                     navigationSuiteColors = NavigationSuiteDefaults.colors(
                         navigationDrawerContainerColor = EbbingTheme.colors.background,
-                        navigationDrawerContentColor = EbbingTheme.colors.white,
+                        navigationDrawerContentColor = EbbingTheme.colors.textOnPrimary,
                     ),
                     navigationSuiteItems = {
                         TopLevelDestination.topLevelDestinations.forEach { dest ->
@@ -227,7 +227,7 @@ private fun TabletContent(
                                 label = {
                                     Text(
                                         text = dest.title,
-                                        style = EbbingTheme.typography.headingSM,
+                                        style = EbbingTheme.typography.body18M,
                                         textAlign = TextAlign.Center,
                                     )
                                 },

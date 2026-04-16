@@ -18,8 +18,8 @@ internal fun TagContent(
 ) {
     Text(
         text = "태그",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 

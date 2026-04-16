@@ -221,8 +221,8 @@ private fun LinkBody(
     Column(modifier = modifier) {
         Text(
             text = "내 기기 데이터로 연동시키기",
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.body14M,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
@@ -250,9 +250,9 @@ private fun LinkBody(
                         }
                     }
                 ),
-                textStyle = EbbingTheme.typography.bodyMM.copy(
-                    color = if (isGenerateButtonEnabled) EbbingTheme.colors.black
-                    else EbbingTheme.colors.primaryDefault
+                textStyle = EbbingTheme.typography.body16M.copy(
+                    color = if (isGenerateButtonEnabled) EbbingTheme.colors.textOnBackground
+                    else EbbingTheme.colors.primaryNormal
                 ),
                 decorationBox = { innerTextField ->
                     Box {
@@ -261,8 +261,8 @@ private fun LinkBody(
                         if (!isGenerateButtonEnabled) {
                             Text(
                                 text = remainingTimeInSec,
-                                style = EbbingTheme.typography.bodySM,
-                                color = EbbingTheme.colors.primaryDefault,
+                                style = EbbingTheme.typography.body14M,
+                                color = EbbingTheme.colors.primaryNormal,
                                 modifier = Modifier.align(Alignment.CenterEnd),
                             )
                         }
@@ -271,7 +271,7 @@ private fun LinkBody(
                 modifier = Modifier
                     .height(52.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(EbbingTheme.colors.light3)
+                    .background(EbbingTheme.colors.fillNormal)
                     .padding(horizontal = 16.dp, vertical = 14.dp)
                     .weight(1f),
             )
@@ -293,20 +293,20 @@ private fun LinkBody(
 
         Text(
             text = "내 데이터로 연동할 수 있는 코드를 생성하세요.",
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark3,
+            style = EbbingTheme.typography.body14M,
+            color = EbbingTheme.colors.textDisabled,
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.light2,
+            color = EbbingTheme.colors.fillStrong,
             thickness = 1.dp,
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
         Text(
             text = "다른 기기 데이터로 연동하기",
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.body14M,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
@@ -334,15 +334,15 @@ private fun LinkBody(
                         }
                     }
                 ),
-                textStyle = EbbingTheme.typography.bodyMM.copy(
-                    color = if (isConnectButtonEnabled) EbbingTheme.colors.black
-                    else EbbingTheme.colors.primaryDefault
+                textStyle = EbbingTheme.typography.body16M.copy(
+                    color = if (isConnectButtonEnabled) EbbingTheme.colors.textOnBackground
+                    else EbbingTheme.colors.primaryNormal
                 ),
                 decorationBox = { innerTextField -> innerTextField() },
                 modifier = Modifier
                     .height(52.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(EbbingTheme.colors.light3)
+                    .background(EbbingTheme.colors.fillNormal)
                     .padding(horizontal = 16.dp, vertical = 14.dp)
                     .weight(1f),
             )
@@ -364,12 +364,12 @@ private fun LinkBody(
 
         Text(
             text = "사용할 데이터를 가진 기기의 연동 코드를 입력하세요.",
-            style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark3,
+            style = EbbingTheme.typography.body14M,
+            color = EbbingTheme.colors.textDisabled,
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.light2,
+            color = EbbingTheme.colors.fillStrong,
             thickness = 1.dp,
             modifier = Modifier.padding(vertical = 16.dp)
         )
@@ -381,25 +381,25 @@ private fun DescriptionBody() {
     Text(
         text = buildAnnotatedString {
             append("1. 데이터를 보존할 기기에서 ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
                 append("연동 코드를 생성")
             }
             append("하세요.\n")
             append("2. 생성된 코드는 ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
                 append("10분간 유효")
             }
             append("합니다.\n")
             append("3. 다른 기기에서 해당 코드를 입력해 연동을 완료하세요.\n")
             append("4. 코드를 입력하는 기기의 ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
                 append("기존 데이터는 덮어씌워지므로, ")
             }
             append("신중히 선택해 주세요.")
         },
         textAlign = TextAlign.Start,
-        style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.dark1,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textSub,
     )
 }
 

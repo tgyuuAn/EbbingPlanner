@@ -151,8 +151,8 @@ private fun PhoneWidgetScreen(
                 if (!state.isTreatment) {
                     Text(
                         text = "적용",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .throttledClickable(
@@ -174,8 +174,8 @@ private fun PhoneWidgetScreen(
         ) {
             Text(
                 text = "위젯 테마를 변경해요.",
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading24B,
+                color = EbbingTheme.colors.textOnBackground,
             )
 
             state.selectedTheme?.let {
@@ -239,8 +239,8 @@ private fun TabletWidgetScreen(
             rightComponent = {
                 Text(
                     text = "적용",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
@@ -267,8 +267,8 @@ private fun TabletWidgetScreen(
             ) {
                 Text(
                     text = "위젯 테마를 변경해요.",
-                    style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
+                    style = EbbingTheme.typography.heading24B,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
 
                 state.selectedTheme?.let {
@@ -316,8 +316,8 @@ internal fun ThemeBody(
 ) {
     Text(
         text = "테마",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -346,7 +346,7 @@ internal fun ThemeBody(
                     Image(
                         painter = painterResource(R.drawable.ic_check),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.white),
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnPrimary),
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -364,8 +364,8 @@ internal fun AlphaBody(
 ) {
     Text(
         text = "배경 투명도",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -384,15 +384,15 @@ internal fun AlphaBody(
 
         Text(
             text = "${(selectedBackgroundAlpha * 100).roundToInt()} %",
-            style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.body16M,
+            color = EbbingTheme.colors.textOnBackground,
         )
     }
 
     Text(
         text = "내용 투명도",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -411,8 +411,8 @@ internal fun AlphaBody(
 
         Text(
             text = "${(selectedTextAlpha * 100).roundToInt()} %",
-            style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.body16M,
+            color = EbbingTheme.colors.textOnBackground,
         )
     }
 }
@@ -437,8 +437,8 @@ internal fun PreviewBody(
 
     Text(
         text = "미리보기",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -482,7 +482,7 @@ private fun WidgetCard(
                     shape = RoundedCornerShape(16.dp),
                 )
                 .border(
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                     width = 0.5.dp,
                     shape = RoundedCornerShape(16.dp)
                 )
@@ -493,7 +493,7 @@ private fun WidgetCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        EbbingTheme.colors.light1.copy(alpha = backgroundAlpha),
+                        EbbingTheme.colors.fillDisabled.copy(alpha = backgroundAlpha),
                         shape = RoundedCornerShape(12.dp),
                     )
                     .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -502,28 +502,28 @@ private fun WidgetCard(
                     text = buildAnnotatedString {
                         append("오늘 할 일  ")
 
-                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryMiddle.copy(textAlpha))) {
+                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryDeep.copy(textAlpha))) {
                             append("0")
                         }
                         append(" /0")
                     },
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black.copy(alpha = textAlpha),
+                    style = EbbingTheme.typography.body16M,
+                    color = EbbingTheme.colors.textOnBackground.copy(alpha = textAlpha),
                     modifier = Modifier.weight(1f),
                 )
 
                 Image(
                     painter = painterResource(R.drawable.ic_plus),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black.copy(alpha = textAlpha)),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground.copy(alpha = textAlpha)),
                     modifier = Modifier.size(20.dp),
                 )
             }
 
             Text(
                 text = "금일 스케줄이 없어요.",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black.copy(alpha = textAlpha),
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground.copy(alpha = textAlpha),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -533,8 +533,8 @@ private fun WidgetCard(
 
         Text(
             text = if (isDarkMode) "다크" else "라이트",
-            style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.heading14SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 8.dp, end = 20.dp)

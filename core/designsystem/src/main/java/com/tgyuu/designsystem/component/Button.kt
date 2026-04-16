@@ -30,9 +30,9 @@ fun EbbingSolidButton(
         enabled = enabled,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = EbbingTheme.colors.primaryDefault,
+            containerColor = EbbingTheme.colors.primaryNormal,
             contentColor = EbbingTheme.colors.background,
-            disabledContainerColor = EbbingTheme.colors.light1,
+            disabledContainerColor = EbbingTheme.colors.fillDisabled,
             disabledContentColor = EbbingTheme.colors.background,
         ),
         contentPadding = PaddingValues(vertical = 14.dp),
@@ -42,7 +42,7 @@ fun EbbingSolidButton(
     ) {
         Text(
             text = label,
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.body16M,
         )
     }
 }
@@ -59,12 +59,12 @@ fun EbbingOutlinedButton(
         onClick = onClick,
         enabled = enabled,
         shape = shape,
-        border = BorderStroke(width = 1.dp, color = EbbingTheme.colors.primaryDefault),
+        border = BorderStroke(width = 1.dp, color = EbbingTheme.colors.primaryNormal),
         colors = ButtonDefaults.buttonColors(
             containerColor = EbbingTheme.colors.background,
-            contentColor = EbbingTheme.colors.primaryDefault,
-            disabledContainerColor = EbbingTheme.colors.light1,
-            disabledContentColor = EbbingTheme.colors.primaryDefault,
+            contentColor = EbbingTheme.colors.primaryNormal,
+            disabledContainerColor = EbbingTheme.colors.fillDisabled,
+            disabledContentColor = EbbingTheme.colors.primaryNormal,
         ),
         contentPadding = PaddingValues(vertical = 14.dp),
         modifier = modifier
@@ -73,7 +73,7 @@ fun EbbingOutlinedButton(
     ) {
         Text(
             text = label,
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.body16M,
         )
     }
 }

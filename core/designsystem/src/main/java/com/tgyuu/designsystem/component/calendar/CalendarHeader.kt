@@ -26,8 +26,8 @@ internal fun CalendarHeader(
             Text(
                 text = weekDayText,
                 textAlign = TextAlign.Center,
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier
                     .weight(1f)
                     .semantics { contentDescription = "${weekDayText}_${idx}" },

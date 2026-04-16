@@ -48,7 +48,7 @@ internal fun TagBottomSheet(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
-                    tint = EbbingTheme.colors.black,
+                    tint = EbbingTheme.colors.textOnBackground,
                     modifier = Modifier
                         .size(32.dp)
                         .clickable { onAddTagClick() },
@@ -64,7 +64,7 @@ internal fun TagBottomSheet(
                 .padding(top = 12.dp)
                 .verticalScrollbar(
                     state = listState,
-                    color = EbbingTheme.colors.light1,
+                    color = EbbingTheme.colors.fillDisabled,
                 ),
         ) {
             items(

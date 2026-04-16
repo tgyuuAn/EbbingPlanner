@@ -154,7 +154,7 @@ fun EbbingPickerItem(
                     text = getItemForIndex(index, items, infiniteScroll, visibleItemsMiddle),
                     maxLines = 1,
                     style = textStyle,
-                    color = EbbingTheme.colors.black.copy(alpha = alpha),
+                    color = EbbingTheme.colors.textOnBackground.copy(alpha = alpha),
                     modifier = Modifier
                         .padding(vertical = itemSpacing / 2)
                         .graphicsLayer(scaleY = scaleY)

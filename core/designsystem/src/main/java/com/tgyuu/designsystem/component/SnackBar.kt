@@ -35,14 +35,14 @@ fun EbbingSnackBar(
             .padding(bottom = 60.dp, start = 20.dp, end = 20.dp)
             .wrapContentSize()
             .clip(RoundedCornerShape(12.dp))
-            .background(EbbingTheme.colors.dark3)
+            .background(EbbingTheme.colors.textDisabled)
             .padding(horizontal = 20.dp, vertical = 8.dp),
     ) {
         Text(
             text = snackBarData.visuals.message,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            style = EbbingTheme.typography.bodySM,
+            style = EbbingTheme.typography.body14M,
             color = Color.White,
         )
     }

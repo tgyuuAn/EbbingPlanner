@@ -176,8 +176,8 @@ private fun EditDateScreenPhone(
                 if (!state.isTreatment) {
                     Text(
                         text = "저장",
-                        style = EbbingTheme.typography.bodyMSB,
-                        color = EbbingTheme.colors.primaryDefault,
+                        style = EbbingTheme.typography.body16M,
+                        color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .throttledClickable(throttleTime = 1500L) {
@@ -211,7 +211,7 @@ private fun EditDateScreenPhone(
             )
 
             HorizontalDivider(
-                color = EbbingTheme.colors.light2,
+                color = EbbingTheme.colors.fillStrong,
                 thickness = 1.dp,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
@@ -260,8 +260,8 @@ private fun EditDateScreenTablet(
             rightComponent = {
                 Text(
                     text = "저장",
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.primaryDefault,
+                    style = EbbingTheme.typography.body16M,
+                    color = EbbingTheme.colors.primaryNormal,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(throttleTime = 1500L) {
@@ -309,7 +309,7 @@ private fun EditDateScreenTablet(
                 )
 
                 HorizontalDivider(
-                    color = EbbingTheme.colors.light2,
+                    color = EbbingTheme.colors.fillStrong,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
@@ -334,8 +334,8 @@ private fun EditDateMainFormContent(
             }
             append(" 부터\n시작하는 일정으로 바꿔요")
         },
-        style = EbbingTheme.typography.headingLSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.heading24B,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.clickable { onSelectedDateChangeClick() },
     )
 
@@ -357,8 +357,8 @@ private fun DescriptionBody() {
                 "- 위 체크 박스에서 새로운 일정에 완료 여부를 설정할 수 있습니다.\n" +
                 "- 일정을 변경하게 되면 기존 일정에 있던 메모들이 제거됩니다.",
         textAlign = TextAlign.Start,
-        style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.dark3,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textDisabled,
     )
 }
 

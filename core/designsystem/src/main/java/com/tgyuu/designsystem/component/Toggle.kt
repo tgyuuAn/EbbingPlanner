@@ -51,7 +51,7 @@ fun EbbingToggle(
         modifier = modifier
             .size(width = 34.dp, height = 20.dp)
             .clip(RoundedCornerShape(999.dp))
-            .background(if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.light1)
+            .background(if (checked) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.fillDisabled)
             .throttledClickable(1000L) { onCheckedChange(!checked) }
     ) {
         Box(

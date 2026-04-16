@@ -70,7 +70,7 @@ fun EbbingPicker(
                         .align(Alignment.Center)
                         .padding(horizontal = 20.dp)
                         .height(50.dp)
-                        .background(EbbingTheme.colors.light3, shape = RoundedCornerShape(12.dp)),
+                        .background(EbbingTheme.colors.fillNormal, shape = RoundedCornerShape(12.dp)),
                 )
 
                 Row(
@@ -84,7 +84,7 @@ fun EbbingPicker(
                         items = amPmItems,
                         visibleItemsCount = 3,
                         itemSpacing = itemSpacing,
-                        textStyle = EbbingTheme.typography.bodyMM,
+                        textStyle = EbbingTheme.typography.body16M,
                         modifier = Modifier.weight(1f),
                         textModifier = Modifier.padding(8.dp),
                         infiniteScroll = false,
@@ -103,7 +103,7 @@ fun EbbingPicker(
                         items = hourItems,
                         visibleItemsCount = 5,
                         itemSpacing = itemSpacing,
-                        textStyle = EbbingTheme.typography.bodyMM,
+                        textStyle = EbbingTheme.typography.body16M,
                         modifier = Modifier.weight(1f),
                         textModifier = Modifier.padding(8.dp),
                         infiniteScroll = true,
@@ -130,7 +130,7 @@ fun EbbingPicker(
                         items = minuteItems,
                         visibleItemsCount = 5,
                         itemSpacing = itemSpacing,
-                        textStyle = EbbingTheme.typography.bodyMM,
+                        textStyle = EbbingTheme.typography.body16M,
                         modifier = Modifier.weight(1f),
                         textModifier = Modifier.padding(8.dp),
                         infiniteScroll = true,

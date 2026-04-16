@@ -45,8 +45,8 @@ internal fun MemoContent(
 ) {
     Text(
         text = "메모",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -82,8 +82,8 @@ internal fun PreviewContent(
 ) {
     Text(
         text = "미리보기",
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
+        style = EbbingTheme.typography.body16M,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -107,7 +107,7 @@ private fun TodoListCard(
     Column(
         modifier = modifier
             .border(
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 width = 0.5.dp,
                 shape = RoundedCornerShape(12.dp)
             )
@@ -145,14 +145,14 @@ private fun TodoListCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(EbbingTheme.colors.light3)
+                        .background(EbbingTheme.colors.fillNormal)
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = todo.title,
-                            style = EbbingTheme.typography.bodyMSB,
-                            color = EbbingTheme.colors.black,
+                            style = EbbingTheme.typography.body16M,
+                            color = EbbingTheme.colors.textOnBackground,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(bottom = 4.dp),
@@ -160,8 +160,8 @@ private fun TodoListCard(
 
                         Text(
                             text = todo.name,
-                            style = EbbingTheme.typography.bodyMM,
-                            color = EbbingTheme.colors.dark1,
+                            style = EbbingTheme.typography.body16M,
+                            color = EbbingTheme.colors.textSub,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(bottom = 4.dp),
@@ -180,8 +180,8 @@ private fun TodoListCard(
 
                             Text(
                                 text = "우선도 : ${todo.priority}",
-                                style = EbbingTheme.typography.bodySSB,
-                                color = EbbingTheme.colors.dark1,
+                                style = EbbingTheme.typography.heading14SB,
+                                color = EbbingTheme.colors.textSub,
                                 maxLines = 1,
                                 textAlign = TextAlign.End,
                                 overflow = TextOverflow.Ellipsis,
@@ -193,7 +193,7 @@ private fun TodoListCard(
                     Image(
                         painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_3dots),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.dark1),
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -220,8 +220,8 @@ private fun TodoListCard(
 
                 Text(
                     text = memo,
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.dark1,
+                    style = EbbingTheme.typography.heading14SB,
+                    color = EbbingTheme.colors.textSub,
                     modifier = Modifier.weight(1f),
                 )
             }

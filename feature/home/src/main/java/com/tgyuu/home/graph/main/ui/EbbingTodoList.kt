@@ -111,8 +111,8 @@ private fun TodoHeader(
         else "${displayDate.monthValue}월 ${displayDate.dayOfMonth}일"
         Text(
             text = "$dateText  할 일 $count",
-            style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.body16M,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f)
         )
 
@@ -124,13 +124,13 @@ private fun TodoHeader(
         ) {
             Text(
                 text = sortType.displayName,
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground
             )
             Image(
                 painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_down),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -142,7 +142,7 @@ private fun TodoHeader(
             modifier = Modifier
                 .size(28.dp)
                 .clip(RoundedCornerShape(6.dp))
-                .background(EbbingTheme.colors.primaryDefault)
+                .background(EbbingTheme.colors.primaryNormal)
                 .clickable { onAddTodoClick() }
                 .padding(4.dp)
         )
@@ -183,9 +183,9 @@ private fun TodoPage(
         Text(
             text = "${date.monthValue}월 ${date.dayOfMonth}일 스케줄이 없어요.\n" +
                     "우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
-            style = EbbingTheme.typography.bodySM,
+            style = EbbingTheme.typography.body14M,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.dark3,
+            color = EbbingTheme.colors.textDisabled,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 30.dp),

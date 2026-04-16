@@ -66,7 +66,9 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             configRepository.getTodoRegisteredCount().first { it >= 3 }
-            setState { copy(showInAppReviewDialog = true) }
+            if (configRepository.consumeInAppReview()) {
+                setState { copy(showInAppReviewDialog = true) }
+            }
         }
     }
 

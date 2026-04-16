@@ -246,7 +246,7 @@ private fun PhoneSettingScreen(
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.light2,
+            color = EbbingTheme.colors.fillStrong,
             thickness = 1.dp,
             modifier = Modifier.padding(bottom = 16.dp),
         )
@@ -425,8 +425,8 @@ private fun NotificationBody(
 
     Text(
         text = "알림",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -441,15 +441,15 @@ private fun NotificationBody(
     ) {
         Text(
             text = "알림 설정",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
         Text(
             text = if (isOn) "ON" else "OFF",
-            style = EbbingTheme.typography.headingSM,
-            color = if (isOn) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark2,
+            style = EbbingTheme.typography.body18M,
+            color = if (isOn) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(end = 12.dp),
         )
 
@@ -481,8 +481,8 @@ private fun NotificationBody(
         ) {
             Text(
                 text = "알림 시간",
-                style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.dark1,
+                style = EbbingTheme.typography.heading18B,
+                color = EbbingTheme.colors.textSub,
                 modifier = Modifier.weight(1f),
             )
 
@@ -493,8 +493,8 @@ private fun NotificationBody(
                     }
                 },
                 textAlign = TextAlign.End,
-                style = EbbingTheme.typography.headingSM,
-                color = EbbingTheme.colors.primaryDefault,
+                style = EbbingTheme.typography.body18M,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier.clickable { onAlarmTimeClick() },
             )
         }
@@ -513,8 +513,8 @@ private fun NotificationBody(
         ) {
             Text(
                 text = "알림 메시지",
-                style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.dark1,
+                style = EbbingTheme.typography.heading18B,
+                color = EbbingTheme.colors.textSub,
                 modifier = Modifier.weight(1f),
             )
 
@@ -529,7 +529,7 @@ private fun NotificationBody(
     HorizontalDivider(
         modifier = Modifier.padding(vertical = 16.dp),
         thickness = 1.dp,
-        color = EbbingTheme.colors.light2
+        color = EbbingTheme.colors.fillStrong
     )
 }
 
@@ -540,8 +540,8 @@ private fun CalendarStartDayBody(
 ) {
     Text(
         text = "달력",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -553,8 +553,8 @@ private fun CalendarStartDayBody(
     ) {
         Text(
             text = "달력 시작 요일",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -565,14 +565,14 @@ private fun CalendarStartDayBody(
                 }
             },
             textAlign = TextAlign.End,
-            style = EbbingTheme.typography.headingSM,
-            color = EbbingTheme.colors.primaryDefault,
+            style = EbbingTheme.typography.body18M,
+            color = EbbingTheme.colors.primaryNormal,
             modifier = Modifier.clickable { onStartDayClick() },
         )
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp),
     )
@@ -585,8 +585,8 @@ private fun TagRepeatCycleBody(
 ) {
     Text(
         text = "태그 / 반복 주기",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -599,8 +599,8 @@ private fun TagRepeatCycleBody(
     ) {
         Text(
             text = "태그 관리",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -620,8 +620,8 @@ private fun TagRepeatCycleBody(
     ) {
         Text(
             text = "반복 주기 관리",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -633,7 +633,7 @@ private fun TagRepeatCycleBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -646,8 +646,8 @@ private fun DataBody(
 ) {
     Text(
         text = "데이터",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -660,8 +660,8 @@ private fun DataBody(
     ) {
         Text(
             text = "다른 기기와 동기화 하기",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -681,8 +681,8 @@ private fun DataBody(
     ) {
         Text(
             text = "데이터 초기화 하기",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -694,7 +694,7 @@ private fun DataBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -706,8 +706,8 @@ private fun InquiryBody() {
 
     Text(
         text = "문의",
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -725,8 +725,8 @@ private fun InquiryBody() {
     ) {
         Text(
             text = "문의하기",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -738,7 +738,7 @@ private fun InquiryBody() {
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -755,8 +755,8 @@ private fun InAppReviewRow(onInAppReviewClick: () -> Unit) {
     ) {
         Text(
             text = "앱 리뷰 작성",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -776,8 +776,8 @@ private fun AnnouncementBody(
 ) {
     Text(
         text = stringResource(R.string.setting_guidance),
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -790,8 +790,8 @@ private fun AnnouncementBody(
     ) {
         Text(
             text = stringResource(R.string.setting_announcement),
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -811,8 +811,8 @@ private fun AnnouncementBody(
     ) {
         Text(
             text = stringResource(R.string.setting_privacy_policy),
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -832,8 +832,8 @@ private fun AnnouncementBody(
     ) {
         Text(
             text = stringResource(R.string.setting_term),
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -845,7 +845,7 @@ private fun AnnouncementBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -858,8 +858,8 @@ private fun ThemeBody(
 ) {
     Text(
         text = stringResource(R.string.setting_theme),
-        style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -872,8 +872,8 @@ private fun ThemeBody(
     ) {
         Text(
             text = stringResource(R.string.setting_theme_color_change),
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -893,8 +893,8 @@ private fun ThemeBody(
     ) {
         Text(
             text = stringResource(R.string.setting_widget_alpha_change),
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.weight(1f),
         )
 
@@ -906,7 +906,7 @@ private fun ThemeBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.fillStrong,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -929,8 +929,8 @@ private fun UpdateBody(
     ) {
         Text(
             text = stringResource(R.string.setting_version, version),
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark3,
+            style = EbbingTheme.typography.heading18B,
+            color = EbbingTheme.colors.textDisabled,
         )
 
         if (isShowUpdateButton(context, updateInfo)) {

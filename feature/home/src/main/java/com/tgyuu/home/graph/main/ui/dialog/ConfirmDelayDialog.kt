@@ -77,16 +77,16 @@ internal fun ConfirmDelayDialog(
         ) {
             Text(
                 text = "${schedule.title.originalText} 일정을 하루 미루시겠습니까?",
-                color = EbbingTheme.colors.black,
-                style = EbbingTheme.typography.headingMSB.copy(fontWeight = FontWeight.Bold),
+                color = EbbingTheme.colors.textOnBackground,
+                style = EbbingTheme.typography.heading20B.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
                 text = dateText,
-                color = EbbingTheme.colors.primaryDefault,
-                style = EbbingTheme.typography.bodyMSB,
+                color = EbbingTheme.colors.primaryNormal,
+                style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 8.dp),
             )
@@ -103,15 +103,15 @@ internal fun ConfirmDelayDialog(
                         checked = excludeRestDays,
                         onCheckedChange = { excludeRestDays = it },
                         colors = CheckboxDefaults.colors(
-                            checkedColor = EbbingTheme.colors.primaryDefault,
-                            uncheckedColor = EbbingTheme.colors.light1,
+                            checkedColor = EbbingTheme.colors.primaryNormal,
+                            uncheckedColor = EbbingTheme.colors.fillDisabled,
                         )
                     )
 
                     Text(
                         text = restDaysText,
-                        style = EbbingTheme.typography.bodyMR,
-                        color = EbbingTheme.colors.black,
+                        style = EbbingTheme.typography.body16M,
+                        color = EbbingTheme.colors.textOnBackground,
                     )
                 }
             } else {
@@ -120,9 +120,9 @@ internal fun ConfirmDelayDialog(
 
             Text(
                 text = "미룬 일정은 수정하기에서 다시 되돌릴 수 있습니다.",
-                style = EbbingTheme.typography.bodySR,
+                style = EbbingTheme.typography.caption14R,
                 textAlign = TextAlign.Center,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.textDisabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)

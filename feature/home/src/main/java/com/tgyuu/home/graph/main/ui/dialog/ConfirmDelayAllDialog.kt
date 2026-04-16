@@ -52,8 +52,8 @@ internal fun ConfirmDelayAllDialog(
         ) {
             Text(
                 text = "모든 ${schedule.title.originalText} 일정을\n하루씩 미루시겠습니까?",
-                color = EbbingTheme.colors.black,
-                style = EbbingTheme.typography.headingMSB,
+                color = EbbingTheme.colors.textOnBackground,
+                style = EbbingTheme.typography.heading20B,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp),
             )
@@ -70,15 +70,15 @@ internal fun ConfirmDelayAllDialog(
                         checked = excludeRestDays,
                         onCheckedChange = { excludeRestDays = it },
                         colors = CheckboxDefaults.colors(
-                            checkedColor = EbbingTheme.colors.primaryDefault,
-                            uncheckedColor = EbbingTheme.colors.light1,
+                            checkedColor = EbbingTheme.colors.primaryNormal,
+                            uncheckedColor = EbbingTheme.colors.fillDisabled,
                         )
                     )
 
                     Text(
                         text = restDaysText,
-                        style = EbbingTheme.typography.bodyMR,
-                        color = EbbingTheme.colors.black,
+                        style = EbbingTheme.typography.body16M,
+                        color = EbbingTheme.colors.textOnBackground,
                     )
                 }
             } else {
@@ -87,8 +87,8 @@ internal fun ConfirmDelayAllDialog(
 
             Text(
                 text = "미룬 일정은 수정하기에서 다시 되돌릴 수 있습니다.",
-                style = EbbingTheme.typography.bodySR,
-                color = EbbingTheme.colors.dark2,
+                style = EbbingTheme.typography.caption14R,
+                color = EbbingTheme.colors.textDisabled,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
