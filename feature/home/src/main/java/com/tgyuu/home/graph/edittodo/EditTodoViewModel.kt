@@ -52,14 +52,20 @@ class EditTodoViewModel @Inject constructor(
             ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
         viewModelScope.launch {
-            val originSchedule = todoRepository.loadSchedule(scheduleId)
+            val originSchedule = todoRepository.loadSchedule(scheduleId) ?: run {
+                navigationBus.navigate(NavigationEvent.Up)
+                return@launch
+            }
 
             val originTagDeferred = async { todoRepository.loadTag(originSchedule.tagId) }
             val sameInfoSchedulesDeferred =
                 async { todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId) }
             val todoInfoDeferred = async { todoRepository.loadTodoInfoById(originSchedule.infoId) }
 
-            val originTag = originTagDeferred.await()
+            val originTag = originTagDeferred.await() ?: run {
+                navigationBus.navigate(NavigationEvent.Up)
+                return@launch
+            }
             val schedulesByDateMap = sameInfoSchedulesDeferred.await()
             val todoInfo = todoInfoDeferred.await()
 
@@ -93,7 +99,7 @@ class EditTodoViewModel @Inject constructor(
     internal fun loadNewTag() {
         todoRepository.recentAddedTagId?.let {
             viewModelScope.launch {
-                val newTag = todoRepository.loadTag(it.toInt())
+                val newTag = todoRepository.loadTag(it.toInt()) ?: return@launch
                 setState { copy(tag = newTag.toUiModel()) }
             }
         }

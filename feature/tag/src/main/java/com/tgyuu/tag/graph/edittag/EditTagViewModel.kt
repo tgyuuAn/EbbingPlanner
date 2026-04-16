@@ -34,7 +34,10 @@ class EditTagViewModel @Inject constructor(
             ?: throw IllegalArgumentException("해당 태그는 없습니다")
 
         viewModelScope.launch {
-            val originTag = todoRepository.loadTag(tagId)
+            val originTag = todoRepository.loadTag(tagId) ?: run {
+                navigationBus.navigate(NavigationEvent.Up)
+                return@launch
+            }
 
             setState {
                 copy(

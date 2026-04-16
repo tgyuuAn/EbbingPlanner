@@ -13,5 +13,5 @@ data class EditTagState(
     val saveButtonPositionVariant: SaveButtonPosition.Variant = SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
     val isTreatment = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
-    val isSaveEnabled: Boolean = name.isNotEmpty()
+    val isSaveEnabled: Boolean = name.isNotEmpty() && originTag != null
 }

@@ -19,6 +19,7 @@ import java.time.LocalDate
 data class EditDateState(
     val title: String = "",
     val originTagColor: Int = 0XFFBBE1FA.toInt(),
+    val tagId: Int? = null,
     val selectedDate: LocalDate = LocalDate.now(),
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,

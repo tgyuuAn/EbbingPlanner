@@ -90,7 +90,7 @@ class AddTodoViewModel @Inject constructor(
     internal fun loadNewTag() {
         todoRepository.recentAddedTagId?.let {
             viewModelScope.launch {
-                val newTag = todoRepository.loadTag(it.toInt())
+                val newTag = todoRepository.loadTag(it.toInt()) ?: return@launch
                 setState { copy(tag = newTag.toUiModel()) }
             }
         }

@@ -114,12 +114,12 @@ class FakeTodoRepository : TodoRepository {
         repeatCycles.removeIf { it.id == repeatCycle.id }
     }
 
-    override suspend fun loadSchedule(id: Int): TodoSchedule {
-        return schedules.first { it.id == id }
+    override suspend fun loadSchedule(id: Int): TodoSchedule? {
+        return schedules.firstOrNull { it.id == id }
     }
 
-    override suspend fun loadTag(id: Int): TodoTag {
-        return tags.first { it.id == id }
+    override suspend fun loadTag(id: Int): TodoTag? {
+        return tags.firstOrNull { it.id == id }
     }
 
     override suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo> {
