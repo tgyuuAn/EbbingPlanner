@@ -22,5 +22,6 @@ internal fun animateEbbingColors(target: EbbingColors): EbbingColors {
         fillNormal       = ebbingAnimateColorAsState(target.fillNormal),
         fillStrong       = ebbingAnimateColorAsState(target.fillStrong),
         fillDisabled     = ebbingAnimateColorAsState(target.fillDisabled),
+        fillPrimary      = ebbingAnimateColorAsState(target.fillPrimary),
     )
 }
