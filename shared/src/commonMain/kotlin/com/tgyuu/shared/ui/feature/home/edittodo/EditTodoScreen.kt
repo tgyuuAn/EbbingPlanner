@@ -17,10 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
+import com.tgyuu.shared.designsystem.component.EbbingPartialUnderlineText
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
@@ -67,13 +64,9 @@ fun EditTodoScreen(
                 .imePadding(),
         ) {
             // Header with date (clickable to change date)
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
-                    }
-                    append(" 에\n진행하는 걸로 바꿀래요")
-                },
+            EbbingPartialUnderlineText(
+                underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
+                rest = " 에\n진행하는 걸로 바꿀래요",
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.clickable {
