@@ -30,8 +30,10 @@ import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.layout.width
 import androidx.glance.text.FontFamily
 import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
@@ -47,6 +49,8 @@ import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTypography
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.LocalEbbingWidgetColors
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
@@ -106,25 +110,15 @@ private fun TodayTodoWidgetContent(
             .clickable(onClick = actionStartActivity<MainActivity>())
             .background(
                 imageProvider = ImageProvider(backgroundImage),
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
+                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.background),
             )
-            .padding(12.dp)
+            .padding(4.dp)
     ) {
-        val headerImage = when (alpha) {
-            0.25f -> R.drawable.shape_widget_header_25
-            0.5f -> R.drawable.shape_widget_header_50
-            0.75f -> R.drawable.shape_widget_header_75
-            else -> R.drawable.shape_widget_header_100
-        }
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.fillMaxWidth()
-                .background(
-                    imageProvider = ImageProvider(headerImage),
-                    colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant),
-                )
-                .padding(horizontal = 12.dp, vertical = 4.dp),
+                .padding(horizontal = 20.dp)
+                .padding(top = 6.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -134,40 +128,31 @@ private fun TodayTodoWidgetContent(
 
                 Text(
                     text = "오늘 할 일   ",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
+                    style = EbbingWidgetTypography.heading18B.copy(
                         textAlign = TextAlign.Start,
-                        color = GlanceTheme.colors.surface,
+                        color = LocalEbbingWidgetColors.current.textOnBackground,
                     ),
                 )
                 Text(
                     text = todoListsDoneSize.toString(),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
+                    style = EbbingWidgetTypography.heading18B.copy(
                         textAlign = TextAlign.Start,
-                        color = GlanceTheme.colors.primary,
+                        color = if (todoListsDoneSize > 0) LocalEbbingWidgetColors.current.textPrimary
+                        else LocalEbbingWidgetColors.current.textDisabled,
                     ),
                 )
                 Text(
                     text = " /${todoLists.size}",
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
+                    style = EbbingWidgetTypography.heading18B.copy(
                         textAlign = TextAlign.Start,
-                        color = GlanceTheme.colors.surface,
+                        color = LocalEbbingWidgetColors.current.textDisabled,
                     ),
                 )
             }
 
             Image(
-                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
+                provider = ImageProvider(R.drawable.ic_widget_plus),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
                 modifier = GlanceModifier
                     .size(20.dp)
                     .clickable(
@@ -180,22 +165,18 @@ private fun TodayTodoWidgetContent(
 
         if (todoLists.isEmpty()) {
             Text(
-                text = "금일 스케줄이 없어요.",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal,
-                    textAlign = TextAlign.Center,
-                    fontFamily = FontFamily.Cursive,
-                    color = GlanceTheme.colors.surface,
+                text = "오늘은 일정이 없어요",
+                style = EbbingWidgetTypography.heading16SB.copy(
+                    textAlign = TextAlign.Start,
+                    color = LocalEbbingWidgetColors.current.textSub,
                 ),
                 modifier = GlanceModifier.fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 30.dp),
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
             )
         } else {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
-                    .padding(12.dp)
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 items(items = todoLists) { item ->
                     TodoItemRow(
@@ -220,17 +201,16 @@ internal fun TodoItemRow(
     ) {
         Spacer(
             modifier = GlanceModifier
-                .size(16.dp)
-                .cornerRadius(999.dp)
+                .width(3.dp)
+                .height(14.dp)
+                .cornerRadius(2.dp)
                 .background(ColorProvider(Color(todo.color), Color(todo.color)))
         )
 
         Text(
             text = todo.title,
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontWeight = if (todo.isDone) FontWeight.Bold else FontWeight.Normal,
-                color = GlanceTheme.colors.surface,
+            style = (if (todo.isDone) EbbingWidgetTypography.body14M else EbbingWidgetTypography.heading14SB).copy(
+                color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
                 textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
             ),
             maxLines = 2,
