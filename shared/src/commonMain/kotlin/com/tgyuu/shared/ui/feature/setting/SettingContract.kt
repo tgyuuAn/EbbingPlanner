@@ -10,6 +10,7 @@ data class SettingState(
     val appVersion: String = "1.0.0",
     val isNotificationEnabled: Boolean = true,
     val alarmTime: String = "오후 6시 30분",
+    val mondayStart: Boolean = false,
 ) : UiState
 
 sealed class SettingIntent : UiIntent {
@@ -26,4 +27,7 @@ sealed class SettingIntent : UiIntent {
     data object OnPrivacyPolicyClick : SettingIntent()
     data object OnTermsOfUseClick : SettingIntent()
     data object OnWidgetClick : SettingIntent()
+    data class OnUpdateStartDay(val mondayStart: Boolean) : SettingIntent()
+    data object OnNoticeClick : SettingIntent()
+    data object OnInquiryClick : SettingIntent()
 }
