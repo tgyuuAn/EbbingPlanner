@@ -34,6 +34,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.navigation.RootComponent
+import com.tgyuu.shared.platform.InAppReviewManager
 import com.tgyuu.shared.ui.feature.home.HomeScreen
 import com.tgyuu.shared.ui.feature.home.HomeViewModel
 import com.tgyuu.shared.ui.feature.schedule.ScheduleScreen
@@ -90,6 +91,7 @@ fun RootContent(
     val todoRepository = koinInject<TodoRepository>()
     val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val inAppReviewManager = koinInject<InAppReviewManager>()
 
     // Check if first app open → show onboarding
     LaunchedEffect(Unit) {
@@ -209,7 +211,10 @@ fun RootContent(
                     animation = stackAnimation(fade()),
                 ) { child ->
                     when (val instance = child.instance) {
-                        is RootComponent.Child.Home -> HomeScreen(viewModel = homeViewModel)
+                        is RootComponent.Child.Home -> HomeScreen(
+                            viewModel = homeViewModel,
+                            onRequestInAppReview = { inAppReviewManager.requestReview() },
+                        )
                         is RootComponent.Child.Schedule -> ScheduleScreen(viewModel = scheduleViewModel)
                         is RootComponent.Child.Setting -> SettingScreen(viewModel = settingViewModel)
                         is RootComponent.Child.Tag -> TagScreenWrapper(component)

@@ -46,6 +46,7 @@ class EditDateViewModel(
                     copy(
                         title = it.title,
                         originTagColor = it.color,
+                        tagId = it.tagId,
                         selectedDate = it.date,
                         restDays = todoInfo.restDays.toImmutableSet(),
                     )
@@ -100,6 +101,11 @@ class EditDateViewModel(
             return
         }
 
+        val tagId = currentState.tagId ?: run {
+            onShowSnackbar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요")
+            return
+        }
+
         try {
             // Delete original schedules
             originSchedules.firstOrNull()
@@ -111,7 +117,7 @@ class EditDateViewModel(
                 title = currentState.title,
                 dates = currentState.schedules,
                 isDoneSchedules = isDoneSchedules,
-                tagId = originSchedules.firstOrNull()?.tagId ?: 0,
+                tagId = tagId,
                 priority = originSchedules.firstOrNull()?.priority,
                 restDays = currentState.restDays.toSet(),
             )

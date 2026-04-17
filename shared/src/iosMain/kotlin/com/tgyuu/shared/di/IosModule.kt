@@ -2,6 +2,7 @@ package com.tgyuu.shared.di
 
 import com.tgyuu.shared.database.EbbingDatabase
 import com.tgyuu.shared.database.createEbbingDatabase
+import com.tgyuu.shared.platform.InAppReviewManager
 import com.tgyuu.shared.platform.Settings
 import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.platform.ErrorDataSource
@@ -22,6 +23,7 @@ import org.koin.dsl.module
 val iosModule = module {
     single<EbbingDatabase> { createEbbingDatabase() }
     single { Settings() }
+    single { InAppReviewManager() }
 }
 
 /**

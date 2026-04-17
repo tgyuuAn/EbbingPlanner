@@ -61,6 +61,8 @@ val sharedModule = module {
             syncDataSource = get(),
             syncDao = get(),
             schedulesDao = get(),
+            repeatCyclesDao = get(),
+            tagsDao = get(),
         )
     }
 
