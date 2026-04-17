@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.widget.calendar
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -13,10 +14,10 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.background
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
@@ -36,6 +37,7 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
+import androidx.glance.layout.width
 import androidx.glance.text.FontFamily
 import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
@@ -50,11 +52,12 @@ import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTypography
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.LocalEbbingWidgetColors
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
@@ -127,20 +130,18 @@ private fun CalendarWidgetContent(
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable(onClick = actionStartActivity<MainActivity>())
             .background(
                 imageProvider = ImageProvider(image),
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
+                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.background)
             )
-            .padding(4.dp)
+            .padding(vertical = 16.dp, horizontal = 20.dp)
     ) {
-        CalendarWidgetHeader(mondayStart = mondayStart)
+        CalendarWidgetHeader(mondayStart = mondayStart, selectedDate = selectedDate)
 
         CalendarWidgetBody(
             calendarDates = calendarDates,
             schedulesByDateMap = schedulesByDateMap,
             selectedDate = selectedDate,
-            modifier = GlanceModifier.height(230.dp),
         )
 
         SelectedDateTodoList(
@@ -153,32 +154,42 @@ private fun CalendarWidgetContent(
 }
 
 @Composable
-private fun CalendarWidgetHeader(mondayStart: Boolean) {
+private fun CalendarWidgetHeader(mondayStart: Boolean, selectedDate: LocalDate) {
     val today = LocalDate.now()
     Column(modifier = GlanceModifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .height(30.dp),
+                .height(24.dp),
         ) {
-            Spacer(modifier = GlanceModifier.size(20.dp))
-
             Text(
                 text = "${today.year}년 ${today.monthValue}월",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    color = GlanceTheme.colors.surface,
+                style = EbbingWidgetTypography.heading16B.copy(
+                    color = LocalEbbingWidgetColors.current.textOnBackground,
                 ),
                 modifier = GlanceModifier.defaultWeight()
             )
 
             Image(
-                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_return),
+                provider = ImageProvider(R.drawable.ic_widget_plus),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
+                modifier = GlanceModifier
+                    .size(20.dp)
+                    .clickable(
+                        actionRunCallback<AddTodoFromWidgetAction>(
+                            actionParametersOf(
+                                widgetSourceKey to "CalendarWidget",
+                                selectedDateKey to selectedDate.toString()
+                            )
+                        )
+                    ),
+            )
+
+            Spacer(modifier = GlanceModifier.size(12.dp))
+
+            Image(
+                provider = ImageProvider(R.drawable.ic_widget_return),
+                contentDescription = null,
                 modifier = GlanceModifier
                     .size(14.dp)
                     .clickable(
@@ -189,15 +200,15 @@ private fun CalendarWidgetHeader(mondayStart: Boolean) {
             )
         }
 
+        Spacer(modifier = GlanceModifier.size(12.dp))
+
         Row(modifier = GlanceModifier.fillMaxWidth()) {
             getEbbingDayOfWeek(mondayStart).forEach {
                 Text(
                     text = it.toKorean(),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
+                    style = EbbingWidgetTypography.body14M.copy(
                         textAlign = TextAlign.Center,
-                        color = GlanceTheme.colors.surface,
+                        color = LocalEbbingWidgetColors.current.textSub,
                     ),
                     modifier = GlanceModifier.defaultWeight(),
                 )
@@ -214,13 +225,13 @@ private fun CalendarWidgetBody(
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val today = LocalDate.now()
+    val numberOfWeeks = (calendarDates.indexOfLast { it.isCurrentMonth } / 7) + 1
     Column(modifier = modifier) {
-        for (week in 0 until 6) {
+        for (week in 0 until numberOfWeeks) {
             Row(
                 modifier = GlanceModifier
                     .fillMaxWidth()
-                    .height(40.dp)
-                    .padding(vertical = 2.dp),
+                    .height(33.dp),
             ) {
                 for (day in 0 until 7) {
                     val index = week * 7 + day
@@ -236,6 +247,10 @@ private fun CalendarWidgetBody(
                     )
                 }
             }
+
+            if (week != 0 || week < numberOfWeeks - 1) {
+                Spacer(modifier = GlanceModifier.height(26.5.dp))
+            }
         }
     }
 }
@@ -249,47 +264,51 @@ private fun RowScope.CalendarDayCell(
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val isSelected = date.date == selectedDate
-    val dayItemColor = if (isSelected) GlanceTheme.colors.surface
+    val dayItemColor = if (isSelected) LocalEbbingWidgetColors.current.textOnBackground
     else ColorProvider(Color.Transparent, Color.Transparent)
-    val textColor = if (isSelected) GlanceTheme.colors.inverseSurface
-    else GlanceTheme.colors.surface
+    val textColor = if (isSelected) LocalEbbingWidgetColors.current.textOnPrimary
+    else LocalEbbingWidgetColors.current.textOnBackground
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.defaultWeight()
-            .cornerRadius(8.dp)
-            .background(dayItemColor)
             .clickable(
                 actionRunCallback<SelectDateAction>(
                     actionParametersOf(selectedDateKey to date.date.toString())
                 )
             ),
     ) {
-        Text(
-            text = date.dayOfMonth.toString(),
-            style = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                color = if (date.isCurrentMonth) textColor else GlanceTheme.colors.tertiary,
-                textAlign = TextAlign.Center
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = GlanceModifier
+                .size(22.dp)
+                .cornerRadius(999.dp)
+                .background(dayItemColor),
+        ) {
+            Text(
+                text = date.dayOfMonth.toString(),
+                style = EbbingWidgetTypography.caption12R.copy(
+                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                    color = if (date.isCurrentMonth) textColor else LocalEbbingWidgetColors.current.textDisabled,
+                    textAlign = TextAlign.Center,
+                )
             )
-        )
+        }
 
+        val dots = schedules.map { it.color }.distinct().take(3)
         Row(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = GlanceModifier.padding(top = 2.dp),
         ) {
-            schedules.map { it.color }
-                .distinct()
-                .take(4)
-                .forEach { color ->
-                    Spacer(
-                        modifier = GlanceModifier
-                            .size(6.dp)
-                            .cornerRadius(999.dp)
-                            .background(ColorProvider(Color(color), Color(color)))
-                    )
-                }
+            dots.forEachIndexed { index, color ->
+                if (index > 0) Spacer(modifier = GlanceModifier.width(2.dp))
+                Spacer(
+                    modifier = GlanceModifier
+                        .size(7.dp)
+                        .cornerRadius(999.dp)
+                        .background(ColorProvider(Color(color), Color(color)))
+                )
+            }
         }
     }
 }
@@ -301,21 +320,10 @@ private fun ColumnScope.SelectedDateTodoList(
     todoLists: List<TodoSchedule>,
     doneSize: Int,
 ) {
-    val image = when (alpha) {
-        0.25f -> R.drawable.shape_widget_header_25
-        0.5f -> R.drawable.shape_widget_header_50
-        0.75f -> R.drawable.shape_widget_header_75
-        else -> R.drawable.shape_widget_header_100
-    }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = GlanceModifier.fillMaxWidth()
-            .background(
-                imageProvider = ImageProvider(image),
-                colorFilter = ColorFilter.tint(GlanceTheme.colors.surfaceVariant)
-            )
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(top = 12.dp),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -324,68 +332,44 @@ private fun ColumnScope.SelectedDateTodoList(
             Text(
                 text = if (selectedDate == LocalDate.now()) "오늘 할 일   "
                 else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = GlanceTheme.colors.surface,
+                style = EbbingWidgetTypography.heading18B.copy(
+                    color = LocalEbbingWidgetColors.current.textOnBackground,
                 ),
             )
             Text(
                 text = doneSize.toString(),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = GlanceTheme.colors.primary,
+                style = EbbingWidgetTypography.heading18B.copy(
+                    color = if (doneSize > 0) LocalEbbingWidgetColors.current.textPrimary
+                    else LocalEbbingWidgetColors.current.textDisabled,
                 ),
             )
             Text(
                 text = " /${todoLists.size}",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = GlanceTheme.colors.surface
+                style = EbbingWidgetTypography.heading18B.copy(
+                    color = LocalEbbingWidgetColors.current.textDisabled,
                 ),
             )
         }
-
-        Image(
-            provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
-            modifier = GlanceModifier
-                .size(20.dp)
-                .clickable(
-                    actionRunCallback<AddTodoFromWidgetAction>(
-                        actionParametersOf(
-                            widgetSourceKey to "CalendarWidget",
-                            selectedDateKey to selectedDate.toString()
-                        )
-                    )
-                ),
-        )
     }
 
+    Spacer(modifier = GlanceModifier.height(12.dp))
+
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = GlanceModifier.fillMaxWidth().defaultWeight()
+        contentAlignment = Alignment.TopStart,
+        modifier = GlanceModifier.fillMaxWidth()
+            .defaultWeight(),
     ) {
         if (todoLists.isEmpty()) {
             Text(
-                text = "금일 스케줄이 없어요.",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Normal,
-                    textAlign = TextAlign.Center,
-                    fontFamily = FontFamily.Cursive,
-                    color = GlanceTheme.colors.surface
+                text = "오늘은 일정이 없어요",
+                style = EbbingWidgetTypography.heading16SB.copy(
+                    textAlign = TextAlign.Start,
+                    color = LocalEbbingWidgetColors.current.textSub,
                 ),
             )
         } else {
             LazyColumn(
-                modifier = GlanceModifier
-                    .fillMaxSize()
-                    .padding(12.dp),
+                modifier = GlanceModifier.fillMaxSize()
             ) {
                 items(items = todoLists) { item ->
                     TodoItemRow(
@@ -396,5 +380,7 @@ private fun ColumnScope.SelectedDateTodoList(
                 }
             }
         }
+
+        Spacer(modifier = GlanceModifier.height(36.dp))
     }
 }
