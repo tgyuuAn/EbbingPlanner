@@ -24,7 +24,10 @@ class MemoViewModel(
     private fun loadSchedule() {
         safeScope.launch {
             try {
-                val schedule = todoRepository.loadSchedule(scheduleId)
+                val schedule = todoRepository.loadSchedule(scheduleId) ?: run {
+                    onNavigateBack()
+                    return@launch
+                }
                 setState {
                     copy(
                         originSchedule = schedule,

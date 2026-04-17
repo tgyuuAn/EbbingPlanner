@@ -310,7 +310,7 @@ internal fun UuidBody(
 
     Text(
         text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
-        style = EbbingTheme.typography.bodySR,
+        style = EbbingTheme.typography.caption14R,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier
             .fillMaxWidth()
@@ -328,7 +328,7 @@ internal fun UuidBody(
 
     Text(
         text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
-        style = EbbingTheme.typography.bodySR,
+        style = EbbingTheme.typography.caption14R,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier
             .fillMaxWidth()
@@ -471,7 +471,7 @@ private fun SectionDivider() {
 
     Text(
         text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
-        style = EbbingTheme.typography.bodySR,
+        style = EbbingTheme.typography.caption14R,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier
             .fillMaxWidth()
@@ -489,7 +489,7 @@ private fun SectionDivider() {
 
     Text(
         text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
-        style = EbbingTheme.typography.bodySR,
+        style = EbbingTheme.typography.caption14R,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier
             .fillMaxWidth()
