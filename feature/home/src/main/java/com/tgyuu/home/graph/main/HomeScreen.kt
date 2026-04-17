@@ -1,7 +1,8 @@
 package com.tgyuu.home.graph.main
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import android.app.Activity
 import androidx.compose.ui.platform.LocalContext
@@ -313,9 +316,15 @@ private fun PhoneHomeScreen(
     val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
-    var isExpanded by remember { mutableStateOf(false) }
     var calendarHeight by remember { mutableStateOf(1000.dp) }
-    val animatedTopPadding by animateDpAsState(targetValue = if (isExpanded) 0.dp else calendarHeight)
+    val calendarHeightPx = with(localDensity) { calendarHeight.toPx() }
+    val offsetAnimatable = remember { Animatable(calendarHeightPx) }
+    val isExpanded = offsetAnimatable.value < calendarHeightPx / 2
+    val animatedTopPadding = with(localDensity) { offsetAnimatable.value.toDp() }
+
+    LaunchedEffect(calendarHeightPx) {
+        if (!isExpanded) offsetAnimatable.snapTo(calendarHeightPx)
+    }
 
     LaunchedEffect(workedDate) {
         calendarState.onDateSelect(workedDate)
@@ -378,6 +387,23 @@ private fun PhoneHomeScreen(
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally)
+                    .pointerInput(calendarHeightPx) {
+                        detectDragGestures(
+                            onDragEnd = {
+                                scope.launch {
+                                    val target = if (offsetAnimatable.value < calendarHeightPx / 2) 0f else calendarHeightPx
+                                    offsetAnimatable.animateTo(target, animationSpec = spring())
+                                }
+                            },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                scope.launch {
+                                    val newValue = (offsetAnimatable.value + dragAmount.y).coerceIn(0f, calendarHeightPx)
+                                    offsetAnimatable.snapTo(newValue)
+                                }
+                            }
+                        )
+                    }
                     .throttledClickable(500L) {
                         analyticsHelper.logEvent(
                             AnalyticsEvent.Click(
@@ -385,7 +411,10 @@ private fun PhoneHomeScreen(
                                 buttonName = if (isExpanded) "FoldList" else "ExpandList",
                             )
                         )
-                        isExpanded = !isExpanded
+                        scope.launch {
+                            val target = if (isExpanded) calendarHeightPx else 0f
+                            offsetAnimatable.animateTo(target, animationSpec = spring())
+                        }
                     },
             )
 
