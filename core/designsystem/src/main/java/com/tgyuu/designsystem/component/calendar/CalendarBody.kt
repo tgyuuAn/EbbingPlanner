@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -99,12 +100,15 @@ private fun CalendarDayItem(
                 else -> EbbingTheme.colors.textOnBackground
             }
 
+            val todayTextHeight = with(LocalDensity.current) {
+                EbbingTheme.typography.caption12R.lineHeight.toDp()
+            }
             if (isOverflow) {
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = "Today",
                     tint = textColor,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(todayTextHeight)
                 )
             } else {
                 Text(
