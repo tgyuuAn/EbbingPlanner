@@ -25,11 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
+import com.tgyuu.shared.designsystem.component.EbbingPartialUnderlineText
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.common.toRelativeDayDescription
@@ -81,13 +78,9 @@ fun EditDateScreen(
                 .imePadding(),
         ) {
             // Header with date (clickable to change date)
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
-                    }
-                    append(" 부터\n시작하는 일정으로 바꿔요")
-                },
+            EbbingPartialUnderlineText(
+                underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
+                rest = " 부터\n시작하는 일정으로 바꿔요",
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.clickable {

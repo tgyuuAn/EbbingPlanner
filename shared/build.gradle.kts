@@ -75,6 +75,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.play.review.ktx)
         }
 
         iosMain.dependencies {

@@ -7,18 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0D00894DBFAF9BE5BFA50DCB /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058FE5D3F4B4352AB39886B6 /* DateExtensions.swift */; };
-		11F13BC86AFD50D9D8E270FB /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C44FFCABDEB2354B79FDC95 /* ColorExtensions.swift */; };
-		16FB5DCEDAA0EB7191581D08 /* TagListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6B0ADB01B72DD9C5E8B895 /* TagListView.swift */; };
-		40F2279AB9398810B0769D94 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA017F981A8B90516744E161 /* HomeViewModel.swift */; };
-		9DB000B9FED48A7A18920DA5 /* TagListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABBB28E770B8281D0A902F3 /* TagListViewModel.swift */; };
+		4333AA3CCBAF451893621143 /* EbbingPlannerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91238F3C9A0E4494E140C0B3 /* EbbingPlannerWidget.swift */; };
+		4AB704C7D831C67237D46E9C /* FirebaseSyncBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F57D35DAA05B93B48FF8154 /* FirebaseSyncBridge.swift */; };
+		7E5A4D8304701E4480C859ED /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1AAC2E85B84D1D9A58C062 /* Pods_iosApp.framework */; };
+		A5ECB83A94CBA1C95B3FB32A /* FirebaseErrorBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F44F0E6E246AB4B8BDAEEAF /* FirebaseErrorBridge.swift */; };
 		A684ADA1BD7B7C95B8058719 /* shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C5238AC229500570E67FDB9D /* shared.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		AF5745262CD6616F59C371F3 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE412577452521D0E0DAE95 /* HomeView.swift */; };
+		BFACF4D3D77B2467F007599D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 902E29824DB2E4278F8E6ECD /* GoogleService-Info.plist */; };
+		C47E8E7AB85C8B706FEC5D8E /* EbbingPlannerWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E38172513E3F77E33635171A /* EbbingPlannerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CC38D4F51AC8335130D1C35E /* EbbingPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0122956141A7451E81839E0F /* EbbingPlannerApp.swift */; };
-		D50607E8B0AF6835248D4A89 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26BF3B67427A5D73DEEF2E27 /* SettingView.swift */; };
-		F8BF881AD7378FA63FD2AB01 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3D55755E40EB86EB0EA66A /* ContentView.swift */; };
 		FEBF8D9E41316D8D1EC3F216 /* shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5238AC229500570E67FDB9D /* shared.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2947A09EC4EC8569B86BCE80 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0FE345AE78591A23084DFD35 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3290AFD89310A4E67D448A91;
+			remoteInfo = EbbingPlannerWidget;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		22361975309806525E5C5DE0 /* Embed Frameworks */ = {
@@ -32,21 +40,35 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3A3C1C91FFFACB3AF8283753 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C47E8E7AB85C8B706FEC5D8E /* EbbingPlannerWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0122956141A7451E81839E0F /* EbbingPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbbingPlannerApp.swift; sourceTree = "<group>"; };
-		058FE5D3F4B4352AB39886B6 /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
-		0C6B0ADB01B72DD9C5E8B895 /* TagListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListView.swift; sourceTree = "<group>"; };
-		1C44FFCABDEB2354B79FDC95 /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
-		26BF3B67427A5D73DEEF2E27 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
-		4ABBB28E770B8281D0A902F3 /* TagListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagListViewModel.swift; sourceTree = "<group>"; };
-		6DE412577452521D0E0DAE95 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		AA017F981A8B90516744E161 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		0C3FBE3C34D4030B255DD997 /* EbbingPlannerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbbingPlannerWidget.entitlements; sourceTree = "<group>"; };
+		0F44F0E6E246AB4B8BDAEEAF /* FirebaseErrorBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseErrorBridge.swift; sourceTree = "<group>"; };
+		1ECA9A6EFBE289CB77383318 /* Pods-iosApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debug.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debug.xcconfig"; sourceTree = "<group>"; };
+		4F57D35DAA05B93B48FF8154 /* FirebaseSyncBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSyncBridge.swift; sourceTree = "<group>"; };
+		6F3F523CB7D968FEE7280737 /* Pods-iosApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.release.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.release.xcconfig"; sourceTree = "<group>"; };
+		902E29824DB2E4278F8E6ECD /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		91238F3C9A0E4494E140C0B3 /* EbbingPlannerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbbingPlannerWidget.swift; sourceTree = "<group>"; };
+		BE1AAC2E85B84D1D9A58C062 /* Pods_iosApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5238AC229500570E67FDB9D /* shared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = shared.framework; path = ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework; sourceTree = "<group>"; };
-		CA3D55755E40EB86EB0EA66A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DDB66A78DE8C03C61948120A /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E38172513E3F77E33635171A /* EbbingPlannerWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = EbbingPlannerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5BAD04B82744B4AE088EBAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E77A39B925C3B8068C37CD7A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F0F86A2785CAFE64C696D907 /* EbbingPlanner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbbingPlanner.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +77,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEBF8D9E41316D8D1EC3F216 /* shared.framework in Frameworks */,
+				7E5A4D8304701E4480C859ED /* Pods_iosApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,104 +87,102 @@
 		00126B70683A2B251B72D659 = {
 			isa = PBXGroup;
 			children = (
+				51599DA8D1989B5140352946 /* EbbingPlannerWidget */,
 				325944CBC27CEAAED12EF47E /* iosApp */,
 				D24A68DBC44C20C314D511BD /* Frameworks */,
 				87BAAC17C31431FF934226AD /* Products */,
+				DF5616F342A7D7DAB87B5D6E /* Pods */,
 			);
-			sourceTree = "<group>";
-		};
-		1815D7269CF5975DA3B54E7C /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				1C44FFCABDEB2354B79FDC95 /* ColorExtensions.swift */,
-				058FE5D3F4B4352AB39886B6 /* DateExtensions.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		208491760A14FB484511F2F0 /* Setting */ = {
-			isa = PBXGroup;
-			children = (
-				26BF3B67427A5D73DEEF2E27 /* SettingView.swift */,
-			);
-			path = Setting;
 			sourceTree = "<group>";
 		};
 		325944CBC27CEAAED12EF47E /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
-				CA3D55755E40EB86EB0EA66A /* ContentView.swift */,
+				F0F86A2785CAFE64C696D907 /* EbbingPlanner.entitlements */,
 				0122956141A7451E81839E0F /* EbbingPlannerApp.swift */,
+				0F44F0E6E246AB4B8BDAEEAF /* FirebaseErrorBridge.swift */,
+				4F57D35DAA05B93B48FF8154 /* FirebaseSyncBridge.swift */,
+				902E29824DB2E4278F8E6ECD /* GoogleService-Info.plist */,
 				E77A39B925C3B8068C37CD7A /* Info.plist */,
-				1815D7269CF5975DA3B54E7C /* Extensions */,
-				7EFD923EAB1FE363537C47D8 /* Features */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
 		};
-		79C6CFAB39A40995A7F0A477 /* Home */ = {
+		51599DA8D1989B5140352946 /* EbbingPlannerWidget */ = {
 			isa = PBXGroup;
 			children = (
-				6DE412577452521D0E0DAE95 /* HomeView.swift */,
-				AA017F981A8B90516744E161 /* HomeViewModel.swift */,
+				0C3FBE3C34D4030B255DD997 /* EbbingPlannerWidget.entitlements */,
+				91238F3C9A0E4494E140C0B3 /* EbbingPlannerWidget.swift */,
+				E5BAD04B82744B4AE088EBAE /* Info.plist */,
 			);
-			path = Home;
-			sourceTree = "<group>";
-		};
-		7EFD923EAB1FE363537C47D8 /* Features */ = {
-			isa = PBXGroup;
-			children = (
-				79C6CFAB39A40995A7F0A477 /* Home */,
-				208491760A14FB484511F2F0 /* Setting */,
-				C4FBF01849B073110365234B /* Tag */,
-			);
-			path = Features;
+			path = EbbingPlannerWidget;
 			sourceTree = "<group>";
 		};
 		87BAAC17C31431FF934226AD /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				E38172513E3F77E33635171A /* EbbingPlannerWidget.appex */,
 				DDB66A78DE8C03C61948120A /* iosApp.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		C4FBF01849B073110365234B /* Tag */ = {
-			isa = PBXGroup;
-			children = (
-				0C6B0ADB01B72DD9C5E8B895 /* TagListView.swift */,
-				4ABBB28E770B8281D0A902F3 /* TagListViewModel.swift */,
-			);
-			path = Tag;
 			sourceTree = "<group>";
 		};
 		D24A68DBC44C20C314D511BD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				C5238AC229500570E67FDB9D /* shared.framework */,
+				BE1AAC2E85B84D1D9A58C062 /* Pods_iosApp.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DF5616F342A7D7DAB87B5D6E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1ECA9A6EFBE289CB77383318 /* Pods-iosApp.debug.xcconfig */,
+				6F3F523CB7D968FEE7280737 /* Pods-iosApp.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A337416A4FB4BA50B069D633 /* iosApp */ = {
+		3290AFD89310A4E67D448A91 /* EbbingPlannerWidget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 71F9A4449042839E99DAA767 /* Build configuration list for PBXNativeTarget "iosApp" */;
+			buildConfigurationList = F00780B235F109B9FDCF441A /* Build configuration list for PBXNativeTarget "EbbingPlannerWidget" */;
 			buildPhases = (
-				221A6D8EC541C274536B85FE /* Build Shared Framework */,
-				24263A071B7867EA3FC7201B /* Sources */,
-				5140D3D7C07E80C1114DE8E2 /* Frameworks */,
-				22361975309806525E5C5DE0 /* Embed Frameworks */,
+				619970C5D1366357CFC855DD /* Sources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = iosApp;
-			packageProductDependencies = (
+			name = EbbingPlannerWidget;
+			productName = EbbingPlannerWidget;
+			productReference = E38172513E3F77E33635171A /* EbbingPlannerWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A337416A4FB4BA50B069D633 /* iosApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 71F9A4449042839E99DAA767 /* Build configuration list for PBXNativeTarget "iosApp" */;
+			buildPhases = (
+				46395CF3725E1C44070B15D5 /* [CP] Check Pods Manifest.lock */,
+				221A6D8EC541C274536B85FE /* Build Shared Framework */,
+				24263A071B7867EA3FC7201B /* Sources */,
+				3F39742A3E7CEB49CA03A691 /* Resources */,
+				5140D3D7C07E80C1114DE8E2 /* Frameworks */,
+				3A3C1C91FFFACB3AF8283753 /* Embed Foundation Extensions */,
+				22361975309806525E5C5DE0 /* Embed Frameworks */,
+				718EFA0C933417A9769A2244 /* [CP] Embed Pods Frameworks */,
 			);
+			buildRules = (
+			);
+			dependencies = (
+				A91B57923AE3E517962D1FF6 /* PBXTargetDependency */,
+			);
+			name = iosApp;
 			productName = iosApp;
 			productReference = DDB66A78DE8C03C61948120A /* iosApp.app */;
 			productType = "com.apple.product-type.application";
@@ -175,6 +196,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					3290AFD89310A4E67D448A91 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
 					A337416A4FB4BA50B069D633 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
@@ -195,10 +220,22 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				3290AFD89310A4E67D448A91 /* EbbingPlannerWidget */,
 				A337416A4FB4BA50B069D633 /* iosApp */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3F39742A3E7CEB49CA03A691 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFACF4D3D77B2467F007599D /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		221A6D8EC541C274536B85FE /* Build Shared Framework */ = {
@@ -220,6 +257,45 @@
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64\nelse\n  ./gradlew :shared:linkDebugFrameworkIosArm64\nfi\n";
 		};
+		46395CF3725E1C44070B15D5 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-iosApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		718EFA0C933417A9769A2244 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -227,25 +303,54 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				11F13BC86AFD50D9D8E270FB /* ColorExtensions.swift in Sources */,
-				F8BF881AD7378FA63FD2AB01 /* ContentView.swift in Sources */,
-				0D00894DBFAF9BE5BFA50DCB /* DateExtensions.swift in Sources */,
 				CC38D4F51AC8335130D1C35E /* EbbingPlannerApp.swift in Sources */,
-				AF5745262CD6616F59C371F3 /* HomeView.swift in Sources */,
-				40F2279AB9398810B0769D94 /* HomeViewModel.swift in Sources */,
-				D50607E8B0AF6835248D4A89 /* SettingView.swift in Sources */,
-				16FB5DCEDAA0EB7191581D08 /* TagListView.swift in Sources */,
-				9DB000B9FED48A7A18920DA5 /* TagListViewModel.swift in Sources */,
+				A5ECB83A94CBA1C95B3FB32A /* FirebaseErrorBridge.swift in Sources */,
+				4AB704C7D831C67237D46E9C /* FirebaseSyncBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		619970C5D1366357CFC855DD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4333AA3CCBAF451893621143 /* EbbingPlannerWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A91B57923AE3E517962D1FF6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3290AFD89310A4E67D448A91 /* EbbingPlannerWidget */;
+			targetProxy = 2947A09EC4EC8569B86BCE80 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		4A2BF49CDD870525FFDF4F8F /* Release */ = {
+		1435833D285038CA19B148C7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = EbbingPlannerWidget/EbbingPlannerWidget.entitlements;
+				INFOPLIST_FILE = EbbingPlannerWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tgyuu.ebbingplanner.widget;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4A2BF49CDD870525FFDF4F8F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F3F523CB7D968FEE7280737 /* Pods-iosApp.release.xcconfig */;
+			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iosApp/EbbingPlanner.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -325,7 +430,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -339,8 +444,10 @@
 		};
 		B9EC5BF05358AF6B3DEC7A39 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1ECA9A6EFBE289CB77383318 /* Pods-iosApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = iosApp/EbbingPlanner.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -361,6 +468,23 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tgyuu.ebbingplanner;
 				PRODUCT_NAME = EbbingPlanner;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C72BDC0F05865D7DCB370B50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = EbbingPlannerWidget/EbbingPlannerWidget.entitlements;
+				INFOPLIST_FILE = EbbingPlannerWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tgyuu.ebbingplanner.widget;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -414,7 +538,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -442,6 +566,15 @@
 			buildConfigurations = (
 				6EF72E529BD36C04D3E42AD5 /* Debug */,
 				F4A9F83E7CF0963A5DC73A15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F00780B235F109B9FDCF441A /* Build configuration list for PBXNativeTarget "EbbingPlannerWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C72BDC0F05865D7DCB370B50 /* Debug */,
+				1435833D285038CA19B148C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

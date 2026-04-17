@@ -1,11 +1,16 @@
 package com.tgyuu.shared.platform
 
 import android.app.Activity
+import com.google.android.play.core.review.ReviewManagerFactory
 
 actual class InAppReviewManager(private val activity: Activity?) {
     actual fun requestReview() {
-        // TODO: Implement with Google Play In-App Review API
-        // val manager = ReviewManagerFactory.create(activity)
-        // val request = manager.requestReviewFlow()
+        val activity = activity ?: return
+        val manager = ReviewManagerFactory.create(activity)
+        manager.requestReviewFlow().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                manager.launchReviewFlow(activity, task.result)
+            }
+        }
     }
 }
