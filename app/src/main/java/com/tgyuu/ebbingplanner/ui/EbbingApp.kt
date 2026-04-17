@@ -137,14 +137,15 @@ private fun PhoneContent(
                 .addFocusCleaner(focusManager),
         )
 
-        BackHandler(enabled = sheetState.isVisible) {
-            scope.launch { sheetState.hide() }
-        }
-
         HandleDoubleBackToExit(
             appState = appState,
             snackBarHostState = snackBarHostState,
         )
+
+        // sheet BackHandler는 exit보다 뒤에 등록 → 우선순위 높음
+        BackHandler(enabled = sheetState.isVisible) {
+            scope.launch { sheetState.hide() }
+        }
     }
 }
 
@@ -253,14 +254,14 @@ private fun TabletContent(
                         .padding(vertical = 20.dp),
                 )
 
-                BackHandler(enabled = sheetState.isVisible) {
-                    scope.launch { sheetState.hide() }
-                }
-
                 HandleDoubleBackToExit(
                     appState = appState,
                     snackBarHostState = snackBarHostState,
                 )
+
+                BackHandler(enabled = sheetState.isVisible) {
+                    scope.launch { sheetState.hide() }
+                }
             }
         }
     }
