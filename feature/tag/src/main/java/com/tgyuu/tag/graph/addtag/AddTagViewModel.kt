@@ -46,11 +46,21 @@ class AddTagViewModel(
             return
         }
 
-        todoRepository.addTag(
+        val existingTags = todoRepository.loadTags()
+        if (existingTags.any { it.name.equals(currentState.name.trim(), ignoreCase = true) }) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 존재하는 태그 이름입니다"))
+            return
+        }
+
+        val newId = todoRepository.addTag(
             name = currentState.name.trim(),
             color = currentState.colorValue,
         )
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_added)))
+        if (newId <= 0L) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그 추가에 실패했습니다"))
+            return
+        }
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 태그를 추가하였습니다"))
         navigationBus.navigate(NavigationEvent.Up)
     }
 }

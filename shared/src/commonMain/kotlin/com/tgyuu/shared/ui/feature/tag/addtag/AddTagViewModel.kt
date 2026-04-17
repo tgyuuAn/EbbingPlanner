@@ -42,10 +42,20 @@ class AddTagViewModel(
         if (!currentState.isSaveEnabled) return
 
         try {
-            todoRepository.addTag(
-                name = currentState.name,
+            val existingTags = todoRepository.loadTags()
+            if (existingTags.any { it.name.equals(currentState.name.trim(), ignoreCase = true) }) {
+                onShowSnackbar("이미 존재하는 태그 이름입니다")
+                return
+            }
+
+            val newId = todoRepository.addTag(
+                name = currentState.name.trim(),
                 color = currentState.colorValue,
             )
+            if (newId <= 0L) {
+                onShowSnackbar("태그 추가에 실패했습니다")
+                return
+            }
             onShowSnackbar("새로운 태그를 추가하였습니다")
             onNavigateBack()
         } catch (e: Exception) {
