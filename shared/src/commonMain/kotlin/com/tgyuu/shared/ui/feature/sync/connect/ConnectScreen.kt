@@ -32,6 +32,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
@@ -81,35 +83,66 @@ fun ConnectScreen(
         )
     }
 
-    Column(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingSubTopBar(
-            title = "다른 기기와 연동",
-            onNavigationClick = { viewModel.onIntent(ConnectIntent.OnBackClick) },
-            modifier = Modifier.padding(bottom = 20.dp),
-        )
-
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .fillMaxWidth(),
-        ) {
-            LinkBody(
-                myCode = state.myCode,
-                anotherCode = state.anotherCode,
-                remainingTimeInSec = state.formattedRemainingTimeInSec,
-                isGenerateButtonEnabled = state.isGenerateButtonEnabled,
-                isConnectButtonEnabled = state.isConnectButtonEnabled,
-                onMyCodeChange = { viewModel.onIntent(ConnectIntent.OnMyCodeChange(it)) },
-                onAnotherCodeChange = { viewModel.onIntent(ConnectIntent.OnAnotherCodeChange(it)) },
-                onClickGenerateCode = { viewModel.onIntent(ConnectIntent.OnClickGenerateCode) },
-                onClickConnectAnother = { isShowConnectDialog = true },
+        val isWide = maxWidth > 600.dp
+        Column(modifier = Modifier.fillMaxSize()) {
+            EbbingSubTopBar(
+                title = "다른 기기와 연동",
+                onNavigationClick = { viewModel.onIntent(ConnectIntent.OnBackClick) },
+                modifier = Modifier.padding(bottom = 20.dp),
             )
 
-            DescriptionBody()
+            if (isWide) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(scrollState),
+                    ) {
+                        LinkBody(
+                            myCode = state.myCode,
+                            anotherCode = state.anotherCode,
+                            remainingTimeInSec = state.formattedRemainingTimeInSec,
+                            isGenerateButtonEnabled = state.isGenerateButtonEnabled,
+                            isConnectButtonEnabled = state.isConnectButtonEnabled,
+                            onMyCodeChange = { viewModel.onIntent(ConnectIntent.OnMyCodeChange(it)) },
+                            onAnotherCodeChange = { viewModel.onIntent(ConnectIntent.OnAnotherCodeChange(it)) },
+                            onClickGenerateCode = { viewModel.onIntent(ConnectIntent.OnClickGenerateCode) },
+                            onClickConnectAnother = { isShowConnectDialog = true },
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 20.dp),
+                    ) {
+                        DescriptionBody()
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .fillMaxWidth(),
+                ) {
+                    LinkBody(
+                        myCode = state.myCode,
+                        anotherCode = state.anotherCode,
+                        remainingTimeInSec = state.formattedRemainingTimeInSec,
+                        isGenerateButtonEnabled = state.isGenerateButtonEnabled,
+                        isConnectButtonEnabled = state.isConnectButtonEnabled,
+                        onMyCodeChange = { viewModel.onIntent(ConnectIntent.OnMyCodeChange(it)) },
+                        onAnotherCodeChange = { viewModel.onIntent(ConnectIntent.OnAnotherCodeChange(it)) },
+                        onClickGenerateCode = { viewModel.onIntent(ConnectIntent.OnClickGenerateCode) },
+                        onClickConnectAnother = { isShowConnectDialog = true },
+                    )
+                    DescriptionBody()
+                }
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,9 +44,9 @@ fun MemoScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-    ) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "메모 ${if (state.originSchedule?.memo.isNullOrEmpty()) "추가" else "수정"}",
             onNavigationClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
@@ -71,32 +73,49 @@ fun MemoScreen(
             thickness = 1.dp,
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-                .imePadding(),
-        ) {
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Memo Input
-            MemoContent(
-                memo = state.memo,
-                onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
-                onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Preview Content
-            state.originSchedule?.let { schedule ->
-                PreviewContent(
-                    schedule = schedule,
-                    memo = state.memo,
-                )
+        if (isWide) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(20.dp)
+                    .imePadding(),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    MemoContent(
+                        memo = state.memo,
+                        onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
+                        onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    state.originSchedule?.let { schedule ->
+                        PreviewContent(schedule = schedule, memo = state.memo)
+                    }
+                }
             }
-
-            Spacer(modifier = Modifier.height(60.dp))
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .imePadding(),
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
+                MemoContent(
+                    memo = state.memo,
+                    onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
+                    onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                state.originSchedule?.let { schedule ->
+                    PreviewContent(schedule = schedule, memo = state.memo)
+                }
+                Spacer(modifier = Modifier.height(60.dp))
+            }
         }
 
         if (state.isTreatment) {
@@ -111,6 +130,7 @@ fun MemoScreen(
             )
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable

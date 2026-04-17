@@ -13,7 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -59,7 +63,9 @@ fun RepeatCycleScreen(
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "반복 주기 관리",
             onNavigationClick = { viewModel.onIntent(RepeatCycleIntent.OnBackClick) },
@@ -103,11 +109,26 @@ fun RepeatCycleScreen(
                     color = EbbingTheme.colors.dark2,
                 )
             }
+        } else if (isWide) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize().padding(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(items = state.repeatCycleList, key = { it.id }) { repeatCycle ->
+                    RepeatCycleItem(
+                        repeatCycle = repeatCycle,
+                        onClick = { viewModel.onIntent(RepeatCycleIntent.OnEditClick(repeatCycle)) },
+                        onDeleteClick = { repeatCycleToDelete = repeatCycle },
+                    )
+                }
+                item { Spacer(modifier = Modifier.height(24.dp)) }
+                item { Spacer(modifier = Modifier.height(24.dp)) }
+            }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp),
+                modifier = Modifier.fillMaxSize().padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(
@@ -125,6 +146,7 @@ fun RepeatCycleScreen(
             }
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable

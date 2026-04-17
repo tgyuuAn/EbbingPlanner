@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,7 +55,10 @@ fun ScheduleScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    val containerHeight = maxHeight
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
             title = "일정 모아보기",
             modifier = Modifier.padding(horizontal = 20.dp),
@@ -71,18 +75,66 @@ fun ScheduleScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator(
-                    color = EbbingTheme.colors.primaryDefault,
-                )
+                CircularProgressIndicator(color = EbbingTheme.colors.primaryDefault)
+            }
+        } else if (isWide) {
+            // Tablet: 좌측(태그+할일 목록) | 우측(스케줄 상세)
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    TagsSection(
+                        tags = state.tags,
+                        selectedTag = state.selectedTag,
+                        achievementRateMap = state.tagAchievementRateMap,
+                        onTagClick = { viewModel.onIntent(ScheduleIntent.OnTagClick(it)) },
+                        modifier = Modifier.heightIn(max = containerHeight * 0.4f),
+                    )
+                    if (state.selectedTag != null) {
+                        HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
+                        TodoInfosSection(
+                            todoInfos = state.todoInfos,
+                            selectedTag = state.selectedTag!!,
+                            selectedTodoInfo = state.selectedTodoInfo,
+                            achievementRateMap = state.todoInfoAchievementRateMap,
+                            onTodoInfoClick = { viewModel.onIntent(ScheduleIntent.OnInfoClick(it)) },
+                            modifier = Modifier.heightIn(max = containerHeight * 0.5f),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    if (state.selectedTodoInfo != null) {
+                        SchedulesSection(
+                            todoSchedules = state.todoSchedules,
+                            selectedTodoInfo = state.selectedTodoInfo,
+                            achievementRate = state.todoInfoAchievementRateMap[state.selectedTodoInfo?.id] ?: 0f,
+                            onScheduleClick = { viewModel.onIntent(ScheduleIntent.OnScheduleClick(it)) },
+                            modifier = Modifier.heightIn(max = containerHeight * 0.85f),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         } else {
+            // Phone: 기존 수직 레이아웃
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp),
             ) {
-                // Selected Schedule Info
                 if (state.selectedTodoInfo != null) {
                     SchedulesSection(
                         todoSchedules = state.todoSchedules,
@@ -90,15 +142,8 @@ fun ScheduleScreen(
                         achievementRate = state.todoInfoAchievementRateMap[state.selectedTodoInfo?.id] ?: 0f,
                         onScheduleClick = { viewModel.onIntent(ScheduleIntent.OnScheduleClick(it)) },
                     )
-
-                    HorizontalDivider(
-                        color = EbbingTheme.colors.light2,
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(vertical = 16.dp),
-                    )
+                    HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
                 }
-
-                // Selected Tag Info
                 if (state.selectedTag != null) {
                     TodoInfosSection(
                         todoInfos = state.todoInfos,
@@ -107,26 +152,19 @@ fun ScheduleScreen(
                         achievementRateMap = state.todoInfoAchievementRateMap,
                         onTodoInfoClick = { viewModel.onIntent(ScheduleIntent.OnInfoClick(it)) },
                     )
-
-                    HorizontalDivider(
-                        color = EbbingTheme.colors.light2,
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(vertical = 16.dp),
-                    )
+                    HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
                 }
-
-                // Tags Section
                 TagsSection(
                     tags = state.tags,
                     selectedTag = state.selectedTag,
                     achievementRateMap = state.tagAchievementRateMap,
                     onTagClick = { viewModel.onIntent(ScheduleIntent.OnTagClick(it)) },
                 )
-
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable

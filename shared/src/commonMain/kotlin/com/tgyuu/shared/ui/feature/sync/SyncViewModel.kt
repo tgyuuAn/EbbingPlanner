@@ -75,7 +75,13 @@ class SyncViewModel(
     private suspend fun disconnectAnother() {
         try {
             syncRepository?.disconnectAnother()
-            setState { copy(linkedUuid = null) }
+            setState {
+                copy(
+                    linkedUuid = null,
+                    localLastSyncedAt = null,
+                    serverLastUpdatedAt = null,
+                )
+            }
             onShowSnackbar("연결이 해제되었습니다")
         } catch (e: Exception) {
             onShowSnackbar("연결 해제에 실패했습니다")

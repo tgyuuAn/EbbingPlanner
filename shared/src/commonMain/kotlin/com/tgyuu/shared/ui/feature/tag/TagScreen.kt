@@ -13,7 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,7 +65,9 @@ fun TagScreen(
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "태그 관리",
             onNavigationClick = { viewModel.onIntent(TagIntent.OnBackClick) },
@@ -105,28 +111,32 @@ fun TagScreen(
                     color = EbbingTheme.colors.dark2,
                 )
             }
+        } else if (isWide) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize().padding(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(items = state.tagList, key = { it.id }) { tag ->
+                    TagItem(tag = tag, onClick = { viewModel.onIntent(TagIntent.OnEditClick(tag)) }, onDeleteClick = { tagToDelete = tag })
+                }
+                item { Spacer(modifier = Modifier.height(24.dp)) }
+                item { Spacer(modifier = Modifier.height(24.dp)) }
+            }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp),
+                modifier = Modifier.fillMaxSize().padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(
-                    items = state.tagList,
-                    key = { it.id },
-                ) { tag ->
-                    TagItem(
-                        tag = tag,
-                        onClick = { viewModel.onIntent(TagIntent.OnEditClick(tag)) },
-                        onDeleteClick = { tagToDelete = tag },
-                    )
+                items(items = state.tagList, key = { it.id }) { tag ->
+                    TagItem(tag = tag, onClick = { viewModel.onIntent(TagIntent.OnEditClick(tag)) }, onDeleteClick = { tagToDelete = tag })
                 }
-
                 item { Spacer(modifier = Modifier.height(24.dp)) }
             }
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable

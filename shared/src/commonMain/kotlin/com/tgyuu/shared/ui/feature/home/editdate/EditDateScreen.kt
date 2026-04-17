@@ -3,6 +3,7 @@ package com.tgyuu.shared.ui.feature.home.editdate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,7 +50,9 @@ fun EditDateScreen(
         mutableStateListOf(*List(state.schedules.size) { false }.toTypedArray())
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "일정 수정",
             onNavigationClick = { viewModel.onIntent(EditDateIntent.OnBackClick) },
@@ -70,52 +73,100 @@ fun EditDateScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(20.dp)
-                .imePadding(),
-        ) {
-            // Header with date (clickable to change date)
-            EbbingPartialUnderlineText(
-                underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
-                rest = " 부터\n시작하는 일정으로 바꿔요",
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.clickable {
-                    viewModel.onIntent(EditDateIntent.OnSelectedDateDropDownClick)
-                },
-            )
-
-            RepeatCycleContent(
-                repeatCycle = state.repeatCycle,
-                onRepeatCycleDropDownClick = {
-                    viewModel.onIntent(EditDateIntent.OnRepeatCycleDropDownClick)
-                },
-            )
-
-            RestDayContent(
-                restDays = state.restDays,
-                onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
-            )
-
-            ScheduleCheckContent(
-                schedules = state.schedules,
-                isDoneSchedules = isDoneSchedules,
-                colorValue = state.originTagColor,
-                onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
-            )
-
-            HorizontalDivider(
-                color = EbbingTheme.colors.light2,
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
-            DescriptionBody()
-
-            Spacer(modifier = Modifier.height(60.dp))
+        if (isWide) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .imePadding(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                        .padding(20.dp),
+                ) {
+                    EbbingPartialUnderlineText(
+                        underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
+                        rest = " 부터\n시작하는 일정으로 바꿔요",
+                        style = EbbingTheme.typography.headingLSB,
+                        color = EbbingTheme.colors.black,
+                        modifier = Modifier.clickable {
+                            viewModel.onIntent(EditDateIntent.OnSelectedDateDropDownClick)
+                        },
+                    )
+                    RepeatCycleContent(
+                        repeatCycle = state.repeatCycle,
+                        onRepeatCycleDropDownClick = {
+                            viewModel.onIntent(EditDateIntent.OnRepeatCycleDropDownClick)
+                        },
+                    )
+                    RestDayContent(
+                        restDays = state.restDays,
+                        onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
+                    )
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp),
+                ) {
+                    ScheduleCheckContent(
+                        schedules = state.schedules,
+                        isDoneSchedules = isDoneSchedules,
+                        colorValue = state.originTagColor,
+                        onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
+                    )
+                    HorizontalDivider(
+                        color = EbbingTheme.colors.light2,
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                    DescriptionBody()
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(20.dp)
+                    .imePadding(),
+            ) {
+                EbbingPartialUnderlineText(
+                    underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
+                    rest = " 부터\n시작하는 일정으로 바꿔요",
+                    style = EbbingTheme.typography.headingLSB,
+                    color = EbbingTheme.colors.black,
+                    modifier = Modifier.clickable {
+                        viewModel.onIntent(EditDateIntent.OnSelectedDateDropDownClick)
+                    },
+                )
+                RepeatCycleContent(
+                    repeatCycle = state.repeatCycle,
+                    onRepeatCycleDropDownClick = {
+                        viewModel.onIntent(EditDateIntent.OnRepeatCycleDropDownClick)
+                    },
+                )
+                RestDayContent(
+                    restDays = state.restDays,
+                    onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
+                )
+                ScheduleCheckContent(
+                    schedules = state.schedules,
+                    isDoneSchedules = isDoneSchedules,
+                    colorValue = state.originTagColor,
+                    onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
+                )
+                HorizontalDivider(
+                    color = EbbingTheme.colors.light2,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+                DescriptionBody()
+                Spacer(modifier = Modifier.height(60.dp))
+            }
         }
 
         if (state.isTreatment) {
@@ -129,6 +180,7 @@ fun EditDateScreen(
             )
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable

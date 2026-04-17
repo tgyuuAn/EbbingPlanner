@@ -66,9 +66,19 @@ class EditTagViewModel(
         if (!currentState.isSaveEnabled) return
 
         try {
+            val trimmedName = currentState.name.trim()
+            val existingTags = todoRepository.loadTags()
+            val isDuplicate = existingTags.any {
+                it.id != originTag.id && it.name.equals(trimmedName, ignoreCase = true)
+            }
+            if (isDuplicate) {
+                onShowSnackbar("이미 존재하는 태그 이름입니다")
+                return
+            }
+
             val updatedTag = TodoTag(
                 id = originTag.id,
-                name = currentState.name,
+                name = trimmedName,
                 color = currentState.colorValue,
                 createdAt = originTag.createdAt,
             )
