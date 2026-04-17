@@ -1,6 +1,7 @@
 package com.tgyuu.shared.ui.feature.sync
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,46 +63,54 @@ fun SyncScreen(
 
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(horizontal = 20.dp)
-    ) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         EbbingSubTopBar(
             title = "동기화",
             onNavigationClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
             modifier = Modifier.padding(bottom = 20.dp),
         )
 
-        if (state.linkedUuid != null) {
-            LinkedUuidBody(
-                linkedUuid = state.linkedUuid ?: "",
-                lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음",
-                lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음",
-            )
-        } else {
-            UuidBody(
-                uuid = state.uuid,
-                lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음",
-                lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음",
-            )
-        }
-
-        SyncUpBody(
-            isConnected = state.linkedUuid != null,
-            isSyncUpEnabled = state.isSyncUpEnabled,
-            onSyncUpClick = {
-                if (state.isSyncUpEnabled) {
-                    showSyncUpDialog = true
+        if (isWide) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f).verticalScroll(scrollState)) {
+                    if (state.linkedUuid != null) {
+                        LinkedUuidBody(linkedUuid = state.linkedUuid ?: "", lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                    } else {
+                        UuidBody(uuid = state.uuid, lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                    }
+                    SyncUpBody(
+                        isConnected = state.linkedUuid != null,
+                        isSyncUpEnabled = state.isSyncUpEnabled,
+                        onSyncUpClick = { if (state.isSyncUpEnabled) showSyncUpDialog = true },
+                        onConnectClick = { viewModel.onIntent(SyncIntent.OnConnectClick) },
+                        onDisconnectClick = { showDisconnectDialog = true },
+                    )
                 }
-            },
-            onConnectClick = { viewModel.onIntent(SyncIntent.OnConnectClick) },
-            onDisconnectClick = { showDisconnectDialog = true },
-        )
-
-        DescriptionBody()
+                Column(modifier = Modifier.weight(1f).padding(start = 24.dp)) {
+                    DescriptionBody()
+                }
+            }
+        } else {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
+                if (state.linkedUuid != null) {
+                    LinkedUuidBody(linkedUuid = state.linkedUuid ?: "", lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                } else {
+                    UuidBody(uuid = state.uuid, lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                }
+                SyncUpBody(
+                    isConnected = state.linkedUuid != null,
+                    isSyncUpEnabled = state.isSyncUpEnabled,
+                    onSyncUpClick = { if (state.isSyncUpEnabled) showSyncUpDialog = true },
+                    onConnectClick = { viewModel.onIntent(SyncIntent.OnConnectClick) },
+                    onDisconnectClick = { showDisconnectDialog = true },
+                )
+                DescriptionBody()
+            }
+        }
     }
+    } // BoxWithConstraints
 }
 
 @Composable

@@ -2,7 +2,9 @@ package com.tgyuu.shared.ui.feature.repeatcycle.editrepeatcycle
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +38,9 @@ fun EditRepeatCycleScreen(
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "반복 주기 수정",
             onNavigationClick = { viewModel.onIntent(EditRepeatCycleIntent.OnBackClick) },
@@ -59,26 +63,8 @@ fun EditRepeatCycleScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(20.dp)
-                .imePadding(),
-        ) {
-            Text(
-                text = "반복 주기를 수정해요.",
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-            )
-
-            Text(
-                text = "반복 주기",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.padding(top = 32.dp),
-            )
-
+        val inputContent: @Composable () -> Unit = {
+            Text(text = "반복 주기", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.padding(top = 32.dp))
             EbbingTextInputDefault(
                 value = state.intervals,
                 hint = "어떤 주기로 일정을 반복할까요?",
@@ -86,53 +72,37 @@ fun EditRepeatCycleScreen(
                 limit = 60,
                 rightComponent = {
                     if (state.intervals.isNotEmpty()) {
-                        Icon(
-                            imageVector = Icons.Filled.Clear,
-                            contentDescription = "지우기",
-                            tint = EbbingTheme.colors.dark2,
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(20.dp)
-                                .clickable {
-                                    viewModel.onIntent(EditRepeatCycleIntent.OnIntervalsChange(""))
-                                },
-                        )
+                        Icon(imageVector = Icons.Filled.Clear, contentDescription = "지우기", tint = EbbingTheme.colors.dark2, modifier = Modifier.padding(start = 8.dp).size(20.dp).clickable { viewModel.onIntent(EditRepeatCycleIntent.OnIntervalsChange("")) })
                     }
                 },
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
             )
+            Text(text = "' , '를 기준으로 숫자를 분리해주세요\n당일을 포함하려면 0을 기입해주세요\n1000 미만의 숫자만 입력하실 수 있습니다.\n ex) 0, 1, 3, 7, 15", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2, textAlign = TextAlign.Start, modifier = Modifier.padding(top = 8.dp, start = 8.dp).fillMaxWidth())
+        }
+        val previewContent: @Composable () -> Unit = {
+            Text(text = "예상 반복 주기", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.padding(top = 32.dp))
+            Text(text = state.previewRepeatCycle, style = EbbingTheme.typography.bodySSB, color = if (state.previewRepeatCycle == RepeatCycle.DISPLAY_ERROR) EbbingTheme.colors.error else EbbingTheme.colors.dark2, textAlign = TextAlign.Start, modifier = Modifier.padding(top = 8.dp).fillMaxWidth())
+        }
 
-            Text(
-                text = "' , '를 기준으로 숫자를 분리해주세요\n당일을 포함하려면 0을 기입해주세요\n1000 미만의 숫자만 입력하실 수 있습니다.\n ex) 0, 1, 3, 7, 15",
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .padding(top = 8.dp, start = 8.dp)
-                    .fillMaxWidth(),
-            )
-
-            Text(
-                text = "예상 반복 주기",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.padding(top = 32.dp),
-            )
-
-            Text(
-                text = state.previewRepeatCycle,
-                style = EbbingTheme.typography.bodySSB,
-                color = if (state.previewRepeatCycle == RepeatCycle.DISPLAY_ERROR) EbbingTheme.colors.error
-                else EbbingTheme.colors.dark2,
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .fillMaxWidth(),
-            )
-
-            Spacer(modifier = Modifier.height(60.dp))
+        if (isWide) {
+            Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
+                Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
+                    Text(text = "반복 주기를 수정해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    inputContent()
+                    Spacer(modifier = Modifier.height(40.dp))
+                }
+                Column(modifier = Modifier.weight(1f).padding(20.dp)) {
+                    Spacer(modifier = Modifier.height(80.dp))
+                    previewContent()
+                }
+            }
+        } else {
+            Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp).imePadding()) {
+                Text(text = "반복 주기를 수정해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                inputContent()
+                previewContent()
+                Spacer(modifier = Modifier.height(60.dp))
+            }
         }
 
         if (state.isTreatment) {
@@ -140,11 +110,9 @@ fun EditRepeatCycleScreen(
                 label = "저장",
                 onClick = { viewModel.onIntent(EditRepeatCycleIntent.OnUpdateClick) },
                 enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
             )
         }
     }
+    } // BoxWithConstraints
 }
