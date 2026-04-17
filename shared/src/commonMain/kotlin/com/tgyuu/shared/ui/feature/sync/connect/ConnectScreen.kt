@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.sync.connect
 
+import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,7 +89,7 @@ fun ConnectScreen(
             .fillMaxSize()
             .padding(horizontal = 20.dp),
     ) {
-        val isWide = maxWidth > 600.dp
+        val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
         Column(modifier = Modifier.fillMaxSize()) {
             EbbingSubTopBar(
                 title = "다른 기기와 연동",

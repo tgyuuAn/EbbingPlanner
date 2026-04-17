@@ -169,16 +169,7 @@ class HomeViewModel(
             if (it.id == schedule.id) newSchedule else it
         }
         updateCacheAfterChange()
-
-        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val updatedByInfo = buildByInfoMap(cachedSchedules)
-
-        setState {
-            copy(
-                schedulesByDateMap = updatedByDate,
-                schedulesByTodoInfo = updatedByInfo,
-            )
-        }
+        rebuildState()
     }
 
     private suspend fun onDeleteSingleSchedule(schedule: TodoScheduleUiModel) {
@@ -187,18 +178,7 @@ class HomeViewModel(
         currentMonthSchedules = currentMonthSchedules.filterNot { it.id == schedule.id }
         cachedSchedules = cachedSchedules.filterNot { it.id == schedule.id }
         updateCacheAfterChange()
-
-        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val updatedByInfo = buildByInfoMap(cachedSchedules)
-
-        setState {
-            copy(
-                schedulesByDateMap = updatedByDate,
-                schedulesByTodoInfo = updatedByInfo,
-            )
-        }
-
-        onShowSnackBar("해당 일정을 지웠습니다.")
+        rebuildState("해당 일정을 지웠습니다.")
     }
 
     private suspend fun onDeleteRemainingSchedule(schedule: TodoScheduleUiModel) {
@@ -215,18 +195,7 @@ class HomeViewModel(
         cachedSchedules = cachedSchedules.filterNot { it.id in deletedIds }
 
         updateCacheAfterChange()
-
-        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val updatedByInfo = buildByInfoMap(cachedSchedules)
-
-        setState {
-            copy(
-                schedulesByDateMap = updatedByDate,
-                schedulesByTodoInfo = updatedByInfo,
-            )
-        }
-
-        onShowSnackBar("해당 일정 이후 연계된 일정들을 모두 지웠습니다.")
+        rebuildState("해당 일정 이후 연계된 일정들을 모두 지웠습니다.")
     }
 
     private suspend fun onDelaySchedule(schedule: TodoScheduleUiModel, includeRestDays: Boolean = false) {
@@ -250,18 +219,7 @@ class HomeViewModel(
             if (it.id == schedule.id) delayed else it
         }
         updateCacheAfterChange()
-
-        val newByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val newByInfo = buildByInfoMap(cachedSchedules)
-
-        setState {
-            copy(
-                schedulesByDateMap = newByDate,
-                schedulesByTodoInfo = newByInfo,
-            )
-        }
-
-        onShowSnackBar("해당 일정을 다음 날로 미뤘습니다.")
+        rebuildState("해당 일정을 다음 날로 미뤘습니다.")
     }
 
     private suspend fun onDelayAllSchedules(schedule: TodoScheduleUiModel, includeRestDays: Boolean = false) {
@@ -302,18 +260,7 @@ class HomeViewModel(
         }
 
         updateCacheAfterChange()
-
-        val newByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val newByInfo = buildByInfoMap(cachedSchedules)
-
-        setState {
-            copy(
-                schedulesByDateMap = newByDate,
-                schedulesByTodoInfo = newByInfo,
-            )
-        }
-
-        onShowSnackBar("${futureSchedules.size}개 일정을 미뤘습니다.")
+        rebuildState("${futureSchedules.size}개 일정을 미뤘습니다.")
     }
 
     private suspend fun deleteMemo(schedule: TodoScheduleUiModel) {
@@ -327,18 +274,7 @@ class HomeViewModel(
             if (it.id == schedule.id) updated else it
         }
         updateCacheAfterChange()
-
-        val updatedByDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val updatedByInfo = buildByInfoMap(cachedSchedules)
-
-        setState {
-            copy(
-                schedulesByDateMap = updatedByDate,
-                schedulesByTodoInfo = updatedByInfo,
-            )
-        }
-
-        onShowSnackBar("메모를 제거하였습니다")
+        rebuildState("메모를 제거하였습니다")
     }
 
     private fun onUpdateSortType(sortType: SortType) {
@@ -380,6 +316,13 @@ class HomeViewModel(
 
     private fun updateCacheAfterChange() {
         cachedSchedules = (currentMonthSchedules + cachedSchedules).distinctBy { it.id }
+    }
+
+    private fun rebuildState(snackbarMessage: String? = null) {
+        val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
+        val byInfo = buildByInfoMap(cachedSchedules)
+        setState { copy(schedulesByDateMap = byDate, schedulesByTodoInfo = byInfo) }
+        if (!snackbarMessage.isNullOrEmpty()) onShowSnackBar(snackbarMessage)
     }
 
     suspend fun calculateDelayInfo(infoId: Int, currentDate: LocalDate): Pair<Set<DayOfWeek>, LocalDate> {

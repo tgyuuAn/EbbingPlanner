@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.sync
 
+import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -64,7 +65,7 @@ fun SyncScreen(
     val scrollState = rememberScrollState()
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > 600.dp
+    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         EbbingSubTopBar(
             title = "동기화",

@@ -117,7 +117,8 @@ class EditTodoViewModel(
         }
 
         val tag = currentState.tag ?: return
-        val newSchedule = currentState.originSchedule!!.copy(
+        val originSchedule = currentState.originSchedule ?: return
+        val newSchedule = originSchedule.copy(
             title = currentState.title,
             date = currentState.selectedDate,
             tagId = tag.id,

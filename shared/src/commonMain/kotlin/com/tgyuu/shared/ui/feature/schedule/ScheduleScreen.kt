@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.schedule
 
+import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,7 +57,7 @@ fun ScheduleScreen(
     val state by viewModel.state.collectAsState()
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > 600.dp
+    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     val containerHeight = maxHeight
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(

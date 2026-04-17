@@ -59,6 +59,7 @@ import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
@@ -131,6 +132,7 @@ fun HomeScreen(
                         dialogType = type
                         isShowDialog = true
                     },
+                    scope = this,
                 )
             }
         }
@@ -190,34 +192,37 @@ private suspend fun showOptionsBottomSheet(
     bottomSheetState: EbbingBottomSheetState,
     viewModel: HomeViewModel,
     onShowDialog: (DialogType) -> Unit,
+    scope: CoroutineScope,
 ) {
     bottomSheetState.setBottomSheetContent {
         OptionsBottomSheet(
             selectedSchedule = schedule,
             onClickUpdate = { updatedSchedule ->
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     delay(200L)
                     showUpdateBottomSheet(
                         schedule = updatedSchedule,
                         bottomSheetState = bottomSheetState,
                         viewModel = viewModel,
+                        scope = scope,
                     )
                 }
             },
             onClickDelete = { deletedSchedule ->
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     delay(200L)
                     showDeleteBottomSheet(
                         schedule = deletedSchedule,
                         bottomSheetState = bottomSheetState,
                         onShowDialog = onShowDialog,
+                        scope = scope,
                     )
                 }
             },
             onClickDelay = { delayedSchedule ->
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     delay(200L)
                     showDelayBottomSheet(
@@ -225,17 +230,18 @@ private suspend fun showOptionsBottomSheet(
                         bottomSheetState = bottomSheetState,
                         viewModel = viewModel,
                         onShowDialog = onShowDialog,
+                        scope = scope,
                     )
                 }
             },
             onClickMemo = { selectedSchedule ->
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                 }
                 viewModel.onIntent(HomeIntent.OnMemoClick(selectedSchedule))
             },
             onClickDeleteMemo = { selectedSchedule ->
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     onShowDialog(DialogType.ConfirmDeleteMemo(selectedSchedule))
                 }
@@ -249,16 +255,17 @@ private suspend fun showUpdateBottomSheet(
     schedule: TodoScheduleUiModel,
     bottomSheetState: EbbingBottomSheetState,
     viewModel: HomeViewModel,
+    scope: CoroutineScope,
 ) {
     bottomSheetState.setBottomSheetContent {
         UpdateBottomSheet(
             selectedSchedule = schedule,
             onClickUpdateDate = {
-                kotlinx.coroutines.GlobalScope.launch { bottomSheetState.hide() }
+                scope.launch { bottomSheetState.hide() }
                 viewModel.onIntent(HomeIntent.OnUpdateDateClick(schedule))
             },
             onClickUpdateInfo = {
-                kotlinx.coroutines.GlobalScope.launch { bottomSheetState.hide() }
+                scope.launch { bottomSheetState.hide() }
                 viewModel.onIntent(HomeIntent.OnUpdateInfoClick(schedule))
             },
         )
@@ -270,18 +277,19 @@ private suspend fun showDeleteBottomSheet(
     schedule: TodoScheduleUiModel,
     bottomSheetState: EbbingBottomSheetState,
     onShowDialog: (DialogType) -> Unit,
+    scope: CoroutineScope,
 ) {
     bottomSheetState.setBottomSheetContent {
         DeleteBottomSheet(
             selectedSchedule = schedule,
             onClickDeleteSingle = {
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     onShowDialog(DialogType.ConfirmDeleteSingle(schedule))
                 }
             },
             onClickDeleteRemaining = {
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     onShowDialog(DialogType.ConfirmDeleteRemaining(schedule))
                 }
@@ -296,12 +304,13 @@ private suspend fun showDelayBottomSheet(
     bottomSheetState: EbbingBottomSheetState,
     viewModel: HomeViewModel,
     onShowDialog: (DialogType) -> Unit,
+    scope: CoroutineScope,
 ) {
     bottomSheetState.setBottomSheetContent {
         DelayBottomSheet(
             selectedSchedule = schedule,
             onClickDelaySingle = {
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     val (_, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
                         schedule.infoId,
@@ -318,7 +327,7 @@ private suspend fun showDelayBottomSheet(
                 }
             },
             onClickDelayAll = {
-                kotlinx.coroutines.GlobalScope.launch {
+                scope.launch {
                     bottomSheetState.hide()
                     onShowDialog(
                         DialogType.ConfirmDelayAll(

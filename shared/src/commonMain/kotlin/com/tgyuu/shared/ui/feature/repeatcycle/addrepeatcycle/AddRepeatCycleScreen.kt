@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle
 
+import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -39,7 +40,7 @@ fun AddRepeatCycleScreen(
     val scrollState = rememberScrollState()
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > 600.dp
+    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "반복 주기 추가",
