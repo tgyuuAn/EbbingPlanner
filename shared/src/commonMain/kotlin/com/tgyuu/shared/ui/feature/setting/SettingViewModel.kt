@@ -25,10 +25,13 @@ class SettingViewModel(
     companion object {
         private const val PRIVACY_POLICY_URL = "https://tgyuuan.notion.site/ebbing-privacy"
         private const val TERMS_OF_USE_URL = "https://tgyuuan.notion.site/ebbing-terms"
+        private const val NOTICE_URL = "https://mousy-banjo-f6d.notion.site/1dd9de61e3bd80d2b4f4c70c84ad1d98"
+        private const val INQUIRY_URL = "https://open.kakao.com/o/sdZLoCHh"
     }
 
     init {
         loadNotificationState()
+        loadMondayStart()
     }
 
     private fun loadNotificationState() {
@@ -39,6 +42,13 @@ class SettingViewModel(
             val displayHour = if (hour % 12 == 0) 12 else hour % 12
             val timeStr = "$period ${displayHour}시 ${minute.toString().padStart(2, '0')}분"
             setState { copy(isNotificationEnabled = enabled, alarmTime = timeStr) }
+        }
+    }
+
+    private fun loadMondayStart() {
+        viewModelScope.launch {
+            configRepository?.getMondayStart()
+                ?.collect { setState { copy(mondayStart = it) } }
         }
     }
 
@@ -57,7 +67,15 @@ class SettingViewModel(
             SettingIntent.OnPrivacyPolicyClick -> onOpenUrl(PRIVACY_POLICY_URL)
             SettingIntent.OnTermsOfUseClick -> onOpenUrl(TERMS_OF_USE_URL)
             SettingIntent.OnWidgetClick -> onNavigateToWidget()
+            is SettingIntent.OnUpdateStartDay -> updateStartDay(intent.mondayStart)
+            SettingIntent.OnNoticeClick -> onOpenUrl(NOTICE_URL)
+            SettingIntent.OnInquiryClick -> onOpenUrl(INQUIRY_URL)
         }
+    }
+
+    private suspend fun updateStartDay(mondayStart: Boolean) {
+        configRepository?.setMondayStart(mondayStart)
+        setState { copy(mondayStart = mondayStart) }
     }
 
     private suspend fun toggleNotification(enabled: Boolean) {

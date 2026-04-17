@@ -86,6 +86,12 @@ fun SettingScreen(
                 onClearClick = { showClearDialog = true },
             )
 
+            // Calendar Section
+            CalendarBody(
+                mondayStart = state.mondayStart,
+                onUpdateStartDay = { viewModel.onIntent(SettingIntent.OnUpdateStartDay(it)) },
+            )
+
             // Theme Section
             ThemeBody(
                 onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) },
@@ -95,10 +101,13 @@ fun SettingScreen(
             AnnouncementBody(
                 onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) },
                 onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
+                onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) },
             )
 
             // Inquiry Section
-            InquiryBody()
+            InquiryBody(
+                onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
+            )
 
             // In-App Review
             InAppReviewRow(
@@ -173,8 +182,14 @@ private fun ThemeBody(
 private fun AnnouncementBody(
     onPrivacyPolicyClick: () -> Unit,
     onTermsClick: () -> Unit,
+    onNoticeClick: () -> Unit,
 ) {
     SectionHeader(text = "안내")
+
+    SettingRow(
+        title = "공지사항",
+        onClick = onNoticeClick,
+    )
 
     SettingRow(
         title = "개인정보처리방침",
@@ -250,6 +265,50 @@ private fun SettingRow(
 }
 
 @Composable
+private fun CalendarBody(
+    mondayStart: Boolean,
+    onUpdateStartDay: (Boolean) -> Unit,
+) {
+    SectionHeader(text = "달력")
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 17.dp),
+    ) {
+        Text(
+            text = "달력 시작 요일",
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark1,
+            modifier = Modifier.weight(1f),
+        )
+
+        Row {
+            Text(
+                text = "일요일",
+                style = EbbingTheme.typography.bodyMM,
+                color = if (!mondayStart) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                modifier = Modifier
+                    .clickable { onUpdateStartDay(false) }
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            )
+
+            Text(
+                text = "월요일",
+                style = EbbingTheme.typography.bodyMM,
+                color = if (mondayStart) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                modifier = Modifier
+                    .clickable { onUpdateStartDay(true) }
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            )
+        }
+    }
+
+    SectionDivider()
+}
+
+@Composable
 private fun SectionDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier.padding(vertical = 16.dp),
@@ -304,12 +363,14 @@ private fun NotificationBody(
 }
 
 @Composable
-private fun InquiryBody() {
+private fun InquiryBody(
+    onInquiryClick: () -> Unit,
+) {
     SectionHeader(text = "문의")
 
     SettingRow(
         title = "문의하기",
-        onClick = { /* TODO: Open email or contact form */ },
+        onClick = onInquiryClick,
     )
 
     SectionDivider()

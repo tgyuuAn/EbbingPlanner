@@ -9,6 +9,12 @@ struct TodoEntry: TimelineEntry {
     let todos: [TodoItem]
 }
 
+struct CalendarEntry: TimelineEntry {
+    let date: Date
+    let datesWithTodos: Set<String>      // "yyyy-MM-dd" strings
+    let todayTodos: [TodoItem]           // todos for today
+}
+
 struct TodoItem: Identifiable {
     let id: Int
     let title: String
@@ -61,6 +67,41 @@ struct WidgetDatabaseReader {
         }
         let dbPath = container.appendingPathComponent("ebbingdatabase").path
         return fileManager.fileExists(atPath: dbPath) ? dbPath : nil
+    }
+
+    static func loadMonthDatesWithTodos(for date: Date) -> Set<String> {
+        guard let dbPath = getDatabasePath() else { return [] }
+        var db: OpaquePointer?
+        guard sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else { return [] }
+        defer { sqlite3_close(db) }
+
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month], from: date)
+        guard let firstDay = cal.date(from: comps),
+              let lastDay = cal.date(byAdding: DateComponents(month: 1, day: -1), to: firstDay) else {
+            return []
+        }
+
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        let startStr = fmt.string(from: firstDay)
+        let endStr = fmt.string(from: lastDay)
+
+        let query = "SELECT DISTINCT date FROM schedule WHERE date >= ? AND date <= ? AND isDeleted = 0"
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, query, -1, &stmt, nil) == SQLITE_OK else { return [] }
+        defer { sqlite3_finalize(stmt) }
+
+        sqlite3_bind_text(stmt, 1, (startStr as NSString).utf8String, -1, nil)
+        sqlite3_bind_text(stmt, 2, (endStr as NSString).utf8String, -1, nil)
+
+        var result = Set<String>()
+        while sqlite3_step(stmt) == SQLITE_ROW {
+            if let c = sqlite3_column_text(stmt, 0) {
+                result.insert(String(cString: c))
+            }
+        }
+        return result
     }
 
     private static func formattedToday() -> String {
@@ -159,6 +200,171 @@ struct TodayTodoWidgetView: View {
     }
 }
 
+// MARK: - Calendar Timeline Provider
+
+struct CalendarTimelineProvider: TimelineProvider {
+    func placeholder(in context: Context) -> CalendarEntry {
+        CalendarEntry(date: Date(), datesWithTodos: ["2024-01-05", "2024-01-10"], todayTodos: [
+            TodoItem(id: 1, title: "오늘의 할일", isDone: false, tagColor: .blue),
+        ])
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (CalendarEntry) -> Void) {
+        let dates = WidgetDatabaseReader.loadMonthDatesWithTodos(for: Date())
+        let todos = WidgetDatabaseReader.loadTodayTodos()
+        completion(CalendarEntry(date: Date(), datesWithTodos: dates, todayTodos: todos))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<CalendarEntry>) -> Void) {
+        let dates = WidgetDatabaseReader.loadMonthDatesWithTodos(for: Date())
+        let todos = WidgetDatabaseReader.loadTodayTodos()
+        let entry = CalendarEntry(date: Date(), datesWithTodos: dates, todayTodos: todos)
+        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
+        completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+    }
+}
+
+// MARK: - Calendar Widget View
+
+struct CalendarWidgetView: View {
+    var entry: CalendarEntry
+    @Environment(\.widgetFamily) var family
+
+    private let dayOfWeekLabels = ["일", "월", "화", "수", "목", "금", "토"]
+    private let dateFmt: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // Header
+            HStack {
+                Text(monthTitle)
+                    .font(.caption.bold())
+                    .foregroundColor(.primary)
+                Spacer()
+                Text("에빙 플래너")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+
+            // Day of week headers
+            HStack(spacing: 0) {
+                ForEach(dayOfWeekLabels, id: \.self) { label in
+                    Text(label)
+                        .font(.system(size: 8))
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+
+            // Calendar grid
+            let days = calendarDays
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 2) {
+                ForEach(Array(days.enumerated()), id: \.offset) { _, day in
+                    if let day = day {
+                        let dateStr = dateFmt.string(from: day)
+                        let isToday = Calendar.current.isDateInToday(day)
+                        let hasTodos = entry.datesWithTodos.contains(dateStr)
+
+                        ZStack {
+                            if isToday {
+                                Circle()
+                                    .fill(Color.accentColor)
+                                    .frame(width: 18, height: 18)
+                            }
+                            Text("\(Calendar.current.component(.day, from: day))")
+                                .font(.system(size: 8))
+                                .foregroundColor(isToday ? .white : .primary)
+                                .frame(maxWidth: .infinity)
+
+                            if hasTodos && !isToday {
+                                Circle()
+                                    .fill(Color.accentColor)
+                                    .frame(width: 3, height: 3)
+                                    .offset(y: 7)
+                            }
+                        }
+                        .frame(height: 20)
+                    } else {
+                        Color.clear.frame(height: 20)
+                    }
+                }
+            }
+
+            if family == .systemMedium {
+                Divider().padding(.vertical, 2)
+                // Today's todos for medium size
+                if entry.todayTodos.isEmpty {
+                    Text("오늘의 할일이 없습니다")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                } else {
+                    ForEach(entry.todayTodos.prefix(3)) { todo in
+                        HStack(spacing: 4) {
+                            Circle().fill(todo.tagColor).frame(width: 6, height: 6)
+                            Text(todo.title)
+                                .font(.caption2)
+                                .lineLimit(1)
+                                .strikethrough(todo.isDone)
+                                .foregroundColor(todo.isDone ? .secondary : .primary)
+                        }
+                    }
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(8)
+    }
+
+    private var monthTitle: String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ko_KR")
+        f.dateFormat = "yyyy년 M월"
+        return f.string(from: entry.date)
+    }
+
+    private var calendarDays: [Date?] {
+        let cal = Calendar.current
+        let comps = cal.dateComponents([.year, .month], from: entry.date)
+        guard let firstDay = cal.date(from: comps) else { return [] }
+        let weekday = cal.component(.weekday, from: firstDay) - 1 // 0=Sun
+        let daysInMonth = cal.range(of: .day, in: .month, for: firstDay)!.count
+
+        var result: [Date?] = Array(repeating: nil, count: weekday)
+        for day in 1...daysInMonth {
+            result.append(cal.date(byAdding: .day, value: day - 1, to: firstDay))
+        }
+        // pad to complete grid
+        while result.count % 7 != 0 { result.append(nil) }
+        return result
+    }
+}
+
+// MARK: - Calendar Widget Configuration
+
+struct CalendarWidget: Widget {
+    let kind: String = "CalendarWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: CalendarTimelineProvider()) { entry in
+            if #available(iOS 17.0, *) {
+                CalendarWidgetView(entry: entry)
+                    .containerBackground(.fill.tertiary, for: .widget)
+            } else {
+                CalendarWidgetView(entry: entry)
+                    .background(Color(.systemBackground))
+            }
+        }
+        .configurationDisplayName("달력")
+        .description("이번 달 일정을 달력으로 확인하세요.")
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
 // MARK: - Widget Configuration
 
 struct TodayTodoWidget: Widget {
@@ -185,5 +391,6 @@ struct TodayTodoWidget: Widget {
 struct EbbingPlannerWidgetBundle: WidgetBundle {
     var body: some Widget {
         TodayTodoWidget()
+        CalendarWidget()
     }
 }

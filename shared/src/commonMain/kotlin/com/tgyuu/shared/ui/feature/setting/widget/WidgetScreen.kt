@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.model.Theme
@@ -125,7 +126,7 @@ fun WidgetScreen(
             )
 
             Text(
-                text = "${((state.selectedBackgroundAlpha ?: 1f) * 100).toInt()}%",
+                text = "${((state.selectedBackgroundAlpha ?: 1f) * 100).roundToInt()}%",
                 style = EbbingTheme.typography.bodySM,
                 color = EbbingTheme.colors.dark2,
             )
@@ -151,7 +152,7 @@ fun WidgetScreen(
             )
 
             Text(
-                text = "${((state.selectedTextAlpha ?: 1f) * 100).toInt()}%",
+                text = "${((state.selectedTextAlpha ?: 1f) * 100).roundToInt()}%",
                 style = EbbingTheme.typography.bodySM,
                 color = EbbingTheme.colors.dark2,
             )

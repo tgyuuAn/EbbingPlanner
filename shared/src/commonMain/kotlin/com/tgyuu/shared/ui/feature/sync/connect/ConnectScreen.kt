@@ -32,6 +32,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.tgyuu.shared.designsystem.component.EbbingDialog
+import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
+import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
@@ -45,7 +48,38 @@ fun ConnectScreen(
     val scrollState = rememberScrollState()
     var isShowConnectDialog by remember { mutableStateOf(false) }
 
-    // TODO: Add ConfirmConnectDialog
+    if (isShowConnectDialog) {
+        EbbingDialog(
+            dialogTop = {
+                EbbingDialogDefaultTop(
+                    title = "해당 ID로 연동할까요?",
+                    subText = buildAnnotatedString {
+                        append("현재 기기에 있는 데이터는 ")
+                        withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+                            append("업로드된 데이터로 모두 대체")
+                        }
+                        append("됩니다.\n중요한 데이터는 ")
+                        withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+                            append("연동 전에 반드시 확인")
+                        }
+                        append("해주세요.")
+                    },
+                )
+            },
+            dialogBottom = {
+                EbbingDialogBottom(
+                    leftButtonText = "뒤로",
+                    rightButtonText = "연동",
+                    onLeftButtonClick = { isShowConnectDialog = false },
+                    onRightButtonClick = {
+                        isShowConnectDialog = false
+                        viewModel.onIntent(ConnectIntent.OnClickConnectAnother)
+                    },
+                )
+            },
+            onDismissRequest = { isShowConnectDialog = false },
+        )
+    }
 
     Column(
         modifier = modifier
@@ -72,7 +106,7 @@ fun ConnectScreen(
                 onMyCodeChange = { viewModel.onIntent(ConnectIntent.OnMyCodeChange(it)) },
                 onAnotherCodeChange = { viewModel.onIntent(ConnectIntent.OnAnotherCodeChange(it)) },
                 onClickGenerateCode = { viewModel.onIntent(ConnectIntent.OnClickGenerateCode) },
-                onClickConnectAnother = { viewModel.onIntent(ConnectIntent.OnClickConnectAnother) },
+                onClickConnectAnother = { isShowConnectDialog = true },
             )
 
             DescriptionBody()
@@ -215,7 +249,9 @@ private fun LinkBody(
                 label = "연결",
                 onClick = {
                     keyboardController?.hide()
-                    onClickConnectAnother()
+                    if (anotherCode.isNotEmpty() && isConnectButtonEnabled) {
+                        onClickConnectAnother()
+                    }
                 },
                 enabled = anotherCode.isNotEmpty() && isConnectButtonEnabled,
                 modifier = Modifier.padding(start = 8.dp),
