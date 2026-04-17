@@ -316,14 +316,32 @@ private fun PhoneHomeScreen(
     val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
-    var calendarHeight by remember { mutableStateOf(1000.dp) }
-    val calendarHeightPx = with(localDensity) { calendarHeight.toPx() }
-    val offsetAnimatable = remember { Animatable(calendarHeightPx) }
-    val isExpanded = offsetAnimatable.value < calendarHeightPx / 2
+    var showWeekOnly by remember { mutableStateOf(false) }
+    var monthlyCalendarHeight by remember { mutableStateOf(1000.dp) }
+    var weeklyCalendarHeight by remember { mutableStateOf(0.dp) }
+    val monthlyCalendarHeightPx = with(localDensity) { monthlyCalendarHeight.toPx() }
+    val weeklyCalendarHeightPx = with(localDensity) { weeklyCalendarHeight.toPx() }
+    val offsetAnimatable = remember { Animatable(monthlyCalendarHeightPx) }
     val animatedTopPadding = with(localDensity) { offsetAnimatable.value.toDp() }
+    val isCollapsed = offsetAnimatable.value <
+        (weeklyCalendarHeightPx.takeIf { it > 0f } ?: monthlyCalendarHeightPx) / 2
 
-    LaunchedEffect(calendarHeightPx) {
-        if (!isExpanded) offsetAnimatable.snapTo(calendarHeightPx)
+    // 레이아웃 초기화 및 화면 회전 시 동기화 (접힘 상태가 아닐 때만)
+    LaunchedEffect(monthlyCalendarHeightPx) {
+        if (!showWeekOnly && monthlyCalendarHeightPx > 0 &&
+            offsetAnimatable.value > 0 && !offsetAnimatable.isRunning
+        ) {
+            offsetAnimatable.snapTo(monthlyCalendarHeightPx)
+        }
+    }
+
+    // 최초 주간 뷰 전환 시 높이 측정 후 스냅
+    var pendingWeeklySnap by remember { mutableStateOf(false) }
+    LaunchedEffect(weeklyCalendarHeightPx) {
+        if (pendingWeeklySnap && weeklyCalendarHeightPx > 0) {
+            pendingWeeklySnap = false
+            offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+        }
     }
 
     LaunchedEffect(workedDate) {
@@ -339,16 +357,16 @@ private fun PhoneHomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .onGloballyPositioned { coordinates ->
-                    val height = with(localDensity) {
-                        coordinates.size.height.toDp()
-                    }
-                    calendarHeight = height
+                    val height = with(localDensity) { coordinates.size.height.toDp() }
+                    if (showWeekOnly) weeklyCalendarHeight = height
+                    else monthlyCalendarHeight = height
                 }
         ) {
             EbbingCalendar(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
                 startFromMonday = state.mondayStart,
+                showWeekOnly = showWeekOnly,
                 onSelectDate = {
                     if (selectedDate != it) {
                         scope.launch {
@@ -380,25 +398,46 @@ private fun PhoneHomeScreen(
         ) {
             Image(
                 painter = painterResource(
-                    if (!isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                    if (isCollapsed) R.drawable.ic_arrow_down else R.drawable.ic_arrow_up
                 ),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally)
-                    .pointerInput(calendarHeightPx) {
+                    .pointerInput(monthlyCalendarHeightPx, weeklyCalendarHeightPx) {
                         detectDragGestures(
                             onDragEnd = {
                                 scope.launch {
-                                    val target = if (offsetAnimatable.value < calendarHeightPx / 2) 0f else calendarHeightPx
-                                    offsetAnimatable.animateTo(target, animationSpec = spring())
+                                    val snapTarget = snapToClosestOf(
+                                        value = offsetAnimatable.value,
+                                        candidates = buildList {
+                                            add(0f)
+                                            if (weeklyCalendarHeightPx > 0f) add(weeklyCalendarHeightPx)
+                                            add(monthlyCalendarHeightPx)
+                                        },
+                                    )
+                                    when (snapTarget) {
+                                        0f -> {
+                                            offsetAnimatable.animateTo(0f, animationSpec = spring())
+                                            showWeekOnly = false
+                                        }
+                                        weeklyCalendarHeightPx -> {
+                                            showWeekOnly = true
+                                            offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+                                        }
+                                        else -> {
+                                            showWeekOnly = false
+                                            offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
+                                        }
+                                    }
                                 }
                             },
                             onDrag = { change, dragAmount ->
                                 change.consume()
                                 scope.launch {
-                                    val newValue = (offsetAnimatable.value + dragAmount.y).coerceIn(0f, calendarHeightPx)
+                                    val newValue = (offsetAnimatable.value + dragAmount.y)
+                                        .coerceIn(0f, monthlyCalendarHeightPx)
                                     offsetAnimatable.snapTo(newValue)
                                 }
                             }
@@ -408,12 +447,36 @@ private fun PhoneHomeScreen(
                         analyticsHelper.logEvent(
                             AnalyticsEvent.Click(
                                 screenName = "Home",
-                                buttonName = if (isExpanded) "FoldList" else "ExpandList",
+                                buttonName = when {
+                                    isCollapsed -> "FoldList"
+                                    showWeekOnly -> "ExpandList"
+                                    else -> "SwitchToWeekly"
+                                },
                             )
                         )
-                        scope.launch {
-                            val target = if (isExpanded) calendarHeightPx else 0f
-                            offsetAnimatable.animateTo(target, animationSpec = spring())
+                        when {
+                            isCollapsed -> { // COLLAPSED → MONTHLY
+                                showWeekOnly = false
+                                scope.launch {
+                                    offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
+                                }
+                            }
+                            showWeekOnly -> { // WEEKLY → COLLAPSED
+                                scope.launch {
+                                    offsetAnimatable.animateTo(0f, animationSpec = spring())
+                                    showWeekOnly = false
+                                }
+                            }
+                            else -> { // MONTHLY → WEEKLY
+                                showWeekOnly = true
+                                if (weeklyCalendarHeightPx > 0f) {
+                                    scope.launch {
+                                        offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+                                    }
+                                } else {
+                                    pendingWeeklySnap = true
+                                }
+                            }
                         }
                     },
             )
@@ -646,3 +709,6 @@ private fun Preview1() {
         )
     }
 }
+
+private fun snapToClosestOf(value: Float, candidates: List<Float>): Float =
+    candidates.minByOrNull { kotlin.math.abs(it - value) } ?: value
