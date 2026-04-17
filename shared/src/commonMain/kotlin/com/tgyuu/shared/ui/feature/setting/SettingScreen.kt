@@ -1,6 +1,7 @@
 package com.tgyuu.shared.ui.feature.setting
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,80 +49,54 @@ fun SettingScreen(
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
             title = "설정",
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        HorizontalDivider(
-            color = EbbingTheme.colors.light2,
-            thickness = 1.dp,
-            modifier = Modifier.padding(bottom = 16.dp),
-        )
+        HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp),
-        ) {
-            // Notification Section
-            NotificationBody(
-                isEnabled = state.isNotificationEnabled,
-                alarmTime = state.alarmTime,
-                onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) },
-                onNotificationClick = { viewModel.onIntent(SettingIntent.OnNotificationClick) },
-            )
-
-            // Tag / Repeat Cycle Section
-            TagRepeatCycleBody(
-                onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
-                onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
-            )
-
-            // Data Section
-            DataBody(
-                onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
-                onClearClick = { showClearDialog = true },
-            )
-
-            // Calendar Section
-            CalendarBody(
-                mondayStart = state.mondayStart,
-                onUpdateStartDay = { viewModel.onIntent(SettingIntent.OnUpdateStartDay(it)) },
-            )
-
-            // Theme Section
-            ThemeBody(
-                onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) },
-            )
-
-            // Announcement Section
-            AnnouncementBody(
-                onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) },
-                onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) },
-                onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) },
-            )
-
-            // Inquiry Section
-            InquiryBody(
-                onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) },
-            )
-
-            // In-App Review
-            InAppReviewRow(
-                onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) },
-            )
-
-            SectionDivider()
-
-            // Version
-            VersionRow(version = state.appVersion)
-
-            Spacer(modifier = Modifier.height(24.dp))
+        if (isWide) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // Left column
+                Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
+                    NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = state.alarmTime, onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onNotificationClick = { viewModel.onIntent(SettingIntent.OnNotificationClick) })
+                    TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
+                    DataBody(onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true })
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+                // Right column
+                Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
+                    CalendarBody(mondayStart = state.mondayStart, onUpdateStartDay = { viewModel.onIntent(SettingIntent.OnUpdateStartDay(it)) })
+                    ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) })
+                    AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
+                    InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
+                    InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
+                    SectionDivider()
+                    VersionRow(version = state.appVersion)
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+        } else {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
+                NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = state.alarmTime, onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onNotificationClick = { viewModel.onIntent(SettingIntent.OnNotificationClick) })
+                TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
+                DataBody(onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true })
+                CalendarBody(mondayStart = state.mondayStart, onUpdateStartDay = { viewModel.onIntent(SettingIntent.OnUpdateStartDay(it)) })
+                ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) })
+                AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
+                InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
+                InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
+                SectionDivider()
+                VersionRow(version = state.appVersion)
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable
