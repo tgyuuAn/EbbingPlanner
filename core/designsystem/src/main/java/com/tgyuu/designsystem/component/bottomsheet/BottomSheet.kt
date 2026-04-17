@@ -1,5 +1,6 @@
 package com.tgyuu.designsystem.component.bottomsheet
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +20,7 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tgyuu.common.util.clickable
+import kotlinx.coroutines.launch
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 
@@ -38,6 +41,12 @@ fun EbbingModalBottomSheet(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+
+    BackHandler(enabled = sheetState.state.isVisible) {
+        scope.launch { sheetState.hide() }
+    }
+
     ModalBottomSheetLayout(
         sheetGesturesEnabled = false,
         sheetContentColor = EbbingTheme.colors.background,
