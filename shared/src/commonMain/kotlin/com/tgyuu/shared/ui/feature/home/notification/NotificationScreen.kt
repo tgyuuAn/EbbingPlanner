@@ -1,6 +1,7 @@
 package com.tgyuu.shared.ui.feature.home.notification
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,123 +51,124 @@ fun NotificationScreen(
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "알림 설정",
             onNavigationClick = { viewModel.onIntent(NotificationIntent.OnBackClick) },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(20.dp),
-        ) {
-            // Notification toggle
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = "알림",
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black,
-                    modifier = Modifier.weight(1f),
-                )
-
-                EbbingToggle(
-                    checked = state.isNotificationEnabled,
-                    onCheckedChange = { viewModel.onIntent(NotificationIntent.OnNotificationToggle(it)) },
-                )
+        if (isWide) {
+            Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                // Left: toggle section
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                        .padding(20.dp),
+                ) {
+                    NotificationToggleSection(
+                        isEnabled = state.isNotificationEnabled,
+                        onToggle = { viewModel.onIntent(NotificationIntent.OnNotificationToggle(it)) },
+                    )
+                }
+                // Right: detail section
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp),
+                ) {
+                    NotificationDetailSection(
+                        state = state,
+                        onTimeClick = { viewModel.onIntent(NotificationIntent.OnTimePickerClick) },
+                        onMessageChange = { viewModel.onIntent(NotificationIntent.OnMessageChange(it)) },
+                        onResetMessage = { viewModel.onIntent(NotificationIntent.OnResetMessage) },
+                    )
+                }
             }
-
-            HorizontalDivider(
-                color = EbbingTheme.colors.light2,
-                modifier = Modifier.padding(vertical = 16.dp),
-            )
-
-            // Alarm time
-            Text(
-                text = "알림 시간",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
-            )
-
-            Text(
-                text = state.formattedAlarmTime,
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.primaryDefault,
+        } else {
+            Column(
                 modifier = Modifier
-                    .padding(top = 8.dp)
-                    .clickable { viewModel.onIntent(NotificationIntent.OnTimePickerClick) },
-            )
-
-            HorizontalDivider(
-                color = EbbingTheme.colors.light2,
-                modifier = Modifier.padding(vertical = 16.dp),
-            )
-
-            // Alarm message
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
+                    .verticalScroll(scrollState)
+                    .padding(20.dp),
             ) {
-                Text(
-                    text = "알림 메시지",
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black,
-                    modifier = Modifier.weight(1f),
+                NotificationToggleSection(
+                    isEnabled = state.isNotificationEnabled,
+                    onToggle = { viewModel.onIntent(NotificationIntent.OnNotificationToggle(it)) },
                 )
-
-                Text(
-                    text = "초기화",
-                    style = EbbingTheme.typography.bodySM,
-                    color = EbbingTheme.colors.dark3,
-                    modifier = Modifier.clickable {
-                        viewModel.onIntent(NotificationIntent.OnResetMessage)
-                    },
+                NotificationDetailSection(
+                    state = state,
+                    onTimeClick = { viewModel.onIntent(NotificationIntent.OnTimePickerClick) },
+                    onMessageChange = { viewModel.onIntent(NotificationIntent.OnMessageChange(it)) },
+                    onResetMessage = { viewModel.onIntent(NotificationIntent.OnResetMessage) },
                 )
+                Spacer(modifier = Modifier.height(60.dp))
             }
-
-            EbbingTextInputDefault(
-                value = state.alarmMessage,
-                hint = "알림 메시지를 입력하세요",
-                onValueChange = { viewModel.onIntent(NotificationIntent.OnMessageChange(it)) },
-                limit = 100,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .fillMaxWidth(),
-            )
-
-            Text(
-                text = "{할일}을 사용하면 일정 이름으로 자동 대체됩니다",
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark3,
-                modifier = Modifier.padding(top = 4.dp, start = 4.dp),
-            )
-
-            HorizontalDivider(
-                color = EbbingTheme.colors.light2,
-                modifier = Modifier.padding(vertical = 16.dp),
-            )
-
-            // Preview
-            Text(
-                text = "미리보기",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
-            )
-
-            Text(
-                text = state.previewMessage,
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark1,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-
-            Spacer(modifier = Modifier.height(60.dp))
         }
     }
+    } // BoxWithConstraints
+}
+
+@Composable
+private fun NotificationToggleSection(
+    isEnabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = "알림",
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
+            modifier = Modifier.weight(1f),
+        )
+        EbbingToggle(
+            checked = isEnabled,
+            onCheckedChange = onToggle,
+        )
+    }
+    HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
+}
+
+@Composable
+private fun NotificationDetailSection(
+    state: NotificationState,
+    onTimeClick: () -> Unit,
+    onMessageChange: (String) -> Unit,
+    onResetMessage: () -> Unit,
+) {
+    // Alarm time
+    Text(text = "알림 시간", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(
+        text = state.formattedAlarmTime,
+        style = EbbingTheme.typography.headingMSB,
+        color = EbbingTheme.colors.primaryDefault,
+        modifier = Modifier.padding(top = 8.dp).clickable { onTimeClick() },
+    )
+    HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
+
+    // Alarm message
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Text(text = "알림 메시지", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.weight(1f))
+        Text(text = "초기화", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.clickable { onResetMessage() })
+    }
+    EbbingTextInputDefault(
+        value = state.alarmMessage,
+        hint = "알림 메시지를 입력하세요",
+        onValueChange = onMessageChange,
+        limit = 100,
+        modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+    )
+    Text(text = "{할일}을 사용하면 일정 이름으로 자동 대체됩니다", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(top = 4.dp, start = 4.dp))
+    HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
+
+    // Preview
+    Text(text = "미리보기", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(text = state.previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
 }
 
 @Composable

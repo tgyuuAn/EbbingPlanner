@@ -69,9 +69,17 @@ class EditTagViewModel(
             return
         }
 
+        val originTag = currentState.originTag ?: return
+        val trimmedName = currentState.name.trim()
+        val existingTags = todoRepository.loadTags()
+        if (existingTags.any { it.id != originTag.id && it.name.equals(trimmedName, ignoreCase = true) }) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 존재하는 태그 이름입니다"))
+            return
+        }
+
         todoRepository.updateTag(
-            todoTag = currentState.originTag!!.copy(
-                name = currentState.name,
+            todoTag = originTag.copy(
+                name = trimmedName,
                 color = currentState.colorValue,
             )
         )
