@@ -2,7 +2,9 @@ package com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +38,9 @@ fun AddRepeatCycleScreen(
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "반복 주기 추가",
             onNavigationClick = { viewModel.onIntent(AddRepeatCycleIntent.OnBackClick) },
@@ -59,27 +63,35 @@ fun AddRepeatCycleScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(20.dp)
-                .imePadding(),
-        ) {
-            Text(
-                text = "나만의 반복 주기를 추가해요.",
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-            )
-
-            RepeatCycleInputContent(
-                intervals = state.intervals,
-                onIntervalsChange = { viewModel.onIntent(AddRepeatCycleIntent.OnIntervalsChange(it)) },
-            )
-
-            PreviewContent(preview = state.previewRepeatCycle)
-
-            Spacer(modifier = Modifier.height(60.dp))
+        if (isWide) {
+            Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
+                Column(
+                    modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp),
+                ) {
+                    Text(text = "나만의 반복 주기를 추가해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    RepeatCycleInputContent(
+                        intervals = state.intervals,
+                        onIntervalsChange = { viewModel.onIntent(AddRepeatCycleIntent.OnIntervalsChange(it)) },
+                    )
+                    Spacer(modifier = Modifier.height(40.dp))
+                }
+                Column(modifier = Modifier.weight(1f).padding(20.dp)) {
+                    Spacer(modifier = Modifier.height(80.dp))
+                    PreviewContent(preview = state.previewRepeatCycle)
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp).imePadding(),
+            ) {
+                Text(text = "나만의 반복 주기를 추가해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                RepeatCycleInputContent(
+                    intervals = state.intervals,
+                    onIntervalsChange = { viewModel.onIntent(AddRepeatCycleIntent.OnIntervalsChange(it)) },
+                )
+                PreviewContent(preview = state.previewRepeatCycle)
+                Spacer(modifier = Modifier.height(60.dp))
+            }
         }
 
         if (state.isTreatment) {
@@ -87,13 +99,11 @@ fun AddRepeatCycleScreen(
                 label = "저장",
                 onClick = { viewModel.onIntent(AddRepeatCycleIntent.OnSaveClick) },
                 enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
             )
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable
