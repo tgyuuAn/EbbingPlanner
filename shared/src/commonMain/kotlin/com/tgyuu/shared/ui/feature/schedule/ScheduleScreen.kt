@@ -98,11 +98,11 @@ fun ScheduleScreen(
                         onTagClick = { viewModel.onIntent(ScheduleIntent.OnTagClick(it)) },
                         modifier = Modifier.heightIn(max = containerHeight * 0.4f),
                     )
-                    if (state.selectedTag != null) {
+                    state.selectedTag?.let { tag ->
                         HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
                         TodoInfosSection(
                             todoInfos = state.todoInfos,
-                            selectedTag = state.selectedTag!!,
+                            selectedTag = tag,
                             selectedTodoInfo = state.selectedTodoInfo,
                             achievementRateMap = state.todoInfoAchievementRateMap,
                             onTodoInfoClick = { viewModel.onIntent(ScheduleIntent.OnInfoClick(it)) },
@@ -145,10 +145,10 @@ fun ScheduleScreen(
                     )
                     HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(vertical = 16.dp))
                 }
-                if (state.selectedTag != null) {
+                state.selectedTag?.let { tag ->
                     TodoInfosSection(
                         todoInfos = state.todoInfos,
-                        selectedTag = state.selectedTag!!,
+                        selectedTag = tag,
                         selectedTodoInfo = state.selectedTodoInfo,
                         achievementRateMap = state.todoInfoAchievementRateMap,
                         onTodoInfoClick = { viewModel.onIntent(ScheduleIntent.OnInfoClick(it)) },

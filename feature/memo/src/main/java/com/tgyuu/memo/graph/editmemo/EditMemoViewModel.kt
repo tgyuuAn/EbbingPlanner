@@ -60,13 +60,12 @@ class EditMemoViewModel(
             return
         }
 
-        todoRepository.updateTodo(
-            currentState.originSchedule?.copy(memo = currentState.memo) ?: return
-        )
+        val originSchedule = currentState.originSchedule ?: return
+        todoRepository.updateTodo(originSchedule.copy(memo = currentState.memo))
         eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 추가하였습니다"))
         navigationBus.navigate(
             NavigationEvent.To(
-                route = HomeRoute(currentState.originSchedule!!.date.toFormattedString()),
+                route = HomeRoute(originSchedule.date.toFormattedString()),
                 popUpTo = true,
             )
         )

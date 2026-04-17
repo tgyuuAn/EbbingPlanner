@@ -71,99 +71,12 @@ fun WidgetScreen(
 
         if (isWide) { Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
         Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
-            // Theme selection
-            Text(
-                text = "위젯 테마",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+            WidgetControlSection(
+                state = state,
+                onThemeChange = { viewModel.onIntent(WidgetIntent.OnThemeChange(it)) },
+                onBgAlphaChange = { viewModel.onIntent(WidgetIntent.OnBackgroundAlphaChange(it)) },
+                onTextAlphaChange = { viewModel.onIntent(WidgetIntent.OnTextAlphaChange(it)) },
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Theme.entries.forEach { theme ->
-                    val isSelected = theme == state.selectedTheme
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.clickable {
-                            viewModel.onIntent(WidgetIntent.OnThemeChange(theme))
-                        },
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(Color(theme.lightBg))
-                                .then(
-                                    if (isSelected) Modifier.border(3.dp, EbbingTheme.colors.primaryDefault, CircleShape)
-                                    else Modifier.border(1.dp, EbbingTheme.colors.light2, CircleShape)
-                                ),
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Background alpha
-            Text(
-                text = "배경 투명도",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
-            )
-
-            Slider(
-                value = state.selectedBackgroundAlpha ?: 1f,
-                onValueChange = { viewModel.onIntent(WidgetIntent.OnBackgroundAlphaChange(it)) },
-                valueRange = 0f..1f,
-                colors = SliderDefaults.colors(
-                    thumbColor = EbbingTheme.colors.primaryDefault,
-                    activeTrackColor = EbbingTheme.colors.primaryDefault,
-                ),
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            Text(
-                text = "${((state.selectedBackgroundAlpha ?: 1f) * 100).roundToInt()}%",
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Text alpha
-            Text(
-                text = "텍스트 투명도",
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
-            )
-
-            Slider(
-                value = state.selectedTextAlpha ?: 1f,
-                onValueChange = { viewModel.onIntent(WidgetIntent.OnTextAlphaChange(it)) },
-                valueRange = 0f..1f,
-                colors = SliderDefaults.colors(
-                    thumbColor = EbbingTheme.colors.primaryDefault,
-                    activeTrackColor = EbbingTheme.colors.primaryDefault,
-                ),
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            Text(
-                text = "${((state.selectedTextAlpha ?: 1f) * 100).roundToInt()}%",
-                style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            if (!isWide) {
-                WidgetPreviewSection(state = state)
-                Spacer(modifier = Modifier.height(60.dp))
-            }
         }
         if (isWide) {
             Column(modifier = Modifier.weight(1f).padding(20.dp)) {
@@ -172,28 +85,22 @@ fun WidgetScreen(
             }
         } } // Row end
         } else {
-        Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
-            // Theme selection
-            Text(text = "위젯 테마", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
-                Theme.entries.forEach { theme ->
-                    val isSelected = theme == state.selectedTheme
-                    Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(Color(theme.lightBg)).then(if (isSelected) Modifier.border(3.dp, EbbingTheme.colors.primaryDefault, CircleShape) else Modifier.border(1.dp, EbbingTheme.colors.light2, CircleShape)).clickable { viewModel.onIntent(WidgetIntent.OnThemeChange(theme)) })
-                }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(20.dp),
+            ) {
+                WidgetControlSection(
+                    state = state,
+                    onThemeChange = { viewModel.onIntent(WidgetIntent.OnThemeChange(it)) },
+                    onBgAlphaChange = { viewModel.onIntent(WidgetIntent.OnBackgroundAlphaChange(it)) },
+                    onTextAlphaChange = { viewModel.onIntent(WidgetIntent.OnTextAlphaChange(it)) },
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                WidgetPreviewSection(state = state)
+                Spacer(modifier = Modifier.height(60.dp))
             }
-            Spacer(modifier = Modifier.height(32.dp))
-            Text(text = "배경 투명도", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
-            Slider(value = state.selectedBackgroundAlpha ?: 1f, onValueChange = { viewModel.onIntent(WidgetIntent.OnBackgroundAlphaChange(it)) }, valueRange = 0f..1f, colors = SliderDefaults.colors(thumbColor = EbbingTheme.colors.primaryDefault, activeTrackColor = EbbingTheme.colors.primaryDefault), modifier = Modifier.fillMaxWidth())
-            Text(text = "${((state.selectedBackgroundAlpha ?: 1f) * 100).roundToInt()}%", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2)
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(text = "텍스트 투명도", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
-            Slider(value = state.selectedTextAlpha ?: 1f, onValueChange = { viewModel.onIntent(WidgetIntent.OnTextAlphaChange(it)) }, valueRange = 0f..1f, colors = SliderDefaults.colors(thumbColor = EbbingTheme.colors.primaryDefault, activeTrackColor = EbbingTheme.colors.primaryDefault), modifier = Modifier.fillMaxWidth())
-            Text(text = "${((state.selectedTextAlpha ?: 1f) * 100).roundToInt()}%", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2)
-            Spacer(modifier = Modifier.height(32.dp))
-            WidgetPreviewSection(state = state)
-            Spacer(modifier = Modifier.height(60.dp))
-        }
         } // else
 
         if (state.isTreatment) {
@@ -206,6 +113,53 @@ fun WidgetScreen(
         }
     }
     } // BoxWithConstraints
+}
+
+@Composable
+private fun WidgetControlSection(
+    state: WidgetState,
+    onThemeChange: (Theme) -> Unit,
+    onBgAlphaChange: (Float) -> Unit,
+    onTextAlphaChange: (Float) -> Unit,
+) {
+    Text(text = "위젯 테마", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Spacer(modifier = Modifier.height(16.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+        Theme.entries.forEach { theme ->
+            val isSelected = theme == state.selectedTheme
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color(theme.lightBg))
+                    .then(
+                        if (isSelected) Modifier.border(3.dp, EbbingTheme.colors.primaryDefault, CircleShape)
+                        else Modifier.border(1.dp, EbbingTheme.colors.light2, CircleShape)
+                    )
+                    .clickable { onThemeChange(theme) },
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(32.dp))
+    Text(text = "배경 투명도", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Slider(
+        value = state.selectedBackgroundAlpha ?: 1f,
+        onValueChange = onBgAlphaChange,
+        valueRange = 0f..1f,
+        colors = SliderDefaults.colors(thumbColor = EbbingTheme.colors.primaryDefault, activeTrackColor = EbbingTheme.colors.primaryDefault),
+        modifier = Modifier.fillMaxWidth(),
+    )
+    Text(text = "${((state.selectedBackgroundAlpha ?: 1f) * 100).roundToInt()}%", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2)
+    Spacer(modifier = Modifier.height(24.dp))
+    Text(text = "텍스트 투명도", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Slider(
+        value = state.selectedTextAlpha ?: 1f,
+        onValueChange = onTextAlphaChange,
+        valueRange = 0f..1f,
+        colors = SliderDefaults.colors(thumbColor = EbbingTheme.colors.primaryDefault, activeTrackColor = EbbingTheme.colors.primaryDefault),
+        modifier = Modifier.fillMaxWidth(),
+    )
+    Text(text = "${((state.selectedTextAlpha ?: 1f) * 100).roundToInt()}%", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2)
 }
 
 @Composable
