@@ -61,7 +61,8 @@ class MemoViewModel(
         try {
             val updatedSchedule = originSchedule.copy(memo = currentState.memo)
             todoRepository.updateTodo(updatedSchedule)
-            onShowSnackbar("메모를 추가하였습니다")
+            val isEdit = originSchedule.memo.isNotEmpty()
+            onShowSnackbar(if (isEdit) "메모를 수정하였습니다" else "메모를 추가하였습니다")
             onNavigateToHome(originSchedule.date)
         } catch (e: Exception) {
             onShowSnackbar("메모 저장에 실패했습니다")
