@@ -53,11 +53,11 @@ fun RepeatCycleScreen(
     val state by viewModel.state.collectAsState()
     var repeatCycleToDelete by remember { mutableStateOf<RepeatCycleUiModel?>(null) }
 
-    if (repeatCycleToDelete != null) {
+    repeatCycleToDelete?.let { toDelete ->
         DeleteRepeatCycleDialog(
-            displayName = repeatCycleToDelete!!.displayName,
+            displayName = toDelete.displayName,
             onConfirm = {
-                viewModel.onIntent(RepeatCycleIntent.OnDeleteClick(repeatCycleToDelete!!))
+                viewModel.onIntent(RepeatCycleIntent.OnDeleteClick(toDelete))
                 repeatCycleToDelete = null
             },
             onDismiss = { repeatCycleToDelete = null },

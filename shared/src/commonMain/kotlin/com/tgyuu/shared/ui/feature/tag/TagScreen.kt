@@ -55,11 +55,11 @@ fun TagScreen(
     val state by viewModel.state.collectAsState()
     var tagToDelete by remember { mutableStateOf<TodoTagUiModel?>(null) }
 
-    if (tagToDelete != null) {
+    tagToDelete?.let { toDelete ->
         DeleteTagDialog(
-            tagName = tagToDelete!!.name,
+            tagName = toDelete.name,
             onConfirm = {
-                viewModel.onIntent(TagIntent.OnDeleteClick(tagToDelete!!))
+                viewModel.onIntent(TagIntent.OnDeleteClick(toDelete))
                 tagToDelete = null
             },
             onDismiss = { tagToDelete = null },
