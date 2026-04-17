@@ -37,25 +37,22 @@ data class CalendarDate(
 }
 
 fun getCalendarDates(date: LocalDate, startFromMonday: Boolean = false): List<CalendarDate> {
-    val previous = getPreviousMonthDatesToShow(date, startFromMonday)
+    val leadingCount = getLeadingEmptyCellCount(date, startFromMonday)
     val current = getCurrentMonthDatesToShow(date)
-    val next = getNextMonthDatesToShow(date, startFromMonday)
+    val trailingCount = 42 - leadingCount - current.size
+
+    val previous = getPreviousMonthDatesToShowByCount(date, leadingCount)
+    val next = getNextMonthDatesToShowByCount(date, trailingCount)
 
     return previous + current + next
 }
 
-private fun getPreviousMonthDatesToShow(date: LocalDate, startFromMonday: Boolean): List<CalendarDate> {
-    val firstDayOfMonth = LocalDate(date.year, date.monthNumber, 1)
-    val previousMonth = LocalDate(firstDayOfMonth.year, firstDayOfMonth.monthNumber, 1)
-        .minus(1, DateTimeUnit.MONTH)
-    val lastDayOfPreviousMonth = previousMonth.totalDaysInMonth()
-    val count = getLeadingEmptyCellCount(date, startFromMonday)
-
-    return ((lastDayOfPreviousMonth - count + 1)..lastDayOfPreviousMonth).map {
-        CalendarDate(
-            LocalDate(previousMonth.year, previousMonth.monthNumber, it),
-            isCurrentMonth = false
-        )
+private fun getPreviousMonthDatesToShowByCount(date: LocalDate, count: Int): List<CalendarDate> {
+    if (count == 0) return emptyList()
+    val previousMonth = LocalDate(date.year, date.monthNumber, 1).minus(1, DateTimeUnit.MONTH)
+    val lastDay = previousMonth.totalDaysInMonth()
+    return ((lastDay - count + 1)..lastDay).map {
+        CalendarDate(LocalDate(previousMonth.year, previousMonth.monthNumber, it), isCurrentMonth = false)
     }
 }
 
@@ -71,18 +68,11 @@ private fun getCurrentMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     }
 }
 
-private fun getNextMonthDatesToShow(date: LocalDate, startFromMonday: Boolean): List<CalendarDate> {
-    val totalDayCountUntilNextMonth =
-        getPreviousMonthDatesToShow(date, startFromMonday).size + getCurrentMonthDatesToShow(date).size
-    val remainCount = 42 - totalDayCountUntilNextMonth
-
+private fun getNextMonthDatesToShowByCount(date: LocalDate, count: Int): List<CalendarDate> {
+    if (count <= 0) return emptyList()
     val nextMonth = LocalDate(date.year, date.monthNumber, 1).plus(1, DateTimeUnit.MONTH)
-
-    return (1..remainCount).map {
-        CalendarDate(
-            date = LocalDate(nextMonth.year, nextMonth.monthNumber, it),
-            isCurrentMonth = false
-        )
+    return (1..count).map {
+        CalendarDate(date = LocalDate(nextMonth.year, nextMonth.monthNumber, it), isCurrentMonth = false)
     }
 }
 
