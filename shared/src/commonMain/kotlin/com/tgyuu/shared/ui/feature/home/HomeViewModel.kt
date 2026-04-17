@@ -206,11 +206,13 @@ class HomeViewModel(
             .loadSchedulesByTodoInfo(schedule.infoId)
             .filter { it.date >= schedule.date }
 
+        val deletedIds = futureSchedulesToDelete.map { it.id }.toSet()
         for (item in futureSchedulesToDelete) {
             todoRepository.deleteTodo(item)
-            currentMonthSchedules = currentMonthSchedules.filterNot { it.id == item.id }
-            cachedSchedules = cachedSchedules.filterNot { it.id == item.id }
         }
+
+        currentMonthSchedules = currentMonthSchedules.filterNot { it.id in deletedIds }
+        cachedSchedules = cachedSchedules.filterNot { it.id in deletedIds }
 
         updateCacheAfterChange()
 
