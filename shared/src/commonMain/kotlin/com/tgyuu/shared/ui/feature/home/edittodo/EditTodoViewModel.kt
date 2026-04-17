@@ -31,7 +31,10 @@ class EditTodoViewModel(
 
     private fun loadScheduleData() {
         safeScope.launch {
-            val originSchedule = todoRepository.loadSchedule(scheduleId)
+            val originSchedule = todoRepository.loadSchedule(scheduleId) ?: run {
+                onNavigateBack()
+                return@launch
+            }
 
             val originTagDeferred = async { todoRepository.loadTag(originSchedule.tagId) }
             val sameInfoSchedulesDeferred =
@@ -52,7 +55,7 @@ class EditTodoViewModel(
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
                     priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
-                    tag = originTag.toUiModel(),
+                    tag = originTag?.toUiModel(),
                     restDays = todoInfo.restDays.toImmutableSet(),
                 )
             }

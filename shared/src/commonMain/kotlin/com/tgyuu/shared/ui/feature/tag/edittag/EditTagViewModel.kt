@@ -24,7 +24,10 @@ class EditTagViewModel(
     private fun loadTag() {
         safeScope.launch {
             try {
-                val tag = todoRepository.loadTag(tagId)
+                val tag = todoRepository.loadTag(tagId) ?: run {
+                    onNavigateBack()
+                    return@launch
+                }
                 setState {
                     copy(
                         originTag = tag,

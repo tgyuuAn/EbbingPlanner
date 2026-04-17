@@ -128,11 +128,11 @@ class TodoRepositoryImpl(
         repeatCyclesDao.softDeleteRepeatCycle(repeatCycle.id, LocalDateTime.now())
     }
 
-    override suspend fun loadSchedule(id: Int): TodoSchedule =
-        todoSchedulesDao.loadTodoScheduleWithInfoAndTag(id)!!
+    override suspend fun loadSchedule(id: Int): TodoSchedule? =
+        todoSchedulesDao.loadTodoScheduleWithInfoAndTag(id)
 
-    override suspend fun loadTag(id: Int): TodoTag =
-        todoTagsDao.getTag(id)!!.toDomain()
+    override suspend fun loadTag(id: Int): TodoTag? =
+        todoTagsDao.getTag(id)?.toDomain()
 
     override suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo> =
         todoSchedulesDao.loadTodoInfoByTagId(tagId)

@@ -183,6 +183,7 @@ private fun TodoPage(
                 key = { it.id },
             ) { item ->
                 TodoListCard(
+                    modifier = Modifier.animateItem(),
                     todo = item,
                     todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
                     onCheckedChange = onCheckedChange,
