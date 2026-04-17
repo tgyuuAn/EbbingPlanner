@@ -349,6 +349,7 @@ private fun PhoneHomeScreen(
             EbbingCalendar(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
+                startFromMonday = state.mondayStart,
                 onSelectDate = {
                     if (selectedDate != it) {
                         scope.launch {
@@ -449,6 +450,7 @@ private fun TabletHomeScreen(
         EbbingCalendar(
             calendarState = calendarState,
             schedulesByDateMap = state.schedulesByDateMap,
+            startFromMonday = state.mondayStart,
             onSelectDate = {
                 if (selectedDate != it) {
                     scope.launch {

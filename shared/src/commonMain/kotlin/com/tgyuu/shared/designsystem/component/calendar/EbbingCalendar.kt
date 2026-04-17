@@ -53,6 +53,7 @@ fun EbbingCalendar(
     calendarState: CalendarState,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     modifier: Modifier = Modifier,
+    startFromMonday: Boolean = false,
     onSelectDate: (LocalDate) -> Unit = {},
     onSyncClick: (() -> Unit)? = null,
 ) {
@@ -89,7 +90,7 @@ fun EbbingCalendar(
             onSyncClick = onSyncClick,
         )
 
-        CalendarHeader()
+        CalendarHeader(startFromMonday = startFromMonday)
 
         HorizontalPager(
             state = pagerState,
@@ -99,6 +100,7 @@ fun EbbingCalendar(
                 currentDate = calendarState.currentDisplayDate,
                 selectedDate = calendarState.selectedDate,
                 schedulesByDateMap = schedulesByDateMap,
+                startFromMonday = startFromMonday,
                 onDateSelect = { selectedDate ->
                     val selectedOffset = yearMonthDiff(
                         from = calendarState.originSelectedDate,
@@ -171,11 +173,15 @@ private fun CalendarController(
 }
 
 @Composable
-private fun CalendarHeader(modifier: Modifier = Modifier) {
+private fun CalendarHeader(
+    startFromMonday: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
+    val days = if (startFromMonday) EbbingDayOfWeekMonday else EbbingDayOfWeekSunday
     Row(
         modifier = modifier.fillMaxWidth(),
     ) {
-        EbbingDayOfWeek.forEach { weekday ->
+        days.forEach { weekday ->
             val weekDayText = weekday.toKorean()
 
             Text(
@@ -195,6 +201,7 @@ private fun CalendarBody(
     selectedDate: LocalDate?,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     onDateSelect: (LocalDate) -> Unit,
+    startFromMonday: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
@@ -203,7 +210,7 @@ private fun CalendarBody(
         modifier = modifier,
     ) {
         items(
-            items = getCalendarDates(currentDate),
+            items = getCalendarDates(currentDate, startFromMonday),
             key = { it.date.toString() },
         ) {
             CalendarDayItem(

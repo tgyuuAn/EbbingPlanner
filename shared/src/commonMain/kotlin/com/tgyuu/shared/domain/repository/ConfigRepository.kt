@@ -27,6 +27,9 @@ interface ConfigRepository {
     suspend fun getSoftUpdateInfo(): UpdateInfo
     suspend fun getHardUpdateInfo(): UpdateInfo
 
+    fun getMondayStart(): Flow<Boolean>
+    suspend fun setMondayStart(enabled: Boolean)
+
     suspend fun getClearSyncFlag(): Boolean
     suspend fun markFirstTodoAdded(): Boolean
 
