@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
@@ -135,6 +136,14 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[MONDAY_START] = enabled }
     }
 
+    override val calendarDefaultView: Flow<CalendarDefaultView>
+        get() = dataStore.data
+            .map { prefs -> CalendarDefaultView.create(prefs[CALENDAR_DEFAULT_VIEW] ?: "MONTHLY") }
+
+    override suspend fun setCalendarDefaultView(view: CalendarDefaultView) {
+        dataStore.edit { prefs -> prefs[CALENDAR_DEFAULT_VIEW] = view.name }
+    }
+
     override suspend fun consumeInAppReview(): Boolean {
         var shouldShow = false
         dataStore.edit { prefs ->
@@ -182,5 +191,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val HAS_SHOWN_IN_APP_REVIEW = booleanPreferencesKey("HAS_SHOWN_IN_APP_REVIEW")
         private val TODO_REGISTERED_COUNT = intPreferencesKey("TODO_REGISTERED_COUNT")
         private val MONDAY_START = booleanPreferencesKey("MONDAY_START")
+        private val CALENDAR_DEFAULT_VIEW = stringPreferencesKey("CALENDAR_DEFAULT_VIEW")
     }
 }

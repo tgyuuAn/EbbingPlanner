@@ -1,6 +1,7 @@
 package com.tgyuu.data.repository
 
 import com.tgyuu.datastore.datasource.user.LocalUserConfigDataSource
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
@@ -89,4 +90,10 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun setMondayStart(enabled: Boolean) =
         localUserConfigDataSource.setMondayStart(enabled)
+
+    override fun getCalendarDefaultView(): Flow<CalendarDefaultView> =
+        localUserConfigDataSource.calendarDefaultView
+
+    override suspend fun setCalendarDefaultView(view: CalendarDefaultView) =
+        localUserConfigDataSource.setCalendarDefaultView(view)
 }

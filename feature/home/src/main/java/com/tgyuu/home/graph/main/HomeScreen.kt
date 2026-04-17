@@ -48,6 +48,7 @@ import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.home.graph.main.contract.HomeIntent
@@ -128,6 +129,7 @@ internal fun HomeRoute(
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
         onCheckedChange = { viewModel.onIntent(OnCheckChanged(it)) },
         onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
+        onCalendarViewChanged = { viewModel.onIntent(HomeIntent.OnCalendarViewChanged(it)) },
         onSortTypeClick = {
             viewModel.onIntent(OnSortTypeClick({
                 SortTypeBottomSheet(
@@ -267,6 +269,7 @@ private fun HomeScreen(
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onSyncClick: () -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -281,6 +284,7 @@ private fun HomeScreen(
             onEditScheduleClick = onEditScheduleClick,
             onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
+            onCalendarViewChanged = onCalendarViewChanged,
             modifier = modifier
         )
     } else {
@@ -308,6 +312,7 @@ private fun PhoneHomeScreen(
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
@@ -316,12 +321,16 @@ private fun PhoneHomeScreen(
     val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
-    var showWeekOnly by remember { mutableStateOf(false) }
+    val defaultView = state.calendarDefaultView
+    // remember에 defaultView를 key로 쓰지 않음 - 저장 후 DataStore 응답 시 재생성으로 인한 애니메이션 튐 방지
+    var showWeekOnly by remember { mutableStateOf(defaultView == CalendarDefaultView.WEEKLY) }
     var monthlyCalendarHeight by remember { mutableStateOf(1000.dp) }
     var weeklyCalendarHeight by remember { mutableStateOf(0.dp) }
     val monthlyCalendarHeightPx = with(localDensity) { monthlyCalendarHeight.toPx() }
     val weeklyCalendarHeightPx = with(localDensity) { weeklyCalendarHeight.toPx() }
-    val offsetAnimatable = remember { Animatable(monthlyCalendarHeightPx) }
+    val initialOffset = if (defaultView == CalendarDefaultView.DAILY) 0f
+                        else monthlyCalendarHeightPx
+    val offsetAnimatable = remember { Animatable(initialOffset) }
     val animatedTopPadding = with(localDensity) { offsetAnimatable.value.toDp() }
     val isCollapsed = offsetAnimatable.value <
         (weeklyCalendarHeightPx.takeIf { it > 0f } ?: monthlyCalendarHeightPx) / 2
@@ -336,7 +345,7 @@ private fun PhoneHomeScreen(
     }
 
     // 최초 주간 뷰 전환 시 높이 측정 후 스냅
-    var pendingWeeklySnap by remember { mutableStateOf(false) }
+    var pendingWeeklySnap by remember { mutableStateOf(defaultView == CalendarDefaultView.WEEKLY) }
     LaunchedEffect(weeklyCalendarHeightPx) {
         if (pendingWeeklySnap && weeklyCalendarHeightPx > 0) {
             pendingWeeklySnap = false
@@ -419,15 +428,18 @@ private fun PhoneHomeScreen(
                                     )
                                     when (snapTarget) {
                                         0f -> {
-                                            offsetAnimatable.animateTo(0f, animationSpec = spring())
                                             showWeekOnly = false
+                                            onCalendarViewChanged(CalendarDefaultView.DAILY)
+                                            offsetAnimatable.animateTo(0f, animationSpec = spring())
                                         }
                                         weeklyCalendarHeightPx -> {
                                             showWeekOnly = true
+                                            onCalendarViewChanged(CalendarDefaultView.WEEKLY)
                                             offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
                                         }
                                         else -> {
                                             showWeekOnly = false
+                                            onCalendarViewChanged(CalendarDefaultView.MONTHLY)
                                             offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
                                         }
                                     }
@@ -460,11 +472,13 @@ private fun PhoneHomeScreen(
                                 scope.launch {
                                     offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
                                 }
+                                onCalendarViewChanged(CalendarDefaultView.MONTHLY)
                             }
                             showWeekOnly -> { // WEEKLY → COLLAPSED
+                                showWeekOnly = false
+                                onCalendarViewChanged(CalendarDefaultView.DAILY)
                                 scope.launch {
                                     offsetAnimatable.animateTo(0f, animationSpec = spring())
-                                    showWeekOnly = false
                                 }
                             }
                             else -> { // MONTHLY → WEEKLY
@@ -476,6 +490,7 @@ private fun PhoneHomeScreen(
                                 } else {
                                     pendingWeeklySnap = true
                                 }
+                                onCalendarViewChanged(CalendarDefaultView.WEEKLY)
                             }
                         }
                     },
@@ -706,6 +721,7 @@ private fun Preview1() {
             onCurrentDateChanged = {},
             onSortTypeClick = {},
             onSyncClick = {},
+            onCalendarViewChanged = {},
         )
     }
 }
