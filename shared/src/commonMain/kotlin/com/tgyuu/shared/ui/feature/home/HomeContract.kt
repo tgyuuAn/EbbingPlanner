@@ -21,6 +21,7 @@ data class HomeState(
     val sortType: SortType = SortType.CREATED,
     val mondayStart: Boolean = false,
     val showWidgetNudgeDialog: Boolean = false,
+    val showInAppReviewDialog: Boolean = false,
 ) : UiState {
 
     val todaySchedules: ImmutableList<TodoScheduleUiModel>

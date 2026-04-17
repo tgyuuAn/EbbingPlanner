@@ -15,12 +15,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.tgyuu.shared.designsystem.component.EbbingDialog
+import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
+import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.component.EbbingToggle
+import com.tgyuu.shared.designsystem.component.picker.EbbingPicker
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 
 @Composable
@@ -30,6 +38,17 @@ fun NotificationScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+
+    if (state.isShowTimePicker) {
+        AlarmTimePickerDialog(
+            initialHour = state.alarmHour,
+            initialMinute = state.alarmMinute,
+            onDismiss = { viewModel.onIntent(NotificationIntent.OnTimePickerDismiss) },
+            onConfirm = { hour, minute ->
+                viewModel.onIntent(NotificationIntent.OnTimeChange(hour, minute))
+            },
+        )
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
@@ -148,4 +167,68 @@ fun NotificationScreen(
             Spacer(modifier = Modifier.height(60.dp))
         }
     }
+}
+
+@Composable
+private fun AlarmTimePickerDialog(
+    initialHour: Int,
+    initialMinute: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (Int, Int) -> Unit,
+) {
+    var newAmPm by remember { mutableStateOf(if (initialHour >= 12) "오후" else "오전") }
+    var newHour by remember { mutableIntStateOf(initialHour) }
+    var newMinute by remember { mutableIntStateOf(initialMinute) }
+
+    val pickerAmPm = if (initialHour >= 12) "오후" else "오전"
+    val pickerHour = when {
+        initialHour == 0 -> "12"
+        initialHour > 12 -> (initialHour - 12).toString()
+        else -> initialHour.toString()
+    }
+    val pickerMinute = initialMinute.toString().padStart(2, '0')
+
+    EbbingDialog(
+        onDismissRequest = onDismiss,
+        dialogTop = {
+            EbbingDialogDefaultTop(
+                title = "알림 시간",
+                subText = "언제 남은 일정 알림을 보낼까요?",
+            )
+        },
+        dialogBottom = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 20.dp),
+            ) {
+                EbbingPicker(
+                    initialAmPm = pickerAmPm,
+                    initialHour = pickerHour,
+                    initialMinute = pickerMinute,
+                    onValueChange = { amPm, hour, minute ->
+                        newAmPm = amPm
+                        newHour = hour
+                        newMinute = minute
+                    },
+                    modifier = Modifier.padding(vertical = 20.dp),
+                )
+
+                EbbingSolidButton(
+                    label = "적용하기",
+                    onClick = {
+                        val adjustedHour = when {
+                            newAmPm == "오후" && newHour == 12 -> 12
+                            newAmPm == "오후" -> newHour + 12
+                            newAmPm == "오전" && newHour == 12 -> 0
+                            else -> newHour
+                        }
+                        onConfirm(adjustedHour, newMinute)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+    )
 }
