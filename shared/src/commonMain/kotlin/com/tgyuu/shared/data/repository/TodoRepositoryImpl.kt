@@ -57,7 +57,8 @@ class TodoRepositoryImpl(
         todoTagsDao.getTags().map { it.toDomain() }
 
     override suspend fun loadRepeatCycle(id: Int): RepeatCycle =
-        repeatCyclesDao.getRepeatCycle(id)!!.toDomain()
+        repeatCyclesDao.getRepeatCycle(id)?.toDomain()
+            ?: throw NoSuchElementException("RepeatCycle not found for id=$id")
 
     override suspend fun loadRepeatCycles(): List<RepeatCycle> =
         repeatCyclesDao.getRepeatCycles().map { it.toDomain() }

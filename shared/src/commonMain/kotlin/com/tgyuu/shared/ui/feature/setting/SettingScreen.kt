@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.setting
 
+import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,7 @@ fun SettingScreen(
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > 600.dp
+    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
             title = "설정",
