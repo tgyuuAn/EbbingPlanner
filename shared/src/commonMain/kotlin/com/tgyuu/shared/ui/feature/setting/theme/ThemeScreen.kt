@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +38,9 @@ fun ThemeScreen(
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val isWide = maxWidth > 600.dp
+    Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
             title = "테마",
             onNavigationClick = { viewModel.onIntent(ThemeIntent.OnBackClick) },
@@ -60,28 +63,26 @@ fun ThemeScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(20.dp),
-        ) {
-            Text(
-                text = "테마 색상을 선택해요.",
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            ThemeSelector(
-                selectedTheme = state.selectTheme,
-                onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) },
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            ThemePreview(theme = state.selectTheme ?: Theme.NORMAL)
+        if (isWide) {
+            Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
+                    Text(text = "테마 색상을 선택해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    Spacer(modifier = Modifier.height(32.dp))
+                    ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
+                }
+                Column(modifier = Modifier.weight(1f).padding(20.dp)) {
+                    Spacer(modifier = Modifier.height(80.dp))
+                    ThemePreview(theme = state.selectTheme ?: Theme.NORMAL)
+                }
+            }
+        } else {
+            Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
+                Text(text = "테마 색상을 선택해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                Spacer(modifier = Modifier.height(32.dp))
+                ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
+                Spacer(modifier = Modifier.height(32.dp))
+                ThemePreview(theme = state.selectTheme ?: Theme.NORMAL)
+            }
         }
 
         if (state.isTreatment) {
@@ -89,13 +90,11 @@ fun ThemeScreen(
                 label = "적용",
                 onClick = { viewModel.onIntent(ThemeIntent.OnUpdateClick) },
                 enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
             )
         }
     }
+    } // BoxWithConstraints
 }
 
 @Composable
