@@ -55,6 +55,9 @@ import com.tgyuu.shared.ui.feature.home.dialog.ConfirmDeleteRemainingDialog
 import com.tgyuu.shared.ui.feature.home.dialog.ConfirmDeleteSingleDialog
 import com.tgyuu.shared.ui.feature.home.dialog.DialogType
 import com.tgyuu.shared.ui.feature.home.dialog.WidgetNudgeDialog
+import com.tgyuu.shared.designsystem.component.EbbingDialog
+import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
+import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -68,12 +71,36 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
     isTablet: Boolean = false,
+    onRequestInAppReview: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberEbbingBottomSheetState()
     var isShowDialog by remember { mutableStateOf(false) }
     var dialogType by remember { mutableStateOf<DialogType?>(null) }
+
+    if (state.showInAppReviewDialog) {
+        EbbingDialog(
+            dialogTop = {
+                EbbingDialogDefaultTop(
+                    title = "에빙플래너가 도움이 되었나요?",
+                    subText = "남겨주신 리뷰를 바탕으로 \n더 편리한 서비스를 만들겠습니다.",
+                )
+            },
+            dialogBottom = {
+                EbbingSolidButton(
+                    label = "리뷰 작성하기",
+                    onClick = {
+                        viewModel.dismissInAppReviewDialog()
+                        onRequestInAppReview()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                )
+            },
+            onDismissRequest = { viewModel.dismissInAppReviewDialog() },
+        )
+    }
 
     val workedDate = state.selectedDate ?: LocalDate.now()
 

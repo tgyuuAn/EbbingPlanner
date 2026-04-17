@@ -55,6 +55,17 @@ class HomeViewModel(
             configRepository?.getMondayStart()
                 ?.collect { setState { copy(mondayStart = it) } }
         }
+        viewModelScope.launch {
+            todoRepository.loadAllSchedules().let { schedules ->
+                if (schedules.size >= 3 && configRepository?.consumeInAppReview() == true) {
+                    setState { copy(showInAppReviewDialog = true) }
+                }
+            }
+        }
+    }
+
+    fun dismissInAppReviewDialog() {
+        setState { copy(showInAppReviewDialog = false) }
     }
 
     suspend fun initCurrentMonthSchedules() {
