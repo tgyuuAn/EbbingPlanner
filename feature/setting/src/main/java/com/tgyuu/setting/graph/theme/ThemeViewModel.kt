@@ -74,6 +74,7 @@ class ThemeViewModel @Inject constructor(
                     configRepository.setAppTheme(select)
                 }.onSuccess {
                     setState { copy(originTheme = select) }
+                    navigationBus.navigate(NavigationEvent.Up)
                     eventBus.sendEvent(EbbingEvent.ShowSnackBar("앱 테마를 변경하였습니다"))
                 }.onFailure {
                     eventBus.sendEvent(EbbingEvent.ShowSnackBar("테마 변경에 실패하였습니다"))

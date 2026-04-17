@@ -123,6 +123,7 @@ class WidgetViewModel @Inject constructor(
                     originTextAlpha = newTextAlpha,
                 )
             }
+            navigationBus.navigate(NavigationEvent.Up)
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("위젯 테마를 변경하였습니다"))
         }.onFailure {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("테마 변경에 실패하였습니다"))
