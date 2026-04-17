@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,10 +56,22 @@ internal fun RepeatCycleBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
+        val dayCountForHeader = dailyEndDate?.let {
+            ChronoUnit.DAYS.between(selectedDate, it).toInt()
+        }
+
         EbbingBottomSheetHeader(
             title = if (showEndDatePicker) "종료일 선택" else "반복 주기",
             rightComponent = {
-                if (!showEndDatePicker) {
+                if (showEndDatePicker) {
+                    if (dayCountForHeader != null && dayCountForHeader > 0 && dayCountForHeader <= RepeatCycle.MAX_DAILY_REPEAT_DAYS) {
+                        Text(
+                            text = "총 ${dayCountForHeader + 1}일간 매일 반복",
+                            style = EbbingTheme.typography.body14M,
+                            color = EbbingTheme.colors.primaryNormal,
+                        )
+                    }
+                } else {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
@@ -117,8 +130,10 @@ internal fun RepeatCycleBottomSheet(
                     showSyncButton = false,
                     startFromMonday = startFromMonday,
                     onSelectDate = { date ->
-                        if (!date.isBefore(selectedDate)) {
+                        if (date.isAfter(selectedDate)) {
                             dailyEndDate = date
+                        } else {
+                            dailyEndDate = null
                         }
                     },
                     modifier = Modifier
@@ -138,13 +153,6 @@ internal fun RepeatCycleBottomSheet(
                         color = EbbingTheme.colors.statusError,
                         modifier = Modifier.padding(top = 4.dp),
                     )
-                } else if (dayCount != null) {
-                    Text(
-                        text = "총 ${dayCount + 1}일간 매일 반복",
-                        style = EbbingTheme.typography.body14M,
-                        color = EbbingTheme.colors.primaryNormal,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
                 }
             }
         }
@@ -155,7 +163,7 @@ internal fun RepeatCycleBottomSheet(
                 val dayCount = dailyEndDate?.let {
                     ChronoUnit.DAYS.between(selectedDate, it).toInt()
                 }
-                dayCount != null && dayCount >= 0 && dayCount <= RepeatCycle.MAX_DAILY_REPEAT_DAYS
+                dayCount != null && dayCount > 0 && dayCount <= RepeatCycle.MAX_DAILY_REPEAT_DAYS
             } else true,
             onClick = {
                 if (showEndDatePicker) {
