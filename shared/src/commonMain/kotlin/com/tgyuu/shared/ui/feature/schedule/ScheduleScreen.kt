@@ -43,6 +43,7 @@ import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoInfoUiModel
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
+import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.DayOfWeek
 
@@ -292,7 +293,7 @@ private fun SchedulesSection(
                 text = buildAnnotatedString {
                     append("달성률 ")
                     withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
-                        append("${(achievementRate * 100).toInt()}%")
+                        append("${(achievementRate * 100).roundToInt()}%")
                     }
                 },
                 style = EbbingTheme.typography.bodyMSB,
@@ -379,7 +380,7 @@ private fun ContentItemCard(
         )
 
         Text(
-            text = "${(achievementRate * 100).toInt()}%",
+            text = "${(achievementRate * 100).roundToInt()}%",
             style = textStyle,
             color = EbbingTheme.colors.primaryDefault,
         )

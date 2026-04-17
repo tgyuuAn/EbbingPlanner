@@ -102,6 +102,13 @@ class ConfigRepositoryImpl(
         return UpdateInfo(minVersion = "", noticeMsg = "")
     }
 
+    override fun getMondayStart(): Flow<Boolean> =
+        settings.observeBoolean(KEY_MONDAY_START, false)
+
+    override suspend fun setMondayStart(enabled: Boolean) {
+        settings.putBoolean(KEY_MONDAY_START, enabled)
+    }
+
     override suspend fun getClearSyncFlag(): Boolean {
         val flag = settings.getBoolean(KEY_CLEAR_SYNC_FLAG, true)
         if (flag) {
@@ -131,5 +138,6 @@ class ConfigRepositoryImpl(
         private const val KEY_WIDGET_BG_ALPHA = "WIDGET_BACKGROUND_ALPHA"
         private const val KEY_WIDGET_TEXT_ALPHA = "WIDGET_TEXT_ALPHA"
         private const val KEY_HAS_EVER_ADDED_TODO = "HAS_EVER_ADDED_TODO"
+        private const val KEY_MONDAY_START = "MONDAY_START"
     }
 }

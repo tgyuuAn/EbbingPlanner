@@ -44,7 +44,9 @@ class AddMemoViewModel(
     }
 
     private fun onMemoChange(memo: String) {
-        setState { copy(memo = memo) }
+        if (memo.length <= 100) {
+            setState { copy(memo = memo) }
+        }
     }
 
     private suspend fun saveMemo() {

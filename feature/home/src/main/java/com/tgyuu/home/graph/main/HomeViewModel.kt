@@ -450,7 +450,7 @@ class HomeViewModel(
             val sorted = when (sortType) {
                 SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
                 SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
-                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { it.priority }))
+                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { -it.priority }))
             }
             sorted.toUiModels()
         }.toImmutableMap()

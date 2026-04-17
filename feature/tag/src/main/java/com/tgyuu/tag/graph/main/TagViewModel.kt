@@ -41,6 +41,7 @@ class TagViewModel(
     }
 
     private suspend fun onDeleteClick(tag: TodoTagUiModel) {
+        if (tag.id == 1) return
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteTag")
         )

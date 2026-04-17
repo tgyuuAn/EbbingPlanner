@@ -6,7 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 
-val EbbingDayOfWeek = listOf(
+val EbbingDayOfWeekSunday = listOf(
     DayOfWeek.SUNDAY,
     DayOfWeek.MONDAY,
     DayOfWeek.TUESDAY,
@@ -16,6 +16,19 @@ val EbbingDayOfWeek = listOf(
     DayOfWeek.SATURDAY,
 )
 
+val EbbingDayOfWeekMonday = listOf(
+    DayOfWeek.MONDAY,
+    DayOfWeek.TUESDAY,
+    DayOfWeek.WEDNESDAY,
+    DayOfWeek.THURSDAY,
+    DayOfWeek.FRIDAY,
+    DayOfWeek.SATURDAY,
+    DayOfWeek.SUNDAY,
+)
+
+// Keep for backward compatibility
+val EbbingDayOfWeek = EbbingDayOfWeekSunday
+
 data class CalendarDate(
     val date: LocalDate,
     val isCurrentMonth: Boolean,
@@ -23,20 +36,20 @@ data class CalendarDate(
     val dayOfMonth: Int = date.dayOfMonth
 }
 
-fun getCalendarDates(date: LocalDate): List<CalendarDate> {
-    val previous = getPreviousMonthDatesToShow(date)
+fun getCalendarDates(date: LocalDate, startFromMonday: Boolean = false): List<CalendarDate> {
+    val previous = getPreviousMonthDatesToShow(date, startFromMonday)
     val current = getCurrentMonthDatesToShow(date)
-    val next = getNextMonthDatesToShow(date)
+    val next = getNextMonthDatesToShow(date, startFromMonday)
 
     return previous + current + next
 }
 
-private fun getPreviousMonthDatesToShow(date: LocalDate): List<CalendarDate> {
+private fun getPreviousMonthDatesToShow(date: LocalDate, startFromMonday: Boolean): List<CalendarDate> {
     val firstDayOfMonth = LocalDate(date.year, date.monthNumber, 1)
     val previousMonth = LocalDate(firstDayOfMonth.year, firstDayOfMonth.monthNumber, 1)
         .minus(1, DateTimeUnit.MONTH)
     val lastDayOfPreviousMonth = previousMonth.totalDaysInMonth()
-    val count = getPreviousMonthDayOfWeeksToShow(date).size
+    val count = getLeadingEmptyCellCount(date, startFromMonday)
 
     return ((lastDayOfPreviousMonth - count + 1)..lastDayOfPreviousMonth).map {
         CalendarDate(
@@ -58,9 +71,9 @@ private fun getCurrentMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     }
 }
 
-private fun getNextMonthDatesToShow(date: LocalDate): List<CalendarDate> {
+private fun getNextMonthDatesToShow(date: LocalDate, startFromMonday: Boolean): List<CalendarDate> {
     val totalDayCountUntilNextMonth =
-        getPreviousMonthDatesToShow(date).size + getCurrentMonthDatesToShow(date).size
+        getPreviousMonthDatesToShow(date, startFromMonday).size + getCurrentMonthDatesToShow(date).size
     val remainCount = 42 - totalDayCountUntilNextMonth
 
     val nextMonth = LocalDate(date.year, date.monthNumber, 1).plus(1, DateTimeUnit.MONTH)
@@ -73,21 +86,31 @@ private fun getNextMonthDatesToShow(date: LocalDate): List<CalendarDate> {
     }
 }
 
-private fun getPreviousMonthDayOfWeeksToShow(date: LocalDate): List<DayOfWeek> {
-    val firstDayOfWeek = getFirstDayOfWeek(date)
-    // Convert DayOfWeek to Sunday-based index (Sunday = 0)
-    val sundayBasedIndex = when (firstDayOfWeek) {
-        DayOfWeek.SUNDAY -> 0
-        DayOfWeek.MONDAY -> 1
-        DayOfWeek.TUESDAY -> 2
-        DayOfWeek.WEDNESDAY -> 3
-        DayOfWeek.THURSDAY -> 4
-        DayOfWeek.FRIDAY -> 5
-        DayOfWeek.SATURDAY -> 6
-        else -> 0
+fun getLeadingEmptyCellCount(date: LocalDate, startFromMonday: Boolean): Int {
+    val firstDayOfWeek = LocalDate(date.year, date.monthNumber, 1).dayOfWeek
+    return if (startFromMonday) {
+        when (firstDayOfWeek) {
+            DayOfWeek.MONDAY -> 0
+            DayOfWeek.TUESDAY -> 1
+            DayOfWeek.WEDNESDAY -> 2
+            DayOfWeek.THURSDAY -> 3
+            DayOfWeek.FRIDAY -> 4
+            DayOfWeek.SATURDAY -> 5
+            DayOfWeek.SUNDAY -> 6
+            else -> 0
+        }
+    } else {
+        when (firstDayOfWeek) {
+            DayOfWeek.SUNDAY -> 0
+            DayOfWeek.MONDAY -> 1
+            DayOfWeek.TUESDAY -> 2
+            DayOfWeek.WEDNESDAY -> 3
+            DayOfWeek.THURSDAY -> 4
+            DayOfWeek.FRIDAY -> 5
+            DayOfWeek.SATURDAY -> 6
+            else -> 0
+        }
     }
-
-    return EbbingDayOfWeek.take(sundayBasedIndex)
 }
 
 private fun getFirstDayOfWeek(date: LocalDate): DayOfWeek {

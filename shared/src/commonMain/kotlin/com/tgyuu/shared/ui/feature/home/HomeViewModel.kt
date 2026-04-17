@@ -51,6 +51,10 @@ class HomeViewModel(
             val sortType = configRepository?.getSortType() ?: SortType.CREATED
             setState { copy(sortType = sortType) }
         }
+        viewModelScope.launch {
+            configRepository?.getMondayStart()
+                ?.collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     suspend fun initCurrentMonthSchedules() {
