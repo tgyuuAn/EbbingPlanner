@@ -2,8 +2,10 @@ package com.tgyuu.shared.data.repository
 
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.data.source.SyncDataSource
+import com.tgyuu.shared.database.dao.RepeatCyclesDao
 import com.tgyuu.shared.database.dao.SyncDao
 import com.tgyuu.shared.database.dao.TodoSchedulesDao
+import com.tgyuu.shared.database.dao.TodoTagsDao
 import com.tgyuu.shared.domain.model.sync.ConnectInfo
 import com.tgyuu.shared.domain.repository.SyncRepository
 import com.tgyuu.shared.platform.Settings
@@ -17,6 +19,8 @@ class SyncRepositoryImpl(
     private val syncDataSource: SyncDataSource,
     private val syncDao: SyncDao,
     private val schedulesDao: TodoSchedulesDao,
+    private val repeatCyclesDao: RepeatCyclesDao? = null,
+    private val tagsDao: TodoTagsDao? = null,
 ) : SyncRepository {
 
     override suspend fun ensureUUIDExists() {
@@ -62,8 +66,8 @@ class SyncRepositoryImpl(
             uuid = uuid,
             schedules = schedules,
             infos = infos,
-            repeatCycles = emptyList(), // TODO: Add repeat cycle sync DAO method
-            tags = emptyList(), // TODO: Add tag sync DAO method
+            repeatCycles = repeatCyclesDao?.getRepeatCyclesForSync(syncTime)?.map { it.toSyncModel() } ?: emptyList(),
+            tags = tagsDao?.getTagsForSync(syncTime) ?: emptyList(),
         )
 
         settings.putString(KEY_LOCAL_SYNCED_AT, syncedAt.toString())

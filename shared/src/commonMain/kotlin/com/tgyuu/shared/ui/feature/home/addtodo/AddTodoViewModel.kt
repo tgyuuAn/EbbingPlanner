@@ -2,6 +2,7 @@ package com.tgyuu.shared.ui.feature.home.addtodo
 
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
 import com.tgyuu.shared.domain.model.DefaultTodoTag
@@ -23,6 +24,7 @@ class AddTodoViewModel(
     private val onNavigateToAddRepeatCycle: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
+    private val configRepository: ConfigRepository? = null,
     private val onShowTagBottomSheet: (() -> Unit)? = null,
     private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState(selectedDate = selectedDate)) {
@@ -125,6 +127,8 @@ class AddTodoViewModel(
                 priority = currentState.priority.toIntOrNull(),
                 restDays = currentState.restDays.toSet(),
             )
+
+            configRepository?.markFirstTodoAdded()
 
             onShowSnackbar("새로운 일정을 추가하였습니다")
             onNavigateToHome(currentState.selectedDate)
