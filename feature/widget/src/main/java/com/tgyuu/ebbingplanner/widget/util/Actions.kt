@@ -8,7 +8,6 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
@@ -102,6 +101,8 @@ class SelectDateAction : ActionCallback {
     }
 }
 
+const val ACTION_OPEN_ADD_TODO = "com.tgyuu.ebbingplanner.OPEN_ADD_TODO"
+
 class AddTodoFromWidgetAction : ActionCallback {
     override suspend fun onAction(
         context: Context,
@@ -117,10 +118,11 @@ class AddTodoFromWidgetAction : ActionCallback {
         }
         context.sendBroadcast(broadcastIntent)
 
-        val activityIntent = Intent(context, MainActivity::class.java).apply {
+        val activityIntent = Intent(ACTION_OPEN_ADD_TODO).apply {
+            setPackage(context.packageName)
             putExtra(KEY_DESTINATION, ADD_TODO)
             if (selectedDate != null) putExtra(KEY_SELECTED_DATE, selectedDate)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         context.startActivity(activityIntent)
     }

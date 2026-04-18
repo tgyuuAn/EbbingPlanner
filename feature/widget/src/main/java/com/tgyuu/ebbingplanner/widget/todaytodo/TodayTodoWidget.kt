@@ -15,6 +15,7 @@ import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
+import android.content.Intent
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
@@ -44,8 +45,7 @@ import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.MainActivity
-import com.tgyuu.ebbingplanner.R
+import com.tgyuu.widget.R
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
@@ -54,6 +54,7 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.LocalEbbingWidgetC
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.widget.util.ACTION_OPEN_ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
@@ -107,7 +108,13 @@ private fun TodayTodoWidgetContent(
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable(onClick = actionStartActivity<MainActivity>())
+            .clickable(
+                onClick = actionStartActivity(
+                    Intent(ACTION_OPEN_ADD_TODO).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
+                )
+            )
             .background(
                 imageProvider = ImageProvider(backgroundImage),
                 colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.background),
