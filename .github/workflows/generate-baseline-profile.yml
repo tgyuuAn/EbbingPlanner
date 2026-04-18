@@ -1,0 +1,67 @@
+name: Generate Baseline Profile
+
+on:
+  schedule:
+    - cron: '0 17 * * *'  # 매일 새벽 2시 KST (UTC+9)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Create local.properties
+        run: echo "EBBING_NOTICE_URL=${{ secrets.EBBING_NOTICE_URL }}" > local.properties
+
+      - name: Create keystore
+        run: |
+          mkdir -p keystore
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore/release.keystore
+
+      - name: Create keystore.properties
+        run: |
+          cat > keystore.properties << EOF
+          STORE_FILE_PATH=keystore/release.keystore
+          STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS_RELEASE=${{ secrets.KEY_ALIAS_RELEASE }}
+          KEY_PASSWORD_RELEASE=${{ secrets.KEY_PASSWORD_RELEASE }}
+          EOF
+
+      - name: Generate Baseline Profile
+        run: ./gradlew :app:generateReleaseBaselineProfile -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add app/src/release/generated/baselineProfiles/
+          if git diff --staged --quiet; then
+            echo "BaselineProfile 변경 없음, 스킵"
+          else
+            git commit -m "[Auto] BaselineProfile 업데이트"
+            git push origin develop
+          fi
