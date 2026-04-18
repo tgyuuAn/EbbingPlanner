@@ -9,13 +9,10 @@ import com.tgyuu.repeatcycle.util.toPreviewIntervals
 data class EditRepeatCycleState(
     val originRepeatCycle: RepeatCycle? = null,
     val intervals: String = "",
-    val resourceProvider: ResourceProvider? = null,
 ) : UiState {
-    val previewRepeatCycle = resourceProvider?.let {
-        parsingIntervals(intervals)
-            .getOrDefault(emptyList())
-            .toPreviewIntervals(it)
-    } ?: ""
+    val previewRepeatCycle = parsingIntervals(intervals)
+        .getOrDefault(emptyList())
+        .toPreviewIntervals()
 
     val isSaveEnabled = intervals.isNotEmpty()
 }

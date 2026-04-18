@@ -1,7 +1,5 @@
 package com.tgyuu.dashboard
 
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent.HideBottomSheet
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -17,9 +15,7 @@ import com.tgyuu.dashboard.model.toUiModel
 import com.tgyuu.dashboard.model.toUiModels
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import com.tgyuu.domain.model.TodoInfo
-import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.domain.model.TodoTag
+import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
@@ -28,37 +24,31 @@ import kotlinx.coroutines.coroutineScope
 
 class ScheduleViewModel(
     private val todoRepository: TodoRepository,
-    private val analyticsHelper: AnalyticsHelper,
-    private val navigationBus: NavigationBus,
-    private val eventBus: EventBus,
-    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
     internal suspend fun loadTodoSchedules() = coroutineScope {
         suspendRunCatching {
             val allSchedules = todoRepository.loadAllSchedules()
 
-            val infosByTagMap = allSchedules
-                .groupBy { it.tagId }
-                .mapValues { (_, schedules) ->
-                    schedules.map { s ->
-                        TodoInfo(id = s.infoId, title = s.title, tagId = s.tagId).toUiModel()
-                    }.distinctBy { it.id }.toImmutableList()
-                }.toImmutableMap()
+            val todoInfoMap = allSchedules.groupBy { schedule ->
+                schedule.tagId
+            }.mapValues { entry ->
+                entry.value.map { schedule ->
+                    TodoInfoUiModel(
+                        id = schedule.infoId,
+                        title = schedule.title,
+                        tagId = schedule.tagId,
+                    )
+                }.distinctBy { it.id }.toImmutableList()
+            }.toImmutableMap()
 
-            val schedulesByInfoMap = allSchedules
-                .groupBy { it.infoId }
-                .mapValues { (_, schedules) ->
-                    schedules.map { s ->
-                        TodoSchedule(
-                            id = s.id, infoId = s.infoId, title = s.title,
-                            tagId = s.tagId, name = s.name, color = s.color,
-                            date = s.date, memo = s.memo, isPinned = s.isPinned,
-                            isDone = s.isDone, createdAt = s.createdAt,
-                            infoCreatedAt = s.createdAt,
-                        ).toUiModel()
-                    }.sortedBy { it.date }.toImmutableList()
-                }.toImmutableMap()
+            val todoScheduleMap = allSchedules.groupBy { schedule ->
+                schedule.infoId
+            }.mapValues { entry ->
+                entry.value.map { schedule ->
+                    schedule.toUiModel()
+                }.distinctBy { it.id }.toImmutableList()
+            }.toImmutableMap()
 
             val todoTags = todoRepository.loadTags()
             val tags = todoTags.toUiModels()
@@ -140,51 +130,16 @@ class ScheduleViewModel(
         }
     }
 
-    private suspend fun onReplaceBottomSheet(content: BottomSheetContent) {
-        eventBus.sendEvent(HideBottomSheet)
-        eventBus.awaitBottomSheetHidden()
-        eventBus.sendEvent(ShowBottomSheet(content))
+    private fun onTagClick(tag: TodoTagUiModel) {
+        setSelectedTag(tag)
     }
 
-    private suspend fun onRequestDeleteTag(tagId: Int, tagName: String) {
-        eventBus.sendEvent(HideBottomSheet)
-        eventBus.awaitBottomSheetHidden()
-        setState { copy(pendingDeleteTag = tagId to tagName) }
-    }
-
-    private suspend fun onNavigateToAddTodo() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddSchedule")
-        )
-        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        navigationBus.navigate(To(AddTodoRoute(today)))
-    }
-
-    private fun onToggleTagExpand(tagId: Int) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "ToggleTag")
-        )
-        val current = currentState.expandedTagIds.toMutableSet()
-        if (tagId in current) current.remove(tagId) else current.add(tagId)
-        setState { copy(expandedTagIds = current.toPersistentHashSet()) }
-    }
-
-    private fun onToggleInfoExpand(infoId: Int) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "ToggleInfo")
-        )
-        val current = currentState.expandedInfoIds.toMutableSet()
-        if (infoId in current) current.remove(infoId) else current.add(infoId)
-        setState { copy(expandedInfoIds = current.toPersistentHashSet()) }
+    private fun onInfoClick(todoInfo: TodoInfoUiModel) {
+        setSelectedTodoInfo(todoInfo)
     }
 
     private suspend fun onScheduleClick(schedule: TodoScheduleUiModel) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Schedule")
-        )
-        val domainSchedule = schedule.toDomainModel()
-        todoRepository.updateTodo(domainSchedule.copy(isDone = !domainSchedule.isDone))
-        loadTodoSchedules()
+        onCheckedChange(schedule)
     }
 
     private suspend fun onSaveTag(tagId: Int, name: String, color: Int) {
@@ -299,7 +254,17 @@ class ScheduleViewModel(
         }
     }
 
-    companion object {
-        private const val SCREEN_NAME = "Schedule"
+    private suspend fun onCheckedChange(schedule: TodoScheduleUiModel) {
+        val domainSchedule = schedule.toDomainModel()
+        val newDomainSchedule = domainSchedule.copy(isDone = !domainSchedule.isDone)
+        todoRepository.updateTodo(newDomainSchedule)
+
+        val newSchedule = newDomainSchedule.toUiModel()
+        val updatedMap = currentState.todoScheduleMap.toMutableMap()
+        val schedules = updatedMap[schedule.infoId].orEmpty().map {
+            if (it.id == schedule.id) newSchedule else it
+        }.toImmutableList()
+        updatedMap[schedule.infoId] = schedules
+        setState { copy(todoScheduleMap = updatedMap.toImmutableMap()) }
     }
 }
