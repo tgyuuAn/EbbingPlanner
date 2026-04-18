@@ -42,15 +42,6 @@ import com.tgyuu.memo.ui.dialog.SaveMemoDialog
 internal fun AddMemoRoute(viewModel: AddMemoViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    if (state.showSaveDialog) {
-        SaveMemoDialog(
-            relatedCount = state.relatedScheduleCount,
-            onDismissRequest = { viewModel.onIntent(AddMemoIntent.OnDismissSaveDialog) },
-            onSaveToAllClick = { viewModel.onIntent(AddMemoIntent.OnSaveToAllRelatedClick) },
-            onSaveToSingleClick = { viewModel.onIntent(AddMemoIntent.OnSaveToSingleClick) },
-        )
-    }
-
     AddMemoScreen(
         state = state,
         onBackClick = { viewModel.onIntent(AddMemoIntent.OnBackClick) },
@@ -77,22 +68,17 @@ private fun AddMemoScreen(
                 title = "메모 추가",
                 onNavigationClick = onBackClick,
                 rightComponent = {
-                    if (!state.isTreatment) {
-                        Text(
-                            text = "저장",
-                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .throttledClickable(
-                                    throttleTime = 1500L,
-                                    enabled = state.isSaveEnabled
-                                ) {
-                                    onSaveClick()
-                                    focusManager.clearFocus()
-                                },
-                        )
-                    }
+                    Text(
+                        text = "저장",
+                        style = EbbingTheme.typography.body16M,
+                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .throttledClickable(throttleTime = 1500L, enabled = state.isSaveEnabled) {
+                                onSaveClick()
+                                focusManager.clearFocus()
+                            },
+                    )
                 },
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
@@ -127,7 +113,7 @@ private fun AddMemoScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            if (state.isTreatment) {
+            if (false) {
                 EbbingSolidButton(
                     label = "저장",
                     onClick = {

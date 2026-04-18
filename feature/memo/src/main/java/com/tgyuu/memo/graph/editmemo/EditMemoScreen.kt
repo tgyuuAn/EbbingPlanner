@@ -42,15 +42,6 @@ import com.tgyuu.memo.ui.dialog.SaveMemoDialog
 internal fun EditMemoRoute(viewModel: EditMemoViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    if (state.showSaveDialog) {
-        SaveMemoDialog(
-            relatedCount = state.relatedScheduleCount,
-            onDismissRequest = { viewModel.onIntent(EditMemoIntent.OnDismissSaveDialog) },
-            onSaveToAllClick = { viewModel.onIntent(EditMemoIntent.OnSaveToAllRelatedClick) },
-            onSaveToSingleClick = { viewModel.onIntent(EditMemoIntent.OnSaveToSingleClick) },
-        )
-    }
-
     EditMemoScreen(
         state = state,
         onBackClick = { viewModel.onIntent(EditMemoIntent.OnBackClick) },
@@ -77,7 +68,7 @@ private fun EditMemoScreen(
                 title = "메모 수정",
                 onNavigationClick = onBackClick,
                 rightComponent = {
-                    if (!state.isTreatment) {
+                    if (true) {
                         Text(
                             text = "저장",
                             style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
@@ -127,7 +118,7 @@ private fun EditMemoScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            if (state.isTreatment) {
+            if (false) {
                 EbbingSolidButton(
                     label = "저장",
                     onClick = {

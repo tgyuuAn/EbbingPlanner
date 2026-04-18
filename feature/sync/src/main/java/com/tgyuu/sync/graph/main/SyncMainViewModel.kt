@@ -1,8 +1,6 @@
 package com.tgyuu.sync.graph.main
 
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -31,7 +29,6 @@ class SyncMainViewModel(
     private val navigationBus: NavigationBus,
     private val errorBus: ErrorBus,
     internal val eventBus: EventBus,
-    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
 
     @OptIn(ExperimentalTime::class)
@@ -90,56 +87,32 @@ class SyncMainViewModel(
     }
 
     private suspend fun onBackClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
-        )
         navigationBus.navigate(NavigationEvent.Up)
     }
 
     private fun onSyncUpClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Sync")
-        )
         syncUpData()
     }
 
     private suspend fun onConnectClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Connect")
-        )
         navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
     }
 
     private fun onDisconnectClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Disconnect")
-        )
         disconnectAnother()
     }
 
     private fun onSyncDialogBackClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SYNC_DIALOG, buttonName = "Back")
-        )
     }
 
     private fun onSyncDialogSyncClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SYNC_DIALOG, buttonName = "Sync")
-        )
         syncUpData()
     }
 
     private fun onDisconnectDialogBackClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = DISCONNECT_DIALOG, buttonName = "Back")
-        )
     }
 
     private fun onDisconnectDialogDisconnectClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = DISCONNECT_DIALOG, buttonName = "Disconnect")
-        )
         disconnectAnother()
     }
 

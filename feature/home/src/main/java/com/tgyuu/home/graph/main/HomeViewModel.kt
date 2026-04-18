@@ -3,9 +3,6 @@ package com.tgyuu.home.graph.main
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.ACTION_NAME
-import com.tgyuu.analytics.AnalyticsEvent.PropertiesKeys.ACTION_RESULT
-import com.tgyuu.analytics.AnalyticsEvent.Types.ACTION
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.copy
@@ -267,11 +264,11 @@ class HomeViewModel(
         }
 
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = ACTION,
-                properties = mutableMapOf(
-                    ACTION_NAME to "delay_single_schedule",
-                    ACTION_RESULT to "success",
+            AnalyticsEvent.Action(
+                screenName = "Home",
+                actionName = "delay_single_schedule",
+                actionResult = "success",
+                properties = mapOf(
                     "schedule_id" to schedule.id,
                     "original_date" to schedule.date.toString(),
                     "next_date" to nextDate.toString(),
@@ -296,13 +293,11 @@ class HomeViewModel(
 
         if (futureSchedules.isEmpty()) {
             analyticsHelper.logEvent(
-                AnalyticsEvent(
-                    type = ACTION,
-                    properties = mutableMapOf(
-                        ACTION_NAME to "delay_all_schedules",
-                        ACTION_RESULT to "no_schedules",
-                        "schedule_id" to schedule.id,
-                    )
+                AnalyticsEvent.Action(
+                    screenName = "Home",
+                    actionName = "delay_all_schedules",
+                    actionResult = "no_schedules",
+                    properties = mapOf("schedule_id" to schedule.id)
                 )
             )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("미룰 일정이 없습니다."))
@@ -366,11 +361,11 @@ class HomeViewModel(
         }
 
         analyticsHelper.logEvent(
-            AnalyticsEvent(
-                type = ACTION,
-                properties = mutableMapOf(
-                    ACTION_NAME to "delay_all_schedules",
-                    ACTION_RESULT to "success",
+            AnalyticsEvent.Action(
+                screenName = "Home",
+                actionName = "delay_all_schedules",
+                actionResult = "success",
+                properties = mapOf(
                     "schedule_id" to schedule.id,
                     "schedules_count" to futureSchedules.size,
                     "include_rest_days" to includeRestDays,

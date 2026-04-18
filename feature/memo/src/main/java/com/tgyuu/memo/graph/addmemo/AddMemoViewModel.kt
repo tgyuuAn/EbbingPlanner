@@ -40,6 +40,9 @@ class AddMemoViewModel(
             is AddMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
             AddMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             AddMemoIntent.OnSaveClick -> saveMemo()
+            AddMemoIntent.OnDismissSaveDialog -> Unit
+            AddMemoIntent.OnSaveToAllRelatedClick -> saveMemo()
+            AddMemoIntent.OnSaveToSingleClick -> saveMemo()
         }
     }
 
