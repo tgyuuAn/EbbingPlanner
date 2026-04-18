@@ -286,6 +286,38 @@ private fun PhoneScheduleScreen(
                 Modifier.weight(1f)
             )
         }
+
+        EbbingVisibleAnimation(
+            visible = state.selectedTag != null,
+            modifier = Modifier.padding(horizontal = 20.dp),
+        ) {
+            Column {
+                TodoInfosBody(
+                    todoInfos = state.todoInfos,
+                    selectedTag = state.selectedTag ?: return@Column,
+                    selectedTodoInfo = state.selectedTodoInfo,
+                    achievementRateMap = state.todoInfoAchievementRateMap,
+                    onTodoInfoClick = onInfoClick,
+                    modifier = Modifier.heightIn(max = 400.dp),
+                )
+
+                HorizontalDivider(
+                    color = EbbingTheme.colors.fillStrong,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+        }
+
+        TagsBody(
+            tags = state.tags,
+            selectedTag = state.selectedTag,
+            achievementRateMap = state.tagAchievementRateMap,
+            onTagClick = onTagClick,
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, bottom = 16.dp)
+                .heightIn(max = 400.dp),
+        )
     }
 }
 
@@ -323,10 +355,73 @@ private fun TabletScheduleScreen(
 
         HorizontalDivider(color = EbbingTheme.colors.fillTextfield, thickness = 1.dp)
 
-        if (state.visibleTags.isEmpty()) {
-            EmptyScheduleContent(
-                onNavigateToAddTodo = onNavigateToAddTodo,
-                modifier = Modifier.weight(1f)
+                EbbingVisibleAnimation(visible = state.selectedTag != null) {
+                    Column {
+                        HorizontalDivider(
+                            color = EbbingTheme.colors.fillStrong,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+
+                        TodoInfosBody(
+                            todoInfos = state.todoInfos,
+                            selectedTag = state.selectedTag ?: return@Column,
+                            selectedTodoInfo = state.selectedTodoInfo,
+                            achievementRateMap = state.todoInfoAchievementRateMap,
+                            onTodoInfoClick = onInfoClick,
+                            modifier = Modifier.heightIn(max = maxBodyHeight / 2 * 3),
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                EbbingVisibleAnimation(visible = state.selectedTodoInfo != null) {
+                    SchedulesBody(
+                        todoSchedules = state.todoSchedules,
+                        selectedTodoInfo = state.selectedTodoInfo,
+                        achievementRate = state.todoInfoAchievementRateMap[state.selectedTodoInfo?.id]
+                            ?: 0f,
+                        onScheduleClick = onScheduleClick,
+                        modifier = Modifier.heightIn(max = maxBodyHeight),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TagsBody(
+    tags: ImmutableList<TodoTagUiModel>,
+    selectedTag: TodoTagUiModel?,
+    achievementRateMap: Map<Int, Float>,
+    onTagClick: (TodoTagUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val listState = rememberLazyListState()
+
+    Column(modifier = modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    append("태그 ")
+                    withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
+                        append(tags.size.toString())
+                    }
+                },
+                style = EbbingTheme.typography.body16M,
+                color = EbbingTheme.colors.textOnBackground,
             )
         } else {
             TagList(
