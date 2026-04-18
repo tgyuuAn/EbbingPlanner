@@ -63,7 +63,7 @@ private fun EditRepeatCycleScreen(
                 title = "반복 주기 수정",
                 onNavigationClick = onBackClick,
                 rightComponent = {
-                    if (!state.isTreatment) {
+                    if (true) {
                         Text(
                             text = "저장",
                             style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
@@ -106,7 +106,7 @@ private fun EditRepeatCycleScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            if (state.isTreatment) {
+            if (false) {
                 EbbingSolidButton(
                     label = "저장",
                     onClick = {

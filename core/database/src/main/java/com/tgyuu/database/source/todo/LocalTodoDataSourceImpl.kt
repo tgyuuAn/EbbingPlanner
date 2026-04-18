@@ -125,5 +125,14 @@ class LocalTodoDataSourceImpl constructor(
     override suspend fun getTodoInfoById(infoId: Int): TodoInfo =
         todoSchedulesDao.getTodoInfoById(infoId)
 
+    override suspend fun getTodoInfoEntity(id: Int) =
+        todoSchedulesDao.loadTodoInfoEntity(id)
+
+    override suspend fun updateSchedules(schedules: List<TodoSchedule>) {
+        schedules.forEach { schedule ->
+            todoSchedulesDao.updateTodoSchedule(schedule.toEntity())
+        }
+    }
+
     override suspend fun deleteAllTodoInfos() = todoSchedulesDao.hardDeleteAllTodoInfos()
 }

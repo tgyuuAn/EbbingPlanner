@@ -7,6 +7,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.tgyuu.common.initializer.Initializer
 import com.tgyuu.experiment.data.datasource.ExperimentLocalDataSource
 import com.tgyuu.experiment.data.datasource.ExperimentLocalDataSourceImpl
+import com.tgyuu.experiment.data.datasource.ExperimentMemoryDataSource
+import com.tgyuu.experiment.data.datasource.ExperimentMemoryDataSourceImpl
 import com.tgyuu.experiment.data.datasource.ExperimentRemoteDataSource
 import com.tgyuu.experiment.data.datasource.ExperimentRemoteDataSourceImpl
 import com.tgyuu.experiment.data.initializer.ExperimentInitializer
@@ -25,6 +27,7 @@ val experimentModule = module {
 
     single { ExperimentLocalDataSourceImpl(get(named("experiment"))) } bind ExperimentLocalDataSource::class
     single { ExperimentRemoteDataSourceImpl(get()) } bind ExperimentRemoteDataSource::class
-    single { ExperimentRepositoryImpl(get(), get()) } bind ExperimentRepository::class
+    single { ExperimentMemoryDataSourceImpl() } bind ExperimentMemoryDataSource::class
+    single { ExperimentRepositoryImpl(get(), get(), get()) } bind ExperimentRepository::class
     single { ExperimentInitializer(get()) } bind Initializer::class
 }

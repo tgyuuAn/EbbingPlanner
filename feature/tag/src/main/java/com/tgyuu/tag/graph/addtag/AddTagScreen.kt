@@ -82,7 +82,7 @@ private fun AddTagScreen(
             title = "태그 추가",
             onNavigationClick = onBackClick,
             rightComponent = {
-                if (!state.isTreatment) {
+                if (true) {
                     Text(
                         text = "저장",
                         style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
@@ -124,7 +124,7 @@ private fun AddTagScreen(
             )
         }
 
-        if (state.isTreatment) {
+        if (false) {
             EbbingSolidButton(
                 label = "저장",
                 onClick = {

@@ -1,7 +1,5 @@
 package com.tgyuu.dashboard
 
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.dashboard.contract.ScheduleIntent
@@ -12,8 +10,6 @@ import com.tgyuu.dashboard.model.toUiModels
 import com.tgyuu.designsystem.model.TodoInfoUiModel
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
-import com.tgyuu.domain.model.TodoInfo
-import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
@@ -21,7 +17,6 @@ import kotlinx.coroutines.coroutineScope
 
 class ScheduleViewModel(
     private val todoRepository: TodoRepository,
-    private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
     internal suspend fun loadTodoSchedules() = coroutineScope {
@@ -32,11 +27,11 @@ class ScheduleViewModel(
                 schedule.tagId
             }.mapValues { entry ->
                 entry.value.map { schedule ->
-                    TodoInfo(
+                    TodoInfoUiModel(
                         id = schedule.infoId,
                         title = schedule.title,
                         tagId = schedule.tagId,
-                    ).toUiModel()
+                    )
                 }.distinctBy { it.id }.toImmutableList()
             }.toImmutableMap()
 
@@ -44,20 +39,7 @@ class ScheduleViewModel(
                 schedule.infoId
             }.mapValues { entry ->
                 entry.value.map { schedule ->
-                    TodoSchedule(
-                        id = schedule.id,
-                        infoId = schedule.infoId,
-                        title = schedule.title,
-                        tagId = schedule.tagId,
-                        name = schedule.name,
-                        color = schedule.color,
-                        date = schedule.date,
-                        memo = schedule.memo,
-                        priority = schedule.priority,
-                        isDone = schedule.isDone,
-                        createdAt = schedule.createdAt,
-                        infoCreatedAt = schedule.createdAt
-                    ).toUiModel()
+                    schedule.toUiModel()
                 }.distinctBy { it.id }.toImmutableList()
             }.toImmutableMap()
 
@@ -82,23 +64,14 @@ class ScheduleViewModel(
     }
 
     private fun onTagClick(tag: TodoTagUiModel) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Tag")
-        )
         setSelectedTag(tag)
     }
 
     private fun onInfoClick(todoInfo: TodoInfoUiModel) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Info")
-        )
         setSelectedTodoInfo(todoInfo)
     }
 
     private suspend fun onScheduleClick(schedule: TodoScheduleUiModel) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Schedule")
-        )
         onCheckedChange(schedule)
     }
 
@@ -117,10 +90,6 @@ class ScheduleViewModel(
         if (todoInfo == currentState.selectedTodoInfo) return
 
         setState { copy(selectedTodoInfo = todoInfo) }
-    }
-
-    companion object {
-        private const val SCREEN_NAME = "Schedule"
     }
 
     private suspend fun onCheckedChange(schedule: TodoScheduleUiModel) {
