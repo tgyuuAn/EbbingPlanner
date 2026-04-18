@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -69,7 +70,34 @@ internal fun CalendarBody(
 }
 
 @Composable
-private fun CalendarDayItem(
+internal fun WeekCalendarBody(
+    weekReferenceDate: LocalDate,
+    selectedDate: LocalDate,
+    schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
+    onDateSelect: (LocalDate) -> Unit,
+    startFromMonday: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .semantics { contentDescription = "주간 달력 바디" },
+    ) {
+        getWeekDates(weekReferenceDate, startFromMonday).forEach { calendarDate ->
+            CalendarDayItem(
+                calendarDate = calendarDate,
+                selectedDate = selectedDate,
+                events = schedulesByDateMap[calendarDate.date] ?: emptyList(),
+                onDateSelect = onDateSelect,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+internal fun CalendarDayItem(
     calendarDate: CalendarDate,
     selectedDate: LocalDate?,
     events: List<TodoScheduleUiModel>,

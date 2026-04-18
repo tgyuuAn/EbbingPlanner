@@ -1,5 +1,6 @@
 package com.tgyuu.domain.repository
 
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
@@ -34,6 +35,8 @@ interface ConfigRepository {
     fun getTodoRegisteredCount(): Flow<Int>
     fun getMondayStart(): Flow<Boolean>
     suspend fun setMondayStart(enabled: Boolean)
+    fun getCalendarDefaultView(): Flow<CalendarDefaultView>
+    suspend fun setCalendarDefaultView(view: CalendarDefaultView)
 
     companion object {
         const val DEFAULT_ALARM_MESSAGE: String = "{할일} 을 확인하고, 잊지 말고 복습하세요!"

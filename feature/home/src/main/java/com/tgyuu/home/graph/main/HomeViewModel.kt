@@ -65,6 +65,11 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            configRepository.getCalendarDefaultView()
+                .collect { setState { copy(calendarDefaultView = it) } }
+        }
+
+        viewModelScope.launch {
             configRepository.getTodoRegisteredCount().first { it >= 3 }
             if (configRepository.consumeInAppReview()) {
                 setState { copy(showInAppReviewDialog = true) }
@@ -118,6 +123,7 @@ class HomeViewModel @Inject constructor(
             HomeIntent.OnSyncClick -> onSyncClick()
             is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
             HomeIntent.OnWidgetNudgeDismiss -> onWidgetNudgeDismiss()
+            is HomeIntent.OnCalendarViewChanged -> configRepository.setCalendarDefaultView(intent.view)
         }
     }
 
