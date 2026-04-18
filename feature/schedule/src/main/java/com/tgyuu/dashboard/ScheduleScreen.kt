@@ -143,7 +143,7 @@ private fun PhoneScheduleScreen(
             Column {
                 TodoInfosBody(
                     todoInfos = state.todoInfos,
-                    selectedTag = state.selectedTag!!,
+                    selectedTag = state.selectedTag ?: return@Column,
                     selectedTodoInfo = state.selectedTodoInfo,
                     achievementRateMap = state.todoInfoAchievementRateMap,
                     onTodoInfoClick = onInfoClick,
@@ -218,7 +218,7 @@ private fun TabletScheduleScreen(
 
                         TodoInfosBody(
                             todoInfos = state.todoInfos,
-                            selectedTag = state.selectedTag!!,
+                            selectedTag = state.selectedTag ?: return@Column,
                             selectedTodoInfo = state.selectedTodoInfo,
                             achievementRateMap = state.todoInfoAchievementRateMap,
                             onTodoInfoClick = onInfoClick,

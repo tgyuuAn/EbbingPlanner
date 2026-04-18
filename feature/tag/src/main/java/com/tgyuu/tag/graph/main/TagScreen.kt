@@ -82,16 +82,18 @@ private fun TagScreen(
     var isShowDialog by remember { mutableStateOf(false) }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (isShowDialog && selectedTag != null) {
-        DeleteDialog(
-            tag = selectedTag!!,
-            onDismissRequest = { isShowDialog = false },
-            onDeleteClick = {
-                onDeleteClick(selectedTag!!)
-                isShowDialog = false
-                selectedTag = null
-            },
-        )
+    selectedTag?.let { toDelete ->
+        if (isShowDialog) {
+            DeleteDialog(
+                tag = toDelete,
+                onDismissRequest = { isShowDialog = false },
+                onDeleteClick = {
+                    onDeleteClick(toDelete)
+                    isShowDialog = false
+                    selectedTag = null
+                },
+            )
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -176,7 +178,7 @@ private fun TagScreen(
 
                 EbbingSolidButton(
                     label = "수정",
-                    onClick = { onEditClick(selectedTag!!) },
+                    onClick = { selectedTag?.let(onEditClick) },
                     modifier = Modifier.weight(1f),
                 )
             }

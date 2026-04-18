@@ -80,15 +80,17 @@ private fun RepeatCycleScreen(
     var isShowDialog by remember { mutableStateOf(false) }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (isShowDialog && selectedRepeatCycle != null) {
-        DeleteDialog(
-            onDismissRequest = { isShowDialog = false },
-            onDeleteClick = {
-                onDeleteClick(selectedRepeatCycle!!)
-                isShowDialog = false
-                selectedRepeatCycle = null
-            },
-        )
+        selectedRepeatCycle?.let { toDelete ->
+        if (isShowDialog) {
+            DeleteDialog(
+                onDismissRequest = { isShowDialog = false },
+                onDeleteClick = {
+                    onDeleteClick(toDelete)
+                    isShowDialog = false
+                    selectedRepeatCycle = null
+                },
+            )
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -171,7 +173,7 @@ private fun RepeatCycleScreen(
 
                 EbbingSolidButton(
                     label = "수정",
-                    onClick = { onEditClick(selectedRepeatCycle!!) },
+                    onClick = { selectedRepeatCycle?.let(onEditClick) },
                     modifier = Modifier.weight(1f),
                 )
             }

@@ -73,13 +73,9 @@ class WidgetViewModel(
     }
 
     private fun saveWidgetConfigure() = viewModelScope.launch {
-        currentState.selectedBackgroundAlpha ?: return@launch
-        currentState.selectedTextAlpha ?: return@launch
-        currentState.selectedTheme ?: return@launch
-
-        val newBackgroundAlpha = currentState.selectedBackgroundAlpha!!
-        val newTextAlpha = currentState.selectedTextAlpha!!
-        val newTheme = currentState.selectedTheme!!
+        val newBackgroundAlpha = currentState.selectedBackgroundAlpha ?: return@launch
+        val newTextAlpha = currentState.selectedTextAlpha ?: return@launch
+        val newTheme = currentState.selectedTheme ?: return@launch
 
         suspendRunCatching {
             val backgroundAlphaJob =
