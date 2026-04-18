@@ -1,5 +1,6 @@
 package com.tgyuu.ebbingplanner.widget.todaytodo
 
+import android.content.ComponentName
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -15,7 +16,6 @@ import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
-import android.content.Intent
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
@@ -110,9 +110,10 @@ private fun TodayTodoWidgetContent(
             .fillMaxSize()
             .clickable(
                 onClick = actionStartActivity(
-                    Intent(ACTION_OPEN_ADD_TODO).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    }
+                    ComponentName(
+                        androidx.glance.LocalContext.current.packageName,
+                        "${androidx.glance.LocalContext.current.packageName}.MainActivity"
+                    )
                 )
             )
             .background(
