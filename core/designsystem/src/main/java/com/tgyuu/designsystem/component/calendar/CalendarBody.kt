@@ -39,6 +39,7 @@ internal fun CalendarBody(
     selectedDate: LocalDate?,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
     onDateSelect: (LocalDate) -> Unit,
+    startFromMonday: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val bodyDescription = stringResource(R.string.ds_cd_calendar_body)
@@ -51,7 +52,7 @@ internal fun CalendarBody(
             .semantics { contentDescription = bodyDescription },
     ) {
         items(
-            items = getCalendarDates(currentDate),
+            items = getCalendarDates(currentDate, startFromMonday),
             key = { it.date.toString() },
         ) {
             CalendarDayItem(

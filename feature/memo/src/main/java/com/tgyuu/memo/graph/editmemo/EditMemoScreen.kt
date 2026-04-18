@@ -42,15 +42,6 @@ import com.tgyuu.memo.ui.dialog.SaveMemoDialog
 internal fun EditMemoRoute(viewModel: EditMemoViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    if (state.showSaveDialog) {
-        SaveMemoDialog(
-            relatedCount = state.relatedScheduleCount,
-            onDismissRequest = { viewModel.onIntent(EditMemoIntent.OnDismissSaveDialog) },
-            onSaveToAllClick = { viewModel.onIntent(EditMemoIntent.OnSaveToAllRelatedClick) },
-            onSaveToSingleClick = { viewModel.onIntent(EditMemoIntent.OnSaveToSingleClick) },
-        )
-    }
-
     EditMemoScreen(
         state = state,
         onBackClick = { viewModel.onIntent(EditMemoIntent.OnBackClick) },
@@ -76,7 +67,24 @@ private fun EditMemoScreen(
             EbbingSubTopBar(
                 title = stringResource(R.string.memo_edit_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {},
+                rightComponent = {
+                    if (true) {
+                        Text(
+                            text = "저장",
+                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
+                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .throttledClickable(
+                                    throttleTime = 1500L,
+                                    enabled = state.isSaveEnabled
+                                ) {
+                                    onSaveClick()
+                                    focusManager.clearFocus()
+                                },
+                        )
+                    }
+                },
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
@@ -111,18 +119,20 @@ private fun EditMemoScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            EbbingSolidButton(
-                label = stringResource(R.string.memo_edit_button),
-                onClick = {
-                    onSaveClick()
-                    focusManager.clearFocus()
-                },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
+            if (false) {
+                EbbingSolidButton(
+                    label = "저장",
+                    onClick = {
+                        onSaveClick()
+                        focusManager.clearFocus()
+                    },
+                    enabled = state.isSaveEnabled,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(EbbingTheme.colors.background)
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                )
+            }
         }
     } else {
         Column(

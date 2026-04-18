@@ -117,8 +117,8 @@ private fun EditTodoScreen(
             rightComponent = {
                 Text(
                     text = "저장",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
+                    style = EbbingTheme.typography.body16M,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .throttledClickable(
@@ -146,8 +146,8 @@ private fun EditTodoScreen(
                     }
                     append(" 에\n진행하는 걸로 바꿀래요")
                 },
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.heading24B,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.clickable { onSelectedDateChangeClick() },
             )
 

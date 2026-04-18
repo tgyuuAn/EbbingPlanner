@@ -53,6 +53,9 @@ class EditMemoViewModel(
             is EditMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
             EditMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             EditMemoIntent.OnUpdateClick -> updateMemo()
+            EditMemoIntent.OnDismissSaveDialog -> Unit
+            EditMemoIntent.OnSaveToAllRelatedClick -> updateMemo()
+            EditMemoIntent.OnSaveToSingleClick -> updateMemo()
         }
     }
 

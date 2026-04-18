@@ -36,8 +36,9 @@ import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.domain.model.RepeatCycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.until
 
 @Composable
 internal fun RepeatCycleBottomSheet(
@@ -61,7 +62,7 @@ internal fun RepeatCycleBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         val dayCountForHeader = dailyEndDate?.let {
-            ChronoUnit.DAYS.between(selectedDate, it).toInt()
+            selectedDate.until(it, DateTimeUnit.DAY).toInt()
         }
 
         EbbingBottomSheetHeader(
@@ -122,11 +123,7 @@ internal fun RepeatCycleBottomSheet(
 
             Column {
                 Text(
-                    text = stringResource(
-                        R.string.home_daily_repeat_prompt,
-                        selectedDate.monthValue,
-                        selectedDate.dayOfMonth,
-                    ),
+                    text = "${selectedDate.monthNumber}월 ${selectedDate.dayOfMonth}일부터 언제까지 반복할까요?",
                     style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(top = 8.dp),
@@ -138,7 +135,7 @@ internal fun RepeatCycleBottomSheet(
                     showSyncButton = false,
                     startFromMonday = startFromMonday,
                     onSelectDate = { date ->
-                        if (date.isAfter(selectedDate)) {
+                        if (date > selectedDate) {
                             dailyEndDate = date
                         } else {
                             dailyEndDate = null
@@ -150,7 +147,7 @@ internal fun RepeatCycleBottomSheet(
                 )
 
                 val dayCount = dailyEndDate?.let {
-                    ChronoUnit.DAYS.between(selectedDate, it).toInt()
+                    selectedDate.until(it, DateTimeUnit.DAY).toInt()
                 }
                 val exceedsMax = dayCount != null && dayCount >= RepeatCycle.MAX_DAILY_REPEAT_DAYS
 
@@ -172,28 +169,19 @@ internal fun RepeatCycleBottomSheet(
             label = stringResource(R.string.home_apply),
             enabled = if (showEndDatePicker) {
                 val dayCount = dailyEndDate?.let {
-                    ChronoUnit.DAYS.between(selectedDate, it).toInt()
+                    selectedDate.until(it, DateTimeUnit.DAY).toInt()
                 }
                 dayCount != null && dayCount > 0 && dayCount < RepeatCycle.MAX_DAILY_REPEAT_DAYS
             } else true,
             onClick = {
                 if (showEndDatePicker) {
                     dailyEndDate?.let { endDate ->
-                        val dayCount = ChronoUnit.DAYS.between(selectedDate, endDate).toInt()
+                        val dayCount = selectedDate.until(endDate, DateTimeUnit.DAY).toInt()
                         val intervals = (0..dayCount).toList()
                         val endDateText = if (endDate.year != selectedDate.year) {
-                            context.getString(
-                                R.string.home_end_date_with_year,
-                                endDate.year,
-                                endDate.monthValue,
-                                endDate.dayOfMonth,
-                            )
+                            "${endDate.year}년 ${endDate.monthNumber}월 ${endDate.dayOfMonth}일"
                         } else {
-                            context.getString(
-                                R.string.home_month_day,
-                                endDate.monthValue,
-                                endDate.dayOfMonth,
-                            )
+                            "${endDate.monthNumber}월 ${endDate.dayOfMonth}일"
                         }
                         val dailyCycle = RepeatCycleUiModel(
                             id = RepeatCycle.DAILY_REPEAT_ID,

@@ -92,7 +92,6 @@ class AddTodoViewModel(
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
         val message = configRepository.getAlarmMessage()
-        val nudgeTextVariant = experimentRepository.getVariant(Experiment.NotificationNudgeText)
 
         setState {
             copy(
@@ -102,7 +101,6 @@ class AddTodoViewModel(
                     defaultMessage = defaultMessage,
                     message = message,
                     originMessage = message,
-                    nudgeTextVariant = nudgeTextVariant,
                 )
             )
         }

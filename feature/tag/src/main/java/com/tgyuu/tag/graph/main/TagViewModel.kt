@@ -1,8 +1,6 @@
 package com.tgyuu.tag.graph.main
 
 import androidx.lifecycle.viewModelScope
-import com.tgyuu.analytics.AnalyticsEvent
-import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -24,8 +22,6 @@ class TagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
-    private val analyticsHelper: AnalyticsHelper,
-    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<TagState, TagIntent>(TagState()) {
 
     override suspend fun processIntent(intent: TagIntent) {
@@ -38,9 +34,6 @@ class TagViewModel(
     }
 
     private suspend fun onBackClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
-        )
         navigationBus.navigate(NavigationEvent.Up)
     }
 
@@ -55,19 +48,12 @@ class TagViewModel(
 
     private suspend fun onDeleteClick(tag: TodoTagUiModel) {
         if (tag.id == 1) return
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteTag")
-        )
         deleteTag(tag)
     }
 
     private suspend fun onEditClick(tag: TodoTagUiModel) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditTag")
-        )
         navigationBus.navigate(
-            NavigationEvent.To(TagGraph.EditTagRoute(tag.id))
-        )
+            NavigationEvent.To(TagGraph.EditTagRoute(tag.id)))
     }
 
     companion object {
