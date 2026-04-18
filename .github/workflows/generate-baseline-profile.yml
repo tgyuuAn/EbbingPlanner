@@ -35,17 +35,23 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Create local.properties
-        run: echo "EBBING_NOTICE_URL=${{ secrets.EBBING_NOTICE_URL }}" > local.properties
+        run: |
+          cat > local.properties << EOF
+          sdk.dir=$ANDROID_SDK_ROOT
+          AMPLITUDE_API_KEY=${{ secrets.AMPLITUDE_API_KEY }}
+          EBBING_NOTICE_URL=${{ secrets.EBBING_NOTICE_URL }}
+          EBBING_TALK_URL=${{ secrets.EBBING_TALK_URL }}
+          EBBING_TERMS_OF_USE_URL=${{ secrets.EBBING_TERMS_OF_USE_URL }}
+          EBBING_PRIVACY_AND_POLICY_URL=${{ secrets.EBBING_PRIVACY_AND_POLICY_URL }}
+          EOF
 
       - name: Create keystore
-        run: |
-          mkdir -p keystore
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore/release.keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/upload-keystore.jks
 
       - name: Create keystore.properties
         run: |
           cat > keystore.properties << EOF
-          STORE_FILE_PATH=keystore/release.keystore
+          STORE_FILE_PATH=upload-keystore.jks
           STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS_RELEASE=${{ secrets.KEY_ALIAS_RELEASE }}
           KEY_PASSWORD_RELEASE=${{ secrets.KEY_PASSWORD_RELEASE }}
