@@ -6,7 +6,6 @@ import androidx.glance.text.TextStyle
 
 /**
  * 위젯용 타이포그래피. EbbingTheme.typography와 동일한 스펙을 Glance TextStyle로 제공합니다.
- * Glance FontWeight는 Normal / Medium / Bold만 지원하므로 SemiBold → Bold로 근사합니다.
  */
 object EbbingWidgetTypography {
     // Heading - Bold
@@ -17,9 +16,9 @@ object EbbingWidgetTypography {
     val heading16B = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
     val heading14B = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold)
 
-    // Heading - SemiBold (Glance 미지원 → Bold 근사)
-    val heading16SB = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
-    val heading14SB = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold)
+    // Heading - SemiBold
+    val heading16SB = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+    val heading14SB = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
 
     // Body - Medium
     val body18M = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Medium)

@@ -14,7 +14,7 @@ import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.ContentScale
 import androidx.glance.layout.size
-import com.tgyuu.ebbingplanner.R
+import com.tgyuu.widget.R
 
 @Composable
 fun EbbingWidgetCheck(

@@ -52,7 +52,7 @@ import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.R
+import com.tgyuu.widget.R
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
@@ -214,6 +214,14 @@ private fun CalendarWidgetHeader(mondayStart: Boolean, selectedDate: LocalDate) 
                 )
             }
         }
+
+        Spacer(
+            modifier = GlanceModifier.fillMaxWidth()
+                .height(1.dp)
+                .background(LocalEbbingWidgetColors.current.fillStrong)
+        )
+
+        Spacer(modifier = GlanceModifier.fillMaxWidth().height(4.dp))
     }
 }
 
@@ -338,14 +346,14 @@ private fun ColumnScope.SelectedDateTodoList(
             )
             Text(
                 text = doneSize.toString(),
-                style = EbbingWidgetTypography.heading18B.copy(
+                style = EbbingWidgetTypography.heading16B.copy(
                     color = if (doneSize > 0) LocalEbbingWidgetColors.current.textPrimary
                     else LocalEbbingWidgetColors.current.textDisabled,
                 ),
             )
             Text(
                 text = " /${todoLists.size}",
-                style = EbbingWidgetTypography.heading18B.copy(
+                style = EbbingWidgetTypography.heading16B.copy(
                     color = LocalEbbingWidgetColors.current.textDisabled,
                 ),
             )

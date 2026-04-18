@@ -79,14 +79,10 @@ dependencies {
     implementation(projects.feature.tag)
     implementation(projects.feature.repeatcycle)
     implementation(projects.feature.sync)
+    implementation(projects.feature.widget)
     baselineProfile(projects.baselineprofile)
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.adaptive.navigation.suite)
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.material3)
-    implementation(libs.androidx.glance.preview)
-    implementation(libs.androidx.glance.appwidget.preview)
-    implementation(libs.gson)
 }

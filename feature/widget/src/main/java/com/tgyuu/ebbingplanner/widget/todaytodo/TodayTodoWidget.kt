@@ -1,5 +1,6 @@
 package com.tgyuu.ebbingplanner.widget.todaytodo
 
+import android.content.ComponentName
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -44,8 +45,7 @@ import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.MainActivity
-import com.tgyuu.ebbingplanner.R
+import com.tgyuu.widget.R
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
@@ -54,6 +54,7 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.LocalEbbingWidgetC
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.widget.util.ACTION_OPEN_ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
@@ -107,7 +108,14 @@ private fun TodayTodoWidgetContent(
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable(onClick = actionStartActivity<MainActivity>())
+            .clickable(
+                onClick = actionStartActivity(
+                    ComponentName(
+                        androidx.glance.LocalContext.current.packageName,
+                        "${androidx.glance.LocalContext.current.packageName}.MainActivity"
+                    )
+                )
+            )
             .background(
                 imageProvider = ImageProvider(backgroundImage),
                 colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.background),
