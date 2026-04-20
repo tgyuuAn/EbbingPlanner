@@ -141,13 +141,11 @@ private fun TodayTodoWidgetContent(
                 imageProvider = ImageProvider(backgroundImage),
                 colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.background),
             )
-            .padding(4.dp)
+            .padding(20.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(top = 6.dp),
+            modifier = GlanceModifier.fillMaxWidth(),
         ) {
             val todoListsDoneSize = todoLists.filter { it.isDone }.size
 
@@ -156,7 +154,7 @@ private fun TodayTodoWidgetContent(
                 modifier = GlanceModifier.defaultWeight(),
             ) {
                 if (headerBitmap != null) {
-                    Image(provider = ImageProvider(headerBitmap), contentDescription = null)
+                    Image(provider = ImageProvider(headerBitmap), contentDescription = "오늘 할 일")
                 } else {
                     Text(
                         text = "오늘 할 일   ",
@@ -166,7 +164,10 @@ private fun TodayTodoWidgetContent(
                     )
                 }
                 if (doneBitmap != null) {
-                    Image(provider = ImageProvider(doneBitmap), contentDescription = null)
+                    Image(
+                        provider = ImageProvider(doneBitmap),
+                        contentDescription = "완료 ${todoListsDoneSize}개",
+                    )
                 } else {
                     Text(
                         text = todoListsDoneSize.toString(),
@@ -177,7 +178,10 @@ private fun TodayTodoWidgetContent(
                     )
                 }
                 if (totalBitmap != null) {
-                    Image(provider = ImageProvider(totalBitmap), contentDescription = null)
+                    Image(
+                        provider = ImageProvider(totalBitmap),
+                        contentDescription = "전체 ${todoLists.size}개",
+                    )
                 } else {
                     Text(
                         text = "/${todoLists.size}",
@@ -205,8 +209,8 @@ private fun TodayTodoWidgetContent(
             if (emptyBitmap != null) {
                 Image(
                     provider = ImageProvider(emptyBitmap),
-                    contentDescription = null,
-                    modifier = GlanceModifier.padding(horizontal = 20.dp, vertical = 12.dp),
+                    contentDescription = "오늘은 일정이 없어요",
+                    modifier = GlanceModifier.padding(vertical = 12.dp),
                 )
             } else {
                 Text(
@@ -216,7 +220,7 @@ private fun TodayTodoWidgetContent(
                         color = LocalEbbingWidgetColors.current.textSub,
                     ),
                     modifier = GlanceModifier.fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                        .padding(vertical = 12.dp),
                 )
             }
         } else {

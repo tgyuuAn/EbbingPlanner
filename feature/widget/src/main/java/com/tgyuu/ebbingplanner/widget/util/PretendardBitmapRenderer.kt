@@ -83,12 +83,14 @@ object PretendardBitmapRenderer {
         return bitmap
     }
 
-    /** 렌더링 결과를 내부 저장소 파일로 저장한다. */
+    /** 렌더링 결과를 내부 저장소 파일로 원자적으로 저장한다. */
     fun saveBitmap(context: Context, bitmap: Bitmap, filename: String): File {
         val dir = File(context.filesDir, "widget_bitmaps").also { it.mkdirs() }
-        val file = File(dir, filename)
-        file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        return file
+        val target = File(dir, filename)
+        val temp = File(dir, "$filename.tmp")
+        temp.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        temp.renameTo(target)
+        return target
     }
 
     /** 저장된 비트맵 파일을 불러온다. 파일이 없으면 null 반환. */
@@ -111,7 +113,10 @@ object PretendardBitmapRenderer {
         strikethrough: Boolean = false,
     ) {
         val bitmap = renderText(context, text, weight, sizeSp, textColorArgb, maxWidthPx, maxLines, strikethrough)
-        saveBitmap(context, bitmap, filename)
-        bitmap.recycle()
+        try {
+            saveBitmap(context, bitmap, filename)
+        } finally {
+            bitmap.recycle()
+        }
     }
 }

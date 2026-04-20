@@ -185,7 +185,7 @@ private fun CalendarWidgetHeader(
             if (headerBitmap != null) {
                 Image(
                     provider = ImageProvider(headerBitmap),
-                    contentDescription = null,
+                    contentDescription = "${today.year}년 ${today.monthValue}월",
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
             } else {
@@ -240,7 +240,7 @@ private fun CalendarWidgetHeader(
                     ) {
                         Image(
                             provider = ImageProvider(dowBitmap),
-                            contentDescription = null,
+                            contentDescription = dow.toKorean(),
                         )
                     }
                 } else {

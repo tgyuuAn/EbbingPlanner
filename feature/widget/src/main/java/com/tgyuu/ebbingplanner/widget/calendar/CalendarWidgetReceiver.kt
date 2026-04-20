@@ -40,9 +40,11 @@ import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -126,7 +128,9 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         )
         val byDate = buildByDateMap(allSchedules, sortType)
 
-        generatePretendardBitmaps(context, theme, textAlpha, mondayStart, now)
+        withContext(Dispatchers.IO) {
+            generatePretendardBitmaps(context, theme, textAlpha, mondayStart, now)
+        }
 
         val glanceId = GlanceAppWidgetManager(context)
             .getGlanceIds(CalendarWidget::class.java)

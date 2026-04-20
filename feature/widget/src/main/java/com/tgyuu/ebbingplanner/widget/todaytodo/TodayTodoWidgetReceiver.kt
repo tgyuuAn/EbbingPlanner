@@ -1,6 +1,7 @@
 package com.tgyuu.ebbingplanner.widget.todaytodo
 
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -38,9 +39,11 @@ import com.tgyuu.ebbingplanner.widget.util.KEY_WIDGET_SOURCE
 import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -126,7 +129,9 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
             .loadSchedulesByDate(LocalDate.now())
             .sortedWith(compareBy({ it.isDone }, { it.title }))
 
-        generatePretendardBitmaps(context, theme, textAlpha, todoLists)
+        withContext(Dispatchers.IO) {
+            generatePretendardBitmaps(context, theme, textAlpha, todoLists)
+        }
 
         val glanceId = GlanceAppWidgetManager(context)
             .getGlanceIds(TodayTodoWidget::class.java)
@@ -172,9 +177,18 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
         val doneSize = todoLists.count { it.isDone }
         val density = context.resources.displayMetrics.density
-        // 화면 너비에서 외부 패딩(40dp) + 색상 바·패딩(15dp) + 체크 아이콘(20dp) + 이미지 내부 패딩(24dp) 제외
-        val titleMaxWidthPx = (context.resources.displayMetrics.widthPixels - (99 * density).toInt())
-            .coerceAtLeast(100)
+        // 실제 위젯 인스턴스 중 가장 작은 너비 기준으로 비트맵 폭 계산 (없으면 XML minWidth 180dp)
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val widgetIds = appWidgetManager.getAppWidgetIds(
+            ComponentName(context, TodayTodoWidgetReceiver::class.java)
+        )
+        val minWidgetWidthDp = widgetIds.toList().mapNotNull { id ->
+            appWidgetManager.getAppWidgetOptions(id)
+                .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, -1)
+                .takeIf { it > 0 }
+        }.minOrNull() ?: 180
+        // 외부 패딩(40dp) + 색상 바·패딩(15dp) + 체크 아이콘(20dp) + 이미지 내부 패딩(24dp) 제외
+        val titleMaxWidthPx = ((minWidgetWidthDp - 99) * density).toInt().coerceAtLeast(50)
 
         PretendardBitmapRenderer.renderAndSave(
             context, "오늘 할 일   ",
@@ -190,7 +204,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         )
 
         PretendardBitmapRenderer.renderAndSave(
-            context, " /${todoLists.size}",
+            context, "/${todoLists.size}",
             PretendardBitmapRenderer.Weight.BOLD, 18f, textDisabled,
             filename = "todo_total.png",
         )
