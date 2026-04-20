@@ -3,12 +3,26 @@ package com.tgyuu.ebbingplanner.widget.calendar
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
+import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.foundation.forestDarkColorScheme
+import com.tgyuu.designsystem.foundation.forestLightColorScheme
+import com.tgyuu.designsystem.foundation.lilacDarkColorScheme
+import com.tgyuu.designsystem.foundation.lilacLightColorScheme
+import com.tgyuu.designsystem.foundation.marineDarkColorScheme
+import com.tgyuu.designsystem.foundation.marineLightColorScheme
+import com.tgyuu.designsystem.foundation.normalDarkColorScheme
+import com.tgyuu.designsystem.foundation.normalLightColorScheme
+import com.tgyuu.designsystem.foundation.sunsetDarkColorScheme
+import com.tgyuu.designsystem.foundation.sunsetLightColorScheme
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -23,11 +37,14 @@ import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -111,6 +128,10 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         )
         val byDate = buildByDateMap(allSchedules, sortType)
 
+        withContext(Dispatchers.IO) {
+            generatePretendardBitmaps(context, theme, textAlpha, mondayStart, now)
+        }
+
         val glanceId = GlanceAppWidgetManager(context)
             .getGlanceIds(CalendarWidget::class.java)
             .firstOrNull()
@@ -129,6 +150,44 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
             }
 
             glanceAppWidget.update(context, it)
+        }
+    }
+
+    private fun generatePretendardBitmaps(
+        context: Context,
+        theme: Theme,
+        textAlpha: Float,
+        mondayStart: Boolean,
+        now: LocalDate,
+    ) {
+        val isDark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+
+        val colorScheme = when (theme) {
+            Theme.NORMAL -> if (isDark) normalDarkColorScheme else normalLightColorScheme
+            Theme.FOREST -> if (isDark) forestDarkColorScheme else forestLightColorScheme
+            Theme.SUNSET -> if (isDark) sunsetDarkColorScheme else sunsetLightColorScheme
+            Theme.MARINE -> if (isDark) marineDarkColorScheme else marineLightColorScheme
+            Theme.LILAC -> if (isDark) lilacDarkColorScheme else lilacLightColorScheme
+        }
+
+        val textOnBackground = colorScheme.textOnBackground.copy(alpha = textAlpha).toArgb()
+        val textSub = colorScheme.textSub.copy(alpha = textAlpha).toArgb()
+
+        // 년/월 헤더
+        PretendardBitmapRenderer.renderAndSave(
+            context, "${now.year}년 ${now.monthValue}월",
+            PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+            filename = "calendar_header.png",
+        )
+
+        // 요일 라벨 (0~6)
+        getEbbingDayOfWeek(mondayStart).forEachIndexed { index, dow ->
+            PretendardBitmapRenderer.renderAndSave(
+                context, dow.toKorean(),
+                PretendardBitmapRenderer.Weight.MEDIUM, 14f, textSub,
+                filename = "calendar_dow_$index.png",
+            )
         }
     }
 

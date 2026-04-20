@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.widget.todaytodo
 
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,7 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTypogr
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.LocalEbbingWidgetColors
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
+import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.MAX_VISIBLE_TODOS
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
 import com.tgyuu.ebbingplanner.widget.util.ACTION_OPEN_ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
@@ -60,12 +62,21 @@ import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
 import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
 import java.time.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val headerBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_header.png")
+        val doneBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_done_count.png")
+        val totalBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_total.png")
+        val emptyBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_empty.png")
+        val titleBitmaps = (0 until MAX_VISIBLE_TODOS).map { i ->
+            PretendardBitmapRenderer.loadBitmap(context, "todo_title_$i.png")
+        }
+
         provideContent {
             val prefs = currentState<Preferences>()
 
@@ -86,6 +97,11 @@ class TodayTodoWidget : GlanceAppWidget() {
                 TodayTodoWidgetContent(
                     alpha = backgroundAlpha,
                     todoLists = todoLists,
+                    headerBitmap = headerBitmap,
+                    doneBitmap = doneBitmap,
+                    totalBitmap = totalBitmap,
+                    emptyBitmap = emptyBitmap,
+                    titleBitmaps = titleBitmaps,
                 )
             }
         }
@@ -96,6 +112,11 @@ class TodayTodoWidget : GlanceAppWidget() {
 private fun TodayTodoWidgetContent(
     alpha: Float,
     todoLists: List<TodoSchedule>,
+    headerBitmap: Bitmap?,
+    doneBitmap: Bitmap?,
+    totalBitmap: Bitmap?,
+    emptyBitmap: Bitmap?,
+    titleBitmaps: List<Bitmap?>,
 ) {
     val backgroundImage = when (alpha) {
         0.25f -> R.drawable.shape_widget_background_25
@@ -120,42 +141,55 @@ private fun TodayTodoWidgetContent(
                 imageProvider = ImageProvider(backgroundImage),
                 colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.background),
             )
-            .padding(4.dp)
+            .padding(20.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(top = 6.dp),
+            modifier = GlanceModifier.fillMaxWidth(),
         ) {
+            val todoListsDoneSize = todoLists.filter { it.isDone }.size
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = GlanceModifier.defaultWeight()
+                modifier = GlanceModifier.defaultWeight(),
             ) {
-                val todoListsDoneSize = todoLists.filter { it.isDone }.size
-
-                Text(
-                    text = "오늘 할 일   ",
-                    style = EbbingWidgetTypography.heading18B.copy(
-                        textAlign = TextAlign.Start,
-                        color = LocalEbbingWidgetColors.current.textOnBackground,
-                    ),
-                )
-                Text(
-                    text = todoListsDoneSize.toString(),
-                    style = EbbingWidgetTypography.heading18B.copy(
-                        textAlign = TextAlign.Start,
-                        color = if (todoListsDoneSize > 0) LocalEbbingWidgetColors.current.textPrimary
-                        else LocalEbbingWidgetColors.current.textDisabled,
-                    ),
-                )
-                Text(
-                    text = " /${todoLists.size}",
-                    style = EbbingWidgetTypography.heading18B.copy(
-                        textAlign = TextAlign.Start,
-                        color = LocalEbbingWidgetColors.current.textDisabled,
-                    ),
-                )
+                if (headerBitmap != null) {
+                    Image(provider = ImageProvider(headerBitmap), contentDescription = "오늘 할 일")
+                } else {
+                    Text(
+                        text = "오늘 할 일   ",
+                        style = EbbingWidgetTypography.heading18B.copy(
+                            color = LocalEbbingWidgetColors.current.textOnBackground,
+                        ),
+                    )
+                }
+                if (doneBitmap != null) {
+                    Image(
+                        provider = ImageProvider(doneBitmap),
+                        contentDescription = "완료 ${todoListsDoneSize}개",
+                    )
+                } else {
+                    Text(
+                        text = todoListsDoneSize.toString(),
+                        style = EbbingWidgetTypography.heading18B.copy(
+                            color = if (todoListsDoneSize > 0) LocalEbbingWidgetColors.current.textPrimary
+                            else LocalEbbingWidgetColors.current.textDisabled,
+                        ),
+                    )
+                }
+                if (totalBitmap != null) {
+                    Image(
+                        provider = ImageProvider(totalBitmap),
+                        contentDescription = "전체 ${todoLists.size}개",
+                    )
+                } else {
+                    Text(
+                        text = "/${todoLists.size}",
+                        style = EbbingWidgetTypography.heading18B.copy(
+                            color = LocalEbbingWidgetColors.current.textDisabled,
+                        ),
+                    )
+                }
             }
 
             Image(
@@ -172,23 +206,32 @@ private fun TodayTodoWidgetContent(
         }
 
         if (todoLists.isEmpty()) {
-            Text(
-                text = "오늘은 일정이 없어요",
-                style = EbbingWidgetTypography.heading16SB.copy(
-                    textAlign = TextAlign.Start,
-                    color = LocalEbbingWidgetColors.current.textSub,
-                ),
-                modifier = GlanceModifier.fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-            )
+            if (emptyBitmap != null) {
+                Image(
+                    provider = ImageProvider(emptyBitmap),
+                    contentDescription = "오늘은 일정이 없어요",
+                    modifier = GlanceModifier.padding(vertical = 12.dp),
+                )
+            } else {
+                Text(
+                    text = "오늘은 일정이 없어요",
+                    style = EbbingWidgetTypography.heading16SB.copy(
+                        textAlign = TextAlign.Start,
+                        color = LocalEbbingWidgetColors.current.textSub,
+                    ),
+                    modifier = GlanceModifier.fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                )
+            }
         } else {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
                     .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
-                items(items = todoLists) { item ->
+                items(items = todoLists.mapIndexed { i, it -> i to it }) { (index, item) ->
                     TodoItemRow(
                         todo = item,
+                        titleBitmap = titleBitmaps.getOrNull(index),
                         modifier = GlanceModifier.fillMaxWidth()
                             .padding(vertical = 6.dp),
                     )
@@ -201,6 +244,7 @@ private fun TodayTodoWidgetContent(
 @Composable
 internal fun TodoItemRow(
     todo: TodoSchedule,
+    titleBitmap: Bitmap? = null,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     Row(
@@ -215,16 +259,24 @@ internal fun TodoItemRow(
                 .background(ColorProvider(Color(todo.color), Color(todo.color)))
         )
 
-        Text(
-            text = todo.title,
-            style = (if (todo.isDone) EbbingWidgetTypography.body14M else EbbingWidgetTypography.heading14SB).copy(
-                color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
-                textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
-            ),
-            maxLines = 2,
-            modifier = GlanceModifier.padding(horizontal = 12.dp)
-                .defaultWeight(),
-        )
+        if (titleBitmap != null) {
+            Image(
+                provider = ImageProvider(titleBitmap),
+                contentDescription = todo.title,
+                modifier = GlanceModifier.padding(horizontal = 12.dp).defaultWeight(),
+            )
+        } else {
+            Text(
+                text = todo.title,
+                style = (if (todo.isDone) EbbingWidgetTypography.body14M else EbbingWidgetTypography.heading14SB).copy(
+                    color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
+                    textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
+                ),
+                maxLines = 2,
+                modifier = GlanceModifier.padding(horizontal = 12.dp)
+                    .defaultWeight(),
+            )
+        }
 
         EbbingWidgetCheck(
             checked = todo.isDone,
@@ -242,7 +294,12 @@ private fun HomeWidgetPreview() {
     BaseWidgetPreview {
         TodayTodoWidgetContent(
             alpha = 1f,
-            todoLists = emptyList()
+            todoLists = emptyList(),
+            headerBitmap = null,
+            doneBitmap = null,
+            totalBitmap = null,
+            emptyBitmap = null,
+            titleBitmaps = emptyList(),
         )
     }
 }
@@ -253,6 +310,11 @@ private fun HomeWidgetPreview2() {
     BaseWidgetPreview {
         TodayTodoWidgetContent(
             alpha = 1f,
+            headerBitmap = null,
+            doneBitmap = null,
+            totalBitmap = null,
+            emptyBitmap = null,
+            titleBitmaps = emptyList(),
             todoLists = listOf(
                 TodoSchedule(
                     id = 1,

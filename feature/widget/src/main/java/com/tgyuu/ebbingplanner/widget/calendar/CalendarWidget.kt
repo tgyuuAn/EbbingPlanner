@@ -1,6 +1,7 @@
 package com.tgyuu.ebbingplanner.widget.calendar
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,6 +64,7 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
+import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
@@ -72,6 +74,11 @@ import java.time.LocalDate
 
 class CalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val headerBitmap = PretendardBitmapRenderer.loadBitmap(context, "calendar_header.png")
+        val dowBitmaps = (0 until 7).map { i ->
+            PretendardBitmapRenderer.loadBitmap(context, "calendar_dow_$i.png")
+        }
+
         provideContent {
             val prefs = currentState<Preferences>()
 
@@ -104,6 +111,8 @@ class CalendarWidget : GlanceAppWidget() {
                     selectedDate = selectedDate,
                     calendarDates = calendarDates,
                     mondayStart = mondayStart,
+                    headerBitmap = headerBitmap,
+                    dowBitmaps = dowBitmaps,
                 )
             }
         }
@@ -117,6 +126,8 @@ private fun CalendarWidgetContent(
     calendarDates: List<CalendarDate>,
     selectedDate: LocalDate,
     mondayStart: Boolean,
+    headerBitmap: Bitmap?,
+    dowBitmaps: List<Bitmap?>,
 ) {
     val selectedDateTodoLists = schedulesByDateMap[selectedDate] ?: emptyList()
     val todoListsDoneSize = selectedDateTodoLists.filter { it.isDone }.size
@@ -136,7 +147,12 @@ private fun CalendarWidgetContent(
             )
             .padding(vertical = 16.dp, horizontal = 20.dp)
     ) {
-        CalendarWidgetHeader(mondayStart = mondayStart, selectedDate = selectedDate)
+        CalendarWidgetHeader(
+            mondayStart = mondayStart,
+            selectedDate = selectedDate,
+            headerBitmap = headerBitmap,
+            dowBitmaps = dowBitmaps,
+        )
 
         CalendarWidgetBody(
             calendarDates = calendarDates,
@@ -154,21 +170,33 @@ private fun CalendarWidgetContent(
 }
 
 @Composable
-private fun CalendarWidgetHeader(mondayStart: Boolean, selectedDate: LocalDate) {
+private fun CalendarWidgetHeader(
+    mondayStart: Boolean,
+    selectedDate: LocalDate,
+    headerBitmap: Bitmap?,
+    dowBitmaps: List<Bitmap?>,
+) {
     val today = LocalDate.now()
     Column(modifier = GlanceModifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.fillMaxWidth()
-                .height(24.dp),
+            modifier = GlanceModifier.fillMaxWidth(),
         ) {
-            Text(
-                text = "${today.year}년 ${today.monthValue}월",
-                style = EbbingWidgetTypography.heading16B.copy(
-                    color = LocalEbbingWidgetColors.current.textOnBackground,
-                ),
-                modifier = GlanceModifier.defaultWeight()
-            )
+            if (headerBitmap != null) {
+                Image(
+                    provider = ImageProvider(headerBitmap),
+                    contentDescription = "${today.year}년 ${today.monthValue}월",
+                )
+                Spacer(modifier = GlanceModifier.defaultWeight())
+            } else {
+                Text(
+                    text = "${today.year}년 ${today.monthValue}월",
+                    style = EbbingWidgetTypography.heading16B.copy(
+                        color = LocalEbbingWidgetColors.current.textOnBackground,
+                    ),
+                    modifier = GlanceModifier.defaultWeight(),
+                )
+            }
 
             Image(
                 provider = ImageProvider(R.drawable.ic_widget_plus),
@@ -203,15 +231,28 @@ private fun CalendarWidgetHeader(mondayStart: Boolean, selectedDate: LocalDate) 
         Spacer(modifier = GlanceModifier.size(12.dp))
 
         Row(modifier = GlanceModifier.fillMaxWidth()) {
-            getEbbingDayOfWeek(mondayStart).forEach {
-                Text(
-                    text = it.toKorean(),
-                    style = EbbingWidgetTypography.body14M.copy(
-                        textAlign = TextAlign.Center,
-                        color = LocalEbbingWidgetColors.current.textSub,
-                    ),
-                    modifier = GlanceModifier.defaultWeight(),
-                )
+            getEbbingDayOfWeek(mondayStart).forEachIndexed { index, dow ->
+                val dowBitmap = dowBitmaps.getOrNull(index)
+                if (dowBitmap != null) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = GlanceModifier.defaultWeight(),
+                    ) {
+                        Image(
+                            provider = ImageProvider(dowBitmap),
+                            contentDescription = dow.toKorean(),
+                        )
+                    }
+                } else {
+                    Text(
+                        text = dow.toKorean(),
+                        style = EbbingWidgetTypography.body14M.copy(
+                            textAlign = TextAlign.Center,
+                            color = LocalEbbingWidgetColors.current.textSub,
+                        ),
+                        modifier = GlanceModifier.defaultWeight(),
+                    )
+                }
             }
         }
 
@@ -352,7 +393,7 @@ private fun ColumnScope.SelectedDateTodoList(
                 ),
             )
             Text(
-                text = " /${todoLists.size}",
+                text = "/${todoLists.size}",
                 style = EbbingWidgetTypography.heading16B.copy(
                     color = LocalEbbingWidgetColors.current.textDisabled,
                 ),
