@@ -53,6 +53,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
+
 }
 
 baselineProfile {
