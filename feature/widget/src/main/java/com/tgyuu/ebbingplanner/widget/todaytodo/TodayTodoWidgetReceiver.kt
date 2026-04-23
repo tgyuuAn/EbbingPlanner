@@ -22,6 +22,7 @@ import com.tgyuu.designsystem.foundation.normalDarkColorScheme
 import com.tgyuu.designsystem.foundation.normalLightColorScheme
 import com.tgyuu.designsystem.foundation.sunsetDarkColorScheme
 import com.tgyuu.designsystem.foundation.sunsetLightColorScheme
+import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
@@ -125,9 +126,16 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
         val backgroundAlpha = configRepository.getWidgetBackgroundAlpha().firstOrNull() ?: 1f
         val textAlpha = configRepository.getWidgetTextAlpha().firstOrNull() ?: 1f
+        val sortType = configRepository.getSortType()
         val todoLists = todoRepository
             .loadSchedulesByDate(LocalDate.now())
-            .sortedWith(compareBy({ it.isDone }, { it.title }))
+            .sortedWith(
+                when (sortType) {
+                    SortType.CREATED -> compareBy({ it.isDone }, { it.createdAt })
+                    SortType.NAME -> compareBy({ it.isDone }, { it.title })
+                    SortType.PRIORITY -> compareBy({ it.isDone }, { it.priority })
+                }
+            )
 
         withContext(Dispatchers.IO) {
             generatePretendardBitmaps(context, theme, textAlpha, todoLists)
