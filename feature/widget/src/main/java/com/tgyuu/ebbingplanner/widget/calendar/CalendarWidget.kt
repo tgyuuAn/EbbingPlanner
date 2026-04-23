@@ -234,15 +234,11 @@ private fun CalendarWidgetHeader(
             getEbbingDayOfWeek(mondayStart).forEachIndexed { index, dow ->
                 val dowBitmap = dowBitmaps.getOrNull(index)
                 if (dowBitmap != null) {
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    Image(
+                        provider = ImageProvider(dowBitmap),
+                        contentDescription = dow.toKorean(),
                         modifier = GlanceModifier.defaultWeight(),
-                    ) {
-                        Image(
-                            provider = ImageProvider(dowBitmap),
-                            contentDescription = dow.toKorean(),
-                        )
-                    }
+                    )
                 } else {
                     Text(
                         text = dow.toKorean(),

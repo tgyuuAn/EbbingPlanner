@@ -27,3 +27,13 @@
 
 # Generic TypeToken 클래스 보존
 -keep class * extends com.google.gson.reflect.TypeToken
+
+# Glance 위젯 ActionCallback 구현체 보존 (런타임에 클래스명으로 찾음)
+-keep class * extends androidx.glance.appwidget.action.ActionCallback { *; }
+
+# Glance 위젯 GlanceAppWidget / GlanceAppWidgetReceiver 보존
+-keep class * extends androidx.glance.appwidget.GlanceAppWidget { *; }
+-keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver { *; }
+
+# Glance FontWeight 리플렉션 보존 (EbbingWidgetFontWeight.SemiBold)
+-keep class androidx.glance.text.FontWeight { *; }
