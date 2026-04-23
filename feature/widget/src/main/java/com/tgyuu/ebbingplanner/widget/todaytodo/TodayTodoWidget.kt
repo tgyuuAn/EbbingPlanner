@@ -254,7 +254,7 @@ internal fun TodoItemRow(
         Spacer(
             modifier = GlanceModifier
                 .width(3.dp)
-                .height(14.dp)
+                .height(24.dp)
                 .cornerRadius(2.dp)
                 .background(ColorProvider(Color(todo.color), Color(todo.color)))
         )
@@ -268,7 +268,7 @@ internal fun TodoItemRow(
         } else {
             Text(
                 text = todo.title,
-                style = (if (todo.isDone) EbbingWidgetTypography.body14M else EbbingWidgetTypography.heading14SB).copy(
+                style = (if (todo.isDone) EbbingWidgetTypography.heading16SB else EbbingWidgetTypography.body16M).copy(
                     color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
                     textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
                 ),
