@@ -32,8 +32,6 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
-import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
-import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
@@ -84,37 +82,26 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> {
+                val pendingResult = goAsync()
                 analyticsHelper.logEvent(
                     AnalyticsEvent.Click(screenName = "CalendarWidget", buttonName = "Refresh")
                 )
-                updateData(context)
-            }
-            CheckTodoAction.CHECK_TODO_ACTION -> {
-                val todoId = intent.extras?.getInt(TODO_ID)
-                todoId ?: return
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(
-                        screenName = "CalendarWidget",
-                        buttonName = "CheckTodo",
-                        properties = mapOf("todoId" to todoId),
-                    )
-                )
-                checkTodo(todoId, context)
+                scope.launch {
+                    try {
+                        updateDataInternal(context)
+                    } finally {
+                        pendingResult.finish()
+                    }
+                }
             }
         }
     }
 
-    private fun checkTodo(todoId: Int, context: Context) = scope.launch {
-        val selectedTodo = todoRepository.loadSchedule(todoId) ?: run {
-            updateData(context)
-            return@launch
-        }
-        val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
-        todoRepository.updateTodo(updatedTodo)
-        updateData(context)
+    private fun updateData(context: Context) {
+        scope.launch { updateDataInternal(context) }
     }
 
-    private fun updateData(context: Context) = scope.launch {
+    private suspend fun updateDataInternal(context: Context) {
         val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
         val backgroundAlpha = configRepository.getWidgetBackgroundAlpha().firstOrNull() ?: 1f
         val textAlpha = configRepository.getWidgetTextAlpha().firstOrNull() ?: 1f
@@ -173,7 +160,6 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
         val textOnBackground = colorScheme.textOnBackground.copy(alpha = textAlpha).toArgb()
         val textSub = colorScheme.textSub.copy(alpha = textAlpha).toArgb()
-
         // 년/월 헤더
         PretendardBitmapRenderer.renderAndSave(
             context, "${now.year}년 ${now.monthValue}월",
@@ -189,6 +175,35 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
                 filename = "calendar_dow_$index.png",
             )
         }
+
+        // 섹션 헤더: "오늘 할 일" + "X월 D일 할 일" (현재 월 전체)
+        PretendardBitmapRenderer.renderAndSave(
+            context, "오늘 할 일",
+            PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+            filename = "calendar_section_today.png",
+        )
+        (1..now.lengthOfMonth()).forEach { day ->
+            PretendardBitmapRenderer.renderAndSave(
+                context, "${now.monthValue}월 ${day}일 할 일",
+                PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+                filename = "calendar_section_day_$day.png",
+            )
+        }
+
+        // 날짜 숫자 bitmap (흰색 1벌 → Glance ColorFilter.tint로 색상 적용)
+        val white = android.graphics.Color.WHITE
+        (1..31).forEach { day ->
+            PretendardBitmapRenderer.renderAndSave(
+                context, "$day",
+                PretendardBitmapRenderer.Weight.MEDIUM, 12f, white,
+                filename = "calendar_num_$day.png",
+            )
+        }
+        PretendardBitmapRenderer.renderAndSave(
+            context, "${now.dayOfMonth}",
+            PretendardBitmapRenderer.Weight.BOLD, 12f, white,
+            filename = "calendar_num_today.png",
+        )
     }
 
     private fun buildByDateMap(

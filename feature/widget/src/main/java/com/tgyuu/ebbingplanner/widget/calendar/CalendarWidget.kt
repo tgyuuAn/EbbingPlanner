@@ -3,22 +3,18 @@ package com.tgyuu.ebbingplanner.widget.calendar
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.background
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
@@ -39,15 +35,11 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
-import androidx.glance.text.FontFamily
-import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
-import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.designsystem.component.calendar.CalendarDate
-import com.tgyuu.designsystem.component.calendar.EbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.getCalendarDates
 import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.toKorean
@@ -64,20 +56,18 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.WIDGET_MONDAY_START
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
-import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
+import com.tgyuu.ebbingplanner.widget.util.CalendarWidgetBitmaps
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
+import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
 import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
 import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
 import java.time.LocalDate
 
 class CalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val headerBitmap = PretendardBitmapRenderer.loadBitmap(context, "calendar_header.png")
-        val dowBitmaps = (0 until 7).map { i ->
-            PretendardBitmapRenderer.loadBitmap(context, "calendar_dow_$i.png")
-        }
+        val bitmaps = WidgetBitmapStore.loadCalendarBitmaps(context)
 
         provideContent {
             val prefs = currentState<Preferences>()
@@ -111,8 +101,7 @@ class CalendarWidget : GlanceAppWidget() {
                     selectedDate = selectedDate,
                     calendarDates = calendarDates,
                     mondayStart = mondayStart,
-                    headerBitmap = headerBitmap,
-                    dowBitmaps = dowBitmaps,
+                    bitmaps = bitmaps,
                 )
             }
         }
@@ -126,8 +115,7 @@ private fun CalendarWidgetContent(
     calendarDates: List<CalendarDate>,
     selectedDate: LocalDate,
     mondayStart: Boolean,
-    headerBitmap: Bitmap?,
-    dowBitmaps: List<Bitmap?>,
+    bitmaps: CalendarWidgetBitmaps,
 ) {
     val selectedDateTodoLists = schedulesByDateMap[selectedDate] ?: emptyList()
     val todoListsDoneSize = selectedDateTodoLists.filter { it.isDone }.size
@@ -150,21 +138,22 @@ private fun CalendarWidgetContent(
         CalendarWidgetHeader(
             mondayStart = mondayStart,
             selectedDate = selectedDate,
-            headerBitmap = headerBitmap,
-            dowBitmaps = dowBitmaps,
+            bitmaps = bitmaps,
         )
 
         CalendarWidgetBody(
             calendarDates = calendarDates,
             schedulesByDateMap = schedulesByDateMap,
             selectedDate = selectedDate,
+            bitmaps = bitmaps,
         )
 
         SelectedDateTodoList(
             alpha = alpha,
             selectedDate = selectedDate,
             todoLists = selectedDateTodoLists,
-            doneSize = todoListsDoneSize
+            doneSize = todoListsDoneSize,
+            bitmaps = bitmaps,
         )
     }
 }
@@ -173,8 +162,7 @@ private fun CalendarWidgetContent(
 private fun CalendarWidgetHeader(
     mondayStart: Boolean,
     selectedDate: LocalDate,
-    headerBitmap: Bitmap?,
-    dowBitmaps: List<Bitmap?>,
+    bitmaps: CalendarWidgetBitmaps,
 ) {
     val today = LocalDate.now()
     Column(modifier = GlanceModifier.fillMaxWidth()) {
@@ -182,9 +170,9 @@ private fun CalendarWidgetHeader(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.fillMaxWidth(),
         ) {
-            if (headerBitmap != null) {
+            if (bitmaps.header != null) {
                 Image(
-                    provider = ImageProvider(headerBitmap),
+                    provider = ImageProvider(bitmaps.header),
                     contentDescription = "${today.year}년 ${today.monthValue}월",
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
@@ -232,7 +220,7 @@ private fun CalendarWidgetHeader(
 
         Row(modifier = GlanceModifier.fillMaxWidth()) {
             getEbbingDayOfWeek(mondayStart).forEachIndexed { index, dow ->
-                val dowBitmap = dowBitmaps.getOrNull(index)
+                val dowBitmap = bitmaps.dowList.getOrNull(index)
                 if (dowBitmap != null) {
                     Image(
                         provider = ImageProvider(dowBitmap),
@@ -252,6 +240,7 @@ private fun CalendarWidgetHeader(
             }
         }
 
+        Spacer(modifier = GlanceModifier.fillMaxWidth().height(2.dp))
         Spacer(
             modifier = GlanceModifier.fillMaxWidth()
                 .height(1.dp)
@@ -267,6 +256,7 @@ private fun CalendarWidgetBody(
     calendarDates: List<CalendarDate>,
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     selectedDate: LocalDate,
+    bitmaps: CalendarWidgetBitmaps,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val today = LocalDate.now()
@@ -289,6 +279,7 @@ private fun CalendarWidgetBody(
                         selectedDate = selectedDate,
                         schedules = schedules,
                         isToday = isToday,
+                        bitmaps = bitmaps,
                     )
                 }
             }
@@ -306,13 +297,22 @@ private fun RowScope.CalendarDayCell(
     selectedDate: LocalDate,
     schedules: List<TodoSchedule>,
     isToday: Boolean,
+    bitmaps: CalendarWidgetBitmaps,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val isSelected = date.date == selectedDate
     val dayItemColor = if (isSelected) LocalEbbingWidgetColors.current.textOnBackground
     else ColorProvider(Color.Transparent, Color.Transparent)
-    val textColor = if (isSelected) LocalEbbingWidgetColors.current.textOnPrimary
-    else LocalEbbingWidgetColors.current.textOnBackground
+
+    val dayIndex = date.dayOfMonth - 1
+    val dayBitmap: Bitmap? = if (isToday) bitmaps.numBoldToday
+    else bitmaps.numNormal.getOrNull(dayIndex)
+
+    val tintColor = when {
+        isSelected -> LocalEbbingWidgetColors.current.textOnPrimary
+        !date.isCurrentMonth -> LocalEbbingWidgetColors.current.textDisabled
+        else -> LocalEbbingWidgetColors.current.textOnBackground
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -330,14 +330,25 @@ private fun RowScope.CalendarDayCell(
                 .cornerRadius(999.dp)
                 .background(dayItemColor),
         ) {
-            Text(
-                text = date.dayOfMonth.toString(),
-                style = EbbingWidgetTypography.caption12R.copy(
-                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                    color = if (date.isCurrentMonth) textColor else LocalEbbingWidgetColors.current.textDisabled,
-                    textAlign = TextAlign.Center,
+            if (dayBitmap != null) {
+                Image(
+                    provider = ImageProvider(dayBitmap),
+                    contentDescription = date.dayOfMonth.toString(),
+                    colorFilter = ColorFilter.tint(tintColor),
                 )
-            )
+            } else {
+                Text(
+                    text = date.dayOfMonth.toString(),
+                    style = EbbingWidgetTypography.caption12R.copy(
+                        fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                        color = if (date.isCurrentMonth) {
+                            if (isSelected) LocalEbbingWidgetColors.current.textOnPrimary
+                            else LocalEbbingWidgetColors.current.textOnBackground
+                        } else LocalEbbingWidgetColors.current.textDisabled,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
         }
 
         val dots = schedules.map { it.color }.distinct().take(3)
@@ -364,7 +375,15 @@ private fun ColumnScope.SelectedDateTodoList(
     selectedDate: LocalDate,
     todoLists: List<TodoSchedule>,
     doneSize: Int,
+    bitmaps: CalendarWidgetBitmaps,
 ) {
+    val today = LocalDate.now()
+    val sectionHeaderBitmap: Bitmap? = if (selectedDate == today) {
+        bitmaps.sectionToday
+    } else {
+        bitmaps.sectionDays.getOrNull(selectedDate.dayOfMonth - 1)
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = GlanceModifier.fillMaxWidth()
@@ -374,13 +393,22 @@ private fun ColumnScope.SelectedDateTodoList(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.defaultWeight()
         ) {
-            Text(
-                text = if (selectedDate == LocalDate.now()) "오늘 할 일   "
-                else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
-                style = EbbingWidgetTypography.heading18B.copy(
-                    color = LocalEbbingWidgetColors.current.textOnBackground,
-                ),
-            )
+            if (sectionHeaderBitmap != null) {
+                Image(
+                    provider = ImageProvider(sectionHeaderBitmap),
+                    contentDescription = if (selectedDate == today) "오늘 할 일"
+                    else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일",
+                )
+                Spacer(modifier = GlanceModifier.width(8.dp))
+            } else {
+                Text(
+                    text = if (selectedDate == today) "오늘 할 일   "
+                    else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
+                    style = EbbingWidgetTypography.heading16B.copy(
+                        color = LocalEbbingWidgetColors.current.textOnBackground,
+                    ),
+                )
+            }
             Text(
                 text = doneSize.toString(),
                 style = EbbingWidgetTypography.heading16B.copy(
