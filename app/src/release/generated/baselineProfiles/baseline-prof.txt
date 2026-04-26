@@ -476,7 +476,6 @@ SPLandroidx/collection/MutableScatterMap;-><init>(I)V
 SPLandroidx/collection/MutableScatterMap;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLandroidx/collection/MutableScatterMap;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterMap;->clear()V
-SPLandroidx/collection/MutableScatterMap;->dropDeletes$collection()V
 SPLandroidx/collection/MutableScatterMap;->findFirstAvailableSlot(I)I
 HSPLandroidx/collection/MutableScatterMap;->findInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterMap;->initializeGrowth()V
@@ -494,7 +493,6 @@ SPLandroidx/collection/MutableScatterSet;->addAll(Landroidx/collection/ScatterSe
 SPLandroidx/collection/MutableScatterSet;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterSet;->asMutableSet()Ljava/util/Set;
 SPLandroidx/collection/MutableScatterSet;->clear()V
-SPLandroidx/collection/MutableScatterSet;->dropDeletes$collection()V
 HSPLandroidx/collection/MutableScatterSet;->findAbsoluteInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterSet;->findFirstAvailableSlot(I)I
 SPLandroidx/collection/MutableScatterSet;->initializeGrowth()V
@@ -7107,7 +7105,7 @@ SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;-><
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->access$getDeriveStateScopeCount$p(Landroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;)I
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->access$setDeriveStateScopeCount$p(Landroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;I)V
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->clearObsoleteStateReads(Ljava/lang/Object;)V
-HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->getOnChanged()Lkotlin/jvm/functions/Function1;
+SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->getOnChanged()Lkotlin/jvm/functions/Function1;
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->hasScopeObservations()Z
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->notifyInvalidatedScopes()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->observe(Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)V
@@ -13415,6 +13413,7 @@ Landroidx/datastore/core/DataStoreImpl$incrementCollector$2$1$1;
 SPLandroidx/datastore/core/DataStoreImpl$incrementCollector$2$1$1;-><init>(Landroidx/datastore/core/DataStoreImpl;)V
 Landroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;
 SPLandroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;-><init>(Landroidx/datastore/core/DataStoreImpl;Lkotlin/coroutines/Continuation;)V
+SPLandroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/datastore/core/DataStoreImpl$readDataAndUpdateCache$1;
 SPLandroidx/datastore/core/DataStoreImpl$readDataAndUpdateCache$1;-><init>(Landroidx/datastore/core/DataStoreImpl;Lkotlin/coroutines/Continuation;)V
 Landroidx/datastore/core/DataStoreImpl$readDataOrHandleCorruption$1;
@@ -13489,6 +13488,7 @@ SPLandroidx/datastore/core/RunOnce;->awaitComplete(Lkotlin/coroutines/Continuati
 SPLandroidx/datastore/core/RunOnce;->runIfNeeded(Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 Landroidx/datastore/core/RunOnce$runIfNeeded$1;
 SPLandroidx/datastore/core/RunOnce$runIfNeeded$1;-><init>(Landroidx/datastore/core/RunOnce;Lkotlin/coroutines/Continuation;)V
+SPLandroidx/datastore/core/RunOnce$runIfNeeded$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/datastore/core/SimpleActor;
 SPLandroidx/datastore/core/SimpleActor;-><init>(Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;)V
 SPLandroidx/datastore/core/SimpleActor;->access$getConsumeMessage$p(Landroidx/datastore/core/SimpleActor;)Lkotlin/jvm/functions/Function2;
@@ -25270,6 +25270,7 @@ Lcom/tgyuu/ebbingplanner/ui/HandleAppUpdateKt$$ExternalSyntheticLambda4;
 SPLcom/tgyuu/ebbingplanner/ui/HandleAppUpdateKt$$ExternalSyntheticLambda4;-><init>(Lcom/tgyuu/domain/model/UpdateState;Lkotlin/jvm/functions/Function0;I)V
 Lcom/tgyuu/ebbingplanner/widget/calendar/CalendarWidgetReceiver_GeneratedInjector;
 Lcom/tgyuu/ebbingplanner/widget/todaytodo/TodayTodoWidgetReceiver_GeneratedInjector;
+Lcom/tgyuu/ebbingplanner/widget/util/CheckTodoEntryPoint;
 Lcom/tgyuu/experiment/data/datasource/ExperimentLocalDataSource;
 Lcom/tgyuu/experiment/data/datasource/ExperimentLocalDataSourceImpl;
 SPLcom/tgyuu/experiment/data/datasource/ExperimentLocalDataSourceImpl;-><clinit>()V
@@ -26607,7 +26608,7 @@ SPLkotlin/collections/ArraysKt___ArraysJvmKt;->fill$default([IIIIILjava/lang/Obj
 SPLkotlin/collections/ArraysKt___ArraysJvmKt;->fill$default([JJIIILjava/lang/Object;)V
 SPLkotlin/collections/ArraysKt___ArraysJvmKt;->fill$default([Ljava/lang/Object;Ljava/lang/Object;IIILjava/lang/Object;)V
 SPLkotlin/collections/ArraysKt___ArraysJvmKt;->fill([IIII)V
-HSPLkotlin/collections/ArraysKt___ArraysJvmKt;->fill([JJII)V
+SPLkotlin/collections/ArraysKt___ArraysJvmKt;->fill([JJII)V
 SPLkotlin/collections/ArraysKt___ArraysJvmKt;->fill([Ljava/lang/Object;Ljava/lang/Object;II)V
 SPLkotlin/collections/ArraysKt___ArraysJvmKt;->sort([III)V
 SPLkotlin/collections/ArraysKt___ArraysJvmKt;->sortWith([Ljava/lang/Object;Ljava/util/Comparator;)V
@@ -26619,7 +26620,6 @@ SPLkotlin/collections/ArraysKt___ArraysKt;->filterNotNullTo([Ljava/lang/Object;L
 SPLkotlin/collections/ArraysKt___ArraysKt;->first([Ljava/lang/Object;)Ljava/lang/Object;
 SPLkotlin/collections/ArraysKt___ArraysKt;->firstOrNull([Ljava/lang/Object;)Ljava/lang/Object;
 SPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([I)I
-SPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([J)I
 SPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([Ljava/lang/Object;)I
 SPLkotlin/collections/ArraysKt___ArraysKt;->getOrNull([II)Ljava/lang/Integer;
 SPLkotlin/collections/ArraysKt___ArraysKt;->getOrNull([Ljava/lang/Object;I)Ljava/lang/Object;
@@ -26875,7 +26875,7 @@ SPLkotlin/coroutines/CoroutineContext$DefaultImpls$$ExternalSyntheticLambda0;->i
 Lkotlin/coroutines/CoroutineContext$Element;
 Lkotlin/coroutines/CoroutineContext$Element$DefaultImpls;
 SPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->fold(Lkotlin/coroutines/CoroutineContext$Element;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;)Ljava/lang/Object;
-HSPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->get(Lkotlin/coroutines/CoroutineContext$Element;Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext$Element;
+SPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->get(Lkotlin/coroutines/CoroutineContext$Element;Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext$Element;
 SPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->minusKey(Lkotlin/coroutines/CoroutineContext$Element;Lkotlin/coroutines/CoroutineContext$Key;)Lkotlin/coroutines/CoroutineContext;
 SPLkotlin/coroutines/CoroutineContext$Element$DefaultImpls;->plus(Lkotlin/coroutines/CoroutineContext$Element;Lkotlin/coroutines/CoroutineContext;)Lkotlin/coroutines/CoroutineContext;
 Lkotlin/coroutines/CoroutineContext$Key;
@@ -26897,7 +26897,7 @@ Lkotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsKt;
 SPLkotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsKt;->getCOROUTINE_SUSPENDED()Ljava/lang/Object;
 Lkotlin/coroutines/jvm/internal/BaseContinuationImpl;
 SPLkotlin/coroutines/jvm/internal/BaseContinuationImpl;-><init>(Lkotlin/coroutines/Continuation;)V
-SPLkotlin/coroutines/jvm/internal/BaseContinuationImpl;->resumeWith(Ljava/lang/Object;)V
+HSPLkotlin/coroutines/jvm/internal/BaseContinuationImpl;->resumeWith(Ljava/lang/Object;)V
 Lkotlin/coroutines/jvm/internal/Boxing;
 SPLkotlin/coroutines/jvm/internal/Boxing;->boxBoolean(Z)Ljava/lang/Boolean;
 SPLkotlin/coroutines/jvm/internal/Boxing;->boxFloat(F)Ljava/lang/Float;
@@ -32598,7 +32598,6 @@ Lokio/FileSystem;
 SPLokio/FileSystem;-><clinit>()V
 SPLokio/FileSystem;-><init>()V
 SPLokio/FileSystem;->createDirectories(Lokio/Path;Z)V
-SPLokio/FileSystem;->createDirectory(Lokio/Path;)V
 SPLokio/FileSystem;->exists(Lokio/Path;)Z
 SPLokio/FileSystem;->openReadWrite(Lokio/Path;)Lokio/FileHandle;
 Lokio/FileSystem$Companion;
@@ -32615,7 +32614,6 @@ SPLokio/JvmFileHandle;->protectedFlush()V
 SPLokio/JvmFileHandle;->protectedWrite(J[BII)V
 Lokio/JvmSystemFileSystem;
 SPLokio/JvmSystemFileSystem;-><init>()V
-SPLokio/JvmSystemFileSystem;->createDirectory(Lokio/Path;Z)V
 SPLokio/JvmSystemFileSystem;->delete(Lokio/Path;Z)V
 SPLokio/JvmSystemFileSystem;->openReadWrite(Lokio/Path;ZZ)Lokio/FileHandle;
 SPLokio/JvmSystemFileSystem;->source(Lokio/Path;)Lokio/Source;
