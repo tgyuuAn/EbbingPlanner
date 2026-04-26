@@ -226,7 +226,7 @@ private fun TodayTodoWidgetContent(
         } else {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .padding(horizontal = 20.dp, top = 6.dp)
             ) {
                 items(items = todoLists.mapIndexed { i, it -> i to it }) { (index, item) ->
                     TodoItemRow(
@@ -255,7 +255,6 @@ internal fun TodoItemRow(
             modifier = GlanceModifier
                 .width(3.dp)
                 .height(24.dp)
-                .cornerRadius(2.dp)
                 .background(ColorProvider(Color(todo.color), Color(todo.color)))
         )
 

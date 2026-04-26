@@ -78,6 +78,21 @@ class CalendarWidget : GlanceAppWidget() {
         val dowBitmaps = (0 until 7).map { i ->
             PretendardBitmapRenderer.loadBitmap(context, "calendar_dow_$i.png")
         }
+        val sectionTodayBitmap = PretendardBitmapRenderer.loadBitmap(context, "calendar_section_today.png")
+        val sectionDayBitmaps = (1..31).map { day ->
+            PretendardBitmapRenderer.loadBitmap(context, "calendar_section_day_$day.png")
+        }
+        val numNormalBitmaps = (1..31).map { day ->
+            PretendardBitmapRenderer.loadBitmap(context, "calendar_num_normal_$day.png")
+        }
+        val numDisabledBitmaps = (1..31).map { day ->
+            PretendardBitmapRenderer.loadBitmap(context, "calendar_num_disabled_$day.png")
+        }
+        val numPrimaryBitmaps = (1..31).map { day ->
+            PretendardBitmapRenderer.loadBitmap(context, "calendar_num_primary_$day.png")
+        }
+        val numTodayNormalBitmap = PretendardBitmapRenderer.loadBitmap(context, "calendar_num_today_normal.png")
+        val numTodayPrimaryBitmap = PretendardBitmapRenderer.loadBitmap(context, "calendar_num_today_primary.png")
 
         provideContent {
             val prefs = currentState<Preferences>()
@@ -113,6 +128,13 @@ class CalendarWidget : GlanceAppWidget() {
                     mondayStart = mondayStart,
                     headerBitmap = headerBitmap,
                     dowBitmaps = dowBitmaps,
+                    sectionTodayBitmap = sectionTodayBitmap,
+                    sectionDayBitmaps = sectionDayBitmaps,
+                    numNormalBitmaps = numNormalBitmaps,
+                    numDisabledBitmaps = numDisabledBitmaps,
+                    numPrimaryBitmaps = numPrimaryBitmaps,
+                    numTodayNormalBitmap = numTodayNormalBitmap,
+                    numTodayPrimaryBitmap = numTodayPrimaryBitmap,
                 )
             }
         }
@@ -128,6 +150,13 @@ private fun CalendarWidgetContent(
     mondayStart: Boolean,
     headerBitmap: Bitmap?,
     dowBitmaps: List<Bitmap?>,
+    sectionTodayBitmap: Bitmap?,
+    sectionDayBitmaps: List<Bitmap?>,
+    numNormalBitmaps: List<Bitmap?>,
+    numDisabledBitmaps: List<Bitmap?>,
+    numPrimaryBitmaps: List<Bitmap?>,
+    numTodayNormalBitmap: Bitmap?,
+    numTodayPrimaryBitmap: Bitmap?,
 ) {
     val selectedDateTodoLists = schedulesByDateMap[selectedDate] ?: emptyList()
     val todoListsDoneSize = selectedDateTodoLists.filter { it.isDone }.size
@@ -158,13 +187,20 @@ private fun CalendarWidgetContent(
             calendarDates = calendarDates,
             schedulesByDateMap = schedulesByDateMap,
             selectedDate = selectedDate,
+            numNormalBitmaps = numNormalBitmaps,
+            numDisabledBitmaps = numDisabledBitmaps,
+            numPrimaryBitmaps = numPrimaryBitmaps,
+            numTodayNormalBitmap = numTodayNormalBitmap,
+            numTodayPrimaryBitmap = numTodayPrimaryBitmap,
         )
 
         SelectedDateTodoList(
             alpha = alpha,
             selectedDate = selectedDate,
             todoLists = selectedDateTodoLists,
-            doneSize = todoListsDoneSize
+            doneSize = todoListsDoneSize,
+            sectionTodayBitmap = sectionTodayBitmap,
+            sectionDayBitmaps = sectionDayBitmaps,
         )
     }
 }
@@ -252,6 +288,7 @@ private fun CalendarWidgetHeader(
             }
         }
 
+        Spacer(modifier = GlanceModifier.fillMaxWidth().height(2.dp))
         Spacer(
             modifier = GlanceModifier.fillMaxWidth()
                 .height(1.dp)
@@ -267,6 +304,11 @@ private fun CalendarWidgetBody(
     calendarDates: List<CalendarDate>,
     schedulesByDateMap: Map<LocalDate, List<TodoSchedule>>,
     selectedDate: LocalDate,
+    numNormalBitmaps: List<Bitmap?>,
+    numDisabledBitmaps: List<Bitmap?>,
+    numPrimaryBitmaps: List<Bitmap?>,
+    numTodayNormalBitmap: Bitmap?,
+    numTodayPrimaryBitmap: Bitmap?,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val today = LocalDate.now()
@@ -289,6 +331,11 @@ private fun CalendarWidgetBody(
                         selectedDate = selectedDate,
                         schedules = schedules,
                         isToday = isToday,
+                        numNormalBitmaps = numNormalBitmaps,
+                        numDisabledBitmaps = numDisabledBitmaps,
+                        numPrimaryBitmaps = numPrimaryBitmaps,
+                        numTodayNormalBitmap = numTodayNormalBitmap,
+                        numTodayPrimaryBitmap = numTodayPrimaryBitmap,
                     )
                 }
             }
@@ -306,6 +353,11 @@ private fun RowScope.CalendarDayCell(
     selectedDate: LocalDate,
     schedules: List<TodoSchedule>,
     isToday: Boolean,
+    numNormalBitmaps: List<Bitmap?>,
+    numDisabledBitmaps: List<Bitmap?>,
+    numPrimaryBitmaps: List<Bitmap?>,
+    numTodayNormalBitmap: Bitmap?,
+    numTodayPrimaryBitmap: Bitmap?,
     modifier: GlanceModifier = GlanceModifier,
 ) {
     val isSelected = date.date == selectedDate
@@ -313,6 +365,15 @@ private fun RowScope.CalendarDayCell(
     else ColorProvider(Color.Transparent, Color.Transparent)
     val textColor = if (isSelected) LocalEbbingWidgetColors.current.textOnPrimary
     else LocalEbbingWidgetColors.current.textOnBackground
+
+    val dayIndex = date.dayOfMonth - 1
+    val dayBitmap: Bitmap? = when {
+        isToday && isSelected -> numTodayPrimaryBitmap
+        isToday -> numTodayNormalBitmap
+        isSelected -> numPrimaryBitmaps.getOrNull(dayIndex)
+        date.isCurrentMonth -> numNormalBitmaps.getOrNull(dayIndex)
+        else -> numDisabledBitmaps.getOrNull(dayIndex)
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -330,14 +391,21 @@ private fun RowScope.CalendarDayCell(
                 .cornerRadius(999.dp)
                 .background(dayItemColor),
         ) {
-            Text(
-                text = date.dayOfMonth.toString(),
-                style = EbbingWidgetTypography.caption12R.copy(
-                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                    color = if (date.isCurrentMonth) textColor else LocalEbbingWidgetColors.current.textDisabled,
-                    textAlign = TextAlign.Center,
+            if (dayBitmap != null) {
+                Image(
+                    provider = ImageProvider(dayBitmap),
+                    contentDescription = date.dayOfMonth.toString(),
                 )
-            )
+            } else {
+                Text(
+                    text = date.dayOfMonth.toString(),
+                    style = EbbingWidgetTypography.caption12R.copy(
+                        fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                        color = if (date.isCurrentMonth) textColor else LocalEbbingWidgetColors.current.textDisabled,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+            }
         }
 
         val dots = schedules.map { it.color }.distinct().take(3)
@@ -364,7 +432,16 @@ private fun ColumnScope.SelectedDateTodoList(
     selectedDate: LocalDate,
     todoLists: List<TodoSchedule>,
     doneSize: Int,
+    sectionTodayBitmap: Bitmap?,
+    sectionDayBitmaps: List<Bitmap?>,
 ) {
+    val today = LocalDate.now()
+    val sectionHeaderBitmap: Bitmap? = if (selectedDate == today) {
+        sectionTodayBitmap
+    } else {
+        sectionDayBitmaps.getOrNull(selectedDate.dayOfMonth - 1)
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = GlanceModifier.fillMaxWidth()
@@ -374,13 +451,22 @@ private fun ColumnScope.SelectedDateTodoList(
             verticalAlignment = Alignment.CenterVertically,
             modifier = GlanceModifier.defaultWeight()
         ) {
-            Text(
-                text = if (selectedDate == LocalDate.now()) "오늘 할 일   "
-                else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
-                style = EbbingWidgetTypography.heading18B.copy(
-                    color = LocalEbbingWidgetColors.current.textOnBackground,
-                ),
-            )
+            if (sectionHeaderBitmap != null) {
+                Image(
+                    provider = ImageProvider(sectionHeaderBitmap),
+                    contentDescription = if (selectedDate == today) "오늘 할 일"
+                    else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일",
+                )
+                Spacer(modifier = GlanceModifier.width(8.dp))
+            } else {
+                Text(
+                    text = if (selectedDate == today) "오늘 할 일   "
+                    else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
+                    style = EbbingWidgetTypography.heading16B.copy(
+                        color = LocalEbbingWidgetColors.current.textOnBackground,
+                    ),
+                )
+            }
             Text(
                 text = doneSize.toString(),
                 style = EbbingWidgetTypography.heading16B.copy(

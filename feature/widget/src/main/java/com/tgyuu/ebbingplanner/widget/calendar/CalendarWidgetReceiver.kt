@@ -173,6 +173,8 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
         val textOnBackground = colorScheme.textOnBackground.copy(alpha = textAlpha).toArgb()
         val textSub = colorScheme.textSub.copy(alpha = textAlpha).toArgb()
+        val textDisabled = colorScheme.textDisabled.copy(alpha = textAlpha).toArgb()
+        val textOnPrimary = colorScheme.textOnPrimary.copy(alpha = textAlpha).toArgb()
 
         // 년/월 헤더
         PretendardBitmapRenderer.renderAndSave(
@@ -189,6 +191,50 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
                 filename = "calendar_dow_$index.png",
             )
         }
+
+        // 섹션 헤더: "오늘 할 일" + "X월 D일 할 일" (현재 월 전체)
+        PretendardBitmapRenderer.renderAndSave(
+            context, "오늘 할 일",
+            PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+            filename = "calendar_section_today.png",
+        )
+        (1..now.lengthOfMonth()).forEach { day ->
+            PretendardBitmapRenderer.renderAndSave(
+                context, "${now.monthValue}월 ${day}일 할 일",
+                PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+                filename = "calendar_section_day_$day.png",
+            )
+        }
+
+        // 날짜 숫자 bitmap (1~31, 3가지 색상)
+        (1..31).forEach { day ->
+            PretendardBitmapRenderer.renderAndSave(
+                context, "$day",
+                PretendardBitmapRenderer.Weight.MEDIUM, 12f, textOnBackground,
+                filename = "calendar_num_normal_$day.png",
+            )
+            PretendardBitmapRenderer.renderAndSave(
+                context, "$day",
+                PretendardBitmapRenderer.Weight.MEDIUM, 12f, textDisabled,
+                filename = "calendar_num_disabled_$day.png",
+            )
+            PretendardBitmapRenderer.renderAndSave(
+                context, "$day",
+                PretendardBitmapRenderer.Weight.MEDIUM, 12f, textOnPrimary,
+                filename = "calendar_num_primary_$day.png",
+            )
+        }
+        // 오늘 날짜 bold
+        PretendardBitmapRenderer.renderAndSave(
+            context, "${now.dayOfMonth}",
+            PretendardBitmapRenderer.Weight.BOLD, 12f, textOnBackground,
+            filename = "calendar_num_today_normal.png",
+        )
+        PretendardBitmapRenderer.renderAndSave(
+            context, "${now.dayOfMonth}",
+            PretendardBitmapRenderer.Weight.BOLD, 12f, textOnPrimary,
+            filename = "calendar_num_today_primary.png",
+        )
     }
 
     private fun buildByDateMap(
