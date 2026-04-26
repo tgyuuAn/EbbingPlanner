@@ -8,10 +8,15 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import java.time.LocalDate
 
 const val KEY_DESTINATION = "destination"
@@ -47,6 +52,12 @@ class RefreshAction : ActionCallback {
     }
 }
 
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface CheckTodoEntryPoint {
+    fun todoRepository(): TodoRepository
+}
+
 class CheckTodoAction : ActionCallback {
     override suspend fun onAction(
         context: Context,
@@ -54,18 +65,29 @@ class CheckTodoAction : ActionCallback {
         parameters: ActionParameters
     ) {
         val todoId: Int = parameters[todoIdKey] ?: return
-        val todayTodoIntent = Intent(context, TodayTodoWidgetReceiver::class.java).apply {
-            action = CHECK_TODO_ACTION
-            putExtra(TODO_ID, todoId)
+
+        // ActionCallback 내에서 직접 DB toggle 수행 (Receiver 의존 없음)
+        val entryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext, CheckTodoEntryPoint::class.java
+        )
+        val todoRepository = entryPoint.todoRepository()
+        val selectedTodo = todoRepository.loadSchedule(todoId)
+        if (selectedTodo != null) {
+            val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
+            todoRepository.updateTodo(updatedTodo)
         }
 
-        context.sendBroadcast(todayTodoIntent)
-
-        val calendarIntent = Intent(context, CalendarWidgetReceiver::class.java).apply {
-            action = CHECK_TODO_ACTION
-            putExtra(TODO_ID, todoId)
-        }
-        context.sendBroadcast(calendarIntent)
+        // 양쪽 위젯 모두 refresh만 보냄
+        context.sendBroadcast(
+            Intent(context, TodayTodoWidgetReceiver::class.java).apply {
+                action = RefreshAction.UPDATE_ACTION
+            }
+        )
+        context.sendBroadcast(
+            Intent(context, CalendarWidgetReceiver::class.java).apply {
+                action = RefreshAction.UPDATE_ACTION
+            }
+        )
     }
 
     companion object {

@@ -6,12 +6,11 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastMapIndexed
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
@@ -19,7 +18,6 @@ import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
@@ -27,6 +25,7 @@ import androidx.glance.background
 import androidx.glance.color.ColorProvider
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
@@ -36,13 +35,9 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.width
-import androidx.glance.text.FontFamily
-import androidx.glance.text.FontStyle
-import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextDecoration
-import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -56,26 +51,20 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.MAX_VISIBLE_TODOS
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
-import com.tgyuu.ebbingplanner.widget.util.ACTION_OPEN_ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
+import com.tgyuu.ebbingplanner.widget.util.TodayTodoBitmaps
+import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
 import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
 import java.time.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val headerBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_header.png")
-        val doneBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_done_count.png")
-        val totalBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_total.png")
-        val emptyBitmap = PretendardBitmapRenderer.loadBitmap(context, "todo_empty.png")
-        val titleBitmaps = (0 until MAX_VISIBLE_TODOS).map { i ->
-            PretendardBitmapRenderer.loadBitmap(context, "todo_title_$i.png")
-        }
+        val bitmaps = WidgetBitmapStore.loadTodayTodoBitmaps(context, MAX_VISIBLE_TODOS)
 
         provideContent {
             val prefs = currentState<Preferences>()
@@ -97,11 +86,7 @@ class TodayTodoWidget : GlanceAppWidget() {
                 TodayTodoWidgetContent(
                     alpha = backgroundAlpha,
                     todoLists = todoLists,
-                    headerBitmap = headerBitmap,
-                    doneBitmap = doneBitmap,
-                    totalBitmap = totalBitmap,
-                    emptyBitmap = emptyBitmap,
-                    titleBitmaps = titleBitmaps,
+                    bitmaps = bitmaps,
                 )
             }
         }
@@ -112,11 +97,7 @@ class TodayTodoWidget : GlanceAppWidget() {
 private fun TodayTodoWidgetContent(
     alpha: Float,
     todoLists: List<TodoSchedule>,
-    headerBitmap: Bitmap?,
-    doneBitmap: Bitmap?,
-    totalBitmap: Bitmap?,
-    emptyBitmap: Bitmap?,
-    titleBitmaps: List<Bitmap?>,
+    bitmaps: TodayTodoBitmaps,
 ) {
     val backgroundImage = when (alpha) {
         0.25f -> R.drawable.shape_widget_background_25
@@ -153,8 +134,8 @@ private fun TodayTodoWidgetContent(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = GlanceModifier.defaultWeight(),
             ) {
-                if (headerBitmap != null) {
-                    Image(provider = ImageProvider(headerBitmap), contentDescription = "오늘 할 일")
+                if (bitmaps.header != null) {
+                    Image(provider = ImageProvider(bitmaps.header), contentDescription = "오늘 할 일")
                 } else {
                     Text(
                         text = "오늘 할 일   ",
@@ -163,9 +144,9 @@ private fun TodayTodoWidgetContent(
                         ),
                     )
                 }
-                if (doneBitmap != null) {
+                if (bitmaps.doneCount != null) {
                     Image(
-                        provider = ImageProvider(doneBitmap),
+                        provider = ImageProvider(bitmaps.doneCount),
                         contentDescription = "완료 ${todoListsDoneSize}개",
                     )
                 } else {
@@ -177,9 +158,9 @@ private fun TodayTodoWidgetContent(
                         ),
                     )
                 }
-                if (totalBitmap != null) {
+                if (bitmaps.total != null) {
                     Image(
-                        provider = ImageProvider(totalBitmap),
+                        provider = ImageProvider(bitmaps.total),
                         contentDescription = "전체 ${todoLists.size}개",
                     )
                 } else {
@@ -206,9 +187,9 @@ private fun TodayTodoWidgetContent(
         }
 
         if (todoLists.isEmpty()) {
-            if (emptyBitmap != null) {
+            if (bitmaps.empty != null) {
                 Image(
-                    provider = ImageProvider(emptyBitmap),
+                    provider = ImageProvider(bitmaps.empty),
                     contentDescription = "오늘은 일정이 없어요",
                     modifier = GlanceModifier.padding(vertical = 12.dp),
                 )
@@ -226,12 +207,12 @@ private fun TodayTodoWidgetContent(
         } else {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
-                    .padding(horizontal = 20.dp, top = 6.dp)
+                    .padding(top = 6.dp),
             ) {
-                items(items = todoLists.mapIndexed { i, it -> i to it }) { (index, item) ->
+                items(items = todoLists.fastMapIndexed { i, it -> i to it }) { (index, item) ->
                     TodoItemRow(
                         todo = item,
-                        titleBitmap = titleBitmaps.getOrNull(index),
+                        titleBitmap = bitmaps.titles.getOrNull(index),
                         modifier = GlanceModifier.fillMaxWidth()
                             .padding(vertical = 6.dp),
                     )
@@ -258,23 +239,25 @@ internal fun TodoItemRow(
                 .background(ColorProvider(Color(todo.color), Color(todo.color)))
         )
 
-        if (titleBitmap != null) {
-            Image(
-                provider = ImageProvider(titleBitmap),
-                contentDescription = todo.title,
-                modifier = GlanceModifier.padding(horizontal = 12.dp).defaultWeight(),
-            )
-        } else {
-            Text(
-                text = todo.title,
-                style = (if (todo.isDone) EbbingWidgetTypography.heading16SB else EbbingWidgetTypography.body16M).copy(
-                    color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
-                    textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
-                ),
-                maxLines = 2,
-                modifier = GlanceModifier.padding(horizontal = 12.dp)
-                    .defaultWeight(),
-            )
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = GlanceModifier.defaultWeight().padding(horizontal = 8.dp),
+        ) {
+            if (titleBitmap != null) {
+                Image(
+                    provider = ImageProvider(titleBitmap),
+                    contentDescription = todo.title,
+                )
+            } else {
+                Text(
+                    text = todo.title,
+                    style = (if (todo.isDone) EbbingWidgetTypography.heading16SB else EbbingWidgetTypography.body16M).copy(
+                        color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
+                        textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
+                    ),
+                    maxLines = 1,
+                )
+            }
         }
 
         EbbingWidgetCheck(
@@ -294,11 +277,10 @@ private fun HomeWidgetPreview() {
         TodayTodoWidgetContent(
             alpha = 1f,
             todoLists = emptyList(),
-            headerBitmap = null,
-            doneBitmap = null,
-            totalBitmap = null,
-            emptyBitmap = null,
-            titleBitmaps = emptyList(),
+            bitmaps = TodayTodoBitmaps(
+                header = null, doneCount = null, total = null,
+                empty = null, titles = emptyList(),
+            ),
         )
     }
 }
@@ -309,11 +291,10 @@ private fun HomeWidgetPreview2() {
     BaseWidgetPreview {
         TodayTodoWidgetContent(
             alpha = 1f,
-            headerBitmap = null,
-            doneBitmap = null,
-            totalBitmap = null,
-            emptyBitmap = null,
-            titleBitmaps = emptyList(),
+            bitmaps = TodayTodoBitmaps(
+                header = null, doneCount = null, total = null,
+                empty = null, titles = emptyList(),
+            ),
             todoLists = listOf(
                 TodoSchedule(
                     id = 1,

@@ -30,8 +30,6 @@ import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
-import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
-import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO_ACTION
@@ -84,22 +82,17 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> {
+                val pendingResult = goAsync()
                 analyticsHelper.logEvent(
                     AnalyticsEvent.Click(screenName = "TodoWidget", buttonName = "Refresh")
                 )
-                updateData(context)
-            }
-            CheckTodoAction.CHECK_TODO_ACTION -> {
-                val todoId = intent.extras?.getInt(TODO_ID)
-                todoId ?: return
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(
-                        screenName = "TodoWidget",
-                        buttonName = "Check",
-                        properties = mapOf("todoId" to todoId),
-                    )
-                )
-                checkTodo(todoId, context)
+                scope.launch {
+                    try {
+                        updateDataInternal(context)
+                    } finally {
+                        pendingResult.finish()
+                    }
+                }
             }
             ADD_TODO_ACTION -> {
                 val source = intent.extras?.getString(KEY_WIDGET_SOURCE) ?: "TodoWidget"
@@ -110,17 +103,11 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         }
     }
 
-    private fun checkTodo(todoId: Int, context: Context) = scope.launch {
-        val selectedTodo = todoRepository.loadSchedule(todoId) ?: run {
-            updateData(context)
-            return@launch
-        }
-        val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
-        todoRepository.updateTodo(updatedTodo)
-        updateData(context)
+    private fun updateData(context: Context) {
+        scope.launch { updateDataInternal(context) }
     }
 
-    private fun updateData(context: Context) = scope.launch {
+    private suspend fun updateDataInternal(context: Context) {
         val gson = GsonProvider.gson
 
         val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
@@ -232,7 +219,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
                 weight, 14f, titleColor,
                 filename = "todo_title_$index.png",
                 maxWidthPx = titleMaxWidthPx,
-                maxLines = 2,
+                maxLines = 1,
                 strikethrough = todo.isDone,
             )
         }

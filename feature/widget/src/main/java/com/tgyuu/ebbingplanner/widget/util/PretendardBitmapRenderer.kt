@@ -14,6 +14,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.tgyuu.designsystem.R
 import java.io.File
 import kotlin.math.ceil
+import androidx.core.graphics.createBitmap
 
 object PretendardBitmapRenderer {
 
@@ -78,7 +79,7 @@ object PretendardBitmapRenderer {
         val bitmapWidth = effectiveWidth.coerceAtLeast(1)
         val bitmapHeight = layout.height.coerceAtLeast(1)
 
-        val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(bitmapWidth, bitmapHeight)
         Canvas(bitmap).also { layout.draw(it) }
         return bitmap
     }
