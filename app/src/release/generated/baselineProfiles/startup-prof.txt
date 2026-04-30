@@ -476,7 +476,6 @@ SPLandroidx/collection/MutableScatterMap;-><init>(I)V
 SPLandroidx/collection/MutableScatterMap;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLandroidx/collection/MutableScatterMap;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterMap;->clear()V
-SPLandroidx/collection/MutableScatterMap;->dropDeletes$collection()V
 SPLandroidx/collection/MutableScatterMap;->findFirstAvailableSlot(I)I
 HSPLandroidx/collection/MutableScatterMap;->findInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterMap;->initializeGrowth()V
@@ -10119,7 +10118,7 @@ SPLandroidx/compose/ui/node/NodeChainKt;->access$fillVector(Landroidx/compose/ui
 SPLandroidx/compose/ui/node/NodeChainKt;->access$getSentinelHead$p()Landroidx/compose/ui/node/NodeChainKt$SentinelHead$1;
 SPLandroidx/compose/ui/node/NodeChainKt;->access$updateUnsafe(Landroidx/compose/ui/node/ModifierNodeElement;Landroidx/compose/ui/Modifier$Node;)V
 SPLandroidx/compose/ui/node/NodeChainKt;->actionForModifiers(Landroidx/compose/ui/Modifier$Element;Landroidx/compose/ui/Modifier$Element;)I
-SPLandroidx/compose/ui/node/NodeChainKt;->fillVector(Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/collection/MutableVector;)Landroidx/compose/runtime/collection/MutableVector;
+HSPLandroidx/compose/ui/node/NodeChainKt;->fillVector(Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/collection/MutableVector;)Landroidx/compose/runtime/collection/MutableVector;
 SPLandroidx/compose/ui/node/NodeChainKt;->updateUnsafe(Landroidx/compose/ui/node/ModifierNodeElement;Landroidx/compose/ui/Modifier$Node;)V
 Landroidx/compose/ui/node/NodeChainKt$SentinelHead$1;
 SPLandroidx/compose/ui/node/NodeChainKt$SentinelHead$1;-><init>()V
@@ -10163,7 +10162,7 @@ SPLandroidx/compose/ui/node/NodeCoordinator;->getZIndex()F
 SPLandroidx/compose/ui/node/NodeCoordinator;->hasNode-H91voCI(I)Z
 SPLandroidx/compose/ui/node/NodeCoordinator;->head-H91voCI(I)Landroidx/compose/ui/Modifier$Node;
 HSPLandroidx/compose/ui/node/NodeCoordinator;->headNode(Z)Landroidx/compose/ui/Modifier$Node;
-SPLandroidx/compose/ui/node/NodeCoordinator;->invalidateLayer()V
+HSPLandroidx/compose/ui/node/NodeCoordinator;->invalidateLayer()V
 SPLandroidx/compose/ui/node/NodeCoordinator;->isValidOwnerScope()Z
 SPLandroidx/compose/ui/node/NodeCoordinator;->onAttach()V
 SPLandroidx/compose/ui/node/NodeCoordinator;->onDetach()V
@@ -20889,7 +20888,6 @@ SPLcom/google/android/gms/measurement/internal/zzqd;->zza(Ljava/lang/String;[Lja
 SPLcom/google/android/gms/measurement/internal/zzqd;->zza(Ljava/util/List;)Landroid/os/Bundle;
 SPLcom/google/android/gms/measurement/internal/zzqd;->zza([B)J
 SPLcom/google/android/gms/measurement/internal/zzqd;->zzac()V
-SPLcom/google/android/gms/measurement/internal/zzqd;->zzb()Lcom/google/android/gms/common/util/Clock;
 SPLcom/google/android/gms/measurement/internal/zzqd;->zzb(Landroid/content/Context;Ljava/lang/String;)Z
 SPLcom/google/android/gms/measurement/internal/zzqd;->zzb(Ljava/lang/Object;)[Landroid/os/Bundle;
 SPLcom/google/android/gms/measurement/internal/zzqd;->zzb(Ljava/lang/String;)I
@@ -23808,7 +23806,6 @@ SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$Dependency;->ge
 SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$Dependency;->setSubscriber(Lcom/google/firebase/sessions/api/SessionSubscriber;)V
 Lcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;
 SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;-><init>(Lcom/google/firebase/sessions/api/FirebaseSessionsDependencies;Lkotlin/coroutines/Continuation;)V
-SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/google/firebase/sessions/api/SessionSubscriber;
 Lcom/google/firebase/sessions/api/SessionSubscriber$Name;
 SPLcom/google/firebase/sessions/api/SessionSubscriber$Name;->$values()[Lcom/google/firebase/sessions/api/SessionSubscriber$Name;
@@ -26901,7 +26898,7 @@ Lkotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsKt;
 SPLkotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsKt;->getCOROUTINE_SUSPENDED()Ljava/lang/Object;
 Lkotlin/coroutines/jvm/internal/BaseContinuationImpl;
 SPLkotlin/coroutines/jvm/internal/BaseContinuationImpl;-><init>(Lkotlin/coroutines/Continuation;)V
-SPLkotlin/coroutines/jvm/internal/BaseContinuationImpl;->resumeWith(Ljava/lang/Object;)V
+HSPLkotlin/coroutines/jvm/internal/BaseContinuationImpl;->resumeWith(Ljava/lang/Object;)V
 Lkotlin/coroutines/jvm/internal/Boxing;
 SPLkotlin/coroutines/jvm/internal/Boxing;->boxBoolean(Z)Ljava/lang/Boolean;
 SPLkotlin/coroutines/jvm/internal/Boxing;->boxFloat(F)Ljava/lang/Float;
@@ -29243,7 +29240,7 @@ Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;-><clinit>()V
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;-><init>(I)V
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->flushLastBuffer()V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->toByteString()Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->toByteString()Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->write([BII)V
 Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;-><init>(Ljava/io/InputStream;)V
@@ -30991,7 +30988,6 @@ Lkotlinx/coroutines/NotCompleted;
 Lkotlinx/coroutines/ParentJob;
 Lkotlinx/coroutines/ResumeAwaitOnCompletion;
 SPLkotlinx/coroutines/ResumeAwaitOnCompletion;-><init>(Lkotlinx/coroutines/CancellableContinuationImpl;)V
-SPLkotlinx/coroutines/ResumeAwaitOnCompletion;->getOnCancelling()Z
 SPLkotlinx/coroutines/ResumeAwaitOnCompletion;->invoke(Ljava/lang/Throwable;)V
 Lkotlinx/coroutines/ResumeOnCompletion;
 SPLkotlinx/coroutines/ResumeOnCompletion;-><init>(Lkotlin/coroutines/Continuation;)V
@@ -31103,7 +31099,6 @@ SPLkotlinx/coroutines/channels/BufferedChannel;->getSendSegment$volatile$FU()Lja
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersAndCloseStatus$volatile$FU()Ljava/util/concurrent/atomic/AtomicLongFieldUpdater;
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersCounter$kotlinx_coroutines_core()J
 SPLkotlinx/coroutines/channels/BufferedChannel;->get_closeCause$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
-SPLkotlinx/coroutines/channels/BufferedChannel;->hasElements$kotlinx_coroutines_core()Z
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts$default(Lkotlinx/coroutines/channels/BufferedChannel;JILjava/lang/Object;)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts(J)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->invokeCloseHandler()V
@@ -31150,7 +31145,6 @@ SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNext
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNextOnNoWaiterSuspend(Lkotlinx/coroutines/channels/ChannelSegment;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->invokeOnCancellation(Lkotlinx/coroutines/internal/Segment;I)V
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->next()Ljava/lang/Object;
-SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->onClosedHasNext()Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNext(Ljava/lang/Object;)Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNextOnClosedChannel()V
 Lkotlinx/coroutines/channels/BufferedChannel$SendBroadcast;
@@ -32605,6 +32599,7 @@ Lokio/FileSystem;
 SPLokio/FileSystem;-><clinit>()V
 SPLokio/FileSystem;-><init>()V
 SPLokio/FileSystem;->createDirectories(Lokio/Path;Z)V
+SPLokio/FileSystem;->createDirectory(Lokio/Path;)V
 SPLokio/FileSystem;->exists(Lokio/Path;)Z
 SPLokio/FileSystem;->openReadWrite(Lokio/Path;)Lokio/FileHandle;
 Lokio/FileSystem$Companion;
@@ -32621,6 +32616,7 @@ SPLokio/JvmFileHandle;->protectedFlush()V
 SPLokio/JvmFileHandle;->protectedWrite(J[BII)V
 Lokio/JvmSystemFileSystem;
 SPLokio/JvmSystemFileSystem;-><init>()V
+SPLokio/JvmSystemFileSystem;->createDirectory(Lokio/Path;Z)V
 SPLokio/JvmSystemFileSystem;->delete(Lokio/Path;Z)V
 SPLokio/JvmSystemFileSystem;->openReadWrite(Lokio/Path;ZZ)Lokio/FileHandle;
 SPLokio/JvmSystemFileSystem;->source(Lokio/Path;)Lokio/Source;
