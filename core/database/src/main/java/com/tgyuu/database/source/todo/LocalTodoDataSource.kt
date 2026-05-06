@@ -51,6 +51,16 @@ interface LocalTodoDataSource {
     suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync)
     suspend fun updateSchedules(schedules: List<TodoSchedule>)
 
+    suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
+    )
+
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)
     suspend fun softDeleteTodoByTodoInfo(id: Int)
     suspend fun softDeleteAllTodos()
