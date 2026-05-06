@@ -178,11 +178,13 @@ class EditDateViewModel @Inject constructor(
 
         originSchedules.forEach { alarmScheduler.cancelDailyExact(it.date) }
 
-        originSchedules.firstOrNull()
-            ?.infoId
-            ?.let { todoRepository.deleteTodoByTodoInfo(it) }
+        val infoId = originSchedules.firstOrNull()?.infoId ?: run {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
+            return
+        }
 
-        todoRepository.addTodo(
+        todoRepository.replaceSchedules(
+            infoId = infoId,
             title = currentState.title,
             dates = currentState.schedules,
             isDoneSchedules = isDoneSchedules,
