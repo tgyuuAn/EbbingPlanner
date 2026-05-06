@@ -108,6 +108,7 @@ val normalLightColorScheme = EbbingColors(
     fillStrong       = Greyscale800,
     fillDisabled     = Greyscale700,
     fillPrimary      = Bluescale200,
+    fillFocused      = Greyscale000,
 )
 
 val normalDarkColorScheme = EbbingColors(
@@ -127,6 +128,7 @@ val normalDarkColorScheme = EbbingColors(
     fillStrong       = Greyscale200,
     fillDisabled     = Greyscale300,
     fillPrimary      = Bluescale200,
+    fillFocused      = Bluescale200,
 )
 
 val forestLightColorScheme = normalLightColorScheme.copy(
@@ -143,6 +145,7 @@ val forestLightColorScheme = normalLightColorScheme.copy(
     fillStrong       = Greenscale800,
     fillDisabled     = Greenscale700,
     fillPrimary      = Greenscale500,
+    fillFocused      = Greenscale000,
 )
 
 val forestDarkColorScheme = normalDarkColorScheme.copy(
@@ -159,6 +162,7 @@ val forestDarkColorScheme = normalDarkColorScheme.copy(
     fillStrong       = Color(0xFF1A3D1E),
     fillDisabled     = Greenscale200,
     fillPrimary      = Greenscale600,
+    fillFocused      = Greenscale300,
 )
 
 val sunsetLightColorScheme = normalLightColorScheme.copy(
@@ -171,6 +175,7 @@ val sunsetLightColorScheme = normalLightColorScheme.copy(
     fillStrong       = Sunsetscale800,
     fillDisabled     = Sunsetscale700,
     fillPrimary      = Sunsetscale400,
+    fillFocused      = Sunsetscale200,
 )
 
 val sunsetDarkColorScheme = normalDarkColorScheme.copy(
@@ -183,6 +188,7 @@ val sunsetDarkColorScheme = normalDarkColorScheme.copy(
     fillStrong       = Sunsetscale200,
     fillDisabled     = Sunsetscale300,
     fillPrimary      = Sunsetscale700,
+    fillFocused      = Sunsetscale200,
 )
 
 val marineLightColorScheme = normalLightColorScheme.copy(
@@ -195,6 +201,7 @@ val marineLightColorScheme = normalLightColorScheme.copy(
     fillStrong       = Marinescale800,
     fillDisabled     = Marinescale700,
     fillPrimary      = Marinescale200,
+    fillFocused      = Marinescale000,
 )
 
 val marineDarkColorScheme = normalDarkColorScheme.copy(
@@ -207,6 +214,7 @@ val marineDarkColorScheme = normalDarkColorScheme.copy(
     fillStrong       = Marinescale100,
     fillDisabled     = Marinescale200,
     fillPrimary      = Color(0xFF5EB4E1),
+    fillFocused      = Marinescale000,
 )
 
 val lilacLightColorScheme = normalLightColorScheme.copy(
@@ -219,6 +227,7 @@ val lilacLightColorScheme = normalLightColorScheme.copy(
     fillStrong       = Lilacscale800,
     fillDisabled     = Lilacscale700,
     fillPrimary      = Lilacscale200,
+    fillFocused      = Lilacscale000,
 )
 
 val lilacDarkColorScheme = normalDarkColorScheme.copy(
@@ -231,6 +240,7 @@ val lilacDarkColorScheme = normalDarkColorScheme.copy(
     fillStrong       = Lilacscale100,
     fillDisabled     = Lilacscale200,
     fillPrimary      = Lilacscale900,
+    fillFocused      = Lilacscale000,
 )
 
 // =============================================================
@@ -260,4 +270,5 @@ data class EbbingColors(
     val fillStrong: Color,
     val fillDisabled: Color,
     val fillPrimary: Color,
+    val fillFocused: Color,
 )

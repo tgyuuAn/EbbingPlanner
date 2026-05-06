@@ -32,6 +32,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -52,6 +53,8 @@ class HomeViewModel @Inject constructor(
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
     private var currentMonthSchedules: List<TodoSchedule> = emptyList()
     private var cachedSchedules: List<TodoSchedule> = emptyList()
+    private var loadSchedulesJob: Job? = null
+    private var loadRequestSeq: Long = 0L
 
     init {
         viewModelScope.launch {
@@ -201,21 +204,27 @@ class HomeViewModel @Inject constructor(
         navigationBus.navigate(To(EditTodoRoute(infoId)))
     }
 
-    private fun loadSchedules(currentDate: LocalDate) = viewModelScope.launch {
-        val start = currentDate.withDayOfMonth(1).minusMonths(1)
-        val end = currentDate.withDayOfMonth(1).plusMonths(2).minusDays(1)
+    private fun loadSchedules(currentDate: LocalDate) {
+        val requestSeq = ++loadRequestSeq
+        loadSchedulesJob?.cancel()
+        loadSchedulesJob = viewModelScope.launch {
+            val start = currentDate.withDayOfMonth(1).minusMonths(1)
+            val end = currentDate.withDayOfMonth(1).plusMonths(2).minusDays(1)
 
-        val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
-        cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
+            val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
+            if (requestSeq != loadRequestSeq) return@launch
 
-        val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val byInfo = buildByInfoMap(cachedSchedules)
-        setState {
-            copy(
-                isLoading = false,
-                schedulesByDateMap = byDate,
-                schedulesByTodoInfo = byInfo
-            )
+            cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
+
+            val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
+            val byInfo = buildByInfoMap(cachedSchedules)
+            setState {
+                copy(
+                    isLoading = false,
+                    schedulesByDateMap = byDate,
+                    schedulesByTodoInfo = byInfo
+                )
+            }
         }
     }
 
