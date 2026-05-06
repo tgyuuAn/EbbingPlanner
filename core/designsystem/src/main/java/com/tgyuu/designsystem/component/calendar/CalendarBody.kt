@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -105,7 +106,7 @@ internal fun CalendarDayItem(
     modifier: Modifier = Modifier,
 ) {
     val dayItemColor = ebbingAnimateColorAsState(
-        targetValue = if (calendarDate.date == selectedDate) EbbingTheme.colors.textOnBackground
+        targetValue = if (calendarDate.date == selectedDate) EbbingTheme.colors.fillFocused
         else Color.Transparent
     )
 
@@ -123,8 +124,8 @@ internal fun CalendarDayItem(
         ) {
             var isOverflow by remember { mutableStateOf(false) }
             val textColor = when {
-                !calendarDate.isCurrentMonth -> EbbingTheme.colors.textDisabled
                 calendarDate.date == selectedDate -> EbbingTheme.colors.textOnPrimary
+                !calendarDate.isCurrentMonth -> EbbingTheme.colors.textDisabled
                 else -> EbbingTheme.colors.textOnBackground
             }
 
@@ -136,16 +137,20 @@ internal fun CalendarDayItem(
                     imageVector = Icons.Filled.Check,
                     contentDescription = "Today",
                     tint = textColor,
-                    modifier = Modifier.size(todayTextHeight)
+                    modifier = Modifier.height(todayTextHeight).size(todayTextHeight)
                 )
             } else {
                 Text(
                     text = if (calendarDate.date == LocalDate.now()) "Today" else "",
-                    style = EbbingTheme.typography.caption12R,
+                    style = EbbingTheme.typography.caption12R.copy(
+                        lineHeight = EbbingTheme.typography.caption12R.lineHeight,
+                        platformStyle = PlatformTextStyle(includeFontPadding = false),
+                    ),
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = textColor,
+                    modifier = Modifier.height(todayTextHeight),
                     onTextLayout = { result -> isOverflow = result.hasVisualOverflow },
                 )
             }

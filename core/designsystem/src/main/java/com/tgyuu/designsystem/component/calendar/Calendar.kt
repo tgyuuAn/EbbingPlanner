@@ -97,6 +97,7 @@ fun EbbingCalendar(
 
         CalendarController(
             currentDate = calendarState.currentDisplayDate,
+            selectedDate = calendarState.selectedDate,
             onGotoTodayClick = {
                 onGotoTodayClick()
                 scope.launch {
