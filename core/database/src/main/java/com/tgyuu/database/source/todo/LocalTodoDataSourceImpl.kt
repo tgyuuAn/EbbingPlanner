@@ -120,6 +120,24 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync) =
         todoSchedulesDao.updateTodoInfo(todoInfoForSync.toEntity())
 
+    override suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<java.time.DayOfWeek>,
+    ) = todoWithSchedulesDao.replaceSchedules(
+        infoId = infoId,
+        title = title,
+        tagId = tagId,
+        dates = dates,
+        isDoneSchedules = isDoneSchedules,
+        priority = priority,
+        restDays = restDays,
+    )
+
     override suspend fun softDeleteTodo(todoSchedule: TodoSchedule) =
         todoSchedulesDao.softDeleteSchedule(todoSchedule.toEntity().id)
 

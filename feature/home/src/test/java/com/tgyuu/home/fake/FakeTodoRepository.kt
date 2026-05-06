@@ -145,6 +145,36 @@ class FakeTodoRepository : TodoRepository {
         todoInfos[infoId] = existing.copy(restDays = restDays)
     }
 
+    override suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<DayOfWeek>,
+    ) {
+        schedules.removeIf { it.infoId == infoId }
+        dates.zip(isDoneSchedules).forEach { (date, isDone) ->
+            schedules.add(
+                TodoSchedule(
+                    id = 0,
+                    infoId = infoId,
+                    title = title,
+                    tagId = tagId,
+                    name = "",
+                    color = 0,
+                    date = date,
+                    memo = "",
+                    priority = priority ?: 0,
+                    isDone = isDone,
+                    createdAt = LocalDate.now(),
+                    infoCreatedAt = LocalDate.now(),
+                )
+            )
+        }
+    }
+
     override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<DayOfWeek>) {
         val existing = todoInfos[todoSchedule.infoId]
         if (existing != null) {
