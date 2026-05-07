@@ -7134,7 +7134,7 @@ SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;-><
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->access$getDeriveStateScopeCount$p(Landroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;)I
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->access$setDeriveStateScopeCount$p(Landroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;I)V
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->clearObsoleteStateReads(Ljava/lang/Object;)V
-SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->getOnChanged()Lkotlin/jvm/functions/Function1;
+HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->getOnChanged()Lkotlin/jvm/functions/Function1;
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->hasScopeObservations()Z
 SPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->notifyInvalidatedScopes()V
 HSPLandroidx/compose/runtime/snapshots/SnapshotStateObserver$ObservedScopeMap;->observe(Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)V
@@ -10056,7 +10056,7 @@ SPLandroidx/compose/ui/node/MeasurePassDelegate;->getAlignmentLines()Landroidx/c
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getChildDelegates$ui_release()Ljava/util/List;
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->getInnerCoordinator()Landroidx/compose/ui/node/NodeCoordinator;
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->getLastConstraints-DWUhwKw()Landroidx/compose/ui/unit/Constraints;
-SPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayoutNode()Landroidx/compose/ui/node/LayoutNode;
+HSPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayoutNode()Landroidx/compose/ui/node/LayoutNode;
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayoutPending$ui_release()Z
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->getLayoutState()Landroidx/compose/ui/node/LayoutNode$LayoutState;
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->getLookaheadPassDelegate()Landroidx/compose/ui/node/LookaheadPassDelegate;
@@ -17117,7 +17117,6 @@ SPLcom/amplitude/android/plugins/AndroidNetworkConnectivityCheckerPlugin$setup$1
 Lcom/amplitude/android/plugins/AndroidNetworkConnectivityCheckerPlugin$setup$networkChangeHandler$1;
 SPLcom/amplitude/android/plugins/AndroidNetworkConnectivityCheckerPlugin$setup$networkChangeHandler$1;-><init>(Lcom/amplitude/core/Amplitude;)V
 SPLcom/amplitude/android/plugins/AndroidNetworkConnectivityCheckerPlugin$setup$networkChangeHandler$1;->onNetworkAvailable()V
-PLcom/amplitude/android/plugins/AndroidNetworkConnectivityCheckerPlugin$setup$networkChangeHandler$1;->onNetworkUnavailable()V
 Lcom/amplitude/android/storage/AndroidEventsStorageProviderV2;
 SPLcom/amplitude/android/storage/AndroidEventsStorageProviderV2;-><init>()V
 SPLcom/amplitude/android/storage/AndroidEventsStorageProviderV2;->getStorage(Lcom/amplitude/core/Amplitude;Ljava/lang/String;)Lcom/amplitude/core/Storage;
@@ -17213,7 +17212,6 @@ SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onAvailable(Landroid/net/Network;)V
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onBlockedStatusChanged(Landroid/net/Network;Z)V
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onCapabilitiesChanged(Landroid/net/Network;Landroid/net/NetworkCapabilities;)V
-PLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onLost(Landroid/net/Network;)V
 Lcom/amplitude/common/ContextProvider;
 Lcom/amplitude/common/Logger;
 Lcom/amplitude/common/Logger$LogMode;
@@ -26902,7 +26900,6 @@ SPLcom/tgyuu/sync/network/NetworkMonitor;->registerNetworkCallback(Landroid/net/
 Lcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;-><init>(Lcom/tgyuu/sync/network/NetworkMonitor;)V
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->onAvailable(Landroid/net/Network;)V
-PLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->onLost(Landroid/net/Network;)V
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->updateNetworkState(Ljava/util/Set;)V
 Lcom/tgyuu/sync/network/NetworkState;
 SPLcom/tgyuu/sync/network/NetworkState;-><clinit>()V
@@ -31779,6 +31776,7 @@ SPLkotlinx/coroutines/channels/BufferedChannel;->getSendSegment$volatile$FU()Lja
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersAndCloseStatus$volatile$FU()Ljava/util/concurrent/atomic/AtomicLongFieldUpdater;
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersCounter$kotlinx_coroutines_core()J
 SPLkotlinx/coroutines/channels/BufferedChannel;->get_closeCause$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
+SPLkotlinx/coroutines/channels/BufferedChannel;->hasElements$kotlinx_coroutines_core()Z
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts$default(Lkotlinx/coroutines/channels/BufferedChannel;JILjava/lang/Object;)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts(J)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->invokeCloseHandler()V
@@ -31825,6 +31823,7 @@ SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNext
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNextOnNoWaiterSuspend(Lkotlinx/coroutines/channels/ChannelSegment;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->invokeOnCancellation(Lkotlinx/coroutines/internal/Segment;I)V
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->next()Ljava/lang/Object;
+SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->onClosedHasNext()Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNext(Ljava/lang/Object;)Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNextOnClosedChannel()V
 Lkotlinx/coroutines/channels/BufferedChannel$SendBroadcast;
@@ -32492,7 +32491,7 @@ SPLkotlinx/coroutines/internal/ContextScope;->getCoroutineContext()Lkotlin/corou
 Lkotlinx/coroutines/internal/DispatchedContinuation;
 SPLkotlinx/coroutines/internal/DispatchedContinuation;-><clinit>()V
 SPLkotlinx/coroutines/internal/DispatchedContinuation;-><init>(Lkotlinx/coroutines/CoroutineDispatcher;Lkotlin/coroutines/Continuation;)V
-SPLkotlinx/coroutines/internal/DispatchedContinuation;->awaitReusability$kotlinx_coroutines_core()V
+HSPLkotlinx/coroutines/internal/DispatchedContinuation;->awaitReusability$kotlinx_coroutines_core()V
 SPLkotlinx/coroutines/internal/DispatchedContinuation;->claimReusableCancellableContinuation$kotlinx_coroutines_core()Lkotlinx/coroutines/CancellableContinuationImpl;
 SPLkotlinx/coroutines/internal/DispatchedContinuation;->dispatchYield$kotlinx_coroutines_core(Lkotlin/coroutines/CoroutineContext;Ljava/lang/Object;)V
 SPLkotlinx/coroutines/internal/DispatchedContinuation;->getContext()Lkotlin/coroutines/CoroutineContext;
@@ -32704,7 +32703,6 @@ SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;-><init>(Lkotlinx/cor
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->access$getThis$0$p(Lkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;)Lkotlinx/coroutines/scheduling/CoroutineScheduler;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->executeTask(Lkotlinx/coroutines/scheduling/Task;)V
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findAnyTask(Z)Lkotlinx/coroutines/scheduling/Task;
-SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findBlockingTask()Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findTask(Z)Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->getIndexInArray()I
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->getNextParkedWorker()Ljava/lang/Object;
@@ -32767,9 +32765,7 @@ SPLkotlinx/coroutines/scheduling/WorkQueue;->getConsumerIndex$volatile$FU()Ljava
 SPLkotlinx/coroutines/scheduling/WorkQueue;->getLastScheduledTask$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->getProducerIndex$volatile$FU()Ljava/util/concurrent/atomic/AtomicIntegerFieldUpdater;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->poll()Lkotlinx/coroutines/scheduling/Task;
-SPLkotlinx/coroutines/scheduling/WorkQueue;->pollBlocking()Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->pollBuffer()Lkotlinx/coroutines/scheduling/Task;
-SPLkotlinx/coroutines/scheduling/WorkQueue;->pollWithExclusiveMode(Z)Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->trySteal(ILkotlin/jvm/internal/Ref$ObjectRef;)J
 SPLkotlinx/coroutines/scheduling/WorkQueue;->tryStealLastScheduled(ILkotlin/jvm/internal/Ref$ObjectRef;)J
 Lkotlinx/coroutines/selects/SelectInstance;
@@ -33282,6 +33278,7 @@ Lokio/FileSystem;
 SPLokio/FileSystem;-><clinit>()V
 SPLokio/FileSystem;-><init>()V
 SPLokio/FileSystem;->createDirectories(Lokio/Path;Z)V
+SPLokio/FileSystem;->createDirectory(Lokio/Path;)V
 SPLokio/FileSystem;->exists(Lokio/Path;)Z
 SPLokio/FileSystem;->openReadWrite(Lokio/Path;)Lokio/FileHandle;
 Lokio/FileSystem$Companion;
@@ -33298,6 +33295,7 @@ SPLokio/JvmFileHandle;->protectedFlush()V
 SPLokio/JvmFileHandle;->protectedWrite(J[BII)V
 Lokio/JvmSystemFileSystem;
 SPLokio/JvmSystemFileSystem;-><init>()V
+SPLokio/JvmSystemFileSystem;->createDirectory(Lokio/Path;Z)V
 SPLokio/JvmSystemFileSystem;->delete(Lokio/Path;Z)V
 SPLokio/JvmSystemFileSystem;->openReadWrite(Lokio/Path;ZZ)Lokio/FileHandle;
 SPLokio/JvmSystemFileSystem;->source(Lokio/Path;)Lokio/Source;
