@@ -550,6 +550,7 @@ SPLandroidx/collection/ScatterMap;-><init>()V
 SPLandroidx/collection/ScatterMap;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLandroidx/collection/ScatterMap;->contains(Ljava/lang/Object;)Z
 SPLandroidx/collection/ScatterMap;->containsKey(Ljava/lang/Object;)Z
+HSPLandroidx/collection/ScatterMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
 SPLandroidx/collection/ScatterMap;->getCapacity()I
 SPLandroidx/collection/ScatterMap;->getSize()I
 SPLandroidx/collection/ScatterMap;->isEmpty()Z
@@ -5155,7 +5156,7 @@ SPLandroidx/compose/runtime/ComposerImpl;->getCurrentCompositionLocalMap()Landro
 HSPLandroidx/compose/runtime/ComposerImpl;->getCurrentRecomposeScope$runtime_release()Landroidx/compose/runtime/RecomposeScopeImpl;
 SPLandroidx/compose/runtime/ComposerImpl;->getDefaultsInvalid()Z
 SPLandroidx/compose/runtime/ComposerImpl;->getDeferredChanges$runtime_release()Landroidx/compose/runtime/changelist/ChangeList;
-SPLandroidx/compose/runtime/ComposerImpl;->getInserting()Z
+HSPLandroidx/compose/runtime/ComposerImpl;->getInserting()Z
 SPLandroidx/compose/runtime/ComposerImpl;->getNode(Landroidx/compose/runtime/SlotReader;)Ljava/lang/Object;
 SPLandroidx/compose/runtime/ComposerImpl;->getReader$runtime_release()Landroidx/compose/runtime/SlotReader;
 SPLandroidx/compose/runtime/ComposerImpl;->getRecomposeScope()Landroidx/compose/runtime/RecomposeScope;
@@ -6571,6 +6572,7 @@ SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementatio
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->makeNode(ILjava/lang/Object;Ljava/lang/Object;ILjava/lang/Object;Ljava/lang/Object;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/MutabilityOwnership;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->moveEntryToNode(IIILjava/lang/Object;Ljava/lang/Object;I)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutableInsertEntryAt(ILjava/lang/Object;Ljava/lang/Object;Landroidx/compose/runtime/external/kotlinx/collections/immutable/internal/MutabilityOwnership;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
+SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutableMoveEntryToNode(IIILjava/lang/Object;Ljava/lang/Object;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/MutabilityOwnership;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutablePut(ILjava/lang/Object;Ljava/lang/Object;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/PersistentHashMapBuilder;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutablePutAll(Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/DeltaCounter;Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/PersistentHashMapBuilder;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutablePutAllFromOtherNodeCell(Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;IILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/DeltaCounter;Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/PersistentHashMapBuilder;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
@@ -17212,6 +17214,7 @@ SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onAvailable(Landroid/net/Network;)V
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onBlockedStatusChanged(Landroid/net/Network;Z)V
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onCapabilitiesChanged(Landroid/net/Network;Landroid/net/NetworkCapabilities;)V
+SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onLost(Landroid/net/Network;)V
 Lcom/amplitude/common/ContextProvider;
 Lcom/amplitude/common/Logger;
 Lcom/amplitude/common/Logger$LogMode;
@@ -24478,7 +24481,6 @@ SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$Dependency;->ge
 SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$Dependency;->setSubscriber(Lcom/google/firebase/sessions/api/SessionSubscriber;)V
 Lcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;
 SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;-><init>(Lcom/google/firebase/sessions/api/FirebaseSessionsDependencies;Lkotlin/coroutines/Continuation;)V
-SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/google/firebase/sessions/api/SessionSubscriber;
 Lcom/google/firebase/sessions/api/SessionSubscriber$Name;
 SPLcom/google/firebase/sessions/api/SessionSubscriber$Name;->$values()[Lcom/google/firebase/sessions/api/SessionSubscriber$Name;
@@ -26900,6 +26902,7 @@ SPLcom/tgyuu/sync/network/NetworkMonitor;->registerNetworkCallback(Landroid/net/
 Lcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;-><init>(Lcom/tgyuu/sync/network/NetworkMonitor;)V
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->onAvailable(Landroid/net/Network;)V
+SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->onLost(Landroid/net/Network;)V
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->updateNetworkState(Ljava/util/Set;)V
 Lcom/tgyuu/sync/network/NetworkState;
 SPLcom/tgyuu/sync/network/NetworkState;-><clinit>()V
@@ -32703,6 +32706,7 @@ SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;-><init>(Lkotlinx/cor
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->access$getThis$0$p(Lkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;)Lkotlinx/coroutines/scheduling/CoroutineScheduler;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->executeTask(Lkotlinx/coroutines/scheduling/Task;)V
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findAnyTask(Z)Lkotlinx/coroutines/scheduling/Task;
+SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findBlockingTask()Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findTask(Z)Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->getIndexInArray()I
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->getNextParkedWorker()Ljava/lang/Object;
@@ -32765,7 +32769,9 @@ SPLkotlinx/coroutines/scheduling/WorkQueue;->getConsumerIndex$volatile$FU()Ljava
 SPLkotlinx/coroutines/scheduling/WorkQueue;->getLastScheduledTask$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->getProducerIndex$volatile$FU()Ljava/util/concurrent/atomic/AtomicIntegerFieldUpdater;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->poll()Lkotlinx/coroutines/scheduling/Task;
+SPLkotlinx/coroutines/scheduling/WorkQueue;->pollBlocking()Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->pollBuffer()Lkotlinx/coroutines/scheduling/Task;
+SPLkotlinx/coroutines/scheduling/WorkQueue;->pollWithExclusiveMode(Z)Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->trySteal(ILkotlin/jvm/internal/Ref$ObjectRef;)J
 SPLkotlinx/coroutines/scheduling/WorkQueue;->tryStealLastScheduled(ILkotlin/jvm/internal/Ref$ObjectRef;)J
 Lkotlinx/coroutines/selects/SelectInstance;
