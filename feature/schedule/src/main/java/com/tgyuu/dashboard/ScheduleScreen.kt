@@ -266,7 +266,7 @@ private fun PhoneScheduleScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        HorizontalDivider(color = EbbingTheme.colors.fillStrong, thickness = 1.dp)
+        HorizontalDivider(color = EbbingTheme.colors.fillTextfield, thickness = 1.dp)
 
         if (state.visibleTags.isEmpty()) {
             EmptyScheduleContent(
@@ -305,7 +305,7 @@ private fun TabletScheduleScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        HorizontalDivider(color = EbbingTheme.colors.fillStrong, thickness = 1.dp)
+        HorizontalDivider(color = EbbingTheme.colors.fillTextfield, thickness = 1.dp)
 
         if (state.visibleTags.isEmpty()) {
             EmptyScheduleContent(
@@ -366,7 +366,7 @@ private fun TagList(
             )
 
             HorizontalDivider(
-                color = EbbingTheme.colors.fillStrong,
+                color = EbbingTheme.colors.fillTextfield,
                 thickness = 1.dp,
             )
         }
@@ -649,7 +649,7 @@ private fun ScheduleCard(
             modifier = Modifier
                 .size(16.dp)
                 .clip(CircleShape)
-                .background(EbbingTheme.colors.fillStrong),
+                .background(EbbingTheme.colors.fillTextfield),
         ) {
             Text(
                 text = "$index",

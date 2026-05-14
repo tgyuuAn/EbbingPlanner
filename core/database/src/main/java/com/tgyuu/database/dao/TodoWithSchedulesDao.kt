@@ -121,6 +121,51 @@ interface TodoWithSchedulesDao {
             )
         }
     }
+
+    @Query(
+        "UPDATE schedule SET isDeleted = 1, updatedAt = :updatedAt " +
+            "WHERE infoId = :infoId AND isDeleted = 0"
+    )
+    suspend fun softDeleteSchedulesByInfoId(
+        infoId: Int,
+        updatedAt: LocalDateTime = LocalDateTime.now(),
+    )
+
+    @Transaction
+    suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<java.time.DayOfWeek> = emptySet(),
+    ) {
+        require(dates.size == isDoneSchedules.size) {
+            "dates.size(${dates.size}) != isDoneSchedules.size(${isDoneSchedules.size})"
+        }
+
+        softDeleteSchedulesByInfoId(infoId)
+
+        updateInfo(
+            id = infoId,
+            title = title,
+            tagId = tagId,
+            restDays = restDays.joinToString(",") { it.value.toString() },
+        )
+
+        insertSchedules(
+            dates.zip(isDoneSchedules) { date, isDone ->
+                TodoScheduleEntity(
+                    infoId = infoId,
+                    date = date,
+                    isDone = isDone,
+                    memo = "",
+                    priority = priority ?: 0,
+                )
+            }
+        )
+    }
 }
 
 data class ScheduleUpdateParams(

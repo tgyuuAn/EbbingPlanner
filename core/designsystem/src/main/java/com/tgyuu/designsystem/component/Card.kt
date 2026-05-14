@@ -63,7 +63,7 @@ fun TodoListCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(EbbingTheme.colors.fillNormal)
+                        .background(EbbingTheme.colors.fillTextfield)
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
                     Column(

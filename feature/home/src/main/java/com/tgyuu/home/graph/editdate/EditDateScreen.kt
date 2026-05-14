@@ -211,7 +211,7 @@ private fun EditDateScreenPhone(
             )
 
             HorizontalDivider(
-                color = EbbingTheme.colors.fillStrong,
+                color = EbbingTheme.colors.fillTextfield,
                 thickness = 1.dp,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
@@ -309,7 +309,7 @@ private fun EditDateScreenTablet(
                 )
 
                 HorizontalDivider(
-                    color = EbbingTheme.colors.fillStrong,
+                    color = EbbingTheme.colors.fillTextfield,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
