@@ -109,8 +109,8 @@ fun EbbingTextInputDefault(
             .height(52.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(
-                if (readOnly) EbbingTheme.colors.fillStrong
-                else EbbingTheme.colors.fillNormal
+                if (readOnly) EbbingTheme.colors.fillDisabled
+                else EbbingTheme.colors.fillTextfield
             )
             .padding(horizontal = 16.dp, vertical = 14.dp)
             .onFocusChanged { focusState ->
@@ -133,7 +133,7 @@ fun EbbingTextInputDropDown(
         modifier = modifier
             .height(52.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(EbbingTheme.colors.fillNormal)
+            .background(EbbingTheme.colors.fillTextfield)
             .padding(horizontal = 16.dp, vertical = 14.dp)
             .clickable { onDropDownClick() },
     ) {

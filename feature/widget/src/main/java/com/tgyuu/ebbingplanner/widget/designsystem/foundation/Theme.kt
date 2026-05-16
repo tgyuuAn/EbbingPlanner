@@ -52,8 +52,8 @@ fun EbbingWidgetTheme(
             dark.primaryNormal.copy(alpha = alpha)
         ),
         primaryContainer = ColorProvider(
-            light.fillStrong.copy(alpha = alpha),
-            dark.fillStrong.copy(alpha = alpha)
+            light.fillTextfield.copy(alpha = alpha),
+            dark.fillTextfield.copy(alpha = alpha)
         ),
         surface = ColorProvider(
             light.textOnBackground.copy(alpha = alpha),
@@ -68,8 +68,8 @@ fun EbbingWidgetTheme(
             dark.fillDisabled.copy(alpha = alpha)
         ),
         secondary = ColorProvider(
-            light.primaryContainer.copy(alpha = alpha),
-            dark.primaryContainer.copy(alpha = alpha)
+            light.fillSelected.copy(alpha = alpha),
+            dark.fillSelected.copy(alpha = alpha)
         ),
         tertiary = ColorProvider(
             light.textDisabled.copy(alpha = alpha),
@@ -114,7 +114,6 @@ fun EbbingWidgetTheme(
         background = ColorProvider(light.background, dark.background),
         primaryNormal = ColorProvider(light.primaryNormal.copy(alpha = alpha), dark.primaryNormal.copy(alpha = alpha)),
         primaryDeep = ColorProvider(light.primaryDeep.copy(alpha = alpha), dark.primaryDeep.copy(alpha = alpha)),
-        primaryContainer = ColorProvider(light.primaryContainer.copy(alpha = alpha), dark.primaryContainer.copy(alpha = alpha)),
         statusError = ColorProvider(light.statusError.copy(alpha = alpha), dark.statusError.copy(alpha = alpha)),
         statusSuccess = ColorProvider(light.statusSuccess.copy(alpha = alpha), dark.statusSuccess.copy(alpha = alpha)),
         textOnBackground = ColorProvider(light.textOnBackground.copy(alpha = alpha), dark.textOnBackground.copy(alpha = alpha)),
@@ -124,9 +123,20 @@ fun EbbingWidgetTheme(
         textPrimary = ColorProvider(light.textPrimary.copy(alpha = alpha), dark.textPrimary.copy(alpha = alpha)),
         textError = ColorProvider(light.textError.copy(alpha = alpha), dark.textError.copy(alpha = alpha)),
         fillNormal = ColorProvider(light.fillNormal.copy(alpha = alpha), dark.fillNormal.copy(alpha = alpha)),
-        fillStrong = ColorProvider(light.fillStrong.copy(alpha = alpha), dark.fillStrong.copy(alpha = alpha)),
+        fillTextfield = ColorProvider(light.fillTextfield.copy(alpha = alpha), dark.fillTextfield.copy(alpha = alpha)),
+        fillSelected = ColorProvider(light.fillSelected.copy(alpha = alpha), dark.fillSelected.copy(alpha = alpha)),
         fillDisabled = ColorProvider(light.fillDisabled.copy(alpha = alpha), dark.fillDisabled.copy(alpha = alpha)),
         fillPrimary = ColorProvider(light.fillPrimary.copy(alpha = alpha), dark.fillPrimary.copy(alpha = alpha)),
+        fillFocused = ColorProvider(light.fillFocused.copy(alpha = alpha), dark.fillFocused.copy(alpha = alpha)),
+        fillError = ColorProvider(light.fillError.copy(alpha = alpha), dark.fillError.copy(alpha = alpha)),
+        strokePrimary = ColorProvider(light.strokePrimary.copy(alpha = alpha), dark.strokePrimary.copy(alpha = alpha)),
+        strokeNormal = ColorProvider(light.strokeNormal.copy(alpha = alpha), dark.strokeNormal.copy(alpha = alpha)),
+        strokeSecondary = ColorProvider(light.strokeSecondary.copy(alpha = alpha), dark.strokeSecondary.copy(alpha = alpha)),
+        strokeOutline = ColorProvider(light.strokeOutline.copy(alpha = alpha), dark.strokeOutline.copy(alpha = alpha)),
+        strokeOnPrimary = ColorProvider(light.strokeOnPrimary.copy(alpha = alpha), dark.strokeOnPrimary.copy(alpha = alpha)),
+        strokeIcon = ColorProvider(light.strokeIcon.copy(alpha = alpha), dark.strokeIcon.copy(alpha = alpha)),
+        strokeDisabled = ColorProvider(light.strokeDisabled.copy(alpha = alpha), dark.strokeDisabled.copy(alpha = alpha)),
+        materialDimmer = ColorProvider(light.materialDimmer.copy(alpha = alpha), dark.materialDimmer.copy(alpha = alpha)),
     )
 
     CompositionLocalProvider(LocalEbbingWidgetColors provides ebbingWidgetColors) {
