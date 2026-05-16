@@ -1,7 +1,10 @@
 package com.tgyuu.dashboard
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -366,7 +369,7 @@ private fun TagList(
             )
 
             HorizontalDivider(
-                color = EbbingTheme.colors.fillTextfield,
+                color = EbbingTheme.colors.strokeSecondary,
                 thickness = 1.dp,
             )
         }
@@ -413,7 +416,6 @@ private fun TagCard(
                 modifier = Modifier
                     .width(4.dp)
                     .height(40.dp)
-                    .clip(RoundedCornerShape(2.dp))
                     .background(Color(tagColor))
             )
 
@@ -433,7 +435,7 @@ private fun TagCard(
                 Text(
                     text = "${scheduleCount}개의 일정, 완료율 ${Math.round(achievementRate * 100)}%",
                     style = EbbingTheme.typography.caption14R,
-                    color = EbbingTheme.colors.fillDisabled,
+                    color = EbbingTheme.colors.textSub,
                 )
             }
 
@@ -457,12 +459,16 @@ private fun TagCard(
         }
 
         // Level 2: TodoInfo list
-        if (isExpanded) {
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(EbbingTheme.colors.fillNormal)
+                    .background(EbbingTheme.colors.fillTextfield)
                     .padding(horizontal = 16.dp)
                     .padding(top = 12.dp, bottom = 8.dp),
             ) {
@@ -495,7 +501,7 @@ private fun TagCard(
                 ) {
                     Text(
                         text = "닫기",
-                        style = EbbingTheme.typography.caption12R,
+                        style = EbbingTheme.typography.heading14SB,
                         color = EbbingTheme.colors.textSub,
                     )
                     Spacer(modifier = Modifier.width(2.dp))
@@ -550,53 +556,62 @@ private fun TodoInfoItem(
             .background(EbbingTheme.colors.background)
             .animateContentSize()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onToggleExpand() }
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(color = titleColor)) { append(title) }
                         append("  ")
                         withStyle(SpanStyle(color = accentColor)) { append("$scheduleCount") }
                     },
-                    style = EbbingTheme.typography.heading14SB,
+                    style = EbbingTheme.typography.heading16B,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
                 )
 
-                if (!isExpanded && dateRange.isNotEmpty()) {
+                Text(
+                    text = "${Math.round(achievementRate * 100)}%",
+                    style = EbbingTheme.typography.heading14SB,
+                    color = accentColor,
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Image(
+                    painter = painterResource(if (isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(if (isAllDone) EbbingTheme.colors.fillDisabled else EbbingTheme.colors.textOnBackground),
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            AnimatedVisibility(
+                visible = !isExpanded && dateRange.isNotEmpty(),
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+            ) {
+                Column {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = dateRange,
-                        style = EbbingTheme.typography.caption12R,
+                        style = EbbingTheme.typography.body14M,
                         color = EbbingTheme.colors.fillDisabled,
                     )
                 }
             }
-
-            Text(
-                text = "${Math.round(achievementRate * 100)}%",
-                style = EbbingTheme.typography.heading14SB,
-                color = accentColor,
-            )
-
-            Spacer(modifier = Modifier.width(4.dp))
-
-            Image(
-                painter = painterResource(if (isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(if (isAllDone) EbbingTheme.colors.fillDisabled else EbbingTheme.colors.textOnBackground),
-                modifier = Modifier.size(20.dp),
-            )
         }
 
         // Level 3: Schedule list
-        if (isExpanded) {
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = expandVertically(),
+            exit = shrinkVertically(),
+        ) {
             Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)) {
                 schedules.forEachIndexed { index, schedule ->
                     ScheduleCard(
@@ -615,7 +630,7 @@ private fun TodoInfoItem(
                                 .padding(vertical = 8.dp)
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(EbbingTheme.colors.fillDisabled)
+                                .background(EbbingTheme.colors.strokeSecondary)
                         )
                     }
                 }
@@ -733,18 +748,14 @@ private fun DeleteTagDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("$tagName 태그를 ")
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
-                        append("삭제")
-                    }
-                    append(" 하시겠습니까?")
+                    append("$tagName 태그를 삭제 하시겠습니까?")
                 },
-                subText = "삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요."
+                subText = "이 태그는 현재 연결된 모든 일정에서 함께 삭제되며,삭제 후에는 복구할 수 없습니다."
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
+                leftButtonText = "취소",
                 rightButtonText = "삭제",
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onDeleteClick,
