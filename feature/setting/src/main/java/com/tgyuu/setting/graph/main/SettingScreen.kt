@@ -246,7 +246,7 @@ private fun PhoneSettingScreen(
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.fillStrong,
+            color = EbbingTheme.colors.fillTextfield,
             thickness = 1.dp,
             modifier = Modifier.padding(bottom = 16.dp),
         )
@@ -529,7 +529,7 @@ private fun NotificationBody(
     HorizontalDivider(
         modifier = Modifier.padding(vertical = 16.dp),
         thickness = 1.dp,
-        color = EbbingTheme.colors.fillStrong
+        color = EbbingTheme.colors.fillTextfield
     )
 }
 
@@ -572,7 +572,7 @@ private fun CalendarStartDayBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillTextfield,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp),
     )
@@ -633,7 +633,7 @@ private fun TagRepeatCycleBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillTextfield,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -694,7 +694,7 @@ private fun DataBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillTextfield,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -738,7 +738,7 @@ private fun InquiryBody() {
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillTextfield,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -845,7 +845,7 @@ private fun AnnouncementBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillTextfield,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -906,7 +906,7 @@ private fun ThemeBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillTextfield,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )

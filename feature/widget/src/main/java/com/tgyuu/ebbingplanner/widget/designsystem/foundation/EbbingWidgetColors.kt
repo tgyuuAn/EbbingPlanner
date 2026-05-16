@@ -10,7 +10,6 @@ data class EbbingWidgetColors(
     // Primary
     val primaryNormal: ColorProvider,
     val primaryDeep: ColorProvider,
-    val primaryContainer: ColorProvider,
     // Status
     val statusError: ColorProvider,
     val statusSuccess: ColorProvider,
@@ -23,9 +22,22 @@ data class EbbingWidgetColors(
     val textError: ColorProvider,
     // Fill
     val fillNormal: ColorProvider,
-    val fillStrong: ColorProvider,
+    val fillTextfield: ColorProvider,
+    val fillSelected: ColorProvider,
     val fillDisabled: ColorProvider,
     val fillPrimary: ColorProvider,
+    val fillFocused: ColorProvider,
+    val fillError: ColorProvider,
+    // Stroke
+    val strokePrimary: ColorProvider,
+    val strokeNormal: ColorProvider,
+    val strokeSecondary: ColorProvider,
+    val strokeOutline: ColorProvider,
+    val strokeOnPrimary: ColorProvider,
+    val strokeIcon: ColorProvider,
+    val strokeDisabled: ColorProvider,
+    // Material
+    val materialDimmer: ColorProvider,
 )
 
 val LocalEbbingWidgetColors = staticCompositionLocalOf<EbbingWidgetColors> {

@@ -244,7 +244,7 @@ private fun CalendarWidgetHeader(
         Spacer(
             modifier = GlanceModifier.fillMaxWidth()
                 .height(1.dp)
-                .background(LocalEbbingWidgetColors.current.fillStrong)
+                .background(LocalEbbingWidgetColors.current.fillTextfield)
         )
 
         Spacer(modifier = GlanceModifier.fillMaxWidth().height(4.dp))

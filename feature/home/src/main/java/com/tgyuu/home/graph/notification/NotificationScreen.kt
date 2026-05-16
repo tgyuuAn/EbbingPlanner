@@ -479,7 +479,7 @@ private fun NotificationDetailSection(
                     .padding(vertical = 28.dp)
                     .fillMaxWidth()
                     .height(6.dp)
-                    .background(color = EbbingTheme.colors.fillStrong)
+                    .background(color = EbbingTheme.colors.fillTextfield)
             )
         }
 
