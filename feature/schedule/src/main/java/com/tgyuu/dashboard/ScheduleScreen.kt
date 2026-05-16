@@ -109,7 +109,7 @@ private fun PhoneScheduleScreen(
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.fillStrong,
+            color = EbbingTheme.colors.fillTextfield,
             thickness = 1.dp,
             modifier = Modifier.padding(bottom = 16.dp),
         )
@@ -129,7 +129,7 @@ private fun PhoneScheduleScreen(
                 )
 
                 HorizontalDivider(
-                    color = EbbingTheme.colors.fillStrong,
+                    color = EbbingTheme.colors.fillTextfield,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
@@ -151,7 +151,7 @@ private fun PhoneScheduleScreen(
                 )
 
                 HorizontalDivider(
-                    color = EbbingTheme.colors.fillStrong,
+                    color = EbbingTheme.colors.fillTextfield,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
@@ -211,7 +211,7 @@ private fun TabletScheduleScreen(
                 EbbingVisibleAnimation(visible = state.selectedTag != null) {
                     Column {
                         HorizontalDivider(
-                            color = EbbingTheme.colors.fillStrong,
+                            color = EbbingTheme.colors.fillTextfield,
                             thickness = 1.dp,
                             modifier = Modifier.padding(vertical = 16.dp)
                         )

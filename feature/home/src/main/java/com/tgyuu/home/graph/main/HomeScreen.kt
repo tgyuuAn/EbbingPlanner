@@ -395,7 +395,7 @@ private fun PhoneHomeScreen(
 
             HorizontalDivider(
                 thickness = 8.dp,
-                color = EbbingTheme.colors.fillNormal,
+                color = EbbingTheme.colors.fillTextfield,
             )
         }
 
