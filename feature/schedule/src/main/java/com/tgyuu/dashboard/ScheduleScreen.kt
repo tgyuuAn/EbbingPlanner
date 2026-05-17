@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -49,6 +50,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.common.event.EbbingEvent
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -82,6 +85,7 @@ import kotlinx.coroutines.launch
 internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val analyticsHelper = LocalAnalyticsHelper.current
     var deleteTagState by remember { mutableStateOf<Pair<Int, String>?>(null) }
 
     LaunchedEffect(viewModel) {
@@ -89,6 +93,16 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
     }
 
     deleteTagState?.let { (tagId, tagName) ->
+        LaunchedEffect(tagId) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = SCREEN_NAME,
+                    actionName = "show_dialog",
+                    properties = mapOf("dialog_type" to "confirm_delete_tag"),
+                )
+            )
+        }
+
         DeleteTagDialog(
             tagName = tagName,
             onDismissRequest = { deleteTagState = null },
@@ -106,6 +120,9 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
         onScheduleClick = { viewModel.onIntent(ScheduleIntent.OnScheduleClick(it)) },
         onNavigateToAddTodo = { viewModel.onIntent(ScheduleIntent.OnNavigateToAddTodo) },
         onTagThreeDotsClick = { tagName, tagColor, tagId ->
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditTag")
+            )
             viewModel.onIntent(
                 ScheduleIntent.OnShowBottomSheet {
                     TagEditBottomSheet(
@@ -126,11 +143,17 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
             )
         },
         onScheduleThreeDotsClick = { schedule ->
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "OptionSchedule")
+            )
             viewModel.onIntent(
                 ScheduleIntent.OnShowBottomSheet {
                     ScheduleOptionsBottomSheet(
                         selectedSchedule = schedule,
                         onClickUpdate = { s ->
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditSchedule")
+                            )
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                 viewModel.eventBus.awaitBottomSheetHidden()
@@ -156,6 +179,9 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
                             }
                         },
                         onClickDelete = { s ->
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteSchedule")
+                            )
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                 viewModel.eventBus.awaitBottomSheetHidden()
@@ -181,6 +207,9 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
                             }
                         },
                         onClickDelay = { s ->
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DelaySchedule")
+                            )
                             scope.launch {
                                 viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
                                 viewModel.eventBus.awaitBottomSheetHidden()
@@ -205,8 +234,18 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
                                 })
                             }
                         },
-                        onClickMemo = { viewModel.onIntent(ScheduleIntent.OnMemoClick(it)) },
-                        onClickDeleteMemo = { viewModel.onIntent(ScheduleIntent.OnDeleteMemoClick(it)) },
+                        onClickMemo = {
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddMemo")
+                            )
+                            viewModel.onIntent(ScheduleIntent.OnMemoClick(it))
+                        },
+                        onClickDeleteMemo = {
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteMemo")
+                            )
+                            viewModel.onIntent(ScheduleIntent.OnDeleteMemoClick(it))
+                        },
                     )
                 }
             )
@@ -343,13 +382,17 @@ private fun TagList(
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(vertical = 16.dp),
-    ) {
-        items(items = state.visibleTags, key = { it.id }) { tag ->
+    LazyColumn(modifier = modifier) {
+        itemsIndexed(items = state.visibleTags, key = { _, tag -> tag.id }) { idx, tag ->
             val isExpanded = tag.id in state.expandedTagIds
             val infos = state.infosByTagMap[tag.id] ?: persistentListOf()
+
+            if (idx!=0) {
+                HorizontalDivider(
+                    color = EbbingTheme.colors.strokeNormal,
+                    thickness = 1.dp,
+                )
+            }
 
             TagCard(
                 title = tag.name,
@@ -366,11 +409,6 @@ private fun TagList(
                 onScheduleClick = onScheduleClick,
                 onTagThreeDotsClick = { onTagThreeDotsClick(tag.name, tag.color, tag.id) },
                 onScheduleThreeDotsClick = onScheduleThreeDotsClick,
-            )
-
-            HorizontalDivider(
-                color = EbbingTheme.colors.strokeSecondary,
-                thickness = 1.dp,
             )
         }
     }
@@ -396,9 +434,6 @@ private fun TagCard(
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val titleColor =
-        if (isAllDone) EbbingTheme.colors.fillDisabled else EbbingTheme.colors.textOnBackground
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -410,12 +445,12 @@ private fun TagCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onToggleTagExpand() }
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+                .padding(horizontal = 20.dp, vertical = 20.dp),
         ) {
             Spacer(
                 modifier = Modifier
                     .width(4.dp)
-                    .height(40.dp)
+                    .height(42.dp)
                     .background(Color(tagColor))
             )
 
@@ -424,19 +459,21 @@ private fun TagCard(
                     .weight(1f)
                     .padding(start = 12.dp)
             ) {
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = title,
-                    style = EbbingTheme.typography.heading16B,
-                    color = titleColor,
+                    style = EbbingTheme.typography.heading18B,
+                    color =  if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "${scheduleCount}개의 일정, 완료율 ${Math.round(achievementRate * 100)}%",
-                    style = EbbingTheme.typography.caption14R,
-                    color = EbbingTheme.colors.textSub,
+                    style = EbbingTheme.typography.body16M,
+                    color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub,
                 )
+                Spacer(modifier = Modifier.height(2.dp))
             }
 
             if (!isDefaultTag) {
@@ -464,6 +501,11 @@ private fun TagCard(
             enter = expandVertically(),
             exit = shrinkVertically(),
         ) {
+            HorizontalDivider(
+                color = EbbingTheme.colors.strokeNormal,
+                thickness = 1.dp,
+            )
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier
@@ -600,7 +642,7 @@ private fun TodoInfoItem(
                     Text(
                         text = dateRange,
                         style = EbbingTheme.typography.body14M,
-                        color = EbbingTheme.colors.fillDisabled,
+                        color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub,
                     )
                 }
             }
@@ -738,6 +780,8 @@ private fun EmptyScheduleContent(
 
 // ── Dialog ──
 
+private const val SCREEN_NAME = "ScheduleScreen"
+
 @Composable
 private fun DeleteTagDialog(
     tagName: String,
@@ -748,7 +792,7 @@ private fun DeleteTagDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("$tagName 태그를 삭제 하시겠습니까?")
+                    append("$tagName 태그를 삭제하시겠습니까?")
                 },
                 subText = "이 태그는 현재 연결된 모든 일정에서 함께 삭제되며,삭제 후에는 복구할 수 없습니다."
             )

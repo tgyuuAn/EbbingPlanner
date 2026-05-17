@@ -101,7 +101,7 @@ class ScheduleViewModel @Inject constructor(
 
     private suspend fun onNavigateToAddTodo() {
         analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddTodo")
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddSchedule")
         )
         val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         navigationBus.navigate(To(AddTodoRoute(today)))
@@ -135,6 +135,9 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private suspend fun onSaveTag(tagId: Int, name: String, color: Int) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditTag")
+        )
         val tag = currentState.tags.firstOrNull { it.id == tagId } ?: return
         suspendRunCatching {
             todoRepository.updateTag(
@@ -147,6 +150,9 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private suspend fun onDeleteTag(tagId: Int) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteTag")
+        )
         val tag = currentState.tags.firstOrNull { it.id == tagId } ?: return
         suspendRunCatching {
             todoRepository.deleteTag(
@@ -159,6 +165,9 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private suspend fun onUpdateInfoClick(schedule: TodoScheduleUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditTodo")
+        )
         eventBus.sendEvent(HideBottomSheet)
         navigationBus.navigate(To(EditTodoRoute(schedule.id)))
     }
