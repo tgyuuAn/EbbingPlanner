@@ -24,10 +24,9 @@ class ExperimentRepositoryImpl @Inject constructor(
 
         Experiment.ALL.forEach { experiment ->
             val remoteVariant = remoteVariants[experiment.key]
-            val variantToAssign = remoteVariant ?: experiment.defaultVariant.key
 
-            // 로컬에 없으면 로컬 저장
-            localDataSource.saveAssignmentIfNotExists(
+            val variantToAssign = remoteVariant ?: experiment.defaultVariant.key
+            localDataSource.saveAssignment(
                 experimentKey = experiment.key,
                 variantName = variantToAssign,
             )
@@ -56,7 +55,7 @@ class ExperimentRepositoryImpl @Inject constructor(
             variantName = remoteVariant ?: experiment.defaultVariant.key
 
             // 가져온 데이터 로컬 저장
-            localDataSource.saveAssignmentIfNotExists(
+            localDataSource.saveAssignment(
                 experimentKey = experiment.key,
                 variantName = variantName,
             )

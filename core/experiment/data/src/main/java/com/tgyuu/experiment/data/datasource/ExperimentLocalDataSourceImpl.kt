@@ -17,15 +17,13 @@ class ExperimentLocalDataSourceImpl @Inject constructor(
         return dataStore.data.first()[key]
     }
 
-    override suspend fun saveAssignmentIfNotExists(
+    override suspend fun saveAssignment(
         experimentKey: String,
         variantName: String,
     ) {
         val key = stringPreferencesKey("$EXPERIMENT_PREFIX$experimentKey")
         dataStore.edit { prefs ->
-            if (prefs[key] == null) {
-                prefs[key] = variantName
-            }
+            prefs[key] = variantName
         }
     }
 
