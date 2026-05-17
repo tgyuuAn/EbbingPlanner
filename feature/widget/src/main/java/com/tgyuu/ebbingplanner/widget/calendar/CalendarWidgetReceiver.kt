@@ -3,8 +3,6 @@ package com.tgyuu.ebbingplanner.widget.calendar
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -13,16 +11,6 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
 import com.tgyuu.designsystem.component.calendar.toKorean
-import com.tgyuu.designsystem.foundation.forestDarkColorScheme
-import com.tgyuu.designsystem.foundation.forestLightColorScheme
-import com.tgyuu.designsystem.foundation.lilacDarkColorScheme
-import com.tgyuu.designsystem.foundation.lilacLightColorScheme
-import com.tgyuu.designsystem.foundation.marineDarkColorScheme
-import com.tgyuu.designsystem.foundation.marineLightColorScheme
-import com.tgyuu.designsystem.foundation.normalDarkColorScheme
-import com.tgyuu.designsystem.foundation.normalLightColorScheme
-import com.tgyuu.designsystem.foundation.sunsetDarkColorScheme
-import com.tgyuu.designsystem.foundation.sunsetLightColorScheme
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -116,7 +104,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         val byDate = buildByDateMap(allSchedules, sortType)
 
         withContext(Dispatchers.IO) {
-            generatePretendardBitmaps(context, theme, textAlpha, mondayStart, now)
+            generatePretendardBitmaps(context, mondayStart, now)
         }
 
         val glanceId = GlanceAppWidgetManager(context)
@@ -142,28 +130,14 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
 
     private fun generatePretendardBitmaps(
         context: Context,
-        theme: Theme,
-        textAlpha: Float,
         mondayStart: Boolean,
         now: LocalDate,
     ) {
-        val isDark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
-
-        val colorScheme = when (theme) {
-            Theme.NORMAL -> if (isDark) normalDarkColorScheme else normalLightColorScheme
-            Theme.FOREST -> if (isDark) forestDarkColorScheme else forestLightColorScheme
-            Theme.SUNSET -> if (isDark) sunsetDarkColorScheme else sunsetLightColorScheme
-            Theme.MARINE -> if (isDark) marineDarkColorScheme else marineLightColorScheme
-            Theme.LILAC -> if (isDark) lilacDarkColorScheme else lilacLightColorScheme
-        }
-
-        val textOnBackground = colorScheme.textOnBackground.copy(alpha = textAlpha).toArgb()
-        val textSub = colorScheme.textSub.copy(alpha = textAlpha).toArgb()
+        val white = android.graphics.Color.WHITE
         // 년/월 헤더
         PretendardBitmapRenderer.renderAndSave(
             context, "${now.year}년 ${now.monthValue}월",
-            PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+            PretendardBitmapRenderer.Weight.BOLD, 16f, white,
             filename = "calendar_header.png",
         )
 
@@ -171,7 +145,7 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         getEbbingDayOfWeek(mondayStart).forEachIndexed { index, dow ->
             PretendardBitmapRenderer.renderAndSave(
                 context, dow.toKorean(),
-                PretendardBitmapRenderer.Weight.MEDIUM, 14f, textSub,
+                PretendardBitmapRenderer.Weight.MEDIUM, 14f, white,
                 filename = "calendar_dow_$index.png",
             )
         }
@@ -179,19 +153,18 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         // 섹션 헤더: "오늘 할 일" + "X월 D일 할 일" (현재 월 전체)
         PretendardBitmapRenderer.renderAndSave(
             context, "오늘 할 일",
-            PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+            PretendardBitmapRenderer.Weight.BOLD, 16f, white,
             filename = "calendar_section_today.png",
         )
         (1..now.lengthOfMonth()).forEach { day ->
             PretendardBitmapRenderer.renderAndSave(
                 context, "${now.monthValue}월 ${day}일 할 일",
-                PretendardBitmapRenderer.Weight.BOLD, 16f, textOnBackground,
+                PretendardBitmapRenderer.Weight.BOLD, 16f, white,
                 filename = "calendar_section_day_$day.png",
             )
         }
 
         // 날짜 숫자 bitmap (흰색 1벌 → Glance ColorFilter.tint로 색상 적용)
-        val white = android.graphics.Color.WHITE
         (1..31).forEach { day ->
             PretendardBitmapRenderer.renderAndSave(
                 context, "$day",

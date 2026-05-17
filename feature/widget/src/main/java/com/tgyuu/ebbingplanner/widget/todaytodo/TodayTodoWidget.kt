@@ -135,7 +135,11 @@ private fun TodayTodoWidgetContent(
                 modifier = GlanceModifier.defaultWeight(),
             ) {
                 if (bitmaps.header != null) {
-                    Image(provider = ImageProvider(bitmaps.header), contentDescription = "오늘 할 일")
+                    Image(
+                        provider = ImageProvider(bitmaps.header),
+                        contentDescription = "오늘 할 일",
+                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
+                    )
                 } else {
                     Text(
                         text = "오늘 할 일   ",
@@ -148,6 +152,10 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.doneCount),
                         contentDescription = "완료 ${todoListsDoneSize}개",
+                        colorFilter = ColorFilter.tint(
+                            if (todoListsDoneSize > 0) LocalEbbingWidgetColors.current.textPrimary
+                            else LocalEbbingWidgetColors.current.textDisabled,
+                        ),
                     )
                 } else {
                     Text(
@@ -162,6 +170,7 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.total),
                         contentDescription = "전체 ${todoLists.size}개",
+                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textDisabled),
                     )
                 } else {
                     Text(
@@ -191,6 +200,7 @@ private fun TodayTodoWidgetContent(
                 Image(
                     provider = ImageProvider(bitmaps.empty),
                     contentDescription = "오늘은 일정이 없어요",
+                    colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
                     modifier = GlanceModifier.padding(vertical = 12.dp),
                 )
             } else {
@@ -247,6 +257,10 @@ internal fun TodoItemRow(
                 Image(
                     provider = ImageProvider(titleBitmap),
                     contentDescription = todo.title,
+                    colorFilter = ColorFilter.tint(
+                        if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled
+                        else LocalEbbingWidgetColors.current.textOnBackground,
+                    ),
                 )
             } else {
                 Text(
