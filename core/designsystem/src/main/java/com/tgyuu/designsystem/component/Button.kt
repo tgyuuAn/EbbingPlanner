@@ -78,6 +78,33 @@ fun EbbingOutlinedButton(
     }
 }
 
+@Composable
+fun EbbingRoundSolidButton(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(100.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = EbbingTheme.colors.primaryNormal,
+            contentColor = EbbingTheme.colors.textOnPrimary,
+            disabledContainerColor = EbbingTheme.colors.fillDisabled,
+            disabledContentColor = EbbingTheme.colors.background,
+        ),
+        contentPadding = PaddingValues(vertical = 12.dp, horizontal = 40.dp),
+        modifier = modifier,
+    ) {
+        Text(
+            text = label,
+            style = EbbingTheme.typography.heading14B,
+        )
+    }
+}
+
 @EbbingPreview
 @Composable
 fun PreviewPieceSolidButton() {

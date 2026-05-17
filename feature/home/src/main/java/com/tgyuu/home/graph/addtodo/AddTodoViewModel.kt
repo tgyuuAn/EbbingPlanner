@@ -122,12 +122,7 @@ class AddTodoViewModel @Inject constructor(
                 analyticsHelper.logEvent(
                     AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "Back")
                 )
-                navigationBus.navigate(
-                    NavigationEvent.To(
-                        route = HomeRoute(currentState.selectedDate.toFormattedString()),
-                        popUpTo = true,
-                    )
-                )
+                navigationBus.navigate(NavigationEvent.Up)
             }
 
             is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(

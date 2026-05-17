@@ -32,6 +32,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,6 +70,10 @@ import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
 import com.tgyuu.setting.graph.ui.bottomsheet.CalendarStartDayBottomSheet
 import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
 import kotlinx.coroutines.launch
+
+private val SettingItemVerticalPadding = 16.dp
+private val SettingDividerBottomPadding = 16.dp
+private val SettingDividerThickness = 6.dp
 
 @Composable
 internal fun SettingRoute(
@@ -260,7 +266,6 @@ private fun PhoneSettingScreen(
             NotificationBody(
                 notificationEnabled = state.notificationEnabled,
                 alarmTime = "${state.alarmHour}:${state.alarmMinute}",
-                alarmMessage = state.alarmMessage,
                 onNotificationToggleClick = onNotificationToggleClick,
                 onAlarmTimeClick = onAlarmTimeClick,
                 onAlarmMessageClick = onAlarmMessageClick,
@@ -302,7 +307,7 @@ private fun PhoneSettingScreen(
                 onUpdateClick = onUpdateClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 17.dp),
+                    .padding(vertical = SettingItemVerticalPadding),
             )
         }
     }
@@ -347,7 +352,6 @@ private fun TabletSettingScreen(
                 NotificationBody(
                     notificationEnabled = state.notificationEnabled,
                     alarmTime = "${state.alarmHour}:${state.alarmMinute}",
-                    alarmMessage = state.alarmMessage,
                     onNotificationToggleClick = onNotificationToggleClick,
                     onAlarmTimeClick = onAlarmTimeClick,
                     onAlarmMessageClick = onAlarmMessageClick,
@@ -397,7 +401,7 @@ private fun TabletSettingScreen(
                     onUpdateClick = onUpdateClick,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 17.dp),
+                        .padding(vertical = SettingItemVerticalPadding),
                 )
             }
         }
@@ -408,7 +412,6 @@ private fun TabletSettingScreen(
 private fun NotificationBody(
     notificationEnabled: Boolean,
     alarmTime: String,
-    alarmMessage: String,
     onNotificationToggleClick: () -> Unit,
     onAlarmTimeClick: () -> Unit,
     onAlarmMessageClick: () -> Unit,
@@ -426,7 +429,7 @@ private fun NotificationBody(
     Text(
         text = "알림",
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -437,20 +440,13 @@ private fun NotificationBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp),
+            .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
             text = "알림 설정",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
-        )
-
-        Text(
-            text = if (isOn) "ON" else "OFF",
-            style = EbbingTheme.typography.body18M,
-            color = if (isOn) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-            modifier = Modifier.padding(end = 12.dp),
         )
 
         EbbingToggle(
@@ -477,12 +473,12 @@ private fun NotificationBody(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 17.dp),
+                .padding(vertical = SettingItemVerticalPadding),
         ) {
             Text(
                 text = "알림 시간",
-                style = EbbingTheme.typography.heading18B,
-                color = EbbingTheme.colors.textSub,
+                style = EbbingTheme.typography.heading16SB,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
             )
 
@@ -493,8 +489,8 @@ private fun NotificationBody(
                     }
                 },
                 textAlign = TextAlign.End,
-                style = EbbingTheme.typography.body18M,
-                color = EbbingTheme.colors.primaryNormal,
+                style = EbbingTheme.typography.heading16SB,
+                color = EbbingTheme.colors.textPrimary,
                 modifier = Modifier.clickable { onAlarmTimeClick() },
             )
         }
@@ -508,13 +504,13 @@ private fun NotificationBody(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 17.dp)
+                .padding(vertical = SettingItemVerticalPadding)
                 .clickable { onAlarmMessageClick() },
         ) {
             Text(
                 text = "알림 메시지",
-                style = EbbingTheme.typography.heading18B,
-                color = EbbingTheme.colors.textSub,
+                style = EbbingTheme.typography.heading16SB,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
             )
 
@@ -527,9 +523,11 @@ private fun NotificationBody(
     }
 
     HorizontalDivider(
-        modifier = Modifier.padding(vertical = 16.dp),
-        thickness = 1.dp,
-        color = EbbingTheme.colors.fillTextfield
+        modifier = Modifier
+            .ignoreHorizontalPadding()
+            .padding(bottom = SettingDividerBottomPadding),
+        thickness = SettingDividerThickness,
+        color = EbbingTheme.colors.strokeSecondary
     )
 }
 
@@ -541,7 +539,7 @@ private fun CalendarStartDayBody(
     Text(
         text = "달력",
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -549,12 +547,12 @@ private fun CalendarStartDayBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp),
+            .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
             text = "달력 시작 요일",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -565,16 +563,18 @@ private fun CalendarStartDayBody(
                 }
             },
             textAlign = TextAlign.End,
-            style = EbbingTheme.typography.body18M,
-            color = EbbingTheme.colors.primaryNormal,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textPrimary,
             modifier = Modifier.clickable { onStartDayClick() },
         )
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp),
+        modifier = Modifier
+            .ignoreHorizontalPadding()
+            .padding(bottom = SettingDividerBottomPadding),
+        thickness = SettingDividerThickness,
+        color = EbbingTheme.colors.strokeSecondary
     )
 }
 
@@ -586,7 +586,7 @@ private fun TagRepeatCycleBody(
     Text(
         text = "태그 / 반복 주기",
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -594,13 +594,13 @@ private fun TagRepeatCycleBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onTagManageClick() },
     ) {
         Text(
             text = "태그 관리",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -615,13 +615,13 @@ private fun TagRepeatCycleBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onRepeatCycleManageClick() },
     ) {
         Text(
             text = "반복 주기 관리",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -633,9 +633,11 @@ private fun TagRepeatCycleBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
+        modifier = Modifier
+            .ignoreHorizontalPadding()
+            .padding(bottom = SettingDividerBottomPadding),
+        thickness = SettingDividerThickness,
+        color = EbbingTheme.colors.strokeSecondary
     )
 }
 
@@ -647,7 +649,7 @@ private fun DataBody(
     Text(
         text = "데이터",
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -655,13 +657,13 @@ private fun DataBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onSyncClick() },
     ) {
         Text(
             text = "다른 기기와 동기화 하기",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -676,13 +678,13 @@ private fun DataBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onClearClick() },
     ) {
         Text(
             text = "데이터 초기화 하기",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -694,9 +696,11 @@ private fun DataBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
+        modifier = Modifier
+            .ignoreHorizontalPadding()
+            .padding(bottom = SettingDividerBottomPadding),
+        thickness = SettingDividerThickness,
+        color = EbbingTheme.colors.strokeSecondary
     )
 }
 
@@ -707,7 +711,7 @@ private fun InquiryBody() {
     Text(
         text = "문의",
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -715,7 +719,7 @@ private fun InquiryBody() {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable {
                 val url = BuildConfig.EBBING_TALK_URL
                 val intent = Intent(Intent.ACTION_VIEW, url.toUri())
@@ -725,8 +729,8 @@ private fun InquiryBody() {
     ) {
         Text(
             text = "문의하기",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -738,9 +742,11 @@ private fun InquiryBody() {
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
+        modifier = Modifier
+            .ignoreHorizontalPadding()
+            .padding(bottom = SettingDividerBottomPadding),
+        thickness = SettingDividerThickness,
+        color = EbbingTheme.colors.strokeSecondary
     )
 }
 
@@ -750,13 +756,13 @@ private fun InAppReviewRow(onInAppReviewClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onInAppReviewClick() },
     ) {
         Text(
             text = "앱 리뷰 작성",
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -777,7 +783,7 @@ private fun AnnouncementBody(
     Text(
         text = stringResource(R.string.setting_guidance),
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -785,13 +791,13 @@ private fun AnnouncementBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onNoticeClick() },
     ) {
         Text(
             text = stringResource(R.string.setting_announcement),
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -806,13 +812,13 @@ private fun AnnouncementBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onPrivacyPolicy() },
     ) {
         Text(
             text = stringResource(R.string.setting_privacy_policy),
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -827,13 +833,13 @@ private fun AnnouncementBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onTermsClick() },
     ) {
         Text(
             text = stringResource(R.string.setting_term),
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -845,9 +851,11 @@ private fun AnnouncementBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
+        modifier = Modifier
+            .ignoreHorizontalPadding()
+            .padding(bottom = SettingDividerBottomPadding),
+        thickness = SettingDividerThickness,
+        color = EbbingTheme.colors.strokeSecondary
     )
 }
 
@@ -859,7 +867,7 @@ private fun ThemeBody(
     Text(
         text = stringResource(R.string.setting_theme),
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -867,13 +875,13 @@ private fun ThemeBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onThemeManageClick() },
     ) {
         Text(
             text = stringResource(R.string.setting_theme_color_change),
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -888,13 +896,13 @@ private fun ThemeBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
+            .padding(vertical = SettingItemVerticalPadding)
             .clickable { onWidgetAlphaManageClick() },
     ) {
         Text(
             text = stringResource(R.string.setting_widget_alpha_change),
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textSub,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -906,9 +914,11 @@ private fun ThemeBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
+        modifier = Modifier
+            .ignoreHorizontalPadding()
+            .padding(bottom = SettingDividerBottomPadding),
+        thickness = SettingDividerThickness,
+        color = EbbingTheme.colors.strokeSecondary
     )
 }
 
@@ -929,8 +939,8 @@ private fun UpdateBody(
     ) {
         Text(
             text = stringResource(R.string.setting_version, version),
-            style = EbbingTheme.typography.heading18B,
-            color = EbbingTheme.colors.textDisabled,
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         if (isShowUpdateButton(context, updateInfo)) {
@@ -1015,6 +1025,16 @@ private fun checkShouldUpdate(currentVersion: String, minVersion: String): Boole
 private fun normalizeVersion(version: String): List<Int> = version.split('.')
     .map { it.toIntOrNull() ?: 0 }
     .let { if (it.size == 2) it + 0 else it }
+
+private fun Modifier.ignoreHorizontalPadding(horizontal: Dp = 20.dp) = layout { measurable, constraints ->
+    val extraWidth = (horizontal * 2).roundToPx()
+    val placeable = measurable.measure(
+        constraints.copy(maxWidth = constraints.maxWidth + extraWidth)
+    )
+    layout(constraints.maxWidth, placeable.height) {
+        placeable.place(-horizontal.roundToPx(), 0)
+    }
+}
 
 @EbbingPreview
 @Composable

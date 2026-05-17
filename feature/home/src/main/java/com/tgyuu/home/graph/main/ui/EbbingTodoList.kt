@@ -29,6 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -110,8 +113,13 @@ private fun TodoHeader(
         val dateText = if (displayDate == LocalDate.now()) "오늘"
         else "${displayDate.monthValue}월 ${displayDate.dayOfMonth}일"
         Text(
-            text = "$dateText  할 일 $count",
-            style = EbbingTheme.typography.body16M,
+            text = buildAnnotatedString {
+                append("$dateText 할 일 ")
+                withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
+                    append(count.toString())
+                }
+            },
+            style = EbbingTheme.typography.heading16B,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f)
         )
@@ -124,7 +132,7 @@ private fun TodoHeader(
         ) {
             Text(
                 text = sortType.displayName,
-                style = EbbingTheme.typography.body16M,
+                style = EbbingTheme.typography.heading16B,
                 color = EbbingTheme.colors.textOnBackground
             )
             Image(

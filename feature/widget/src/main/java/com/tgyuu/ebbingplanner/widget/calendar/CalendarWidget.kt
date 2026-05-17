@@ -174,6 +174,7 @@ private fun CalendarWidgetHeader(
                 Image(
                     provider = ImageProvider(bitmaps.header),
                     contentDescription = "${today.year}년 ${today.monthValue}월",
+                    colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
             } else {
@@ -225,6 +226,7 @@ private fun CalendarWidgetHeader(
                     Image(
                         provider = ImageProvider(dowBitmap),
                         contentDescription = dow.toKorean(),
+                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
                         modifier = GlanceModifier.defaultWeight(),
                     )
                 } else {
@@ -398,6 +400,7 @@ private fun ColumnScope.SelectedDateTodoList(
                     provider = ImageProvider(sectionHeaderBitmap),
                     contentDescription = if (selectedDate == today) "오늘 할 일"
                     else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일",
+                    colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                 )
                 Spacer(modifier = GlanceModifier.width(8.dp))
             } else {

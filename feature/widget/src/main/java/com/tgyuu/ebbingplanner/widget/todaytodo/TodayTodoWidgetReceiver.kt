@@ -4,24 +4,12 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.tgyuu.designsystem.foundation.forestDarkColorScheme
-import com.tgyuu.designsystem.foundation.forestLightColorScheme
-import com.tgyuu.designsystem.foundation.lilacDarkColorScheme
-import com.tgyuu.designsystem.foundation.lilacLightColorScheme
-import com.tgyuu.designsystem.foundation.marineDarkColorScheme
-import com.tgyuu.designsystem.foundation.marineLightColorScheme
-import com.tgyuu.designsystem.foundation.normalDarkColorScheme
-import com.tgyuu.designsystem.foundation.normalLightColorScheme
-import com.tgyuu.designsystem.foundation.sunsetDarkColorScheme
-import com.tgyuu.designsystem.foundation.sunsetLightColorScheme
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -125,7 +113,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
             )
 
         withContext(Dispatchers.IO) {
-            generatePretendardBitmaps(context, theme, textAlpha, todoLists)
+            generatePretendardBitmaps(context, todoLists)
         }
 
         val glanceId = GlanceAppWidgetManager(context)
@@ -150,27 +138,11 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     private fun generatePretendardBitmaps(
         context: Context,
-        theme: Theme,
-        textAlpha: Float,
         todoLists: List<TodoSchedule>,
     ) {
-        val isDark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
 
-        val colorScheme = when (theme) {
-            Theme.NORMAL -> if (isDark) normalDarkColorScheme else normalLightColorScheme
-            Theme.FOREST -> if (isDark) forestDarkColorScheme else forestLightColorScheme
-            Theme.SUNSET -> if (isDark) sunsetDarkColorScheme else sunsetLightColorScheme
-            Theme.MARINE -> if (isDark) marineDarkColorScheme else marineLightColorScheme
-            Theme.LILAC -> if (isDark) lilacDarkColorScheme else lilacLightColorScheme
-        }
+        val white = android.graphics.Color.WHITE
 
-        val textOnBackground = colorScheme.textOnBackground.copy(alpha = textAlpha).toArgb()
-        val textPrimary = colorScheme.textPrimary.copy(alpha = textAlpha).toArgb()
-        val textDisabled = colorScheme.textDisabled.copy(alpha = textAlpha).toArgb()
-        val textSub = colorScheme.textSub.copy(alpha = textAlpha).toArgb()
-
-        val doneSize = todoLists.count { it.isDone }
         val density = context.resources.displayMetrics.density
         // 실제 위젯 인스턴스 중 가장 작은 너비 기준으로 비트맵 폭 계산 (없으면 XML minWidth 180dp)
         val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -187,36 +159,35 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
         PretendardBitmapRenderer.renderAndSave(
             context, "오늘 할 일   ",
-            PretendardBitmapRenderer.Weight.BOLD, 18f, textOnBackground,
+            PretendardBitmapRenderer.Weight.BOLD, 18f, white,
             filename = "todo_header.png",
         )
 
-        val doneColor = if (doneSize > 0) textPrimary else textDisabled
+        val doneSize = todoLists.count { it.isDone }
         PretendardBitmapRenderer.renderAndSave(
             context, doneSize.toString(),
-            PretendardBitmapRenderer.Weight.BOLD, 18f, doneColor,
+            PretendardBitmapRenderer.Weight.BOLD, 18f, white,
             filename = "todo_done_count.png",
         )
 
         PretendardBitmapRenderer.renderAndSave(
             context, "/${todoLists.size}",
-            PretendardBitmapRenderer.Weight.BOLD, 18f, textDisabled,
+            PretendardBitmapRenderer.Weight.BOLD, 18f, white,
             filename = "todo_total.png",
         )
 
         PretendardBitmapRenderer.renderAndSave(
             context, "오늘은 일정이 없어요",
-            PretendardBitmapRenderer.Weight.SEMI_BOLD, 16f, textSub,
+            PretendardBitmapRenderer.Weight.SEMI_BOLD, 16f, white,
             filename = "todo_empty.png",
         )
 
         todoLists.take(MAX_VISIBLE_TODOS).forEachIndexed { index, todo ->
-            val titleColor = if (todo.isDone) textDisabled else textOnBackground
             val weight = if (todo.isDone) PretendardBitmapRenderer.Weight.MEDIUM
                          else PretendardBitmapRenderer.Weight.SEMI_BOLD
             PretendardBitmapRenderer.renderAndSave(
                 context, todo.title,
-                weight, 14f, titleColor,
+                weight, 14f, white,
                 filename = "todo_title_$index.png",
                 maxWidthPx = titleMaxWidthPx,
                 maxLines = 1,
