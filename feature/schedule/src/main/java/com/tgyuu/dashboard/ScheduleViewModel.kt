@@ -6,6 +6,7 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent.HideBottomSheet
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EbbingEvent.ShowSnackBar
+import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.dashboard.contract.ScheduleIntent
@@ -38,7 +39,7 @@ class ScheduleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val analyticsHelper: AnalyticsHelper,
     private val navigationBus: NavigationBus,
-    internal val eventBus: EventBus,
+    private val eventBus: EventBus,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
     internal suspend fun loadTodoSchedules() = coroutineScope {
@@ -68,12 +69,57 @@ class ScheduleViewModel @Inject constructor(
                 }.toImmutableMap()
 
             val todoTags = todoRepository.loadTags()
+            val tags = todoTags.toUiModels()
+
+            val infoScheduleCountMap = schedulesByInfoMap
+                .mapValues { it.value.size }.toImmutableMap()
+
+            val infoAchievementRateMap = schedulesByInfoMap
+                .mapValues { (_, schedules) ->
+                    if (schedules.isEmpty()) 0f
+                    else schedules.count { it.isDone }.toFloat() / schedules.size
+                }.toImmutableMap()
+
+            val infoAllDoneMap = schedulesByInfoMap
+                .mapValues { (_, schedules) ->
+                    schedules.isNotEmpty() && schedules.all { it.isDone }
+                }.toImmutableMap()
+
+            val tagScheduleCountMap = tags.associate { tag ->
+                val infos = infosByTagMap[tag.id].orEmpty()
+                tag.id to infos.sumOf { info -> schedulesByInfoMap[info.id]?.size ?: 0 }
+            }.toImmutableMap()
+
+            val tagAchievementRateMap = tags.associate { tag ->
+                val infos = infosByTagMap[tag.id].orEmpty()
+                val allSchedules = infos.flatMap { schedulesByInfoMap[it.id].orEmpty() }
+                val rate = if (allSchedules.isEmpty()) 0f
+                else allSchedules.count { it.isDone }.toFloat() / allSchedules.size
+                tag.id to rate
+            }.toImmutableMap()
+
+            val tagAllDoneMap = tags.associate { tag ->
+                val infos = infosByTagMap[tag.id].orEmpty()
+                val allSchedules = infos.flatMap { schedulesByInfoMap[it.id].orEmpty() }
+                tag.id to (allSchedules.isNotEmpty() && allSchedules.all { it.isDone })
+            }.toImmutableMap()
+
+            val visibleTags = tags
+                .filter { (tagScheduleCountMap[it.id] ?: 0) > 0 }
+                .toImmutableList()
 
             setState {
                 copy(
+                    tags = tags,
                     infosByTagMap = infosByTagMap,
                     schedulesByInfoMap = schedulesByInfoMap,
-                    tags = todoTags.toUiModels(),
+                    infoScheduleCountMap = infoScheduleCountMap,
+                    infoAchievementRateMap = infoAchievementRateMap,
+                    infoAllDoneMap = infoAllDoneMap,
+                    tagScheduleCountMap = tagScheduleCountMap,
+                    tagAchievementRateMap = tagAchievementRateMap,
+                    tagAllDoneMap = tagAllDoneMap,
+                    visibleTags = visibleTags,
                 )
             }
         }
@@ -86,8 +132,11 @@ class ScheduleViewModel @Inject constructor(
             is ScheduleIntent.OnScheduleClick -> onScheduleClick(intent.schedule)
             is ScheduleIntent.OnNavigateToAddTodo -> onNavigateToAddTodo()
             is ScheduleIntent.OnShowBottomSheet -> eventBus.sendEvent(ShowBottomSheet(intent.content))
+            is ScheduleIntent.OnReplaceBottomSheet -> onReplaceBottomSheet(intent.content)
             is ScheduleIntent.OnSaveTag -> onSaveTag(intent.tagId, intent.name, intent.color)
             is ScheduleIntent.OnDeleteTag -> onDeleteTag(intent.tagId)
+            is ScheduleIntent.OnRequestDeleteTag -> onRequestDeleteTag(intent.tagId, intent.tagName)
+            is ScheduleIntent.OnClearPendingDeleteTag -> setState { copy(pendingDeleteTag = null) }
             is ScheduleIntent.OnUpdateInfoClick -> onUpdateInfoClick(intent.schedule)
             is ScheduleIntent.OnUpdateDateClick -> onUpdateDateClick(intent.schedule)
             is ScheduleIntent.OnDeleteSingleClick -> onDeleteSingle(intent.schedule)
@@ -97,6 +146,18 @@ class ScheduleViewModel @Inject constructor(
             is ScheduleIntent.OnMemoClick -> onMemoClick(intent.schedule)
             is ScheduleIntent.OnDeleteMemoClick -> onDeleteMemo(intent.schedule)
         }
+    }
+
+    private suspend fun onReplaceBottomSheet(content: BottomSheetContent) {
+        eventBus.sendEvent(HideBottomSheet)
+        eventBus.awaitBottomSheetHidden()
+        eventBus.sendEvent(ShowBottomSheet(content))
+    }
+
+    private suspend fun onRequestDeleteTag(tagId: Int, tagName: String) {
+        eventBus.sendEvent(HideBottomSheet)
+        eventBus.awaitBottomSheetHidden()
+        setState { copy(pendingDeleteTag = tagId to tagName) }
     }
 
     private suspend fun onNavigateToAddTodo() {

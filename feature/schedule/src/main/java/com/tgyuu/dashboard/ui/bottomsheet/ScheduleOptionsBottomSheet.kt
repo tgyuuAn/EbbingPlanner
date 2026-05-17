@@ -220,65 +220,30 @@ internal fun ScheduleOptionsBottomSheet(
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 22.dp),
         ) {
-            Text(
+            BottomSheetOptionItem(
                 text = "수정하기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickUpdate(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickUpdate(selectedSchedule) },
             )
 
-            Text(
+            BottomSheetOptionItem(
                 text = "삭제하기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickDelete(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickDelete(selectedSchedule) },
             )
 
-            Text(
+            BottomSheetOptionItem(
                 text = "내일로 미루기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickDelay(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickDelay(selectedSchedule) },
             )
 
-            Text(
+            BottomSheetOptionItem(
                 text = if (selectedSchedule.memo.originalText.isEmpty()) "메모 추가하기" else "메모 수정하기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickMemo(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickMemo(selectedSchedule) },
             )
 
             if (selectedSchedule.memo.originalText.isNotEmpty()) {
-                Text(
+                BottomSheetOptionItem(
                     text = "메모 지우기",
-                    style = EbbingTheme.typography.body16M,
-                    color = EbbingTheme.colors.textOnBackground,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onClickDeleteMemo(selectedSchedule) }
-                        .height(62.dp),
+                    onClick = { onClickDeleteMemo(selectedSchedule) },
                 )
             }
         }
@@ -303,28 +268,14 @@ internal fun ScheduleUpdateBottomSheet(
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
-            Text(
+            BottomSheetOptionItem(
                 text = "일정 정보 수정하기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickUpdateInfo(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickUpdateInfo(selectedSchedule) },
             )
 
-            Text(
+            BottomSheetOptionItem(
                 text = "연관된 일정 반복 주기 재설정하기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickUpdateDate(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickUpdateDate(selectedSchedule) },
             )
         }
     }
@@ -348,28 +299,14 @@ internal fun ScheduleDeleteBottomSheet(
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
-            Text(
+            BottomSheetOptionItem(
                 text = "해당 일정만 삭제하기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickDeleteSingle(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickDeleteSingle(selectedSchedule) },
             )
 
-            Text(
+            BottomSheetOptionItem(
                 text = "연계된 이후 일정 전부 삭제",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickDeleteRemaining(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickDeleteRemaining(selectedSchedule) },
             )
         }
     }
@@ -393,29 +330,37 @@ internal fun ScheduleDelayBottomSheet(
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
-            Text(
+            BottomSheetOptionItem(
                 text = "이 일정만 미루기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickDelaySingle(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickDelaySingle(selectedSchedule) },
             )
 
-            Text(
+            BottomSheetOptionItem(
                 text = "이후 일정 모두 미루기",
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClickDelayAll(selectedSchedule) }
-                    .height(62.dp),
+                onClick = { onClickDelayAll(selectedSchedule) },
             )
         }
+    }
+}
+
+@Composable
+private fun BottomSheetOptionItem(
+    text: String,
+    onClick: () -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .height(62.dp),
+    ) {
+        Text(
+            text = text,
+            style = EbbingTheme.typography.body16M,
+            color = EbbingTheme.colors.textOnBackground,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }

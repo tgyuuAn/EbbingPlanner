@@ -10,8 +10,11 @@ sealed interface ScheduleIntent : UiIntent {
     data class OnScheduleClick(val schedule: TodoScheduleUiModel) : ScheduleIntent
     data object OnNavigateToAddTodo : ScheduleIntent
     data class OnShowBottomSheet(val content: BottomSheetContent) : ScheduleIntent
+    data class OnReplaceBottomSheet(val content: BottomSheetContent) : ScheduleIntent
     data class OnSaveTag(val tagId: Int, val name: String, val color: Int) : ScheduleIntent
     data class OnDeleteTag(val tagId: Int) : ScheduleIntent
+    data class OnRequestDeleteTag(val tagId: Int, val tagName: String) : ScheduleIntent
+    data object OnClearPendingDeleteTag : ScheduleIntent
 
     // 수정하기
     data class OnUpdateInfoClick(val schedule: TodoScheduleUiModel) : ScheduleIntent

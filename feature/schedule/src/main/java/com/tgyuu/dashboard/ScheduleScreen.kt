@@ -33,7 +33,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +51,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.LocalAnalyticsHelper
-import com.tgyuu.common.event.EbbingEvent
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -79,20 +77,17 @@ import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.DefaultTodoTag
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     val analyticsHelper = LocalAnalyticsHelper.current
-    var deleteTagState by remember { mutableStateOf<Pair<Int, String>?>(null) }
 
     LaunchedEffect(viewModel) {
         viewModel.loadTodoSchedules()
     }
 
-    deleteTagState?.let { (tagId, tagName) ->
+    state.pendingDeleteTag?.let { (tagId, tagName) ->
         LaunchedEffect(tagId) {
             analyticsHelper.logEvent(
                 AnalyticsEvent.Action(
@@ -105,9 +100,9 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
 
         DeleteTagDialog(
             tagName = tagName,
-            onDismissRequest = { deleteTagState = null },
+            onDismissRequest = { viewModel.onIntent(ScheduleIntent.OnClearPendingDeleteTag) },
             onDeleteClick = {
-                deleteTagState = null
+                viewModel.onIntent(ScheduleIntent.OnClearPendingDeleteTag)
                 viewModel.onIntent(ScheduleIntent.OnDeleteTag(tagId))
             },
         )
@@ -132,11 +127,7 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
                             viewModel.onIntent(ScheduleIntent.OnSaveTag(tagId, name, color))
                         },
                         onDelete = {
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                viewModel.eventBus.awaitBottomSheetHidden()
-                                deleteTagState = tagId to tagName
-                            }
+                            viewModel.onIntent(ScheduleIntent.OnRequestDeleteTag(tagId, tagName))
                         },
                     )
                 }
@@ -154,85 +145,49 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
                             analyticsHelper.logEvent(
                                 AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditSchedule")
                             )
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                viewModel.eventBus.awaitBottomSheetHidden()
-                                viewModel.onIntent(ScheduleIntent.OnShowBottomSheet {
-                                    ScheduleUpdateBottomSheet(
-                                        selectedSchedule = s,
-                                        onClickUpdateInfo = {
-                                            viewModel.onIntent(
-                                                ScheduleIntent.OnUpdateInfoClick(
-                                                    it
-                                                )
-                                            )
-                                        },
-                                        onClickUpdateDate = {
-                                            viewModel.onIntent(
-                                                ScheduleIntent.OnUpdateDateClick(
-                                                    it
-                                                )
-                                            )
-                                        },
-                                    )
-                                })
-                            }
+                            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
+                                ScheduleUpdateBottomSheet(
+                                    selectedSchedule = s,
+                                    onClickUpdateInfo = {
+                                        viewModel.onIntent(ScheduleIntent.OnUpdateInfoClick(it))
+                                    },
+                                    onClickUpdateDate = {
+                                        viewModel.onIntent(ScheduleIntent.OnUpdateDateClick(it))
+                                    },
+                                )
+                            })
                         },
                         onClickDelete = { s ->
                             analyticsHelper.logEvent(
                                 AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteSchedule")
                             )
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                viewModel.eventBus.awaitBottomSheetHidden()
-                                viewModel.onIntent(ScheduleIntent.OnShowBottomSheet {
-                                    ScheduleDeleteBottomSheet(
-                                        selectedSchedule = s,
-                                        onClickDeleteSingle = {
-                                            viewModel.onIntent(
-                                                ScheduleIntent.OnDeleteSingleClick(
-                                                    it
-                                                )
-                                            )
-                                        },
-                                        onClickDeleteRemaining = {
-                                            viewModel.onIntent(
-                                                ScheduleIntent.OnDeleteRemainingClick(
-                                                    it
-                                                )
-                                            )
-                                        },
-                                    )
-                                })
-                            }
+                            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
+                                ScheduleDeleteBottomSheet(
+                                    selectedSchedule = s,
+                                    onClickDeleteSingle = {
+                                        viewModel.onIntent(ScheduleIntent.OnDeleteSingleClick(it))
+                                    },
+                                    onClickDeleteRemaining = {
+                                        viewModel.onIntent(ScheduleIntent.OnDeleteRemainingClick(it))
+                                    },
+                                )
+                            })
                         },
                         onClickDelay = { s ->
                             analyticsHelper.logEvent(
                                 AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DelaySchedule")
                             )
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                viewModel.eventBus.awaitBottomSheetHidden()
-                                viewModel.onIntent(ScheduleIntent.OnShowBottomSheet {
-                                    ScheduleDelayBottomSheet(
-                                        selectedSchedule = s,
-                                        onClickDelaySingle = {
-                                            viewModel.onIntent(
-                                                ScheduleIntent.OnDelaySingleClick(
-                                                    it
-                                                )
-                                            )
-                                        },
-                                        onClickDelayAll = {
-                                            viewModel.onIntent(
-                                                ScheduleIntent.OnDelayAllClick(
-                                                    it
-                                                )
-                                            )
-                                        },
-                                    )
-                                })
-                            }
+                            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
+                                ScheduleDelayBottomSheet(
+                                    selectedSchedule = s,
+                                    onClickDelaySingle = {
+                                        viewModel.onIntent(ScheduleIntent.OnDelaySingleClick(it))
+                                    },
+                                    onClickDelayAll = {
+                                        viewModel.onIntent(ScheduleIntent.OnDelayAllClick(it))
+                                    },
+                                )
+                            })
                         },
                         onClickMemo = {
                             analyticsHelper.logEvent(
