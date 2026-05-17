@@ -47,7 +47,7 @@ class ExperimentRepositoryImplTest {
     fun `메모리 캐시가 비어있으면 로컬에서 가져온다`() = runTest {
         // Given
         val experimentKey = Experiment.SaveButtonPosition.key
-        localDataSource.saveAssignmentIfNotExists(experimentKey, "CONTROL")
+        localDataSource.saveAssignment(experimentKey, "CONTROL")
 
         // When
         val result = repository.getVariant(Experiment.SaveButtonPosition)
@@ -122,18 +122,18 @@ class ExperimentRepositoryImplTest {
     }
 
     @Test
-    fun `fetchAndAssignExperiments는 저장 후 로컬의 실제 값을 메모리에 저장한다`() = runTest {
+    fun `fetchAndAssignExperiments는 리모트 값으로 로컬과 메모리를 갱신한다`() = runTest {
         // Given
         val experimentKey = Experiment.SaveButtonPosition.key
-        localDataSource.saveAssignmentIfNotExists(experimentKey, "CONTROL")
+        localDataSource.saveAssignment(experimentKey, "CONTROL")
         remoteDataSource.setRemoteVariant(experimentKey, "TREATMENT")
 
         // When
         repository.fetchAndAssignExperiments()
 
         // Then
-        assertEquals("CONTROL", localDataSource.getAssignment(experimentKey))
-        assertEquals("CONTROL", memoryDataSource.getAssignment(experimentKey))
+        assertEquals("TREATMENT", localDataSource.getAssignment(experimentKey))
+        assertEquals("TREATMENT", memoryDataSource.getAssignment(experimentKey))
     }
 
     @Test
@@ -141,7 +141,7 @@ class ExperimentRepositoryImplTest {
         // Given
         val experimentKey = Experiment.SaveButtonPosition.key
         memoryDataSource.saveAssignment(experimentKey, "TREATMENT")
-        localDataSource.saveAssignmentIfNotExists(experimentKey, "CONTROL")
+        localDataSource.saveAssignment(experimentKey, "CONTROL")
         remoteDataSource.setRemoteVariant(experimentKey, "TREATMENT")
 
         // When
@@ -178,10 +178,8 @@ class FakeExperimentLocalDataSource : ExperimentLocalDataSource {
         return storage[experimentKey]
     }
 
-    override suspend fun saveAssignmentIfNotExists(experimentKey: String, variantName: String) {
-        if (!storage.containsKey(experimentKey)) {
-            storage[experimentKey] = variantName
-        }
+    override suspend fun saveAssignment(experimentKey: String, variantName: String) {
+        storage[experimentKey] = variantName
     }
 }
 
