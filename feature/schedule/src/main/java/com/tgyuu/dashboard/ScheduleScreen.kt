@@ -2,8 +2,9 @@ package com.tgyuu.dashboard
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -318,8 +319,8 @@ private fun TabletScheduleScreen(
                 onTagThreeDotsClick,
                 onScheduleThreeDotsClick,
                 Modifier
+                    .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = 100.dp)
             )
         }
     }
@@ -392,7 +393,7 @@ private fun TagCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .animateContentSize()
+
     ) {
         // Tag header
         Row(
@@ -453,8 +454,8 @@ private fun TagCard(
         // Level 2: TodoInfo list
         AnimatedVisibility(
             visible = isExpanded,
-            enter = expandVertically(),
-            exit = shrinkVertically(),
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
         ) {
             HorizontalDivider(
                 color = EbbingTheme.colors.strokeNormal,
@@ -551,7 +552,7 @@ private fun TodoInfoItem(
                 spotColor = Color(0xFF8994A8),
             )
             .background(EbbingTheme.colors.background)
-            .animateContentSize()
+
     ) {
         Column(
             modifier = Modifier
@@ -606,8 +607,8 @@ private fun TodoInfoItem(
         // Level 3: Schedule list
         AnimatedVisibility(
             visible = isExpanded,
-            enter = expandVertically(),
-            exit = shrinkVertically(),
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
         ) {
             Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)) {
                 schedules.forEachIndexed { index, schedule ->
