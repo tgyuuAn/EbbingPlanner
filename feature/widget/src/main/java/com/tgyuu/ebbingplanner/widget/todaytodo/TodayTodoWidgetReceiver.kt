@@ -27,6 +27,7 @@ import com.tgyuu.ebbingplanner.widget.util.PretendardBitmapRenderer
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -48,6 +49,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = TodayTodoWidget()
 
     private val scope = MainScope()
+    private var updateJob: Job? = null
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
@@ -74,7 +76,8 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
                 analyticsHelper.logEvent(
                     AnalyticsEvent.Click(screenName = "TodoWidget", buttonName = "Refresh")
                 )
-                scope.launch {
+                updateJob?.cancel()
+                updateJob = scope.launch {
                     try {
                         updateDataInternal(context)
                     } finally {
@@ -92,7 +95,8 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
     }
 
     private fun updateData(context: Context) {
-        scope.launch { updateDataInternal(context) }
+        updateJob?.cancel()
+        updateJob = scope.launch { updateDataInternal(context) }
     }
 
     private suspend fun updateDataInternal(context: Context) {
