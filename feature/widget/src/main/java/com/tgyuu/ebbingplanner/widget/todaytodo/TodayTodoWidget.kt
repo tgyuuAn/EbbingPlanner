@@ -130,9 +130,6 @@ private fun TodayTodoWidgetContent(
             modifier = GlanceModifier.fillMaxWidth(),
         ) {
             val todoListsDoneSize = todoLists.filter { it.isDone }.size
-            val isAllDone = todoLists.isNotEmpty() && todoListsDoneSize == todoLists.size
-            val headerColor = if (isAllDone) LocalEbbingWidgetColors.current.textDisabled
-                else LocalEbbingWidgetColors.current.textOnBackground
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -142,14 +139,13 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.header),
                         contentDescription = "오늘 할 일",
-                        colorFilter = ColorFilter.tint(headerColor),
+                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                     )
                 } else {
                     Text(
                         text = "오늘 할 일   ",
                         style = EbbingWidgetTypography.heading18B.copy(
-                            color = headerColor,
-                            textDecoration = if (isAllDone) TextDecoration.LineThrough else null,
+                            color = LocalEbbingWidgetColors.current.textOnBackground,
                         ),
                     )
                 }
@@ -236,9 +232,11 @@ private fun TodayTodoWidgetContent(
                     .padding(top = 6.dp),
             ) {
                 items(items = todoLists.fastMapIndexed { i, it -> i to it }) { (index, item) ->
+                    val titleBitmap = if (item.isDone) bitmaps.titlesDone.getOrNull(index)
+                        else bitmaps.titles.getOrNull(index)
                     TodoItemRow(
                         todo = item,
-                        titleBitmap = bitmaps.titles.getOrNull(index),
+                        titleBitmap = titleBitmap,
                         modifier = GlanceModifier.fillMaxWidth()
                             .padding(vertical = 6.dp),
                     )
@@ -309,7 +307,7 @@ private fun HomeWidgetPreview() {
             todoLists = emptyList(),
             bitmaps = TodayTodoBitmaps(
                 header = null, doneCount = null, total = null,
-                empty = null, titles = emptyList(),
+                empty = null, titles = emptyList(), titlesDone = emptyList(),
             ),
         )
     }
@@ -323,7 +321,7 @@ private fun HomeWidgetPreview2() {
             alpha = 1f,
             bitmaps = TodayTodoBitmaps(
                 header = null, doneCount = null, total = null,
-                empty = null, titles = emptyList(),
+                empty = null, titles = emptyList(), titlesDone = emptyList(),
             ),
             todoLists = listOf(
                 TodoSchedule(

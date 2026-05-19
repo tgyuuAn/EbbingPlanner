@@ -162,13 +162,11 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         val titleMaxWidthPx = ((minWidgetWidthDp - 99) * density).toInt().coerceAtLeast(50)
 
         val doneSize = todoLists.count { it.isDone }
-        val isAllDone = todoLists.isNotEmpty() && doneSize == todoLists.size
 
         PretendardBitmapRenderer.renderAndSave(
             context, "오늘 할 일   ",
             PretendardBitmapRenderer.Weight.BOLD, 18f, white,
             filename = "todo_header.png",
-            strikethrough = isAllDone,
         )
         PretendardBitmapRenderer.renderAndSave(
             context, doneSize.toString(),
@@ -189,15 +187,20 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         )
 
         todoLists.take(MAX_VISIBLE_TODOS).forEachIndexed { index, todo ->
-            val weight = if (todo.isDone) PretendardBitmapRenderer.Weight.MEDIUM
-                         else PretendardBitmapRenderer.Weight.SEMI_BOLD
             PretendardBitmapRenderer.renderAndSave(
                 context, todo.title,
-                weight, 14f, white,
+                PretendardBitmapRenderer.Weight.SEMI_BOLD, 14f, white,
                 filename = "todo_title_$index.png",
                 maxWidthPx = titleMaxWidthPx,
                 maxLines = 1,
-                strikethrough = todo.isDone,
+            )
+            PretendardBitmapRenderer.renderAndSave(
+                context, todo.title,
+                PretendardBitmapRenderer.Weight.MEDIUM, 14f, white,
+                filename = "todo_title_done_$index.png",
+                maxWidthPx = titleMaxWidthPx,
+                maxLines = 1,
+                strikethrough = true,
             )
         }
     }
