@@ -96,6 +96,8 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync) =
         todoSchedulesDao.updateTodoSchedule(todoScheduleForSync.toEntity())
 
+    override suspend fun toggleDone(id: Int) = todoSchedulesDao.toggleDone(id)
+
     override suspend fun updateSchedules(schedules: List<TodoSchedule>) =
         todoWithSchedulesDao.updateSchedules(
             schedules.map { schedule ->

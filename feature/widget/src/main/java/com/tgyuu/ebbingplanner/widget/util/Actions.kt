@@ -68,8 +68,7 @@ class CheckTodoAction : ActionCallback {
             context.applicationContext, WidgetUpdateEntryPoint::class.java
         )
         val todoRepository = entryPoint.todoRepository()
-        val selectedTodo = todoRepository.loadSchedule(todoId) ?: return
-        todoRepository.updateTodo(selectedTodo.copy(isDone = !selectedTodo.isDone))
+        todoRepository.toggleDone(todoId)
 
         WidgetUpdater.updateAllWidgets(
             context, todoRepository, entryPoint.configRepository()

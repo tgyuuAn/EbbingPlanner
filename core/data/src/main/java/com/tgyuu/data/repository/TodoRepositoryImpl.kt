@@ -159,6 +159,8 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun updateTodos(schedules: List<TodoSchedule>) =
         localTodoDataSource.updateSchedules(schedules)
 
+    override suspend fun toggleDone(id: Int) = localTodoDataSource.toggleDone(id)
+
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
         localTodoDataSource.softDeleteTodo(todoSchedule)
 
