@@ -161,13 +161,15 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         // 외부 패딩(40dp) + 색상 바·패딩(15dp) + 체크 아이콘(20dp) + 이미지 내부 패딩(24dp) 제외
         val titleMaxWidthPx = ((minWidgetWidthDp - 99) * density).toInt().coerceAtLeast(50)
 
+        val doneSize = todoLists.count { it.isDone }
+        val isAllDone = todoLists.isNotEmpty() && doneSize == todoLists.size
+
         PretendardBitmapRenderer.renderAndSave(
             context, "오늘 할 일   ",
             PretendardBitmapRenderer.Weight.BOLD, 18f, white,
             filename = "todo_header.png",
+            strikethrough = isAllDone,
         )
-
-        val doneSize = todoLists.count { it.isDone }
         PretendardBitmapRenderer.renderAndSave(
             context, doneSize.toString(),
             PretendardBitmapRenderer.Weight.BOLD, 18f, white,
@@ -187,15 +189,12 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         )
 
         todoLists.take(MAX_VISIBLE_TODOS).forEachIndexed { index, todo ->
-            val weight = if (todo.isDone) PretendardBitmapRenderer.Weight.MEDIUM
-                         else PretendardBitmapRenderer.Weight.SEMI_BOLD
             PretendardBitmapRenderer.renderAndSave(
                 context, todo.title,
-                weight, 14f, white,
+                PretendardBitmapRenderer.Weight.SEMI_BOLD, 14f, white,
                 filename = "todo_title_$index.png",
                 maxWidthPx = titleMaxWidthPx,
                 maxLines = 1,
-                strikethrough = todo.isDone,
             )
         }
     }

@@ -55,6 +55,7 @@ import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.TodayTodoBitmaps
 import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
@@ -129,6 +130,9 @@ private fun TodayTodoWidgetContent(
             modifier = GlanceModifier.fillMaxWidth(),
         ) {
             val todoListsDoneSize = todoLists.filter { it.isDone }.size
+            val isAllDone = todoLists.isNotEmpty() && todoListsDoneSize == todoLists.size
+            val headerColor = if (isAllDone) LocalEbbingWidgetColors.current.textDisabled
+                else LocalEbbingWidgetColors.current.textOnBackground
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -138,13 +142,14 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.header),
                         contentDescription = "오늘 할 일",
-                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
+                        colorFilter = ColorFilter.tint(headerColor),
                     )
                 } else {
                     Text(
                         text = "오늘 할 일   ",
                         style = EbbingWidgetTypography.heading18B.copy(
-                            color = LocalEbbingWidgetColors.current.textOnBackground,
+                            color = headerColor,
+                            textDecoration = if (isAllDone) TextDecoration.LineThrough else null,
                         ),
                     )
                 }
@@ -192,6 +197,17 @@ private fun TodayTodoWidgetContent(
                             actionParametersOf(widgetSourceKey to "TodoWidget")
                         )
                     ),
+            )
+
+            Spacer(modifier = GlanceModifier.size(12.dp))
+
+            Image(
+                provider = ImageProvider(R.drawable.ic_widget_refresh),
+                contentDescription = null,
+                modifier = GlanceModifier
+                    .size(20.dp)
+                    .clickable(actionRunCallback<RefreshAction>()),
+                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
             )
         }
 
@@ -270,6 +286,15 @@ internal fun TodoItemRow(
                         textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
                     ),
                     maxLines = 1,
+                )
+            }
+
+            if (todo.isDone) {
+                Spacer(
+                    modifier = GlanceModifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(LocalEbbingWidgetColors.current.textDisabled),
                 )
             }
         }
