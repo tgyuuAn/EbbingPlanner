@@ -47,13 +47,8 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        val pendingResult = goAsync()
         scope.launch {
-            try {
-                WidgetUpdater.updateTodayTodoWidget(context, todoRepository, configRepository)
-            } finally {
-                pendingResult.finish()
-            }
+            WidgetUpdater.updateTodayTodoWidget(context, todoRepository, configRepository)
         }
     }
 
