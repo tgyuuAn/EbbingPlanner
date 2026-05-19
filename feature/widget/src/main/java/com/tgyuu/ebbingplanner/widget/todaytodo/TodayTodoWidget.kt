@@ -131,8 +131,14 @@ private fun TodayTodoWidgetContent(
         ) {
             val todoListsDoneSize = todoLists.filter { it.isDone }.size
             val isAllDone = todoLists.isNotEmpty() && todoListsDoneSize == todoLists.size
-            val headerColor = if (isAllDone) LocalEbbingWidgetColors.current.textDisabled
-                else LocalEbbingWidgetColors.current.textOnBackground
+
+            val doneCountColor = when {
+                isAllDone -> LocalEbbingWidgetColors.current.textDisabled
+                todoListsDoneSize > 0 || todoLists.isEmpty() -> LocalEbbingWidgetColors.current.textPrimary
+                else -> LocalEbbingWidgetColors.current.textDisabled
+            }
+            val totalColor = if (isAllDone) LocalEbbingWidgetColors.current.textDisabled
+                else LocalEbbingWidgetColors.current.textDisabled
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -142,14 +148,13 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.header),
                         contentDescription = "오늘 할 일",
-                        colorFilter = ColorFilter.tint(headerColor),
+                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                     )
                 } else {
                     Text(
                         text = "오늘 할 일   ",
                         style = EbbingWidgetTypography.heading18B.copy(
-                            color = headerColor,
-                            textDecoration = if (isAllDone) TextDecoration.LineThrough else null,
+                            color = LocalEbbingWidgetColors.current.textOnBackground,
                         ),
                     )
                 }
@@ -157,17 +162,13 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.doneCount),
                         contentDescription = "완료 ${todoListsDoneSize}개",
-                        colorFilter = ColorFilter.tint(
-                            if (todoListsDoneSize > 0) LocalEbbingWidgetColors.current.textPrimary
-                            else LocalEbbingWidgetColors.current.textDisabled,
-                        ),
+                        colorFilter = ColorFilter.tint(doneCountColor),
                     )
                 } else {
                     Text(
                         text = todoListsDoneSize.toString(),
                         style = EbbingWidgetTypography.heading18B.copy(
-                            color = if (todoListsDoneSize > 0) LocalEbbingWidgetColors.current.textPrimary
-                            else LocalEbbingWidgetColors.current.textDisabled,
+                            color = doneCountColor,
                         ),
                     )
                 }
@@ -175,13 +176,13 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.total),
                         contentDescription = "전체 ${todoLists.size}개",
-                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textDisabled),
+                        colorFilter = ColorFilter.tint(totalColor),
                     )
                 } else {
                     Text(
                         text = "/${todoLists.size}",
                         style = EbbingWidgetTypography.heading18B.copy(
-                            color = LocalEbbingWidgetColors.current.textDisabled,
+                            color = totalColor,
                         ),
                     )
                 }
