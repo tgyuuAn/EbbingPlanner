@@ -157,13 +157,15 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         // 외부 패딩(40dp) + 색상 바·패딩(15dp) + 체크 아이콘(20dp) + 이미지 내부 패딩(24dp) 제외
         val titleMaxWidthPx = ((minWidgetWidthDp - 99) * density).toInt().coerceAtLeast(50)
 
+        val doneSize = todoLists.count { it.isDone }
+        val isAllDone = todoLists.isNotEmpty() && doneSize == todoLists.size
+
         PretendardBitmapRenderer.renderAndSave(
             context, "오늘 할 일   ",
             PretendardBitmapRenderer.Weight.BOLD, 18f, white,
             filename = "todo_header.png",
+            strikethrough = isAllDone,
         )
-
-        val doneSize = todoLists.count { it.isDone }
         PretendardBitmapRenderer.renderAndSave(
             context, doneSize.toString(),
             PretendardBitmapRenderer.Weight.BOLD, 18f, white,
