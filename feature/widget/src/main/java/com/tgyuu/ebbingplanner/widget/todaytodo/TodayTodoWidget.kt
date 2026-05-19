@@ -290,15 +290,6 @@ internal fun TodoItemRow(
                     maxLines = 1,
                 )
             }
-
-            if (todo.isDone) {
-                Spacer(
-                    modifier = GlanceModifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(LocalEbbingWidgetColors.current.textDisabled),
-                )
-            }
         }
 
         EbbingWidgetCheck(

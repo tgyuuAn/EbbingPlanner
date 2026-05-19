@@ -21,10 +21,14 @@ import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidget
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 object WidgetUpdater {
+
+    private val mutex = Mutex()
 
     suspend fun updateTodayTodoWidget(
         context: Context,
@@ -112,7 +116,7 @@ object WidgetUpdater {
         context: Context,
         todoRepository: TodoRepository,
         configRepository: ConfigRepository,
-    ) {
+    ) = mutex.withLock {
         updateTodayTodoWidget(context, todoRepository, configRepository)
         updateCalendarWidget(context, todoRepository, configRepository)
     }
