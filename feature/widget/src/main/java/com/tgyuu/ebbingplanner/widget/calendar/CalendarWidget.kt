@@ -206,17 +206,6 @@ private fun CalendarWidgetHeader(
             Spacer(modifier = GlanceModifier.size(12.dp))
 
             Image(
-                provider = ImageProvider(R.drawable.ic_widget_refresh),
-                contentDescription = null,
-                modifier = GlanceModifier
-                    .size(20.dp)
-                    .clickable(actionRunCallback<RefreshAction>()),
-                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
-            )
-
-            Spacer(modifier = GlanceModifier.size(12.dp))
-
-            Image(
                 provider = ImageProvider(R.drawable.ic_widget_return),
                 contentDescription = null,
                 modifier = GlanceModifier
@@ -438,6 +427,17 @@ private fun ColumnScope.SelectedDateTodoList(
                 ),
             )
         }
+
+        Spacer(modifier = GlanceModifier.size(12.dp))
+
+        Image(
+            provider = ImageProvider(R.drawable.ic_widget_refresh),
+            contentDescription = null,
+            modifier = GlanceModifier
+                .size(20.dp)
+                .clickable(actionRunCallback<RefreshAction>()),
+            colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
+        )
     }
 
     Spacer(modifier = GlanceModifier.height(12.dp))
