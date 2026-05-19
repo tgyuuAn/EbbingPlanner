@@ -8,9 +8,9 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
-import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import dagger.hilt.EntryPoint
@@ -36,15 +36,12 @@ class RefreshAction : ActionCallback {
         glanceId: GlanceId,
         parameters: ActionParameters
     ) {
-        val todayTodoIntent = Intent(context, TodayTodoWidgetReceiver::class.java).apply {
-            action = UPDATE_ACTION
-        }
-        context.sendBroadcast(todayTodoIntent)
-
-        val calendarIntent = Intent(context, CalendarWidgetReceiver::class.java).apply {
-            action = UPDATE_ACTION
-        }
-        context.sendBroadcast(calendarIntent)
+        val entryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext, WidgetUpdateEntryPoint::class.java
+        )
+        WidgetUpdater.updateAllWidgets(
+            context, entryPoint.todoRepository(), entryPoint.configRepository()
+        )
     }
 
     companion object {
@@ -54,8 +51,9 @@ class RefreshAction : ActionCallback {
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)
-interface CheckTodoEntryPoint {
+interface WidgetUpdateEntryPoint {
     fun todoRepository(): TodoRepository
+    fun configRepository(): ConfigRepository
 }
 
 class CheckTodoAction : ActionCallback {
@@ -66,27 +64,14 @@ class CheckTodoAction : ActionCallback {
     ) {
         val todoId: Int = parameters[todoIdKey] ?: return
 
-        // ActionCallback 내에서 직접 DB toggle 수행 (Receiver 의존 없음)
         val entryPoint = EntryPointAccessors.fromApplication(
-            context.applicationContext, CheckTodoEntryPoint::class.java
+            context.applicationContext, WidgetUpdateEntryPoint::class.java
         )
         val todoRepository = entryPoint.todoRepository()
-        val selectedTodo = todoRepository.loadSchedule(todoId)
-        if (selectedTodo != null) {
-            val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
-            todoRepository.updateTodo(updatedTodo)
-        }
+        todoRepository.toggleDone(todoId)
 
-        // 양쪽 위젯 모두 refresh만 보냄
-        context.sendBroadcast(
-            Intent(context, TodayTodoWidgetReceiver::class.java).apply {
-                action = RefreshAction.UPDATE_ACTION
-            }
-        )
-        context.sendBroadcast(
-            Intent(context, CalendarWidgetReceiver::class.java).apply {
-                action = RefreshAction.UPDATE_ACTION
-            }
+        WidgetUpdater.updateAllWidgets(
+            context, todoRepository, entryPoint.configRepository()
         )
     }
 
