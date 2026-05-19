@@ -130,6 +130,9 @@ private fun TodayTodoWidgetContent(
             modifier = GlanceModifier.fillMaxWidth(),
         ) {
             val todoListsDoneSize = todoLists.filter { it.isDone }.size
+            val isAllDone = todoLists.isNotEmpty() && todoListsDoneSize == todoLists.size
+            val headerColor = if (isAllDone) LocalEbbingWidgetColors.current.textDisabled
+                else LocalEbbingWidgetColors.current.textOnBackground
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -139,13 +142,14 @@ private fun TodayTodoWidgetContent(
                     Image(
                         provider = ImageProvider(bitmaps.header),
                         contentDescription = "오늘 할 일",
-                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
+                        colorFilter = ColorFilter.tint(headerColor),
                     )
                 } else {
                     Text(
                         text = "오늘 할 일   ",
                         style = EbbingWidgetTypography.heading18B.copy(
-                            color = LocalEbbingWidgetColors.current.textOnBackground,
+                            color = headerColor,
+                            textDecoration = if (isAllDone) TextDecoration.LineThrough else null,
                         ),
                     )
                 }
@@ -284,6 +288,15 @@ internal fun TodoItemRow(
                         textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
                     ),
                     maxLines = 1,
+                )
+            }
+
+            if (todo.isDone) {
+                Spacer(
+                    modifier = GlanceModifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(LocalEbbingWidgetColors.current.textDisabled),
                 )
             }
         }
