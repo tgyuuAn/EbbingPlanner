@@ -58,6 +58,7 @@ import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.CalendarWidgetBitmaps
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
 import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
@@ -200,6 +201,17 @@ private fun CalendarWidgetHeader(
                             )
                         )
                     ),
+            )
+
+            Spacer(modifier = GlanceModifier.size(12.dp))
+
+            Image(
+                provider = ImageProvider(R.drawable.ic_widget_refresh),
+                contentDescription = null,
+                modifier = GlanceModifier
+                    .size(20.dp)
+                    .clickable(actionRunCallback<RefreshAction>()),
+                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
             )
 
             Spacer(modifier = GlanceModifier.size(12.dp))
