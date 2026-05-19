@@ -45,8 +45,13 @@ class CalendarWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+        val pendingResult = goAsync()
         scope.launch {
-            WidgetUpdater.updateCalendarWidget(context, todoRepository, configRepository)
+            try {
+                WidgetUpdater.updateCalendarWidget(context, todoRepository, configRepository)
+            } finally {
+                pendingResult.finish()
+            }
         }
     }
 

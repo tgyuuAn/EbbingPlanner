@@ -43,22 +43,24 @@ object WidgetUpdater {
             generateTodayTodoBitmaps(context, todoLists)
         }
 
-        val glanceId = GlanceAppWidgetManager(context)
+        val glanceIds = GlanceAppWidgetManager(context)
             .getGlanceIds(TodayTodoWidget::class.java)
-            .firstOrNull() ?: return
+        if (glanceIds.isEmpty()) return
 
         val json = GsonProvider.gson.toJson(todoLists)
+        val widget = TodayTodoWidget()
 
-        updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
-            pref.toMutablePreferences().apply {
-                this[TodayTodoWidgetReceiver.TODO_LISTS] = json
-                this[THEME] = theme.name
-                this[BACKGROUND_ALPHA] = backgroundAlpha
-                this[TEXT_ALPHA] = textAlpha
+        glanceIds.forEach { glanceId ->
+            updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
+                pref.toMutablePreferences().apply {
+                    this[TodayTodoWidgetReceiver.TODO_LISTS] = json
+                    this[THEME] = theme.name
+                    this[BACKGROUND_ALPHA] = backgroundAlpha
+                    this[TEXT_ALPHA] = textAlpha
+                }
             }
+            widget.update(context, glanceId)
         }
-
-        TodayTodoWidget().update(context, glanceId)
     }
 
     suspend fun updateCalendarWidget(
@@ -85,23 +87,25 @@ object WidgetUpdater {
             generateCalendarBitmaps(context, mondayStart, now)
         }
 
-        val glanceId = GlanceAppWidgetManager(context)
+        val glanceIds = GlanceAppWidgetManager(context)
             .getGlanceIds(CalendarWidget::class.java)
-            .firstOrNull() ?: return
+        if (glanceIds.isEmpty()) return
 
         val json = GsonProvider.gson.toJson(byDate)
+        val widget = CalendarWidget()
 
-        updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
-            pref.toMutablePreferences().apply {
-                this[CalendarWidgetReceiver.SCHEDULES_BY_DATE_MAP] = json
-                this[THEME] = theme.name
-                this[BACKGROUND_ALPHA] = backgroundAlpha
-                this[TEXT_ALPHA] = textAlpha
-                this[WIDGET_MONDAY_START] = mondayStart
+        glanceIds.forEach { glanceId ->
+            updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
+                pref.toMutablePreferences().apply {
+                    this[CalendarWidgetReceiver.SCHEDULES_BY_DATE_MAP] = json
+                    this[THEME] = theme.name
+                    this[BACKGROUND_ALPHA] = backgroundAlpha
+                    this[TEXT_ALPHA] = textAlpha
+                    this[WIDGET_MONDAY_START] = mondayStart
+                }
             }
+            widget.update(context, glanceId)
         }
-
-        CalendarWidget().update(context, glanceId)
     }
 
     suspend fun updateAllWidgets(
