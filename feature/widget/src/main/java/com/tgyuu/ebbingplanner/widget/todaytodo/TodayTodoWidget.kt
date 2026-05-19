@@ -132,10 +132,10 @@ private fun TodayTodoWidgetContent(
             val todoListsDoneSize = todoLists.filter { it.isDone }.size
             val isAllDone = todoLists.isNotEmpty() && todoListsDoneSize == todoLists.size
 
-            val doneCountColor = when {
-                isAllDone -> LocalEbbingWidgetColors.current.textDisabled
-                todoListsDoneSize > 0 || todoLists.isEmpty() -> LocalEbbingWidgetColors.current.textPrimary
-                else -> LocalEbbingWidgetColors.current.textDisabled
+            val doneCountColor = if (todoListsDoneSize > 0 || todoLists.isEmpty()) {
+                LocalEbbingWidgetColors.current.textPrimary
+            } else {
+                LocalEbbingWidgetColors.current.textDisabled
             }
             val totalColor = if (isAllDone) LocalEbbingWidgetColors.current.textDisabled
                 else LocalEbbingWidgetColors.current.textDisabled
