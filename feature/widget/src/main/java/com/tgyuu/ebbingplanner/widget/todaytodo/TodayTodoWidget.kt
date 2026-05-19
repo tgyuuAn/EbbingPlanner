@@ -269,35 +269,24 @@ internal fun TodoItemRow(
             contentAlignment = Alignment.CenterStart,
             modifier = GlanceModifier.defaultWeight().padding(horizontal = 8.dp),
         ) {
-            Box(contentAlignment = Alignment.Center) {
-                if (titleBitmap != null) {
-                    Image(
-                        provider = ImageProvider(titleBitmap),
-                        contentDescription = todo.title,
-                        colorFilter = ColorFilter.tint(
-                            if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled
-                            else LocalEbbingWidgetColors.current.textOnBackground,
-                        ),
-                    )
-                } else {
-                    Text(
-                        text = todo.title,
-                        style = (if (todo.isDone) EbbingWidgetTypography.heading16SB else EbbingWidgetTypography.body16M).copy(
-                            color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
-                            textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
-                        ),
-                        maxLines = 1,
-                    )
-                }
-
-                if (todo.isDone) {
-                    Spacer(
-                        modifier = GlanceModifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(LocalEbbingWidgetColors.current.textDisabled),
-                    )
-                }
+            if (titleBitmap != null) {
+                Image(
+                    provider = ImageProvider(titleBitmap),
+                    contentDescription = todo.title,
+                    colorFilter = ColorFilter.tint(
+                        if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled
+                        else LocalEbbingWidgetColors.current.textOnBackground,
+                    ),
+                )
+            } else {
+                Text(
+                    text = todo.title,
+                    style = (if (todo.isDone) EbbingWidgetTypography.heading16SB else EbbingWidgetTypography.body16M).copy(
+                        color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
+                        textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
+                    ),
+                    maxLines = 1,
+                )
             }
         }
 
