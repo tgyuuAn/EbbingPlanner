@@ -55,6 +55,7 @@ import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
+import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.TodayTodoBitmaps
 import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
@@ -193,6 +194,17 @@ private fun TodayTodoWidgetContent(
                         )
                     ),
             )
+
+            Spacer(modifier = GlanceModifier.size(12.dp))
+
+            Image(
+                provider = ImageProvider(R.drawable.ic_widget_refresh),
+                contentDescription = null,
+                modifier = GlanceModifier
+                    .size(20.dp)
+                    .clickable(actionRunCallback<RefreshAction>()),
+                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
+            )
         }
 
         if (todoLists.isEmpty()) {
@@ -220,9 +232,11 @@ private fun TodayTodoWidgetContent(
                     .padding(top = 6.dp),
             ) {
                 items(items = todoLists.fastMapIndexed { i, it -> i to it }) { (index, item) ->
+                    val titleBitmap = if (item.isDone) bitmaps.titlesDone.getOrNull(index)
+                        else bitmaps.titles.getOrNull(index)
                     TodoItemRow(
                         todo = item,
-                        titleBitmap = bitmaps.titles.getOrNull(index),
+                        titleBitmap = titleBitmap,
                         modifier = GlanceModifier.fillMaxWidth()
                             .padding(vertical = 6.dp),
                     )
@@ -293,7 +307,7 @@ private fun HomeWidgetPreview() {
             todoLists = emptyList(),
             bitmaps = TodayTodoBitmaps(
                 header = null, doneCount = null, total = null,
-                empty = null, titles = emptyList(),
+                empty = null, titles = emptyList(), titlesDone = emptyList(),
             ),
         )
     }
@@ -307,7 +321,7 @@ private fun HomeWidgetPreview2() {
             alpha = 1f,
             bitmaps = TodayTodoBitmaps(
                 header = null, doneCount = null, total = null,
-                empty = null, titles = emptyList(),
+                empty = null, titles = emptyList(), titlesDone = emptyList(),
             ),
             todoLists = listOf(
                 TodoSchedule(

@@ -18,6 +18,7 @@ data class TodayTodoBitmaps(
     val total: Bitmap?,
     val empty: Bitmap?,
     val titles: List<Bitmap?>,
+    val titlesDone: List<Bitmap?>,
 )
 
 object WidgetBitmapStore {
@@ -46,6 +47,9 @@ object WidgetBitmapStore {
             empty = PretendardBitmapRenderer.loadBitmap(context, "todo_empty.png"),
             titles = (0 until maxTodos).map { i ->
                 PretendardBitmapRenderer.loadBitmap(context, "todo_title_$i.png")
+            },
+            titlesDone = (0 until maxTodos).map { i ->
+                PretendardBitmapRenderer.loadBitmap(context, "todo_title_done_$i.png")
             },
         )
 }
