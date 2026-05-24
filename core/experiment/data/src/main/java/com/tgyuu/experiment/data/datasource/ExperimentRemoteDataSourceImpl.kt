@@ -1,6 +1,5 @@
 package com.tgyuu.experiment.data.datasource
 
-import android.util.Log
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.tgyuu.experiment.data.BuildConfig
 import com.tgyuu.experiment.data.datasource.ExperimentRemoteDataSource
@@ -21,14 +20,12 @@ class ExperimentRemoteDataSourceImpl @Inject constructor(
                     experimentKeys.forEach { key ->
                         val configKey = getConfigKey(key)
                         val value = remoteConfig.getString(configKey)
-                        Log.d("test", "key : $key value : $value")
 
                         if (value.isNotEmpty()) {
                             result[key] = value
                         }
                     }
                 }
-
                 continuation.resume(result)
             }
         }
