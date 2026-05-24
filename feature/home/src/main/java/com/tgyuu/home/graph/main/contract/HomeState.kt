@@ -20,4 +20,10 @@ data class HomeState(
     val showInAppReviewDialog: Boolean = false,
     val mondayStart: Boolean = false,
     val calendarDefaultView: CalendarDefaultView = CalendarDefaultView.MONTHLY,
-) : UiState
+) : UiState {
+    val showWeekOnly: Boolean
+        get() = calendarDefaultView == CalendarDefaultView.WEEKLY
+
+    val isDaily: Boolean
+        get() = calendarDefaultView == CalendarDefaultView.DAILY
+}
