@@ -32,6 +32,7 @@ internal fun SelectedDateBottomSheet(
         EbbingCalendar(
             calendarState = calendarState,
             schedulesByDateMap = schedulesByDateMap,
+            showSyncButton = false,
             startFromMonday = startFromMonday,
             onSelectDate = { newSelectedDate = it },
             modifier = Modifier
