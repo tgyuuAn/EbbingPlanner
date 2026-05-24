@@ -466,12 +466,6 @@ private fun NotificationDetailSection(
     onResetClick: () -> Unit,
     showDivider: Boolean = true,
 ) {
-    val formattedTime = remember(state.alarmHour, state.alarmMinute) {
-        val hour = state.alarmHour.toString().padStart(2, '0')
-        val minute = state.alarmMinute.toString().padStart(2, '0')
-        "$hour:$minute"
-    }
-
     Column {
         if (showDivider) {
             Spacer(
@@ -484,7 +478,7 @@ private fun NotificationDetailSection(
         }
 
         AlarmTimeRow(
-            formattedTime = formattedTime,
+            formattedTime = state.formattedAlarmTime,
             analyticsHelper = analyticsHelper,
             onTimeClick = onTimeClick,
         )
