@@ -321,35 +321,29 @@ private fun PhoneHomeScreen(
     val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
-    val defaultView = state.calendarDefaultView
-    // remember에 defaultView를 key로 쓰지 않음 - 저장 후 DataStore 응답 시 재생성으로 인한 애니메이션 튐 방지
-    var showWeekOnly by remember { mutableStateOf(defaultView == CalendarDefaultView.WEEKLY) }
     var monthlyCalendarHeight by remember { mutableStateOf(1000.dp) }
     var weeklyCalendarHeight by remember { mutableStateOf(0.dp) }
     val monthlyCalendarHeightPx = with(localDensity) { monthlyCalendarHeight.toPx() }
     val weeklyCalendarHeightPx = with(localDensity) { weeklyCalendarHeight.toPx() }
-    val initialOffset = if (defaultView == CalendarDefaultView.DAILY) 0f
-                        else monthlyCalendarHeightPx
-    val offsetAnimatable = remember { Animatable(initialOffset) }
+    val offsetAnimatable = remember { Animatable(monthlyCalendarHeightPx) }
     val animatedTopPadding = with(localDensity) { offsetAnimatable.value.toDp() }
     val isCollapsed = offsetAnimatable.value <
         (weeklyCalendarHeightPx.takeIf { it > 0f } ?: monthlyCalendarHeightPx) / 2
 
-    // 레이아웃 초기화 및 화면 회전 시 동기화 (접힘 상태가 아닐 때만)
-    LaunchedEffect(monthlyCalendarHeightPx) {
-        if (!showWeekOnly && monthlyCalendarHeightPx > 0 &&
-            offsetAnimatable.value > 0 && !offsetAnimatable.isRunning
-        ) {
-            offsetAnimatable.snapTo(monthlyCalendarHeightPx)
-        }
-    }
-
-    // 최초 주간 뷰 전환 시 높이 측정 후 스냅
-    var pendingWeeklySnap by remember { mutableStateOf(defaultView == CalendarDefaultView.WEEKLY) }
-    LaunchedEffect(weeklyCalendarHeightPx) {
-        if (pendingWeeklySnap && weeklyCalendarHeightPx > 0) {
-            pendingWeeklySnap = false
-            offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+    // calendarDefaultView 변경 시 (DataStore 로딩 완료 포함) offset 동기화
+    LaunchedEffect(state.calendarDefaultView, monthlyCalendarHeightPx, weeklyCalendarHeightPx) {
+        when (state.calendarDefaultView) {
+            CalendarDefaultView.DAILY -> offsetAnimatable.snapTo(0f)
+            CalendarDefaultView.WEEKLY -> {
+                if (weeklyCalendarHeightPx > 0f) {
+                    offsetAnimatable.snapTo(weeklyCalendarHeightPx)
+                }
+            }
+            CalendarDefaultView.MONTHLY -> {
+                if (monthlyCalendarHeightPx > 0f) {
+                    offsetAnimatable.snapTo(monthlyCalendarHeightPx)
+                }
+            }
         }
     }
 
@@ -367,7 +361,7 @@ private fun PhoneHomeScreen(
                 .fillMaxWidth()
                 .onGloballyPositioned { coordinates ->
                     val height = with(localDensity) { coordinates.size.height.toDp() }
-                    if (showWeekOnly) weeklyCalendarHeight = height
+                    if (state.showWeekOnly) weeklyCalendarHeight = height
                     else monthlyCalendarHeight = height
                 }
         ) {
@@ -375,7 +369,7 @@ private fun PhoneHomeScreen(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
                 startFromMonday = state.mondayStart,
-                showWeekOnly = showWeekOnly,
+                showWeekOnly = state.showWeekOnly,
                 onSelectDate = {
                     if (selectedDate != it) {
                         scope.launch {
@@ -428,17 +422,14 @@ private fun PhoneHomeScreen(
                                     )
                                     when (snapTarget) {
                                         0f -> {
-                                            showWeekOnly = false
                                             onCalendarViewChanged(CalendarDefaultView.DAILY)
                                             offsetAnimatable.animateTo(0f, animationSpec = spring())
                                         }
                                         weeklyCalendarHeightPx -> {
-                                            showWeekOnly = true
                                             onCalendarViewChanged(CalendarDefaultView.WEEKLY)
                                             offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
                                         }
                                         else -> {
-                                            showWeekOnly = false
                                             onCalendarViewChanged(CalendarDefaultView.MONTHLY)
                                             offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
                                         }
@@ -461,34 +452,29 @@ private fun PhoneHomeScreen(
                                 screenName = "Home",
                                 buttonName = when {
                                     isCollapsed -> "FoldList"
-                                    showWeekOnly -> "ExpandList"
+                                    state.showWeekOnly -> "ExpandList"
                                     else -> "SwitchToWeekly"
                                 },
                             )
                         )
                         when {
                             isCollapsed -> { // COLLAPSED → MONTHLY
-                                showWeekOnly = false
                                 scope.launch {
                                     offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
                                 }
                                 onCalendarViewChanged(CalendarDefaultView.MONTHLY)
                             }
-                            showWeekOnly -> { // WEEKLY → COLLAPSED
-                                showWeekOnly = false
+                            state.showWeekOnly -> { // WEEKLY → COLLAPSED
                                 onCalendarViewChanged(CalendarDefaultView.DAILY)
                                 scope.launch {
                                     offsetAnimatable.animateTo(0f, animationSpec = spring())
                                 }
                             }
                             else -> { // MONTHLY → WEEKLY
-                                showWeekOnly = true
-                                if (weeklyCalendarHeightPx > 0f) {
-                                    scope.launch {
+                                scope.launch {
+                                    if (weeklyCalendarHeightPx > 0f) {
                                         offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
                                     }
-                                } else {
-                                    pendingWeeklySnap = true
                                 }
                                 onCalendarViewChanged(CalendarDefaultView.WEEKLY)
                             }
