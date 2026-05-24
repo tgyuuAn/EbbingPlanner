@@ -9,7 +9,8 @@ sealed class Experiment<V>(
     val defaultVariant: V,
 ) where V : Enum<V>, V : ExperimentVariant {
 
-    fun parseVariant(value: String): V = variants.find { it.key == value } ?: defaultVariant
+    fun parseVariant(value: String): V =
+        variants.find { it.key.equals(value, ignoreCase = true) } ?: defaultVariant
 
     data object SaveButtonPosition : Experiment<SaveButtonPosition.Variant>(
         key = "experiment_save_button_position",
