@@ -15,6 +15,8 @@ import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+private const val CALENDAR_PAGE_COUNT = 12_001 // ±500년(월), ±115년(주)
+
 @Composable
 fun EbbingCalendar(
     calendarState: CalendarState,
@@ -27,17 +29,17 @@ fun EbbingCalendar(
     onGotoTodayClick: () -> Unit = {},
     onSyncClick: () -> Unit = {},
 ) {
-    val monthInitialPage = Int.MAX_VALUE / 2
+    val monthInitialPage = CALENDAR_PAGE_COUNT / 2
     val monthPagerState = rememberPagerState(
         initialPage = monthInitialPage,
-        pageCount = { Int.MAX_VALUE },
+        pageCount = { CALENDAR_PAGE_COUNT },
     )
     val monthOffset = monthPagerState.currentPage - monthInitialPage
 
-    val weekInitialPage = Int.MAX_VALUE / 2
+    val weekInitialPage = CALENDAR_PAGE_COUNT / 2
     val weekPagerState = rememberPagerState(
         initialPage = weekInitialPage,
-        pageCount = { Int.MAX_VALUE },
+        pageCount = { CALENDAR_PAGE_COUNT },
     )
     val weekOffset = weekPagerState.currentPage - weekInitialPage
 
