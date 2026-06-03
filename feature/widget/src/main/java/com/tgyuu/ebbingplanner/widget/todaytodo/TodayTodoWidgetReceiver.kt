@@ -88,12 +88,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
     }
 
     private fun checkTodo(todoId: Int, context: Context) = scope.launch {
-        val selectedTodo = todoRepository.loadSchedule(todoId) ?: run {
-            updateData(context)
-            return@launch
-        }
-        val updatedTodo = selectedTodo.copy(isDone = !selectedTodo.isDone)
-        todoRepository.updateTodo(updatedTodo)
+        todoRepository.toggleDone(todoId)
         updateData(context)
     }
 

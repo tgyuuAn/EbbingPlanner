@@ -50,6 +50,7 @@ import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.sync.network.NetworkMonitor
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.koin.android.ext.android.inject
@@ -179,6 +180,9 @@ class MainActivity : ComponentActivity() {
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(navController, bottomSheetState, snackBarHostState) {
+            // NavHost의 graph가 설정될 때까지 대기 (위젯에서 앱 실행 시 race condition 방지)
+            navController.currentBackStackEntryFlow.first()
+
             launch {
                 navigationBus.navigationFlow.collect { event ->
                     eventBus.sendEvent(EbbingEvent.HideSnackBar)

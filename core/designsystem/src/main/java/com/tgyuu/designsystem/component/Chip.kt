@@ -29,8 +29,8 @@ fun EbbingChip(
         label = {
             Text(
                 text = label,
-                style = if (selected) EbbingTheme.typography.body16M
-                else EbbingTheme.typography.body16M,
+                style = if (selected) EbbingTheme.typography.heading14SB
+                else EbbingTheme.typography.body14M,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -40,11 +40,11 @@ fun EbbingChip(
         selected = selected,
         border = null,
         colors = filterChipColors(
-            selectedLabelColor = EbbingTheme.colors.primaryNormal,
-            selectedContainerColor = EbbingTheme.colors.primaryContainer,
-            containerColor = EbbingTheme.colors.fillNormal,
-            labelColor = if (selected) EbbingTheme.colors.primaryNormal
-            else EbbingTheme.colors.textOnBackground,
+            selectedLabelColor = EbbingTheme.colors.textOnPrimary,
+            selectedContainerColor = EbbingTheme.colors.fillPrimary,
+            containerColor = EbbingTheme.colors.fillTextfield,
+            labelColor = if (selected) EbbingTheme.colors.textOnPrimary
+            else EbbingTheme.colors.textSub,
         ),
         onClick = onChipClicked,
         modifier = modifier.height(52.dp),

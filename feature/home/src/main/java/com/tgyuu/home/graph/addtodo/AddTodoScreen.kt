@@ -402,7 +402,12 @@ private fun TodoMainFormContent(
 ) {
     Text(
         text = buildAnnotatedString {
-            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    color = EbbingTheme.colors.textPrimary,
+                )
+            ) {
                 append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
             }
             append(" 부터\n시작하는 일정을 만들어요")

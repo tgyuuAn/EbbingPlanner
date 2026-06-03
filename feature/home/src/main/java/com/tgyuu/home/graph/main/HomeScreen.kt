@@ -1,7 +1,8 @@
 package com.tgyuu.home.graph.main
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import android.app.Activity
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +49,7 @@ import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.home.graph.main.contract.HomeIntent
@@ -128,6 +132,7 @@ internal fun HomeRoute(
         onAddTodoClick = { viewModel.onIntent(OnAddTodoClick(it)) },
         onCheckedChange = { viewModel.onIntent(OnCheckChanged(it)) },
         onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
+        onCalendarViewChanged = { viewModel.onIntent(HomeIntent.OnCalendarViewChanged(it)) },
         onSortTypeClick = {
             viewModel.onIntent(OnSortTypeClick({
                 SortTypeBottomSheet(
@@ -267,6 +272,7 @@ private fun HomeScreen(
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onSyncClick: () -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -281,6 +287,7 @@ private fun HomeScreen(
             onEditScheduleClick = onEditScheduleClick,
             onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
+            onCalendarViewChanged = onCalendarViewChanged,
             modifier = modifier
         )
     } else {
@@ -308,6 +315,7 @@ private fun PhoneHomeScreen(
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
@@ -316,9 +324,31 @@ private fun PhoneHomeScreen(
     val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
-    var isExpanded by remember { mutableStateOf(false) }
-    var calendarHeight by remember { mutableStateOf(1000.dp) }
-    val animatedTopPadding by animateDpAsState(targetValue = if (isExpanded) 0.dp else calendarHeight)
+    var monthlyCalendarHeight by remember { mutableStateOf(1000.dp) }
+    var weeklyCalendarHeight by remember { mutableStateOf(0.dp) }
+    val monthlyCalendarHeightPx = with(localDensity) { monthlyCalendarHeight.toPx() }
+    val weeklyCalendarHeightPx = with(localDensity) { weeklyCalendarHeight.toPx() }
+    val offsetAnimatable = remember { Animatable(monthlyCalendarHeightPx) }
+    val animatedTopPadding = with(localDensity) { offsetAnimatable.value.toDp() }
+    val isCollapsed = offsetAnimatable.value <
+        (weeklyCalendarHeightPx.takeIf { it > 0f } ?: monthlyCalendarHeightPx) / 2
+
+    // calendarDefaultView 변경 시 (DataStore 로딩 완료 포함) offset 동기화
+    LaunchedEffect(state.calendarDefaultView, monthlyCalendarHeightPx, weeklyCalendarHeightPx) {
+        when (state.calendarDefaultView) {
+            CalendarDefaultView.DAILY -> offsetAnimatable.snapTo(0f)
+            CalendarDefaultView.WEEKLY -> {
+                if (weeklyCalendarHeightPx > 0f) {
+                    offsetAnimatable.snapTo(weeklyCalendarHeightPx)
+                }
+            }
+            CalendarDefaultView.MONTHLY -> {
+                if (monthlyCalendarHeightPx > 0f) {
+                    offsetAnimatable.snapTo(monthlyCalendarHeightPx)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(workedDate) {
         calendarState.onDateSelect(workedDate)
@@ -333,16 +363,16 @@ private fun PhoneHomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .onGloballyPositioned { coordinates ->
-                    val height = with(localDensity) {
-                        coordinates.size.height.toDp()
-                    }
-                    calendarHeight = height
+                    val height = with(localDensity) { coordinates.size.height.toDp() }
+                    if (state.showWeekOnly) weeklyCalendarHeight = height
+                    else monthlyCalendarHeight = height
                 }
         ) {
             EbbingCalendar(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
                 startFromMonday = state.mondayStart,
+                showWeekOnly = state.showWeekOnly,
                 onSelectDate = {
                     if (selectedDate != it) {
                         scope.launch {
@@ -374,21 +404,84 @@ private fun PhoneHomeScreen(
         ) {
             Image(
                 painter = painterResource(
-                    if (!isExpanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                    if (isCollapsed) R.drawable.ic_arrow_down else R.drawable.ic_arrow_up
                 ),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally)
+                    .pointerInput(monthlyCalendarHeightPx, weeklyCalendarHeightPx) {
+                        detectDragGestures(
+                            onDragEnd = {
+                                scope.launch {
+                                    val snapTarget = snapToClosestOf(
+                                        value = offsetAnimatable.value,
+                                        candidates = buildList {
+                                            add(0f)
+                                            if (weeklyCalendarHeightPx > 0f) add(weeklyCalendarHeightPx)
+                                            add(monthlyCalendarHeightPx)
+                                        },
+                                    )
+                                    when (snapTarget) {
+                                        0f -> {
+                                            onCalendarViewChanged(CalendarDefaultView.DAILY)
+                                            offsetAnimatable.animateTo(0f, animationSpec = spring())
+                                        }
+                                        weeklyCalendarHeightPx -> {
+                                            onCalendarViewChanged(CalendarDefaultView.WEEKLY)
+                                            offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+                                        }
+                                        else -> {
+                                            onCalendarViewChanged(CalendarDefaultView.MONTHLY)
+                                            offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
+                                        }
+                                    }
+                                }
+                            },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                scope.launch {
+                                    val newValue = (offsetAnimatable.value + dragAmount.y)
+                                        .coerceIn(0f, monthlyCalendarHeightPx)
+                                    offsetAnimatable.snapTo(newValue)
+                                }
+                            }
+                        )
+                    }
                     .throttledClickable(500L) {
                         analyticsHelper.logEvent(
                             AnalyticsEvent.Click(
                                 screenName = "Home",
-                                buttonName = if (isExpanded) "FoldList" else "ExpandList",
+                                buttonName = when {
+                                    isCollapsed -> "FoldList"
+                                    state.showWeekOnly -> "ExpandList"
+                                    else -> "SwitchToWeekly"
+                                },
                             )
                         )
-                        isExpanded = !isExpanded
+                        when {
+                            isCollapsed -> { // COLLAPSED -> MONTHLY
+                                scope.launch {
+                                    offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
+                                }
+                                onCalendarViewChanged(CalendarDefaultView.MONTHLY)
+                            }
+                            state.showWeekOnly -> { // WEEKLY -> COLLAPSED
+                                onCalendarViewChanged(CalendarDefaultView.DAILY)
+                                scope.launch {
+                                    offsetAnimatable.animateTo(0f, animationSpec = spring())
+                                }
+                            }
+                            else -> { // MONTHLY -> WEEKLY
+                                scope.launch {
+                                    if (weeklyCalendarHeightPx > 0f) {
+                                        offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+                                    }
+                                }
+                                onCalendarViewChanged(CalendarDefaultView.WEEKLY)
+                            }
+                        }
                     },
             )
 
@@ -617,6 +710,10 @@ private fun Preview1() {
             onCurrentDateChanged = {},
             onSortTypeClick = {},
             onSyncClick = {},
+            onCalendarViewChanged = {},
         )
     }
 }
+
+private fun snapToClosestOf(value: Float, candidates: List<Float>): Float =
+    candidates.minByOrNull { kotlin.math.abs(it - value) } ?: value

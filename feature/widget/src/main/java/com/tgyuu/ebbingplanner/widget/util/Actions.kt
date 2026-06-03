@@ -8,7 +8,6 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.tgyuu.ebbingplanner.MainActivity
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
@@ -22,6 +21,7 @@ const val KEY_SELECTED_DATE = "selectedDate"
 const val ADD_TODO = "addTodo"
 const val ADD_TODO_ACTION = "addTodoAction"
 const val KEY_WIDGET_SOURCE = "widgetSource"
+const val ACTION_OPEN_ADD_TODO = "com.tgyuu.ebbingplanner.OPEN_ADD_TODO"
 
 internal val destinationKey = ActionParameters.Key<String>(KEY_DESTINATION)
 internal val todoIdKey = ActionParameters.Key<Int>(TODO_ID)
@@ -119,10 +119,11 @@ class AddTodoFromWidgetAction : ActionCallback {
         }
         context.sendBroadcast(broadcastIntent)
 
-        val activityIntent = Intent(context, MainActivity::class.java).apply {
+        val activityIntent = Intent(ACTION_OPEN_ADD_TODO).apply {
+            setPackage(context.packageName)
             putExtra(KEY_DESTINATION, ADD_TODO)
             if (selectedDate != null) putExtra(KEY_SELECTED_DATE, selectedDate)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
         context.startActivity(activityIntent)
     }

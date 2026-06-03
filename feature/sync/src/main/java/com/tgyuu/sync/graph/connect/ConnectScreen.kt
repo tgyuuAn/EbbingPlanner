@@ -35,8 +35,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
@@ -298,7 +298,7 @@ private fun LinkBody(
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.fillStrong,
+            color = EbbingTheme.colors.fillTextfield,
             thickness = 1.dp,
             modifier = Modifier.padding(vertical = 16.dp)
         )
@@ -369,7 +369,7 @@ private fun LinkBody(
         )
 
         HorizontalDivider(
-            color = EbbingTheme.colors.fillStrong,
+            color = EbbingTheme.colors.fillTextfield,
             thickness = 1.dp,
             modifier = Modifier.padding(vertical = 16.dp)
         )

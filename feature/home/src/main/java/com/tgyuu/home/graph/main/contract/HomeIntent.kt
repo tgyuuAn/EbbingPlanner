@@ -3,6 +3,7 @@ package com.tgyuu.home.graph.main.contract
 import com.tgyuu.common.base.UiIntent
 import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.domain.model.SortType
 import kotlinx.datetime.LocalDate
 
@@ -32,4 +33,5 @@ sealed interface HomeIntent : UiIntent {
     data class OnDeleteMemoClick(val schedule: TodoScheduleUiModel) : HomeIntent
     data object OnSyncClick : HomeIntent
     data object OnWidgetNudgeDismiss : HomeIntent
+    data class OnCalendarViewChanged(val view: CalendarDefaultView) : HomeIntent
 }

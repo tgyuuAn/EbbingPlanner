@@ -58,9 +58,20 @@ interface TodoRepository {
     suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun loadTodoInfoById(infoId: Int): TodoInfo
 
+    suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
+    )
+
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet())
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun updateTodos(schedules: List<TodoSchedule>)
+    suspend fun toggleDone(id: Int)
     suspend fun deleteTodo(todoSchedule: TodoSchedule)
     suspend fun deleteTodoByTodoInfo(id: Int)
 

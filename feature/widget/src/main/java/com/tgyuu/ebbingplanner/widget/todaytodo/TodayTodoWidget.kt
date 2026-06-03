@@ -13,7 +13,6 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
@@ -42,8 +41,6 @@ import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.MainActivity
-import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
@@ -51,12 +48,15 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
+import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.widget.util.destinationKey
+import com.tgyuu.ebbingplanner.widget.util.LaunchAppAction
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
+import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
+import com.tgyuu.widget.R
 import kotlinx.datetime.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
@@ -103,7 +103,7 @@ private fun TodayTodoWidgetContent(
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable(onClick = actionStartActivity<MainActivity>())
+            .clickable(onClick = actionRunCallback<LaunchAppAction>())
             .background(
                 imageProvider = ImageProvider(backgroundImage),
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
@@ -165,14 +165,14 @@ private fun TodayTodoWidgetContent(
             }
 
             Image(
-                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
+                provider = ImageProvider(R.drawable.ic_widget_plus),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
                 modifier = GlanceModifier
                     .size(20.dp)
                     .clickable(
-                        actionStartActivity<MainActivity>(
-                            actionParametersOf(destinationKey to ADD_TODO)
+                        actionRunCallback<AddTodoFromWidgetAction>(
+                            actionParametersOf(widgetSourceKey to "TodoWidget")
                         )
                     ),
             )
@@ -298,4 +298,3 @@ private fun HomeWidgetPreview2() {
         )
     }
 }
-

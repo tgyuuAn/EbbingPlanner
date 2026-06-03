@@ -1,6 +1,8 @@
 package com.tgyuu.sync.graph.connect
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -28,6 +30,7 @@ class ConnectViewModel(
     private val navigationBus: NavigationBus,
     private val errorBus: ErrorBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val timer: Timer,
 ) : BaseViewModel<ConnectState, ConnectIntent>(ConnectState()) {
     private var timerJob: Job? = null
@@ -102,11 +105,27 @@ class ConnectViewModel(
     private suspend fun generateCode() {
 
         if (currentState.myCode.isEmpty()) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "Connect",
+                    actionName = "GenerateCode",
+                    actionResult = "EmptyCode",
+                )
+            )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드는 비어있을 수 없습니다."))
             return
         }
 
-        if (networkMonitor.networkState.value != NetworkState.Connected) {
+        val networkState = networkMonitor.networkState.value
+        if (networkState != NetworkState.Connected) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "Connect",
+                    actionName = "GenerateCode",
+                    actionResult = "NetworkNotConnected",
+                    properties = mapOf("networkState" to networkState.toString()),
+                )
+            )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
             return
         }
@@ -114,6 +133,13 @@ class ConnectViewModel(
         suspendRunCatching {
             syncRepository.generateConnectCode(connectCode = currentState.myCode)
         }.onSuccess {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "Connect",
+                    actionName = "GenerateCode",
+                    actionResult = "Success",
+                )
+            )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드 생성에 성공하였습니다."))
 
             setState {
@@ -133,11 +159,27 @@ class ConnectViewModel(
     private suspend fun connectAnother() {
 
         if (currentState.anotherCode.isEmpty()) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "Connect",
+                    actionName = "ConnectAnother",
+                    actionResult = "EmptyCode",
+                )
+            )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 코드는 비어있을 수 없습니다."))
             return
         }
 
-        if (networkMonitor.networkState.value != NetworkState.Connected) {
+        val networkState = networkMonitor.networkState.value
+        if (networkState != NetworkState.Connected) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "Connect",
+                    actionName = "ConnectAnother",
+                    actionResult = "NetworkNotConnected",
+                    properties = mapOf("networkState" to networkState.toString()),
+                )
+            )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
             return
         }
@@ -146,15 +188,36 @@ class ConnectViewModel(
             syncRepository.connectAnother(connectCode = currentState.anotherCode)
         }.onSuccess { connectInfo ->
             if (connectInfo == null) {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Action(
+                        screenName = "Connect",
+                        actionName = "ConnectAnother",
+                        actionResult = "InvalidOrExpired",
+                    )
+                )
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 유효시간이 만료되었습니다."))
                 return@onSuccess
             }
 
             if (connectInfo.uuid == currentState.uuid) {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Action(
+                        screenName = "Connect",
+                        actionName = "ConnectAnother",
+                        actionResult = "SelfConnect",
+                    )
+                )
                 eventBus.sendEvent(EbbingEvent.ShowSnackBar("나와는 연동할 수 없습니다."))
                 return@onSuccess
             }
 
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "Connect",
+                    actionName = "ConnectAnother",
+                    actionResult = "Success",
+                )
+            )
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
             navigationBus.navigate(NavigationEvent.Up)
         }.onFailure { error ->

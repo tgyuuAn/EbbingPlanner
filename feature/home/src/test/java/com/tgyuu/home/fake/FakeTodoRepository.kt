@@ -146,6 +146,38 @@ class FakeTodoRepository : TodoRepository {
         todoInfos[infoId] = existing.copy(restDays = restDays)
     }
 
+    override suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<kotlinx.datetime.LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<DayOfWeek>,
+    ) {
+        schedules.removeIf { it.infoId == infoId }
+        dates.zip(isDoneSchedules).forEach { (date, isDone) ->
+            schedules.add(
+                TodoSchedule(
+                    id = 0,
+                    infoId = infoId,
+                    title = title,
+                    tagId = tagId,
+                    name = "",
+                    color = 0,
+                    date = date,
+                    memo = "",
+                    priority = priority ?: 0,
+                    isDone = isDone,
+                    createdAt = kotlinx.datetime.Clock.System.now()
+                        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
+                    infoCreatedAt = kotlinx.datetime.Clock.System.now()
+                        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
+                )
+            )
+        }
+    }
+
     override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<DayOfWeek>) {
         val existing = todoInfos[todoSchedule.infoId]
         if (existing != null) {
@@ -166,6 +198,14 @@ class FakeTodoRepository : TodoRepository {
 
     override suspend fun updateTodos(todoSchedules: List<TodoSchedule>) {
         todoSchedules.forEach { updateTodo(it) }
+    }
+
+    override suspend fun toggleDone(id: Int) {
+        val index = schedules.indexOfFirst { it.id == id }
+        if (index != -1) {
+            val schedule = schedules[index]
+            schedules[index] = schedule.copy(isDone = !schedule.isDone)
+        }
     }
 
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) {

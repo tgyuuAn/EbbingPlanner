@@ -18,10 +18,12 @@ fun yearMonthDiff(from: LocalDate, to: LocalDate): Int {
     return (to.year - from.year) * 12 + (to.monthNumber - from.monthNumber)
 }
 
-private val EbbingDayOfWeekSunday = listOf(
+val EbbingDayOfWeek = listOf(
     DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
     DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY,
 )
+
+private val EbbingDayOfWeekSunday = EbbingDayOfWeek
 
 private val EbbingDayOfWeekMonday = listOf(
     DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY,

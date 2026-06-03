@@ -50,6 +50,17 @@ interface LocalTodoDataSource {
     suspend fun updateSchedule(todoSchedule: TodoSchedule)
     suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync)
     suspend fun updateSchedules(schedules: List<TodoSchedule>)
+    suspend fun toggleDone(id: Int)
+
+    suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
+    )
 
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)
     suspend fun softDeleteTodoByTodoInfo(id: Int)

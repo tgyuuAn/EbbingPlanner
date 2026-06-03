@@ -175,7 +175,7 @@ private fun TodoListCard(
                                 checked = todo.isDone,
                                 colorValue = todo.color,
                                 onCheckedChange = {},
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(20.dp),
                             )
 
                             Text(
@@ -202,7 +202,7 @@ private fun TodoListCard(
                     checked = todo.isDone,
                     colorValue = todo.color,
                     onCheckedChange = { },
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }
@@ -215,7 +215,7 @@ private fun TodoListCard(
                 Image(
                     painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_memo),
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(20.dp),
                 )
 
                 Text(

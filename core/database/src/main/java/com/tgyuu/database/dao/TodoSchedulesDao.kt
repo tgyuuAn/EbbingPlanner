@@ -147,6 +147,12 @@ interface TodoSchedulesDao {
     @Query("SELECT * FROM todo_info WHERE id = :id")
     suspend fun loadTodoInfoEntity(id: Int): TodoInfoEntity?
 
+    @Query(
+        "UPDATE schedule SET isDone = NOT isDone, updatedAt = :updatedAt " +
+            "WHERE id = :id AND isDeleted = 0"
+    )
+    suspend fun toggleDone(id: Int, updatedAt: LocalDateTime = LocalDateTime.now())
+
     @Query("UPDATE schedule SET isDeleted = 1, updatedAt = :updatedAt WHERE id = :id")
     suspend fun softDeleteSchedule(id: Int, updatedAt: LocalDateTime = LocalDateTime.now())
 

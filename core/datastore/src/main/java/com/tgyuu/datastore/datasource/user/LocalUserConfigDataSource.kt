@@ -1,5 +1,6 @@
 package com.tgyuu.datastore.datasource.user
 
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import kotlinx.coroutines.flow.Flow
@@ -30,4 +31,6 @@ interface LocalUserConfigDataSource {
     val todoRegisteredCount: Flow<Int>
     val mondayStart: Flow<Boolean>
     suspend fun setMondayStart(enabled: Boolean)
+    val calendarDefaultView: Flow<CalendarDefaultView>
+    suspend fun setCalendarDefaultView(view: CalendarDefaultView)
 }

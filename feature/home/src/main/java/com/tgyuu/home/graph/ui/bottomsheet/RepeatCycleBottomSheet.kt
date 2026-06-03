@@ -65,7 +65,7 @@ internal fun RepeatCycleBottomSheet(
             title = if (showEndDatePicker) "종료일 선택" else "반복 주기",
             rightComponent = {
                 if (showEndDatePicker) {
-                    if (dayCountForHeader != null && dayCountForHeader > 0 && dayCountForHeader <= RepeatCycle.MAX_DAILY_REPEAT_DAYS) {
+                    if (dayCountForHeader != null && dayCountForHeader > 0 && dayCountForHeader < RepeatCycle.MAX_DAILY_REPEAT_DAYS) {
                         Text(
                             text = "총 ${dayCountForHeader + 1}일간 매일 반복",
                             style = EbbingTheme.typography.body14M,
@@ -145,7 +145,7 @@ internal fun RepeatCycleBottomSheet(
                 val dayCount = dailyEndDate?.let {
                     selectedDate.until(it, DateTimeUnit.DAY).toInt()
                 }
-                val exceedsMax = dayCount != null && dayCount > RepeatCycle.MAX_DAILY_REPEAT_DAYS
+                val exceedsMax = dayCount != null && dayCount >= RepeatCycle.MAX_DAILY_REPEAT_DAYS
 
                 if (exceedsMax) {
                     Text(
@@ -164,7 +164,7 @@ internal fun RepeatCycleBottomSheet(
                 val dayCount = dailyEndDate?.let {
                     selectedDate.until(it, DateTimeUnit.DAY).toInt()
                 }
-                dayCount != null && dayCount > 0 && dayCount <= RepeatCycle.MAX_DAILY_REPEAT_DAYS
+                dayCount != null && dayCount > 0 && dayCount < RepeatCycle.MAX_DAILY_REPEAT_DAYS
             } else true,
             onClick = {
                 if (showEndDatePicker) {

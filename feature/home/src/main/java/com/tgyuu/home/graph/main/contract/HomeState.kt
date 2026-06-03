@@ -3,6 +3,7 @@ package com.tgyuu.home.graph.main.contract
 import androidx.compose.runtime.Immutable
 import com.tgyuu.common.base.UiState
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.domain.model.SortType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -18,4 +19,11 @@ data class HomeState(
     val showWidgetNudgeDialog: Boolean = false,
     val showInAppReviewDialog: Boolean = false,
     val mondayStart: Boolean = false,
-) : UiState
+    val calendarDefaultView: CalendarDefaultView = CalendarDefaultView.MONTHLY,
+) : UiState {
+    val showWeekOnly: Boolean
+        get() = calendarDefaultView == CalendarDefaultView.WEEKLY
+
+    val isDaily: Boolean
+        get() = calendarDefaultView == CalendarDefaultView.DAILY
+}

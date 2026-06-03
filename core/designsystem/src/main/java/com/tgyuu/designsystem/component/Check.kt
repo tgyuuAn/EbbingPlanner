@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,9 +33,9 @@ fun EbbingCheck(
     )
 
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = CircleShape,
         border = BorderStroke(
-            width = 2.dp,
+            width = 1.dp,
             color = Color(colorValue),
         ),
         color = buttonColor,
@@ -45,7 +45,7 @@ fun EbbingCheck(
             painter = painterResource(R.drawable.ic_check),
             colorFilter = ColorFilter.tint(EbbingTheme.colors.background),
             contentDescription = null,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
         )
     }
 }
@@ -59,14 +59,14 @@ private fun PreviewCheck() {
                 checked = true,
                 colorValue = 0xFF0F4C75.toInt(),
                 onCheckedChange = {},
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(20.dp),
             )
 
             EbbingCheck(
                 checked = false,
                 colorValue = 0xFF0F4C75.toInt(),
                 onCheckedChange = {},
-                modifier = Modifier.size(40.dp),
+                modifier = Modifier.size(20.dp),
             )
         }
     }

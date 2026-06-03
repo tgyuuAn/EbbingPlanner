@@ -29,6 +29,7 @@ import kotlinx.datetime.number
 @Composable
 internal fun CalendarController(
     currentDate: LocalDate,
+    selectedDate: LocalDate?,
     onGotoTodayClick: () -> Unit,
     modifier: Modifier = Modifier,
     showSyncButton: Boolean = true,
@@ -42,8 +43,13 @@ internal fun CalendarController(
             .padding(horizontal = 10.dp)
             .semantics { contentDescription = "달력 컨트롤러" },
     ) {
+        val today = LocalDate.now()
+        val isOnToday = currentDate.year == today.year &&
+            currentDate.monthNumber == today.monthNumber &&
+            (selectedDate == null || selectedDate == today)
+
         IconButton(onClick = onGotoTodayClick) {
-            if (currentDate != LocalDate.now()) {
+            if (!isOnToday) {
                 Image(
                     painter = painterResource(R.drawable.ic_return),
                     contentDescription = "이전 달",

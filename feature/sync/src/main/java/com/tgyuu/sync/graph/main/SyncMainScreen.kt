@@ -319,7 +319,7 @@ internal fun UuidBody(
     )
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillNormal,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -384,7 +384,7 @@ internal fun LinkedUuidBody(
     )
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillNormal,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -472,7 +472,7 @@ private fun SyncUpBody(
     }
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillNormal,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )

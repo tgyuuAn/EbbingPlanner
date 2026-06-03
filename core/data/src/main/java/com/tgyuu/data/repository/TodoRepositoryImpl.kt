@@ -131,6 +131,24 @@ class TodoRepositoryImpl constructor(
     override suspend fun loadTodoInfoById(infoId: Int): TodoInfo =
         localTodoDataSource.getTodoInfoById(infoId)
 
+    override suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<kotlinx.datetime.LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
+    ) = localTodoDataSource.replaceSchedules(
+        infoId = infoId,
+        title = title,
+        tagId = tagId,
+        dates = dates,
+        isDoneSchedules = isDoneSchedules,
+        priority = priority,
+        restDays = restDays,
+    )
+
     override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<kotlinx.datetime.DayOfWeek>) =
         localTodoDataSource.updateTodoInfo(todoSchedule, restDays)
 
@@ -139,6 +157,8 @@ class TodoRepositoryImpl constructor(
 
     override suspend fun updateTodos(schedules: List<TodoSchedule>) =
         localTodoDataSource.updateSchedules(schedules)
+
+    override suspend fun toggleDone(id: Int) = localTodoDataSource.toggleDone(id)
 
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) =
         localTodoDataSource.softDeleteTodo(todoSchedule)

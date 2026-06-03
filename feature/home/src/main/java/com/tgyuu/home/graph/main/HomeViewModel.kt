@@ -33,6 +33,7 @@ import com.tgyuu.navigation.SyncGraph
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
@@ -58,6 +59,8 @@ class HomeViewModel(
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
     private var currentMonthSchedules: List<TodoSchedule> = emptyList()
     private var cachedSchedules: List<TodoSchedule> = emptyList()
+    private var loadSchedulesJob: Job? = null
+    private var loadRequestSeq: Long = 0L
 
     init {
         viewModelScope.launch {
@@ -68,6 +71,11 @@ class HomeViewModel(
         viewModelScope.launch {
             configRepository.getMondayStart()
                 .collect { setState { copy(mondayStart = it) } }
+        }
+
+        viewModelScope.launch {
+            configRepository.getCalendarDefaultView()
+                .collect { setState { copy(calendarDefaultView = it) } }
         }
 
         viewModelScope.launch {
@@ -121,26 +129,35 @@ class HomeViewModel(
             HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
             is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
             HomeIntent.OnWidgetNudgeDismiss -> setState { copy(showWidgetNudgeDialog = false) }
+            is HomeIntent.OnCalendarViewChanged -> viewModelScope.launch {
+                configRepository.setCalendarDefaultView(intent.view)
+            }
         }
     }
 
-    private fun loadSchedules(currentDate: LocalDate) = viewModelScope.launch {
-        val start = currentDate.minus(1, DateTimeUnit.MONTH)
-            .run { LocalDate(year, month, 1) }
-        val end = currentDate.plus(1, DateTimeUnit.MONTH)
-            .run { LocalDate(year, month, totalDaysInMonth()) }
+    private fun loadSchedules(currentDate: LocalDate) {
+        val requestSeq = ++loadRequestSeq
+        loadSchedulesJob?.cancel()
+        loadSchedulesJob = viewModelScope.launch {
+            val start = currentDate.minus(1, DateTimeUnit.MONTH)
+                .run { LocalDate(year, month, 1) }
+            val end = currentDate.plus(1, DateTimeUnit.MONTH)
+                .run { LocalDate(year, month, totalDaysInMonth()) }
 
-        val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
-        cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
+            val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
+            if (requestSeq != loadRequestSeq) return@launch
 
-        val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
-        val byInfo = buildByInfoMap(cachedSchedules)
-        setState {
-            copy(
-                isLoading = false,
-                schedulesByDateMap = byDate,
-                schedulesByTodoInfo = byInfo
-            )
+            cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
+
+            val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
+            val byInfo = buildByInfoMap(cachedSchedules)
+            setState {
+                copy(
+                    isLoading = false,
+                    schedulesByDateMap = byDate,
+                    schedulesByTodoInfo = byInfo
+                )
+            }
         }
     }
 

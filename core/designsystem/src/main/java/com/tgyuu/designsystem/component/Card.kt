@@ -63,7 +63,7 @@ fun TodoListCard(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(EbbingTheme.colors.fillNormal)
+                        .background(EbbingTheme.colors.fillTextfield)
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
                     Column(
@@ -97,7 +97,7 @@ fun TodoListCard(
                                         checked = it.isDone,
                                         colorValue = it.color,
                                         onCheckedChange = {},
-                                        modifier = Modifier.size(16.dp),
+                                        modifier = Modifier.size(20.dp),
                                     )
                                 }
                             }
@@ -128,7 +128,7 @@ fun TodoListCard(
                     checked = todo.isDone,
                     colorValue = todo.color,
                     onCheckedChange = { onCheckedChange(todo) },
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(20.dp),
                 )
             }
         }

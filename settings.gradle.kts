@@ -49,6 +49,7 @@ include(":feature:onboarding")
 include(":feature:memo")
 include(":feature:repeatcycle")
 include(":feature:sync")
+include(":feature:widget")
 
 include(":baselineprofile")
 include(":core:analytics")

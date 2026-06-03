@@ -42,8 +42,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
@@ -293,7 +293,7 @@ internal fun ThemeBody(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier,
             ) {
-                val color = Color(if (isSystemInDarkTheme()) theme.lightBg else theme.darkBg)
+                val color = theme.primaryNormalColor(isSystemInDarkTheme())
 
                 Spacer(
                     modifier = Modifier
@@ -436,7 +436,7 @@ private fun TodoListCard(
                                     checked = true,
                                     colorValue = DefaultTodoTag.color,
                                     onCheckedChange = {},
-                                    modifier = Modifier.size(16.dp),
+                                    modifier = Modifier.size(20.dp),
                                 )
 
                                 Text(
@@ -463,7 +463,7 @@ private fun TodoListCard(
                         checked = true,
                         colorValue = DefaultTodoTag.color,
                         onCheckedChange = { },
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(20.dp),
                     )
                 }
             }
@@ -510,4 +510,15 @@ private fun PreviewTheme() {
             onThemeChange = {},
         )
     }
+}
+
+private fun Theme.primaryNormalColor(darkTheme: Boolean): Color {
+    val scheme = when (this) {
+        Theme.NORMAL -> if (darkTheme) normalDarkColorScheme else normalLightColorScheme
+        Theme.FOREST -> if (darkTheme) forestDarkColorScheme else forestLightColorScheme
+        Theme.SUNSET -> if (darkTheme) sunsetDarkColorScheme else sunsetLightColorScheme
+        Theme.MARINE -> if (darkTheme) marineDarkColorScheme else marineLightColorScheme
+        Theme.LILAC -> if (darkTheme) lilacDarkColorScheme else lilacLightColorScheme
+    }
+    return scheme.primaryNormal
 }

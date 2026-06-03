@@ -13,7 +13,6 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.actionParametersOf
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
@@ -50,8 +49,6 @@ import com.tgyuu.designsystem.component.calendar.getCalendarDates
 import com.tgyuu.designsystem.component.calendar.toKorean
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.ebbingplanner.MainActivity
-import com.tgyuu.ebbingplanner.R
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidgetReceiver.Companion.SCHEDULES_BY_DATE_MAP
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
@@ -59,11 +56,15 @@ import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodoItemRow
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
+import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.KEY_WIDGET_SOURCE
+import com.tgyuu.ebbingplanner.widget.util.LaunchAppAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction
 import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_DATE
-import com.tgyuu.ebbingplanner.widget.util.destinationKey
 import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
+import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
+import com.tgyuu.widget.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
@@ -123,7 +124,7 @@ private fun CalendarWidgetContent(
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable(onClick = actionStartActivity<MainActivity>())
+            .clickable(onClick = actionRunCallback<LaunchAppAction>())
             .background(
                 imageProvider = ImageProvider(image),
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground)
@@ -172,7 +173,7 @@ private fun CalendarWidgetHeader() {
             )
 
             Image(
-                provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_return),
+                provider = ImageProvider(R.drawable.ic_widget_return),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
                 modifier = GlanceModifier
@@ -345,15 +346,15 @@ private fun ColumnScope.SelectedDateTodoList(
         }
 
         Image(
-            provider = ImageProvider(com.tgyuu.designsystem.R.drawable.ic_plus),
+            provider = ImageProvider(R.drawable.ic_widget_plus),
             contentDescription = null,
             colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
             modifier = GlanceModifier
                 .size(20.dp)
                 .clickable(
-                    actionStartActivity<MainActivity>(
+                    actionRunCallback<AddTodoFromWidgetAction>(
                         actionParametersOf(
-                            destinationKey to ADD_TODO,
+                            widgetSourceKey to "CalendarWidget",
                             selectedDateKey to selectedDate.toString()
                         )
                     )

@@ -213,7 +213,7 @@ private fun EditDateScreenPhone(
             )
 
             HorizontalDivider(
-                color = EbbingTheme.colors.fillStrong,
+                color = EbbingTheme.colors.fillNormal,
                 thickness = 1.dp,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
@@ -311,7 +311,7 @@ private fun EditDateScreenTablet(
                 )
 
                 HorizontalDivider(
-                    color = EbbingTheme.colors.fillStrong,
+                    color = EbbingTheme.colors.fillNormal,
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
@@ -331,7 +331,12 @@ private fun EditDateMainFormContent(
 ) {
     Text(
         text = buildAnnotatedString {
-            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    color = EbbingTheme.colors.textPrimary,
+                )
+            ) {
                 append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
             }
             append(" 부터\n시작하는 일정으로 바꿔요")
