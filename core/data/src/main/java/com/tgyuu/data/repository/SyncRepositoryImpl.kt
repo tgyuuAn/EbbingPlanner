@@ -187,6 +187,9 @@ class SyncRepositoryImpl @Inject constructor(
 
         response.todoInfos.forEach { dto ->
             val todoInfo = dto.toDomain()
+            val tagExists = localTagDataSource.getTag(todoInfo.tagId) != null
+            if (!tagExists) return@forEach
+
             val local = localTodoDataSource.getTodoInfoEntity(todoInfo.id)
 
             if (local == null) {
@@ -200,6 +203,9 @@ class SyncRepositoryImpl @Inject constructor(
             val schedule = dto.toDomain()
 
             if (!schedule.isDeleted) {
+                val infoExists = localTodoDataSource.getTodoInfoEntity(schedule.infoId) != null
+                if (!infoExists) return@forEach
+
                 val local = localTodoDataSource.getTodoScheduleEntity(schedule.id)
 
                 if (local == null) {
