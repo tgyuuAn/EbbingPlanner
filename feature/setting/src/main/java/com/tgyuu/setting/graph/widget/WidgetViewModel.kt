@@ -105,9 +105,7 @@ class WidgetViewModel(
                 )
             }
             navigationBus.navigate(NavigationEvent.Up)
-            eventBus.sendEvent(
-                EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_widget_theme_changed))
-            )
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("위젯 테마를 변경하였습니다"))
         }.onFailure {
             eventBus.sendEvent(
                 EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_theme_change_failed))

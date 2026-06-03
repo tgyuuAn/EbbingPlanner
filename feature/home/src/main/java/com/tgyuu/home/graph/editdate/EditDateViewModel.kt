@@ -168,7 +168,7 @@ class EditDateViewModel(
         originSchedules.forEach { alarmScheduler.cancelDailyExact(it.date) }
 
         val infoId = originSchedules.firstOrNull()?.infoId ?: run {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
             return
         }
 

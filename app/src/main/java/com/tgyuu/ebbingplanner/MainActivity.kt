@@ -52,6 +52,7 @@ import com.tgyuu.navigation.NavigationEvent.BottomBarTo
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.sync.network.NetworkMonitor
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.koin.android.ext.android.inject

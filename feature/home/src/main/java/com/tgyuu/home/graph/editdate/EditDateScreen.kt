@@ -206,6 +206,12 @@ private fun EditDateScreenPhone(
                 onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
             )
 
+            HorizontalDivider(
+                color = EbbingTheme.colors.fillNormal,
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
             DescriptionBody()
 
             Spacer(modifier = Modifier.height(60.dp))
@@ -273,6 +279,12 @@ private fun EditDateScreenTablet(
                     onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
                 )
 
+                HorizontalDivider(
+                    color = EbbingTheme.colors.fillNormal,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+
                 DescriptionBody()
             },
             button = { buttonModifier ->
@@ -306,7 +318,12 @@ private fun EditDateMainFormContent(
     val editDateHeaderSuffix = stringResource(R.string.home_edit_date_header_suffix)
     Text(
         text = buildAnnotatedString {
-            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    color = EbbingTheme.colors.textPrimary,
+                )
+            ) {
                 append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
             }
             append(editDateHeaderSuffix)

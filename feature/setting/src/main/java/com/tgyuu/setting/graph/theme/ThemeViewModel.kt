@@ -60,9 +60,7 @@ class ThemeViewModel(
                 }.onSuccess {
                     setState { copy(originTheme = select) }
                     navigationBus.navigate(NavigationEvent.Up)
-                    eventBus.sendEvent(
-                        EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_app_theme_changed))
-                    )
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("앱 테마를 변경하였습니다"))
                 }.onFailure {
                     eventBus.sendEvent(
                         EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_theme_change_failed))

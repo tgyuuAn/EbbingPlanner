@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.now
@@ -66,6 +67,33 @@ internal fun CalendarBody(
 }
 
 @Composable
+internal fun WeekCalendarBody(
+    weekReferenceDate: LocalDate,
+    selectedDate: LocalDate,
+    schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>>,
+    onDateSelect: (LocalDate) -> Unit,
+    startFromMonday: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .semantics { contentDescription = "주간 달력 바디" },
+    ) {
+        getWeekDates(weekReferenceDate, startFromMonday).forEach { calendarDate ->
+            CalendarDayItem(
+                calendarDate = calendarDate,
+                selectedDate = selectedDate,
+                events = schedulesByDateMap[calendarDate.date] ?: emptyList(),
+                onDateSelect = onDateSelect,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
 internal fun CalendarDayItem(
     calendarDate: CalendarDate,
     selectedDate: LocalDate?,
@@ -73,16 +101,9 @@ internal fun CalendarDayItem(
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isSelected = calendarDate.date == selectedDate
-    val isToday = calendarDate.date == LocalDate.now()
-
-    // 선택 = 검은 원(Fill/Focused), 오늘(미선택) = 회색 원(Fill/Disabled), 그 외 = 없음
-    val circleColor = ebbingAnimateColorAsState(
-        targetValue = when {
-            isSelected -> EbbingTheme.colors.fillFocused
-            isToday -> EbbingTheme.colors.fillDisabled
-            else -> Color.Transparent
-        }
+    val dayItemColor = ebbingAnimateColorAsState(
+        targetValue = if (calendarDate.date == selectedDate) EbbingTheme.colors.fillFocused
+        else Color.Transparent
     )
     val numberColor = when {
         isSelected || isToday -> EbbingTheme.colors.textOnPrimary
@@ -109,6 +130,39 @@ internal fun CalendarDayItem(
                 .clip(CircleShape)
                 .background(circleColor),
         ) {
+            var isOverflow by remember { mutableStateOf(false) }
+            val textColor = when {
+                calendarDate.date == selectedDate -> EbbingTheme.colors.textOnPrimary
+                !calendarDate.isCurrentMonth -> EbbingTheme.colors.textDisabled
+                else -> EbbingTheme.colors.textOnBackground
+            }
+
+            val todayTextHeight = with(LocalDensity.current) {
+                EbbingTheme.typography.caption12R.lineHeight.toDp()
+            }
+            if (isOverflow) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "Today",
+                    tint = textColor,
+                    modifier = Modifier.height(todayTextHeight).size(todayTextHeight)
+                )
+            } else {
+                Text(
+                    text = if (calendarDate.date == LocalDate.now()) "Today" else "",
+                    style = EbbingTheme.typography.caption12R.copy(
+                        lineHeight = EbbingTheme.typography.caption12R.lineHeight,
+                        platformStyle = PlatformTextStyle(includeFontPadding = false),
+                    ),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = textColor,
+                    modifier = Modifier.height(todayTextHeight),
+                    onTextLayout = { result -> isOverflow = result.hasVisualOverflow },
+                )
+            }
+
             Text(
                 text = calendarDate.dayOfMonth.toString(),
                 style = numberStyle,

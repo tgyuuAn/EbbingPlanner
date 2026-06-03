@@ -55,6 +55,24 @@ internal fun CalendarController(
             .height(40.dp)
             .semantics { contentDescription = controllerDescription },
     ) {
+        val today = LocalDate.now()
+        val isOnToday = currentDate.year == today.year &&
+            currentDate.monthNumber == today.monthNumber &&
+            (selectedDate == null || selectedDate == today)
+
+        IconButton(onClick = onGotoTodayClick) {
+            if (!isOnToday) {
+                Image(
+                    painter = painterResource(R.drawable.ic_return),
+                    contentDescription = "이전 달",
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
+                    modifier = Modifier.size(16.dp),
+                )
+            } else {
+                Spacer(modifier = Modifier.size(16.dp))
+            }
+        }
+
         Text(
             text = "${currentDate.year}년 ${currentDate.monthNumber}월",
             textAlign = TextAlign.Center,

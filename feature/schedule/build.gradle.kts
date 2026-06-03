@@ -19,6 +19,7 @@ android {
 
 dependencies {
     implementation(projects.core.common)
+    implementation(projects.core.analytics)
 
     implementation(libs.kotlinx.datetime)
 }

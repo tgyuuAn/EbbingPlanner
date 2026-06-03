@@ -1,24 +1,22 @@
 package com.tgyuu.ebbingplanner.widget.todaytodo
 
-import android.content.ComponentName
 import android.content.Context
-import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastMapIndexed
+import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
-import androidx.glance.LocalContext
 import androidx.glance.action.actionParametersOf
-import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
@@ -26,49 +24,43 @@ import androidx.glance.background
 import androidx.glance.color.ColorProvider
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
-import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
-import androidx.glance.layout.width
+import androidx.glance.text.FontFamily
+import androidx.glance.text.FontStyle
+import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextDecoration
+import androidx.glance.text.TextStyle
 import com.google.gson.reflect.TypeToken
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.widget.R
 import com.tgyuu.ebbingplanner.widget.designsystem.component.EbbingWidgetCheck
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTheme
-import com.tgyuu.ebbingplanner.widget.designsystem.foundation.EbbingWidgetTypography
-import com.tgyuu.ebbingplanner.widget.designsystem.foundation.LocalEbbingWidgetColors
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
 import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
-import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.MAX_VISIBLE_TODOS
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver.Companion.TODO_LISTS
+import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.AddTodoFromWidgetAction
 import com.tgyuu.ebbingplanner.widget.util.BaseWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
-import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
-import com.tgyuu.ebbingplanner.widget.util.openHomeAction
-import com.tgyuu.ebbingplanner.widget.util.TodayTodoBitmaps
-import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
+import com.tgyuu.ebbingplanner.widget.util.LaunchAppAction
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
 import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
-import java.time.LocalDate
+import com.tgyuu.widget.R
+import kotlinx.datetime.LocalDate
 
 class TodayTodoWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val bitmaps = WidgetBitmapStore.loadTodayTodoBitmaps(context, MAX_VISIBLE_TODOS)
-
         provideContent {
             val prefs = currentState<Preferences>()
 
@@ -89,7 +81,6 @@ class TodayTodoWidget : GlanceAppWidget() {
                 TodayTodoWidgetContent(
                     alpha = backgroundAlpha,
                     todoLists = todoLists,
-                    bitmaps = bitmaps,
                 )
             }
         }
@@ -100,9 +91,7 @@ class TodayTodoWidget : GlanceAppWidget() {
 private fun TodayTodoWidgetContent(
     alpha: Float,
     todoLists: List<TodoSchedule>,
-    bitmaps: TodayTodoBitmaps,
 ) {
-    val context = LocalContext.current
     val backgroundImage = when (alpha) {
         0.25f -> R.drawable.shape_widget_background_25
         0.5f -> R.drawable.shape_widget_background_25
@@ -114,92 +103,71 @@ private fun TodayTodoWidgetContent(
         horizontalAlignment = Alignment.Start,
         modifier = GlanceModifier
             .fillMaxSize()
-            .clickable(
-                onClick = actionStartActivity(
-                    ComponentName(
-                        androidx.glance.LocalContext.current.packageName,
-                        "${androidx.glance.LocalContext.current.packageName}.MainActivity"
-                    )
-                )
-            )
+            .clickable(onClick = actionRunCallback<LaunchAppAction>())
             .background(
                 imageProvider = ImageProvider(backgroundImage),
-                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.background),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.onBackground),
             )
-            .padding(20.dp)
+            .padding(12.dp)
     ) {
+        val headerImage = when (alpha) {
+            0.25f -> R.drawable.shape_widget_header_25
+            0.5f -> R.drawable.shape_widget_header_50
+            0.75f -> R.drawable.shape_widget_header_75
+            else -> R.drawable.shape_widget_header_100
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.fillMaxWidth(),
+            modifier = GlanceModifier.fillMaxWidth()
+                .background(
+                    imageProvider = ImageProvider(headerImage),
+                    colorFilter = ColorFilter.tint(GlanceTheme.colors.onSurfaceVariant),
+                )
+                .padding(horizontal = 12.dp, vertical = 4.dp),
         ) {
-            val todoListsDoneSize = todoLists.filter { it.isDone }.size
-            val isAllDone = todoLists.isNotEmpty() && todoListsDoneSize == todoLists.size
-
-            val doneCountColor = if (todoListsDoneSize > 0 || todoLists.isEmpty()) {
-                LocalEbbingWidgetColors.current.textPrimary
-            } else {
-                LocalEbbingWidgetColors.current.textDisabled
-            }
-            val totalColor = if (isAllDone) LocalEbbingWidgetColors.current.textDisabled
-                else LocalEbbingWidgetColors.current.textDisabled
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = GlanceModifier.defaultWeight(),
+                modifier = GlanceModifier.defaultWeight()
             ) {
-                if (bitmaps.header != null) {
-                    Image(
-                        provider = ImageProvider(bitmaps.header),
-                        contentDescription = context.getString(com.tgyuu.designsystem.R.string.widget_today_todo),
-                        colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
-                    )
-                } else {
-                    Text(
-                        text = context.getString(com.tgyuu.designsystem.R.string.widget_today_todo_spaced),
-                        style = EbbingWidgetTypography.heading18B.copy(
-                            color = LocalEbbingWidgetColors.current.textOnBackground,
-                        ),
-                    )
-                }
-                if (bitmaps.doneCount != null) {
-                    Image(
-                        provider = ImageProvider(bitmaps.doneCount),
-                        contentDescription = context.getString(
-                            com.tgyuu.designsystem.R.string.widget_done_count,
-                            todoListsDoneSize,
-                        ),
-                        colorFilter = ColorFilter.tint(doneCountColor),
-                    )
-                } else {
-                    Text(
-                        text = todoListsDoneSize.toString(),
-                        style = EbbingWidgetTypography.heading18B.copy(
-                            color = doneCountColor,
-                        ),
-                    )
-                }
-                if (bitmaps.total != null) {
-                    Image(
-                        provider = ImageProvider(bitmaps.total),
-                        contentDescription = context.getString(
-                            com.tgyuu.designsystem.R.string.widget_total_count,
-                            todoLists.size,
-                        ),
-                        colorFilter = ColorFilter.tint(totalColor),
-                    )
-                } else {
-                    Text(
-                        text = "/${todoLists.size}",
-                        style = EbbingWidgetTypography.heading18B.copy(
-                            color = totalColor,
-                        ),
-                    )
-                }
+                val todoListsDoneSize = todoLists.filter { it.isDone }.size
+
+                Text(
+                    text = "오늘 할 일   ",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        textAlign = TextAlign.Start,
+                        color = GlanceTheme.colors.surface,
+                    ),
+                )
+                Text(
+                    text = todoListsDoneSize.toString(),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        textAlign = TextAlign.Start,
+                        color = GlanceTheme.colors.primary,
+                    ),
+                )
+                Text(
+                    text = " /${todoLists.size}",
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        textAlign = TextAlign.Start,
+                        color = GlanceTheme.colors.surface,
+                    ),
+                )
             }
 
             Image(
                 provider = ImageProvider(R.drawable.ic_widget_plus),
                 contentDescription = null,
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.surface),
                 modifier = GlanceModifier
                     .size(20.dp)
                     .clickable(
@@ -208,52 +176,30 @@ private fun TodayTodoWidgetContent(
                         )
                     ),
             )
-
-            Spacer(modifier = GlanceModifier.size(12.dp))
-
-            Image(
-                provider = ImageProvider(R.drawable.ic_widget_refresh),
-                contentDescription = null,
-                modifier = GlanceModifier
-                    .size(20.dp)
-                    .clickable(actionRunCallback<RefreshAction>()),
-                colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
-            )
         }
 
         if (todoLists.isEmpty()) {
-            if (bitmaps.empty != null) {
-                Image(
-                    provider = ImageProvider(bitmaps.empty),
-                    contentDescription = context.getString(com.tgyuu.designsystem.R.string.widget_empty_schedule),
-                    colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
-                    modifier = GlanceModifier.padding(vertical = 12.dp),
-                )
-            } else {
-                Text(
-                    text = context.getString(com.tgyuu.designsystem.R.string.widget_empty_schedule),
-                    style = EbbingWidgetTypography.heading16SB.copy(
-                        textAlign = TextAlign.Start,
-                        color = LocalEbbingWidgetColors.current.textSub,
-                    ),
-                    modifier = GlanceModifier.fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                )
-            }
+            Text(
+                text = "금일 스케줄이 없어요.",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Normal,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily.Cursive,
+                    color = GlanceTheme.colors.surface,
+                ),
+                modifier = GlanceModifier.fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 30.dp),
+            )
         } else {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
-                    .padding(top = 6.dp),
+                    .padding(12.dp)
             ) {
-                items(
-                    items = todoLists.fastMapIndexed { i, it -> i to it },
-                    itemId = { (_, item) -> item.id.toLong() },
-                ) { (index, item) ->
-                    val titleBitmap = if (item.isDone) bitmaps.titlesDone.getOrNull(index)
-                        else bitmaps.titles.getOrNull(index)
+                items(items = todoLists) { item ->
                     TodoItemRow(
                         todo = item,
-                        titleBitmap = titleBitmap,
                         modifier = GlanceModifier.fillMaxWidth()
                             .padding(vertical = 6.dp),
                     )
@@ -266,45 +212,31 @@ private fun TodayTodoWidgetContent(
 @Composable
 internal fun TodoItemRow(
     todo: TodoSchedule,
-    titleBitmap: Bitmap? = null,
     modifier: GlanceModifier = GlanceModifier,
 ) {
-    val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.clickable(openHomeAction(context, todo.date)),
+        modifier = modifier,
     ) {
         Spacer(
             modifier = GlanceModifier
-                .width(3.dp)
-                .height(24.dp)
+                .size(16.dp)
+                .cornerRadius(999.dp)
                 .background(ColorProvider(Color(todo.color), Color(todo.color)))
         )
 
-        Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = GlanceModifier.defaultWeight().padding(horizontal = 8.dp),
-        ) {
-            if (titleBitmap != null) {
-                Image(
-                    provider = ImageProvider(titleBitmap),
-                    contentDescription = todo.title,
-                    colorFilter = ColorFilter.tint(
-                        if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled
-                        else LocalEbbingWidgetColors.current.textOnBackground,
-                    ),
-                )
-            } else {
-                Text(
-                    text = todo.title,
-                    style = (if (todo.isDone) EbbingWidgetTypography.heading16SB else EbbingWidgetTypography.body16M).copy(
-                        color = if (todo.isDone) LocalEbbingWidgetColors.current.textDisabled else LocalEbbingWidgetColors.current.textOnBackground,
-                        textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
-                    ),
-                    maxLines = 1,
-                )
-            }
-        }
+        Text(
+            text = todo.title,
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontWeight = if (todo.isDone) FontWeight.Bold else FontWeight.Normal,
+                color = GlanceTheme.colors.surface,
+                textDecoration = if (todo.isDone) TextDecoration.LineThrough else null,
+            ),
+            maxLines = 2,
+            modifier = GlanceModifier.padding(horizontal = 12.dp)
+                .defaultWeight(),
+        )
 
         EbbingWidgetCheck(
             checked = todo.isDone,
@@ -322,11 +254,7 @@ private fun HomeWidgetPreview() {
     BaseWidgetPreview {
         TodayTodoWidgetContent(
             alpha = 1f,
-            todoLists = emptyList(),
-            bitmaps = TodayTodoBitmaps(
-                header = null, doneCount = null, total = null,
-                empty = null, titles = emptyList(), titlesDone = emptyList(),
-            ),
+            todoLists = emptyList()
         )
     }
 }
@@ -337,10 +265,6 @@ private fun HomeWidgetPreview2() {
     BaseWidgetPreview {
         TodayTodoWidgetContent(
             alpha = 1f,
-            bitmaps = TodayTodoBitmaps(
-                header = null, doneCount = null, total = null,
-                empty = null, titles = emptyList(), titlesDone = emptyList(),
-            ),
             todoLists = listOf(
                 TodoSchedule(
                     id = 1,
@@ -349,12 +273,12 @@ private fun HomeWidgetPreview2() {
                     tagId = 1,
                     name = "공부",
                     color = 0xFF3282B8.toInt(),
-                    date = LocalDate.of(2025, 5, 8),
+                    date = LocalDate(2025, 5, 8),
                     memo = "Jetpack Compose 위젯",
-                    isPinned = true,
+                    priority = 1,
                     isDone = false,
-                    createdAt = LocalDate.of(2025, 5, 1),
-                    infoCreatedAt = LocalDate.of(2025, 5, 1)
+                    createdAt = LocalDate(2025, 5, 1),
+                    infoCreatedAt = LocalDate(2025, 5, 1)
                 ),
                 TodoSchedule(
                     id = 2,
@@ -363,15 +287,14 @@ private fun HomeWidgetPreview2() {
                     tagId = 2,
                     name = "운동",
                     color = 0xFFFF7490.toInt(),
-                    date = LocalDate.of(2025, 5, 8),
+                    date = LocalDate(2025, 5, 8),
                     memo = "헬스장 1시간",
-                    isPinned = false,
+                    priority = 2,
                     isDone = true,
-                    createdAt = LocalDate.of(2025, 5, 2),
-                    infoCreatedAt = LocalDate.of(2025, 5, 2)
+                    createdAt = LocalDate(2025, 5, 2),
+                    infoCreatedAt = LocalDate(2025, 5, 2)
                 )
             )
         )
     }
 }
-

@@ -370,7 +370,12 @@ private fun TodoMainFormContent(
     val addTodoHeaderSuffix = stringResource(R.string.home_add_todo_header_suffix)
     Text(
         text = buildAnnotatedString {
-            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    color = EbbingTheme.colors.textPrimary,
+                )
+            ) {
                 append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
             }
             append(addTodoHeaderSuffix)

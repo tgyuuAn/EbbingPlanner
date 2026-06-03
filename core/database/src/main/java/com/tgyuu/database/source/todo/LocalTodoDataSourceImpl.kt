@@ -98,6 +98,8 @@ class LocalTodoDataSourceImpl constructor(
             restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
         )
 
+    override suspend fun toggleDone(id: Int) = todoSchedulesDao.toggleDone(id)
+
     override suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync) =
         todoSchedulesDao.updateTodoInfo(todoInfoForSync.toEntity())
 
@@ -105,17 +107,17 @@ class LocalTodoDataSourceImpl constructor(
         infoId: Int,
         title: String,
         tagId: Int,
-        dates: List<LocalDate>,
+        dates: List<kotlinx.datetime.LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek>,
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = todoWithSchedulesDao.replaceSchedules(
         infoId = infoId,
         title = title,
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
-        isPinned = isPinned,
+        priority = priority,
         restDays = restDays,
     )
 

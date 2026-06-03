@@ -58,8 +58,8 @@ interface LocalTodoDataSource {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)

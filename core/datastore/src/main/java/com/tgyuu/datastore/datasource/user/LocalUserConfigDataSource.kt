@@ -33,13 +33,4 @@ interface LocalUserConfigDataSource {
     suspend fun setMondayStart(enabled: Boolean)
     val calendarDefaultView: Flow<CalendarDefaultView>
     suspend fun setCalendarDefaultView(view: CalendarDefaultView)
-    val autoBackupEnabled: Flow<Boolean>
-    suspend fun setAutoBackupEnabled(enabled: Boolean)
-    val tagUsageOrder: Flow<List<Int>>
-    suspend fun recordTagUsage(tagId: Int)
-    suspend fun removeTagUsage(tagId: Int)
-    val repeatCycleUsageOrder: Flow<List<Int>>
-    suspend fun recordRepeatCycleUsage(cycleId: Int)
-    suspend fun removeRepeatCycleUsage(cycleId: Int)
-    suspend fun clearUsageOrder()
 }

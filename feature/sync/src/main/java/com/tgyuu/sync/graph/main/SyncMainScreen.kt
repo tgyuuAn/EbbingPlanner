@@ -336,7 +336,7 @@ internal fun UuidBody(
     )
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillNormal,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -497,7 +497,7 @@ private fun SectionDivider() {
     )
 
     HorizontalDivider(
-        color = EbbingTheme.colors.fillStrong,
+        color = EbbingTheme.colors.fillNormal,
         thickness = 1.dp,
         modifier = Modifier.padding(vertical = 16.dp)
     )
@@ -600,11 +600,54 @@ private fun LastSyncSection(
         )
     }
 
-    Text(
-        text = stringResource(R.string.sync_manual_hint),
-        style = EbbingTheme.typography.caption12R,
-        color = EbbingTheme.colors.textSub,
-        modifier = Modifier.padding(top = 8.dp),
+    if (isConnected) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 17.dp)
+                .clickable { onDisconnectClick() },
+        ) {
+            Text(
+                text = "연동 해제하기",
+                style = EbbingTheme.typography.heading18B,
+                color = EbbingTheme.colors.textSub,
+                modifier = Modifier.weight(1f),
+            )
+
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = "상세 내용",
+                modifier = Modifier.padding(start = 4.dp),
+            )
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 17.dp)
+                .clickable { onConnectClick() },
+        ) {
+            Text(
+                text = "다른 기기와 연동하기",
+                style = EbbingTheme.typography.heading18B,
+                color = EbbingTheme.colors.textSub,
+                modifier = Modifier.weight(1f),
+            )
+
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_right),
+                contentDescription = "상세 내용",
+                modifier = Modifier.padding(start = 4.dp),
+            )
+        }
+    }
+
+    HorizontalDivider(
+        color = EbbingTheme.colors.fillNormal,
+        thickness = 1.dp,
+        modifier = Modifier.padding(vertical = 16.dp)
     )
 }
 

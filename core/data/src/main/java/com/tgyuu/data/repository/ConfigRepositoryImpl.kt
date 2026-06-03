@@ -103,38 +103,4 @@ class ConfigRepositoryImpl constructor(
 
     override suspend fun setCalendarDefaultView(view: CalendarDefaultView) =
         localUserConfigDataSource.setCalendarDefaultView(view)
-
-    override fun getAutoBackupEnabled(): Flow<Boolean> =
-        localUserConfigDataSource.autoBackupEnabled
-
-    override suspend fun setAutoBackupEnabled(enabled: Boolean) =
-        localUserConfigDataSource.setAutoBackupEnabled(enabled)
-
-    override suspend fun getTagUsageOrder(): List<Int> =
-        localUserConfigDataSource.tagUsageOrder.first()
-
-    override suspend fun recordTagUsage(tagId: Int) =
-        localUserConfigDataSource.recordTagUsage(tagId)
-
-    override suspend fun getRepeatCycleUsageOrder(): List<Int> =
-        localUserConfigDataSource.repeatCycleUsageOrder.first()
-
-    override suspend fun recordRepeatCycleUsage(cycleId: Int) =
-        localUserConfigDataSource.recordRepeatCycleUsage(cycleId)
-
-    private suspend fun logNotificationConfigSilently() = runCatching {
-        val uuid = localSyncDataSource.uuid.first()
-        val enabled = localUserConfigDataSource.notificationEnabled.first()
-        val (hour, minute) = localUserConfigDataSource.alarmTime.first()
-        val message = localUserConfigDataSource.alarmMessage.first()
-
-        notificationLogDataSource.logNotificationConfig(
-            uuid = uuid,
-            enabled = enabled,
-            alarmTime = String.format("%02d:%02d", hour, minute),
-            message = message,
-            usesPlaceholder = ConfigRepository.PLACEHOLDER_TOKENS.any { message.contains(it) },
-            isDefault = message == ConfigRepository.DEFAULT_ALARM_MESSAGE,
-        )
-    }
 }

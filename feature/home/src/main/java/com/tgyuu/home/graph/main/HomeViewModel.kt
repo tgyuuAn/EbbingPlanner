@@ -130,14 +130,20 @@ class HomeViewModel(
             HomeIntent.OnSyncClick -> navigationBus.navigate(To(SyncGraph.SyncMainRoute))
             is HomeIntent.OnCurrentDateChanged -> loadSchedules(intent.currentDate)
             HomeIntent.OnWidgetNudgeDismiss -> setState { copy(showWidgetNudgeDialog = false) }
+            is HomeIntent.OnCalendarViewChanged -> viewModelScope.launch {
+                configRepository.setCalendarDefaultView(intent.view)
+            }
         }
     }
 
-    private fun loadSchedules(currentDate: LocalDate) = viewModelScope.launch {
-        val start = currentDate.minus(1, DateTimeUnit.MONTH)
-            .run { LocalDate(year, month, 1) }
-        val end = currentDate.plus(1, DateTimeUnit.MONTH)
-            .run { LocalDate(year, month, totalDaysInMonth()) }
+    private fun loadSchedules(currentDate: LocalDate) {
+        val requestSeq = ++loadRequestSeq
+        loadSchedulesJob?.cancel()
+        loadSchedulesJob = viewModelScope.launch {
+            val start = currentDate.minus(1, DateTimeUnit.MONTH)
+                .run { LocalDate(year, month, 1) }
+            val end = currentDate.plus(1, DateTimeUnit.MONTH)
+                .run { LocalDate(year, month, totalDaysInMonth()) }
 
             val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
             if (requestSeq != loadRequestSeq) return@launch

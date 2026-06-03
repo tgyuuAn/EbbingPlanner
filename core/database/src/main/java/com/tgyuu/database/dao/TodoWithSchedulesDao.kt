@@ -122,30 +122,6 @@ interface TodoWithSchedulesDao {
             )
         }
     }
-
-    @Query("UPDATE schedule SET isDeleted = 1, updatedAt = :updatedAt WHERE isDeleted = 0")
-    suspend fun softDeleteAllSchedules(updatedAt: LocalDateTime)
-
-    @Query("UPDATE todo_info SET tagId = 1, updatedAt = :updatedAt WHERE tagId != 1")
-    suspend fun resetAllTagIds(updatedAt: LocalDateTime)
-
-    @Query("UPDATE todo_tag SET isDeleted = 1, updatedAt = :updatedAt WHERE id != 1 AND isDeleted = 0")
-    suspend fun softDeleteAllTags(updatedAt: LocalDateTime)
-
-    @Query("UPDATE repeat_cycle SET isDeleted = 1, updatedAt = :updatedAt WHERE isDeleted = 0")
-    suspend fun softDeleteAllRepeatCycles(updatedAt: LocalDateTime)
-
-    // 데이터 초기화. 동기화로 다른 기기와 서버에 삭제가 전달되도록 hard delete 하지 않고 soft delete 한다.
-    // todo_info는 일반 삭제와 같이 남겨 두고(일정이 없으면 화면에 나오지 않음), 태그를 지우기 전에 기본 태그로 옮겨
-    // 이후 hardDeleteAllTags가 FK 위반 없이 동작하게 한다.
-    @Transaction
-    suspend fun softDeleteAllData(updatedAt: LocalDateTime = LocalDateTime.now()) {
-        softDeleteAllSchedules(updatedAt)
-        resetAllTagIds(updatedAt)
-        softDeleteAllTags(updatedAt)
-        softDeleteAllRepeatCycles(updatedAt)
-    }
-
     @Query(
         "UPDATE schedule SET isDeleted = 1, updatedAt = :updatedAt " +
             "WHERE infoId = :infoId AND isDeleted = 0"
@@ -162,8 +138,8 @@ interface TodoWithSchedulesDao {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        priority: Int?,
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         require(dates.size == isDoneSchedules.size) {
             "dates.size(${dates.size}) != isDoneSchedules.size(${isDoneSchedules.size})"
@@ -175,7 +151,7 @@ interface TodoWithSchedulesDao {
             id = infoId,
             title = title,
             tagId = tagId,
-            restDays = restDays.joinToString(",") { it.value.toString() },
+            restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
         )
 
         insertSchedules(
@@ -185,7 +161,7 @@ interface TodoWithSchedulesDao {
                     date = date,
                     isDone = isDone,
                     memo = "",
-                    isPinned = isPinned,
+                    priority = priority ?: 0,
                 )
             }
         )

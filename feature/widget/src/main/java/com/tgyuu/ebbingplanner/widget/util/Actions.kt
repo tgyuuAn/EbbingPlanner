@@ -11,8 +11,6 @@ import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.tgyuu.domain.repository.ConfigRepository
-import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
@@ -26,6 +24,7 @@ const val ADD_TODO = "addTodo"
 const val ADD_TODO_ACTION = "addTodoAction"
 const val OPEN_HOME = "openHome"
 const val KEY_WIDGET_SOURCE = "widgetSource"
+const val ACTION_OPEN_ADD_TODO = "com.tgyuu.ebbingplanner.OPEN_ADD_TODO"
 
 internal val destinationKey = ActionParameters.Key<String>(KEY_DESTINATION)
 internal val todoIdKey = ActionParameters.Key<Int>(TODO_ID)

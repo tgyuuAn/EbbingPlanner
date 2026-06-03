@@ -150,9 +150,9 @@ class FakeTodoRepository : TodoRepository {
         infoId: Int,
         title: String,
         tagId: Int,
-        dates: List<LocalDate>,
+        dates: List<kotlinx.datetime.LocalDate>,
         isDoneSchedules: List<Boolean>,
-        isPinned: Boolean,
+        priority: Int?,
         restDays: Set<DayOfWeek>,
     ) {
         schedules.removeIf { it.infoId == infoId }
@@ -167,10 +167,12 @@ class FakeTodoRepository : TodoRepository {
                     color = 0,
                     date = date,
                     memo = "",
-                    isPinned = isPinned,
+                    priority = priority ?: 0,
                     isDone = isDone,
-                    createdAt = LocalDate.now(),
-                    infoCreatedAt = LocalDate.now(),
+                    createdAt = kotlinx.datetime.Clock.System.now()
+                        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
+                    infoCreatedAt = kotlinx.datetime.Clock.System.now()
+                        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
                 )
             )
         }
@@ -201,7 +203,8 @@ class FakeTodoRepository : TodoRepository {
     override suspend fun toggleDone(id: Int) {
         val index = schedules.indexOfFirst { it.id == id }
         if (index != -1) {
-            schedules[index] = schedules[index].copy(isDone = !schedules[index].isDone)
+            val schedule = schedules[index]
+            schedules[index] = schedule.copy(isDone = !schedule.isDone)
         }
     }
 

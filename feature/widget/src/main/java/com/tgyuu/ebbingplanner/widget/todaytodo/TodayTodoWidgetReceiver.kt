@@ -5,30 +5,36 @@ import android.content.Context
 import android.content.Intent
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.common.now
+import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.BACKGROUND_ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.TEXT_ALPHA
+import com.tgyuu.ebbingplanner.widget.designsystem.foundation.THEME
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
+import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO_ACTION
+import com.tgyuu.ebbingplanner.widget.util.GsonProvider
 import com.tgyuu.ebbingplanner.widget.util.KEY_WIDGET_SOURCE
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
-import com.tgyuu.ebbingplanner.widget.util.WidgetUpdater
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import kotlinx.datetime.LocalDate
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-@AndroidEntryPoint
-class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
-    @Inject
-    lateinit var todoRepository: TodoRepository
-
-    @Inject
-    lateinit var configRepository: ConfigRepository
-
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
+class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
+    private val todoRepository: TodoRepository by inject()
+    private val configRepository: ConfigRepository by inject()
+    private val analyticsHelper: AnalyticsHelper by inject()
 
     override val glanceAppWidget: GlanceAppWidget = TodayTodoWidget()
 
@@ -47,9 +53,7 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        scope.launch {
-            WidgetUpdater.updateTodayTodoWidget(context, todoRepository, configRepository)
-        }
+        updateData(context)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -57,19 +61,22 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
         when (intent.action) {
             RefreshAction.UPDATE_ACTION -> {
-                val pendingResult = goAsync()
                 analyticsHelper.logEvent(
                     AnalyticsEvent.Click(screenName = "TodoWidget", buttonName = "Refresh")
                 )
-                scope.launch {
-                    try {
-                        WidgetUpdater.updateTodayTodoWidget(
-                            context, todoRepository, configRepository
-                        )
-                    } finally {
-                        pendingResult.finish()
-                    }
-                }
+                updateData(context)
+            }
+            CheckTodoAction.CHECK_TODO_ACTION -> {
+                val todoId = intent.extras?.getInt(TODO_ID)
+                todoId ?: return
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(
+                        screenName = "TodoWidget",
+                        buttonName = "Check",
+                        properties = mapOf("todoId" to todoId),
+                    )
+                )
+                checkTodo(todoId, context)
             }
             ADD_TODO_ACTION -> {
                 val source = intent.extras?.getString(KEY_WIDGET_SOURCE) ?: "TodoWidget"
@@ -80,8 +87,42 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver() {
         }
     }
 
+    private fun checkTodo(todoId: Int, context: Context) = scope.launch {
+        todoRepository.toggleDone(todoId)
+        updateData(context)
+    }
+
+    private fun updateData(context: Context) = scope.launch {
+        val gson = GsonProvider.gson
+
+        val theme = configRepository.getWidgetTheme().firstOrNull() ?: Theme.NORMAL
+        val backgroundAlpha = configRepository.getWidgetBackgroundAlpha().firstOrNull() ?: 1f
+        val textAlpha = configRepository.getWidgetTextAlpha().firstOrNull() ?: 1f
+        val todoLists = todoRepository
+            .loadSchedulesByDate(LocalDate.now())
+            .sortedWith(compareBy({ it.isDone }, { it.title }))
+
+        val glanceId = GlanceAppWidgetManager(context)
+            .getGlanceIds(TodayTodoWidget::class.java)
+            .firstOrNull()
+
+        val json = gson.toJson(todoLists)
+
+        glanceId?.let {
+            updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) { pref ->
+                pref.toMutablePreferences().apply {
+                    this[TODO_LISTS] = json
+                    this[THEME] = theme.name
+                    this[BACKGROUND_ALPHA] = backgroundAlpha
+                    this[TEXT_ALPHA] = textAlpha
+                }
+            }
+
+            glanceAppWidget.update(context, it)
+        }
+    }
+
     companion object {
         val TODO_LISTS = stringPreferencesKey("todoLists")
-        const val MAX_VISIBLE_TODOS = 20
     }
 }

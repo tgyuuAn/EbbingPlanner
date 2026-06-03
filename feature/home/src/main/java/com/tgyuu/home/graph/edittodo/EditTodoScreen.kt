@@ -141,7 +141,12 @@ private fun EditTodoScreen(
         ) {
             Text(
                 text = buildAnnotatedString {
-                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                    withStyle(
+                        SpanStyle(
+                            textDecoration = TextDecoration.Underline,
+                            color = EbbingTheme.colors.textPrimary,
+                        )
+                    ) {
                         append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
                     }
                     append(" 에\n진행하는 걸로 바꿀래요")
