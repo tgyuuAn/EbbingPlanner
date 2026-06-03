@@ -67,6 +67,13 @@ data class NotificationState(
     val message: String = DEFAULT_ALARM_MESSAGE,
     val originMessage: String = DEFAULT_ALARM_MESSAGE,
 ) {
+    val formattedAlarmTime: String
+        get() {
+            val hour = alarmHour.toString().padStart(2, '0')
+            val minute = alarmMinute.toString().padStart(2, '0')
+            return "$hour:$minute"
+        }
+
     val nudgeText: String = "바쁜 날에도\n복습일을 자동으로 챙겨드릴게요"
     private val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
 

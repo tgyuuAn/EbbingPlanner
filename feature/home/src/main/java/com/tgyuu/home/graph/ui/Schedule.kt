@@ -47,7 +47,7 @@ internal fun ScheduleContent(
                     .heightIn(max = 400.dp)
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(EbbingTheme.colors.fillNormal)
+                    .background(EbbingTheme.colors.fillTextfield)
             ) {
                 itemsIndexed(schedules) { idx, item ->
                     ScheduleCard(

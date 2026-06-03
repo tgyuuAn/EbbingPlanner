@@ -25,7 +25,6 @@ class ExperimentRemoteDataSourceImpl constructor(
                         }
                     }
                 }
-
                 continuation.resume(result)
             }
         }
