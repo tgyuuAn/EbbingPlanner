@@ -26,7 +26,6 @@ object AppUiPolicy {
         MemoGraph.AddMemoRoute::class,
         MemoGraph.EditMemoRoute::class,
         SyncGraph.SyncMainRoute::class,
-        SyncGraph.ConnectRoute::class,
     )
 
     val rootRoutes = setOf(
@@ -36,6 +35,5 @@ object AppUiPolicy {
 
     val networkRequiredRoutes = setOf(
         SyncGraph.SyncMainRoute::class,
-        SyncGraph.ConnectRoute::class,
     )
 }

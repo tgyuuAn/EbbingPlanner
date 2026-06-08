@@ -94,7 +94,4 @@ sealed interface SyncGraph : Route {
 
     @Serializable
     data object SyncMainRoute : SyncGraph
-
-    @Serializable
-    data object ConnectRoute : SyncGraph
 }
