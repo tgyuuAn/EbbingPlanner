@@ -12,14 +12,14 @@ class NotificationLogDataSource @Inject constructor(
         uuid: String,
         enabled: Boolean,
         alarmTime: String,
-        messageLength: Int,
+        message: String,
         usesPlaceholder: Boolean,
         isDefault: Boolean,
     ) {
         val data = mapOf(
             "notificationEnabled" to enabled,
             "alarmTime" to alarmTime,
-            "messageLength" to messageLength,
+            "alarmMessage" to message,
             "usesPlaceholder" to usesPlaceholder,
             "isDefaultMessage" to isDefault,
             "updatedAt" to FieldValue.serverTimestamp(),
