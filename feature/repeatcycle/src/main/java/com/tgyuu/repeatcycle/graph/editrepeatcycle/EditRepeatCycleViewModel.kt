@@ -31,6 +31,13 @@ class EditRepeatCycleViewModel @Inject constructor(
 ) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "EditRepeatCycle",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+
         val repeatCycleId = savedStateHandle.get<Int>("repeatCycleId")
             ?: throw IllegalArgumentException("해당 반복 주기는 없습니다")
 
@@ -70,7 +77,7 @@ class EditRepeatCycleViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "EditRepeatCycle",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

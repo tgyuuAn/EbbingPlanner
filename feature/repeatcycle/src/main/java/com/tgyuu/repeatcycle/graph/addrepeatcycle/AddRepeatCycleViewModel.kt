@@ -27,6 +27,15 @@ class AddRepeatCycleViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
+    init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddRepeatCycle",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+    }
+
     override suspend fun processIntent(intent: AddRepeatCycleIntent) {
         when (intent) {
             is AddRepeatCycleIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
@@ -62,7 +71,7 @@ class AddRepeatCycleViewModel @Inject constructor(
                 AnalyticsEvent.Click(
                     screenName = "AddRepeatCycle",
                     buttonName = "SaveRepeatCycle",
-                    properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                    properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
                 )
             )
             todoRepository.addRepeatCycle(intervals = intervals)

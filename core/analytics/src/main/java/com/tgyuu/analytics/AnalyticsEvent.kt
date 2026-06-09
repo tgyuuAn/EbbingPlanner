@@ -1,7 +1,10 @@
 package com.tgyuu.analytics
 
 sealed interface AnalyticsEvent {
-    data class View(val screenName: String) : AnalyticsEvent
+    data class View(
+        val screenName: String,
+        val properties: Map<String, Any?>? = null,
+    ) : AnalyticsEvent
 
     data class Click(
         val screenName: String,
