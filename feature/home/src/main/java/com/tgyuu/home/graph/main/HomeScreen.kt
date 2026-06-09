@@ -91,7 +91,7 @@ internal fun HomeRoute(
         viewModel.initCurrentMonthSchedules()
     }
 
-    LaunchedEffect(showWidgetNudge) {
+    LaunchedEffect(Unit) {
         if (showWidgetNudge) {
             viewModel.showWidgetNudgeDialog()
         }
