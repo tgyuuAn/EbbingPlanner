@@ -259,7 +259,7 @@ internal fun SyncMainScreen(
                             state = state,
                             onClickGenerateCode = onClickGenerateCode,
                             onScanQrClick = onScanQrClick,
-                        )
+                            )
                     }
 
                     Column(
@@ -516,6 +516,7 @@ private fun QrBody(
             thickness = 1.dp,
             modifier = Modifier.padding(vertical = 16.dp),
         )
+
     }
 }
 

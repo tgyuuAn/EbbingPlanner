@@ -1,6 +1,5 @@
 package com.tgyuu.data.repository
 
-import android.util.Log
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
@@ -12,16 +11,14 @@ import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.SyncRepository
-import com.tgyuu.network.defaultDate
 import com.tgyuu.network.source.SyncDataSource
-import com.tgyuu.network.toDate
-import com.tgyuu.network.toLocalDateTime
-import com.tgyuu.network.toZonedDateTimeOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import java.util.Date
 import javax.inject.Inject
 
 class SyncRepositoryImpl @Inject constructor(
@@ -145,10 +142,9 @@ class SyncRepositoryImpl @Inject constructor(
         val uuid = uuidDeferred.await()
         val connectedUuid = connectedUuidDeferred.await()
 
-        val lastSyncTime = localSyncDataSource.lastSyncTime
-            .first()
-            ?.toLocalDateTime()
-            ?.toDate() ?: defaultDate
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+            ?.let { Date.from(it.toInstant()) }
+            ?: Date(0L)
 
         val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
             .getOrThrow()
@@ -244,28 +240,28 @@ class SyncRepositoryImpl @Inject constructor(
 
     private suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
+            ?.toLocalDateTime() ?: EPOCH
 
         return localTodoDataSource.getSchedulesForSync(lastSyncTime)
     }
 
     private suspend fun loadTagsForSync(): List<TodoTagForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
+            ?.toLocalDateTime() ?: EPOCH
 
         return localTagDataSource.getTagsForSync(lastSyncTime)
     }
 
     private suspend fun loadRepeatCyclesForSync(): List<RepeatCycleForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
+            ?.toLocalDateTime() ?: EPOCH
 
         return localRepeatCycleDataSource.getRepeatCyclesForSync(lastSyncTime)
     }
 
     private suspend fun loadTodoInfosForSync(): List<TodoInfoForSync> {
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: defaultDate.toLocalDateTime()
+            ?.toLocalDateTime() ?: EPOCH
 
         return localTodoDataSource.getTodoInfosForSync(lastSyncTime)
     }
@@ -277,10 +273,9 @@ class SyncRepositoryImpl @Inject constructor(
         val uuid = uuidDeferred.await()
         val connectedUuid = connectedUuidDeferred.await()
 
-        val lastSyncTime = localSyncDataSource.lastSyncTime
-            .first()
-            ?.toLocalDateTime()
-            ?.toDate() ?: defaultDate
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
+            ?.let { Date.from(it.toInstant()) }
+            ?: Date(0L)
 
         val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
             .getOrThrow()
@@ -297,8 +292,11 @@ class SyncRepositoryImpl @Inject constructor(
             schedules = schedules
         )
 
-        val syncedAt = response.syncedAt.toZonedDateTimeOrNull()
-        localSyncDataSource.setLastSyncTime(syncedAt)
-        syncedAt
+        localSyncDataSource.setLastSyncTime(response.syncedAt)
+        response.syncedAt
+    }
+
+    private companion object {
+        val EPOCH: LocalDateTime = LocalDateTime.of(1970, 1, 1, 0, 0)
     }
 }

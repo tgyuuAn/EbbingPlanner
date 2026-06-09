@@ -88,6 +88,7 @@ internal fun NotificationScreen(
     } else {
         NotificationScreenTablet(
             state = state,
+            isTreatment = isTreatment,
             modifier = modifier,
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
@@ -246,6 +247,7 @@ private fun NotificationScreenPhone(
 @Composable
 private fun NotificationScreenTablet(
     state: NotificationState,
+    isTreatment: Boolean = false,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
