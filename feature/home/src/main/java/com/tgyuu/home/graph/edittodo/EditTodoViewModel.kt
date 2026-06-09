@@ -48,6 +48,13 @@ class EditTodoViewModel @Inject constructor(
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "EditTodo",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+
         val scheduleId = savedStateHandle.get<Int>("scheduleId")
             ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
@@ -181,7 +188,7 @@ class EditTodoViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "EditTodo",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

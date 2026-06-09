@@ -30,6 +30,13 @@ class EditTagViewModel @Inject constructor(
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "EditTag",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+
         val tagId = savedStateHandle.get<Int>("tagId")
             ?: throw IllegalArgumentException("해당 태그는 없습니다")
 
@@ -83,7 +90,7 @@ class EditTagViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "EditTag",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

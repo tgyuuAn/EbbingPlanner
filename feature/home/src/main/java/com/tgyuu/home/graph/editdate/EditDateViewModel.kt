@@ -50,6 +50,13 @@ class EditDateViewModel @Inject constructor(
     private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "EditDate",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+
         setState { copy(repeatCycle = DefaultRepeatCycles.first().toUiModel()) }
 
         viewModelScope.launch {
@@ -162,7 +169,7 @@ class EditDateViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "EditDate",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

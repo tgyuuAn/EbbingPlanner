@@ -124,7 +124,12 @@ private fun NotificationScreenPhone(
     var isShowTimeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        analyticsHelper.logEvent(AnalyticsEvent.View(screenName = "NotificationNudge"))
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "NotificationNudge",
+                properties = mapOf("variant" to if (isTreatment) "TREATMENT_V2" else "CONTROL_V2"),
+            )
+        )
     }
 
     LaunchedEffect(permissionState?.status) {
@@ -261,7 +266,12 @@ private fun NotificationScreenTablet(
     var isShowTimeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        analyticsHelper.logEvent(AnalyticsEvent.View(screenName = "NotificationNudge"))
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "NotificationNudge",
+                properties = mapOf("variant" to if (isTreatment) "TREATMENT_V2" else "CONTROL_V2"),
+            )
+        )
     }
 
     LaunchedEffect(permissionState?.status) {

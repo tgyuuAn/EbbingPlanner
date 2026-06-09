@@ -25,6 +25,15 @@ class AddTagViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
 ) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
+    init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddTag",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+    }
+
     override suspend fun processIntent(intent: AddTagIntent) {
         when (intent) {
             AddTagIntent.OnBackClick -> {
@@ -59,7 +68,7 @@ class AddTagViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "AddTag",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

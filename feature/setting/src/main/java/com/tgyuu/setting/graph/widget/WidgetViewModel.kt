@@ -32,6 +32,15 @@ class WidgetViewModel @Inject constructor(
     WidgetState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })
 ) {
 
+    init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "Widget",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+    }
+
     override suspend fun processIntent(intent: WidgetIntent) {
         when (intent) {
             WidgetIntent.OnBackClick -> {
@@ -94,7 +103,7 @@ class WidgetViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "Widget",
                 buttonName = "Apply",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

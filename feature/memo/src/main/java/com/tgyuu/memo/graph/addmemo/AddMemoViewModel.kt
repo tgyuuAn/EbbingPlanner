@@ -32,6 +32,13 @@ class AddMemoViewModel @Inject constructor(
 ) : BaseViewModel<AddMemoState, AddMemoIntent>(AddMemoState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddMemo",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+
         val scheduleId = savedStateHandle.get<Int>("scheduleId")
             ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
@@ -76,7 +83,7 @@ class AddMemoViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "AddMemo",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

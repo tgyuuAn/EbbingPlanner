@@ -32,6 +32,15 @@ class ThemeViewModel @Inject constructor(
     ThemeState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })
 ) {
 
+    init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "Theme",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
+    }
+
     internal suspend fun loadTheme() {
         val origin = configRepository.getAppTheme().first()
         setState {
@@ -64,7 +73,7 @@ class ThemeViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "Theme",
                 buttonName = "Apply",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

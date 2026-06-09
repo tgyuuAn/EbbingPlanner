@@ -62,6 +62,12 @@ class AddTodoViewModel @Inject constructor(
 ) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddTodo",
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
+            )
+        )
 
         initNotificationState()
 
@@ -218,7 +224,7 @@ class AddTodoViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "AddTodo",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key)
+                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 
