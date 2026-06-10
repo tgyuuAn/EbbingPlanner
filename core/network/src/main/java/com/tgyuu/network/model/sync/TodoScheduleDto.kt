@@ -1,47 +1,48 @@
 package com.tgyuu.network.model.sync
 
-import com.google.firebase.firestore.PropertyName
-import com.google.firebase.firestore.ServerTimestamp
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
-import com.tgyuu.network.defaultDate
-import com.tgyuu.network.toDate
-import com.tgyuu.network.toLocalDate
-import com.tgyuu.network.toLocalDateTime
-import java.util.Date
+import com.tgyuu.network.util.toLocalDateTimeFromUtc
+import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
+@Serializable
 data class TodoScheduleDto(
     val id: Int = -1,
-    val infoId: Int = -1,
-    val date: Date = defaultDate,
+    val uuid: String = "",
+    @SerialName("info_id") val infoId: Int = -1,
+    val date: String = "",
     val memo: String = "",
     val priority: Int = 0,
-    @PropertyName("done") val isDone: Boolean = false,
-    val createdAt: Date = defaultDate,
-    @PropertyName("deleted") val isDeleted: Boolean = false,
-    val updatedAt: Date = defaultDate,
-    @ServerTimestamp var uploadedAt: Date? = null,
+    @SerialName("is_done") val isDone: Boolean = false,
+    @SerialName("is_deleted") val isDeleted: Boolean = false,
+    @SerialName("created_at") val createdAt: String = "",
+    @SerialName("updated_at") val updatedAt: String = "",
+    @SerialName("uploaded_at") val uploadedAt: String? = null,
 ) {
     fun toDomain(): TodoScheduleForSync = TodoScheduleForSync(
         id = id,
         infoId = infoId,
-        date = date.toLocalDate(),
+        date = LocalDate.parse(date),
         memo = memo,
         priority = priority,
         isDone = isDone,
-        createdAt = createdAt.toLocalDate(),
+        createdAt = LocalDate.parse(createdAt),
         isDeleted = isDeleted,
-        updatedAt = updatedAt.toLocalDateTime(),
+        updatedAt = updatedAt.toLocalDateTimeFromUtc(),
     )
 }
 
-fun TodoScheduleForSync.toDto(): TodoScheduleDto = TodoScheduleDto(
+fun TodoScheduleForSync.toDto(uuid: String): TodoScheduleDto = TodoScheduleDto(
     id = id,
+    uuid = uuid,
     infoId = infoId,
-    date = date.toDate(),
+    date = date.toString(),
     memo = memo,
     priority = priority,
     isDone = isDone,
-    createdAt = createdAt.toDate(),
     isDeleted = isDeleted,
-    updatedAt = updatedAt.toDate(),
+    createdAt = createdAt.toString(),
+    updatedAt = updatedAt.toUtcIsoString(),
 )

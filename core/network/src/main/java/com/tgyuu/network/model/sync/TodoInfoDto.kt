@@ -1,37 +1,39 @@
 package com.tgyuu.network.model.sync
 
-import com.google.firebase.firestore.ServerTimestamp
 import com.tgyuu.domain.model.sync.TodoInfoForSync
-import com.tgyuu.network.defaultDate
-import com.tgyuu.network.toDate
-import com.tgyuu.network.toLocalDate
-import com.tgyuu.network.toLocalDateTime
-import java.util.Date
+import com.tgyuu.network.util.toLocalDateTimeFromUtc
+import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
+@Serializable
 data class TodoInfoDto(
     val id: Int = -1,
+    val uuid: String = "",
     val title: String = "",
-    val tagId: Int = -1,
-    val createdAt: Date = defaultDate,
-    val updatedAt: Date = defaultDate,
-    val restDays: String = "",
-    @ServerTimestamp var uploadedAt: Date? = null,
+    @SerialName("tag_id") val tagId: Int = -1,
+    @SerialName("rest_days") val restDays: String = "",
+    @SerialName("created_at") val createdAt: String = "",
+    @SerialName("updated_at") val updatedAt: String = "",
+    @SerialName("uploaded_at") val uploadedAt: String? = null,
 ) {
     fun toDomain() = TodoInfoForSync(
         id = id,
         title = title,
         tagId = tagId,
-        createdAt = createdAt.toLocalDate(),
-        updatedAt = updatedAt.toLocalDateTime(),
+        createdAt = LocalDate.parse(createdAt),
+        updatedAt = updatedAt.toLocalDateTimeFromUtc(),
         restDays = restDays,
     )
 }
 
-fun TodoInfoForSync.toDto() = TodoInfoDto(
+fun TodoInfoForSync.toDto(uuid: String) = TodoInfoDto(
     id = id,
+    uuid = uuid,
     title = title,
     tagId = tagId,
-    createdAt = createdAt.toDate(),
-    updatedAt = updatedAt.toDate(),
+    createdAt = createdAt.toString(),
+    updatedAt = updatedAt.toUtcIsoString(),
     restDays = restDays,
 )

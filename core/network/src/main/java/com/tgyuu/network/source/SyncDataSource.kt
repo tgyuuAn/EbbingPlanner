@@ -1,8 +1,5 @@
 package com.tgyuu.network.source
 
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FieldValue.serverTimestamp
-import com.google.firebase.firestore.FirebaseFirestore
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
@@ -12,34 +9,29 @@ import com.tgyuu.network.model.sync.ConnectDto
 import com.tgyuu.network.model.sync.RepeatCycleDto
 import com.tgyuu.network.model.sync.SyncDataDto
 import com.tgyuu.network.model.sync.SyncInfoDto
-import com.tgyuu.network.FirestoreBatchHelper
 import com.tgyuu.network.model.sync.TodoInfoDto
 import com.tgyuu.network.model.sync.TodoScheduleDto
 import com.tgyuu.network.model.sync.TodoTagDto
 import com.tgyuu.network.model.sync.toDto
-import com.tgyuu.network.toDate
-import com.tgyuu.network.toResponse
-import com.tgyuu.network.toZonedDateTimeOrNull
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.Date
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+private val ISO_FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
 class SyncDataSource @Inject constructor(
-    private val firestore: FirebaseFirestore,
+    private val supabase: SupabaseClient,
 ) {
     suspend fun getSyncInfo(uuid: String): SyncInfoDto {
-        val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
-
-        return userDoc.collection(COLLECTION_INFO)
-            .document(INFO_DOCUMENT_ID)
-            .get()
-            .toResponse<SyncInfoDto>()
+        return supabase.from(TABLE_SYNC_INFO)
+            .select { filter { eq("uuid", uuid) } }
+            .decodeSingle<SyncInfoDto>()
     }
 
     suspend fun uploadData(
@@ -49,175 +41,154 @@ class SyncDataSource @Inject constructor(
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
     ): ZonedDateTime = coroutineScope {
-        val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
-        val batchHelper = FirestoreBatchHelper(firestore)
+        // sync_info에 uuid가 없으면 FK 제약조건 위반이므로 먼저 upsert
+        supabase.from(TABLE_SYNC_INFO)
+            .upsert(SyncInfoDto(uuid = uuid))
 
-        val schedulesJob = launch {
-            batchHelper.batchSet(
-                items = schedules,
-                documentRefProvider = { schedule ->
-                    userDoc.collection(COLLECTION_SCHEDULES).document(schedule.id.toString())
-                },
-                dataProvider = { it.toDto() }
-            )
+        val schedulesJob = async {
+            if (schedules.isNotEmpty()) {
+                supabase.from(TABLE_SCHEDULES)
+                    .upsert(schedules.map { it.toDto(uuid) })
+            }
         }
 
-        val todoInfosJob = launch {
-            batchHelper.batchSet(
-                items = infos,
-                documentRefProvider = { info ->
-                    userDoc.collection(COLLECTION_TODO_INFOS).document(info.id.toString())
-                },
-                dataProvider = { it.toDto() }
-            )
+        val infosJob = async {
+            if (infos.isNotEmpty()) {
+                supabase.from(TABLE_TODO_INFOS)
+                    .upsert(infos.map { it.toDto(uuid) })
+            }
         }
 
-        val repeatCyclesJob = launch {
-            batchHelper.batchSet(
-                items = repeatCycles,
-                documentRefProvider = { repeat ->
-                    userDoc.collection(COLLECTION_REPEAT_CYCLES).document(repeat.id.toString())
-                },
-                dataProvider = { it.toDto() }
-            )
+        val repeatCyclesJob = async {
+            if (repeatCycles.isNotEmpty()) {
+                supabase.from(TABLE_REPEAT_CYCLES)
+                    .upsert(repeatCycles.map { it.toDto(uuid) })
+            }
         }
 
-        val tagsJob = launch {
-            batchHelper.batchSet(
-                items = tags,
-                documentRefProvider = { tag ->
-                    userDoc.collection(COLLECTION_TAGS).document(tag.id.toString())
-                },
-                dataProvider = { it.toDto() }
-            )
+        val tagsJob = async {
+            if (tags.isNotEmpty()) {
+                supabase.from(TABLE_TAGS)
+                    .upsert(tags.map { it.toDto(uuid) })
+            }
         }
 
-        repeatCyclesJob.join()
-        tagsJob.join()
-        todoInfosJob.join()
-        schedulesJob.join()
+        schedulesJob.await()
+        infosJob.await()
+        repeatCyclesJob.await()
+        tagsJob.await()
 
-        val infoDocRef = userDoc.collection(COLLECTION_INFO).document(INFO_DOCUMENT_ID)
-        infoDocRef.set(mapOf(FIELD_LAST_UPDATED_AT to serverTimestamp())).await()
+        // last_updated_at 갱신
+        val now = ZonedDateTime.now()
+        supabase.from(TABLE_SYNC_INFO)
+            .update({ set("last_updated_at", now.format(ISO_FORMAT)) }) {
+                filter { eq("uuid", uuid) }
+            }
 
-        val updatedSnapshot = infoDocRef.get().await()
-        updatedSnapshot
-            .getTimestamp(FIELD_LAST_UPDATED_AT)
-            .toZonedDateTimeOrNull()
-            ?: throw IllegalStateException("lastUpdatedAt 가 비었습니다.")
+        now
     }
 
     suspend fun downloadData(
         uuid: String,
-        lastSyncTime: Date,
+        lastSyncTime: java.util.Date,
     ): Result<SyncDataDto> = coroutineScope {
         suspendRunCatching {
-            val userDoc = firestore.collection(COLLECTION_USERS).document(uuid)
+            val lastSyncIso = lastSyncTime.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .format(ISO_FORMAT)
 
             val schedulesDeferred = async {
-                val snapshot = userDoc.collection(COLLECTION_SCHEDULES)
-                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
-                    .get()
-                    .await()
-
-                snapshot.documents.mapNotNull { it.toObject(TodoScheduleDto::class.java) }
-            }
-
-            val repeatCyclesDeferred = async {
-                val snapshot = userDoc.collection(COLLECTION_REPEAT_CYCLES)
-                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
-                    .get()
-                    .await()
-
-                snapshot.documents.mapNotNull { it.toObject(RepeatCycleDto::class.java) }
-            }
-
-            val tagsDeferred = async {
-                val snapshot = userDoc.collection(COLLECTION_TAGS)
-                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
-                    .get()
-                    .await()
-
-                snapshot.documents.mapNotNull { it.toObject(TodoTagDto::class.java) }
+                supabase.from(TABLE_SCHEDULES)
+                    .select {
+                        filter {
+                            eq("uuid", uuid)
+                            gt("uploaded_at", lastSyncIso)
+                        }
+                    }
+                    .decodeList<TodoScheduleDto>()
             }
 
             val todoInfosDeferred = async {
-                val snapshot = userDoc.collection(COLLECTION_TODO_INFOS)
-                    .whereGreaterThan(FIELD_UPLOADED_AT, lastSyncTime)
-                    .get()
-                    .await()
-
-                snapshot.documents.mapNotNull { it.toObject(TodoInfoDto::class.java) }
+                supabase.from(TABLE_TODO_INFOS)
+                    .select {
+                        filter {
+                            eq("uuid", uuid)
+                            gt("uploaded_at", lastSyncIso)
+                        }
+                    }
+                    .decodeList<TodoInfoDto>()
             }
 
-            val infoSnapshotDeferred = async {
-                userDoc.collection(COLLECTION_INFO)
-                    .document(INFO_DOCUMENT_ID)
-                    .get()
-                    .await()
+            val repeatCyclesDeferred = async {
+                supabase.from(TABLE_REPEAT_CYCLES)
+                    .select {
+                        filter {
+                            eq("uuid", uuid)
+                            gt("uploaded_at", lastSyncIso)
+                        }
+                    }
+                    .decodeList<RepeatCycleDto>()
             }
+
+            val tagsDeferred = async {
+                supabase.from(TABLE_TAGS)
+                    .select {
+                        filter {
+                            eq("uuid", uuid)
+                            gt("uploaded_at", lastSyncIso)
+                        }
+                    }
+                    .decodeList<TodoTagDto>()
+            }
+
+            val syncInfoDeferred = async {
+                supabase.from(TABLE_SYNC_INFO)
+                    .select { filter { eq("uuid", uuid) } }
+                    .decodeSingleOrNull<SyncInfoDto>()
+            }
+
+            val syncInfo = syncInfoDeferred.await()
 
             SyncDataDto(
                 schedules = schedulesDeferred.await(),
                 todoInfos = todoInfosDeferred.await(),
                 repeatCycles = repeatCyclesDeferred.await(),
                 tags = tagsDeferred.await(),
-                syncedAt = infoSnapshotDeferred.await().getTimestamp(FIELD_LAST_UPDATED_AT)
-                    ?: Timestamp.now()
+                syncedAt = syncInfo?.toDomain(),
             )
         }
     }
 
     suspend fun generateConnectCode(uuid: String, connectCode: String): ZonedDateTime {
-        val connectCodeDoc = firestore.collection(COLLECTION_CONNECT_CODES)
-            .document(connectCode)
-
-        val connectCodeExpirationTime = LocalDateTime.now()
+        val expirationTime = LocalDateTime.now()
             .plusMinutes(10L)
-            .toDate()
-
-        val connectDto = ConnectDto(
-            uuid = uuid,
-            connectCode = connectCode,
-            connectCodeExpirationTime = connectCodeExpirationTime,
-        )
-
-        connectCodeDoc.set(connectDto)
-            .await()
-
-        return connectCodeExpirationTime.toInstant()
             .atZone(ZoneId.systemDefault())
+
+        supabase.from(TABLE_CONNECT_CODES)
+            .upsert(
+                ConnectDto(
+                    uuid = uuid,
+                    connectCode = connectCode,
+                    expirationTime = expirationTime.format(ISO_FORMAT),
+                )
+            )
+
+        return expirationTime
     }
 
-    suspend fun connectAnother(connectCode: String): Result<ConnectDto?> = suspendRunCatching {
-        val docRef = firestore
-            .collection(COLLECTION_CONNECT_CODES)
-            .document(connectCode)
-
-        val snapshot = docRef.get().await()
-
-        if (snapshot.exists()) {
-            snapshot.toObject(ConnectDto::class.java)
-        } else {
-            null
+    suspend fun connectAnother(connectCode: String): Result<ConnectDto?> =
+        suspendRunCatching {
+            supabase.from(TABLE_CONNECT_CODES)
+                .select { filter { eq("connect_code", connectCode) } }
+                .decodeSingleOrNull<ConnectDto>()
         }
-    }
 
     private companion object {
-        // 컬렉션 상수
-        private const val COLLECTION_USERS = "users"
-        private const val COLLECTION_INFO = "info"
-        private const val COLLECTION_SCHEDULES = "schedules"
-        private const val COLLECTION_TODO_INFOS = "todoInfos"
-        private const val COLLECTION_REPEAT_CYCLES = "repeatCycles"
-        private const val COLLECTION_TAGS = "tags"
-        private const val COLLECTION_CONNECT_CODES = "connectCodes"
-
-        // 다큐먼트 상수
-        private const val INFO_DOCUMENT_ID = "0"
-
-        // 필드 상수
-        private const val FIELD_LAST_UPDATED_AT = "lastUpdatedAt"
-        private const val FIELD_UPLOADED_AT = "uploadedAt"
+        private const val TABLE_SYNC_INFO = "sync_info"
+        private const val TABLE_SCHEDULES = "todo_schedules"
+        private const val TABLE_TODO_INFOS = "todo_infos"
+        private const val TABLE_REPEAT_CYCLES = "repeat_cycles"
+        private const val TABLE_TAGS = "todo_tags"
+        private const val TABLE_CONNECT_CODES = "connect_codes"
     }
 }
