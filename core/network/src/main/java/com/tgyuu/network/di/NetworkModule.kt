@@ -2,6 +2,8 @@ package com.tgyuu.network.di
 
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -9,6 +11,8 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import com.tgyuu.network.BuildConfig
+import com.tgyuu.network.source.DelegatingSyncDataSource
+import com.tgyuu.network.source.SyncRemoteDataSource
 import com.tgyuu.network.source.error.DebugErrorDataSourceImpl
 import com.tgyuu.network.source.error.ErrorDataSource
 import com.tgyuu.network.source.error.ErrorDataSourceImpl
@@ -45,6 +49,16 @@ object NetworkProvidesModule {
     ) {
         install(Postgrest)
     }
+
+    @Singleton
+    @Provides
+    fun provideFirebaseFireStore(): FirebaseFirestore = Firebase.firestore
+
+    @Singleton
+    @Provides
+    fun provideSyncRemoteDataSource(
+        delegating: DelegatingSyncDataSource,
+    ): SyncRemoteDataSource = delegating
 
     @Singleton
     @Provides

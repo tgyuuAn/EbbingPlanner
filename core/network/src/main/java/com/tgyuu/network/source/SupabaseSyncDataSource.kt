@@ -1,17 +1,17 @@
 package com.tgyuu.network.source
 
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.domain.model.sync.ConnectInfo
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.network.model.sync.ConnectDto
-import com.tgyuu.network.model.sync.RepeatCycleDto
-import com.tgyuu.network.model.sync.SyncDataDto
 import com.tgyuu.network.model.sync.SyncInfoDto
 import com.tgyuu.network.model.sync.TodoInfoDto
 import com.tgyuu.network.model.sync.TodoScheduleDto
 import com.tgyuu.network.model.sync.TodoTagDto
+import com.tgyuu.network.model.sync.RepeatCycleDto
 import com.tgyuu.network.model.sync.toDto
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -21,27 +21,29 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import javax.inject.Inject
 
 private val ISO_FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
-class SyncDataSource @Inject constructor(
+class SupabaseSyncDataSource @Inject constructor(
     private val supabase: SupabaseClient,
-) {
-    suspend fun getSyncInfo(uuid: String): SyncInfoDto {
+) : SyncRemoteDataSource {
+
+    override suspend fun getSyncInfo(uuid: String): ZonedDateTime? {
         return supabase.from(TABLE_SYNC_INFO)
             .select { filter { eq("uuid", uuid) } }
-            .decodeSingle<SyncInfoDto>()
+            .decodeSingleOrNull<SyncInfoDto>()
+            ?.toDomain()
     }
 
-    suspend fun uploadData(
+    override suspend fun uploadData(
         uuid: String,
         schedules: List<TodoScheduleForSync>,
         infos: List<TodoInfoForSync>,
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
     ): ZonedDateTime = coroutineScope {
-        // sync_info에 uuid가 없으면 FK 제약조건 위반이므로 먼저 upsert
         supabase.from(TABLE_SYNC_INFO)
             .upsert(SyncInfoDto(uuid = uuid))
 
@@ -78,7 +80,6 @@ class SyncDataSource @Inject constructor(
         repeatCyclesJob.await()
         tagsJob.await()
 
-        // last_updated_at 갱신
         val now = ZonedDateTime.now()
         supabase.from(TABLE_SYNC_INFO)
             .update({ set("last_updated_at", now.format(ISO_FORMAT)) }) {
@@ -88,10 +89,10 @@ class SyncDataSource @Inject constructor(
         now
     }
 
-    suspend fun downloadData(
+    override suspend fun downloadData(
         uuid: String,
-        lastSyncTime: java.util.Date,
-    ): Result<SyncDataDto> = coroutineScope {
+        lastSyncTime: Date,
+    ): Result<SyncDownloadResult> = coroutineScope {
         suspendRunCatching {
             val lastSyncIso = lastSyncTime.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -99,45 +100,25 @@ class SyncDataSource @Inject constructor(
 
             val schedulesDeferred = async {
                 supabase.from(TABLE_SCHEDULES)
-                    .select {
-                        filter {
-                            eq("uuid", uuid)
-                            gt("uploaded_at", lastSyncIso)
-                        }
-                    }
+                    .select { filter { eq("uuid", uuid); gt("uploaded_at", lastSyncIso) } }
                     .decodeList<TodoScheduleDto>()
             }
 
             val todoInfosDeferred = async {
                 supabase.from(TABLE_TODO_INFOS)
-                    .select {
-                        filter {
-                            eq("uuid", uuid)
-                            gt("uploaded_at", lastSyncIso)
-                        }
-                    }
+                    .select { filter { eq("uuid", uuid); gt("uploaded_at", lastSyncIso) } }
                     .decodeList<TodoInfoDto>()
             }
 
             val repeatCyclesDeferred = async {
                 supabase.from(TABLE_REPEAT_CYCLES)
-                    .select {
-                        filter {
-                            eq("uuid", uuid)
-                            gt("uploaded_at", lastSyncIso)
-                        }
-                    }
+                    .select { filter { eq("uuid", uuid); gt("uploaded_at", lastSyncIso) } }
                     .decodeList<RepeatCycleDto>()
             }
 
             val tagsDeferred = async {
                 supabase.from(TABLE_TAGS)
-                    .select {
-                        filter {
-                            eq("uuid", uuid)
-                            gt("uploaded_at", lastSyncIso)
-                        }
-                    }
+                    .select { filter { eq("uuid", uuid); gt("uploaded_at", lastSyncIso) } }
                     .decodeList<TodoTagDto>()
             }
 
@@ -147,19 +128,17 @@ class SyncDataSource @Inject constructor(
                     .decodeSingleOrNull<SyncInfoDto>()
             }
 
-            val syncInfo = syncInfoDeferred.await()
-
-            SyncDataDto(
-                schedules = schedulesDeferred.await(),
-                todoInfos = todoInfosDeferred.await(),
-                repeatCycles = repeatCyclesDeferred.await(),
-                tags = tagsDeferred.await(),
-                syncedAt = syncInfo?.toDomain(),
+            SyncDownloadResult(
+                schedules = schedulesDeferred.await().map { it.toDomain() },
+                todoInfos = todoInfosDeferred.await().map { it.toDomain() },
+                repeatCycles = repeatCyclesDeferred.await().map { it.toDomain() },
+                tags = tagsDeferred.await().map { it.toDomain() },
+                syncedAt = syncInfoDeferred.await()?.toDomain(),
             )
         }
     }
 
-    suspend fun generateConnectCode(uuid: String, connectCode: String): ZonedDateTime {
+    override suspend fun generateConnectCode(uuid: String, connectCode: String): ZonedDateTime {
         val expirationTime = LocalDateTime.now()
             .plusMinutes(10L)
             .atZone(ZoneId.systemDefault())
@@ -176,11 +155,12 @@ class SyncDataSource @Inject constructor(
         return expirationTime
     }
 
-    suspend fun connectAnother(connectCode: String): Result<ConnectDto?> =
+    override suspend fun connectAnother(connectCode: String): Result<ConnectInfo?> =
         suspendRunCatching {
             supabase.from(TABLE_CONNECT_CODES)
                 .select { filter { eq("connect_code", connectCode) } }
                 .decodeSingleOrNull<ConnectDto>()
+                ?.toDomain()
         }
 
     private companion object {

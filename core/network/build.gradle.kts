@@ -30,6 +30,7 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.firebase.config)
+    implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.supabase.postgrest)
     implementation(libs.ktor.client.android)
