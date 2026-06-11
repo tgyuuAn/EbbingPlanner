@@ -11,7 +11,7 @@ import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import com.tgyuu.domain.repository.SyncRepository
-import com.tgyuu.network.source.SyncDataSource
+import com.tgyuu.network.source.SyncRemoteDataSource
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
@@ -22,7 +22,7 @@ import java.util.Date
 import javax.inject.Inject
 
 class SyncRepositoryImpl @Inject constructor(
-    private val syncDataSource: SyncDataSource,
+    private val syncDataSource: SyncRemoteDataSource,
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
     private val localRepeatCycleDataSource: LocalRepeatCycleDataSource,
@@ -40,7 +40,6 @@ class SyncRepositoryImpl @Inject constructor(
         val connectedUuid = connectedUuidDeferred.await()
 
         syncDataSource.getSyncInfo(connectedUuid ?: uuid)
-            .toDomain()
     }
 
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
@@ -83,10 +82,9 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     override suspend fun connectAnother(connectCode: String): ConnectInfo? {
-        val dto = syncDataSource.connectAnother(connectCode).getOrThrow()
-        if (dto == null) return null
+        val info = syncDataSource.connectAnother(connectCode).getOrThrow()
+            ?: return null
 
-        val info = dto.toDomain()
         if (!info.isValid()) return null
 
         val myUuid = getUuid()
@@ -152,9 +150,7 @@ class SyncRepositoryImpl @Inject constructor(
         // 1 : 삽입/업데이트만 수행 (isDeleted가 아닌 항목들)
         // 각 항목에 대해서 updatedAt을 비교하여, 로컬보다 더 이후에 변경된 항목만 반영
         val repeatCyclesJob = launch {
-            response.repeatCycles.forEach { dto ->
-                val repeatCycle = dto.toDomain()
-
+            response.repeatCycles.forEach { repeatCycle ->
                 if (!repeatCycle.isDeleted) {
                     val local = localRepeatCycleDataSource.getRepeatCycle(repeatCycle.id)
 
@@ -167,9 +163,7 @@ class SyncRepositoryImpl @Inject constructor(
             }
         }
 
-        response.tags.forEach { dto ->
-            val tag = dto.toDomain()
-
+        response.tags.forEach { tag ->
             if (!tag.isDeleted) {
                 val local = localTagDataSource.getTag(tag.id)
 
@@ -181,8 +175,7 @@ class SyncRepositoryImpl @Inject constructor(
             }
         }
 
-        response.todoInfos.forEach { dto ->
-            val todoInfo = dto.toDomain()
+        response.todoInfos.forEach { todoInfo ->
             val tagExists = localTagDataSource.getTag(todoInfo.tagId) != null
             if (!tagExists) return@forEach
 
@@ -195,9 +188,7 @@ class SyncRepositoryImpl @Inject constructor(
             }
         }
 
-        response.schedules.forEach { dto ->
-            val schedule = dto.toDomain()
-
+        response.schedules.forEach { schedule ->
             if (!schedule.isDeleted) {
                 val infoExists = localTodoDataSource.getTodoInfoEntity(schedule.infoId) != null
                 if (!infoExists) return@forEach
@@ -215,23 +206,19 @@ class SyncRepositoryImpl @Inject constructor(
         repeatCyclesJob.join()
 
         // 2 : Foreign Key 제약조건을 고려하여 삭제 수행
-        // Schedule -> Tag -> RepeatCycle 순서로 삭제
-        response.schedules.forEach { dto ->
-            val schedule = dto.toDomain()
+        response.schedules.forEach { schedule ->
             if (schedule.isDeleted) {
                 localTodoDataSource.hardDeleteTodo(schedule.id)
             }
         }
 
-        response.tags.forEach { dto ->
-            val tag = dto.toDomain()
+        response.tags.forEach { tag ->
             if (tag.isDeleted) {
                 localTagDataSource.hardDeleteTag(tag.id)
             }
         }
 
-        response.repeatCycles.forEach { dto ->
-            val repeatCycle = dto.toDomain()
+        response.repeatCycles.forEach { repeatCycle ->
             if (repeatCycle.isDeleted) {
                 localRepeatCycleDataSource.hardDeleteRepeatCycle(repeatCycle.id)
             }
@@ -280,16 +267,11 @@ class SyncRepositoryImpl @Inject constructor(
         val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
             .getOrThrow()
 
-        val repeatCycles = response.repeatCycles.map { it.toDomain() }
-        val tags = response.tags.map { it.toDomain() }
-        val infos = response.todoInfos.map { it.toDomain() }
-        val schedules = response.schedules.map { it.toDomain() }
-
         localSyncTransactionDataSource.replaceAllData(
-            infos = infos,
-            repeatCycles = repeatCycles,
-            tags = tags,
-            schedules = schedules
+            infos = response.todoInfos,
+            repeatCycles = response.repeatCycles,
+            tags = response.tags,
+            schedules = response.schedules,
         )
 
         localSyncDataSource.setLastSyncTime(response.syncedAt)
