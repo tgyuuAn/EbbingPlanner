@@ -3,6 +3,7 @@ package com.tgyuu.shared.ui.feature.home
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
+import com.tgyuu.shared.domain.model.CalendarDefaultView
 import com.tgyuu.shared.domain.model.SortType
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import kotlinx.collections.immutable.ImmutableList
@@ -20,9 +21,12 @@ data class HomeState(
     val schedulesByTodoInfo: ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> = persistentMapOf(),
     val sortType: SortType = SortType.CREATED,
     val mondayStart: Boolean = false,
+    val calendarDefaultView: CalendarDefaultView = CalendarDefaultView.MONTHLY,
     val showWidgetNudgeDialog: Boolean = false,
     val showInAppReviewDialog: Boolean = false,
 ) : UiState {
+
+    val showWeekOnly: Boolean get() = calendarDefaultView == CalendarDefaultView.WEEKLY
 
     val todaySchedules: ImmutableList<TodoScheduleUiModel>
         get() = selectedDate?.let { schedulesByDateMap[it] } ?: persistentListOf()
@@ -69,6 +73,9 @@ sealed class HomeIntent : UiIntent {
 
     // Memo
     data class OnMemoClick(val schedule: TodoScheduleUiModel) : HomeIntent()
+
+    // Calendar view
+    data class OnCalendarViewChanged(val view: CalendarDefaultView) : HomeIntent()
 
     // Widget
     data object OnWidgetNudgeDismiss : HomeIntent()

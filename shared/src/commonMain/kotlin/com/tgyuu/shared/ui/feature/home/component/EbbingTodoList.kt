@@ -41,7 +41,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.now
@@ -52,6 +55,8 @@ import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+
+private const val TODO_LIST_PAGE_COUNT = 12_001 // ±16년(일)
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -67,10 +72,10 @@ fun EbbingTodoList(
     onSortTypeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val initialPage = Int.MAX_VALUE / 2
+    val initialPage = TODO_LIST_PAGE_COUNT / 2
     val pagerState = rememberPagerState(
         initialPage = initialPage,
-        pageCount = { Int.MAX_VALUE },
+        pageCount = { TODO_LIST_PAGE_COUNT },
     )
 
     var prevPage by remember { mutableIntStateOf(initialPage) }
@@ -124,8 +129,13 @@ private fun TodoHeader(
         val dateText = if (displayDate == LocalDate.now()) "오늘"
         else "${displayDate.monthNumber}월 ${displayDate.dayOfMonth}일"
         Text(
-            text = "$dateText  할 일 $count",
-            style = EbbingTheme.typography.bodyMSB,
+            text = buildAnnotatedString {
+                append("$dateText 할 일 ")
+                withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    append(count.toString())
+                }
+            },
+            style = EbbingTheme.typography.headingMB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f)
         )
@@ -138,7 +148,7 @@ private fun TodoHeader(
         ) {
             Text(
                 text = sortType.displayName,
-                style = EbbingTheme.typography.bodyMSB,
+                style = EbbingTheme.typography.headingMB,
                 color = EbbingTheme.colors.black
             )
             Icon(
@@ -199,7 +209,7 @@ private fun TodoPage(
                     "우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
             style = EbbingTheme.typography.bodySM,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.dark3,
+            color = EbbingTheme.colors.light1,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 30.dp),

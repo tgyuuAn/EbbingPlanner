@@ -8,45 +8,51 @@ import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.persistentSetOf
 
 @Immutable
 data class ScheduleState(
-    val isLoading: Boolean = true,
     val tags: ImmutableList<TodoTagUiModel> = persistentListOf(),
-    val selectedTag: TodoTagUiModel? = null,
-    val todoInfoMap: ImmutableMap<Int, ImmutableList<TodoInfoUiModel>> = persistentMapOf(),
-    val selectedTodoInfo: TodoInfoUiModel? = null,
-    val todoScheduleMap: ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> = persistentMapOf(),
-) : UiState {
-
-    val todoInfoAchievementRateMap: Map<Int, Float>
-        get() = todoInfoMap.values.flatten().associate { info ->
-            val schedules = todoScheduleMap[info.id].orEmpty()
-            val doneCount = schedules.count { it.isDone }
-            val totalCount = schedules.size
-            info.id to if (totalCount > 0) doneCount.toFloat() / totalCount else 0f
-        }
-
-    val tagAchievementRateMap: Map<Int, Float>
-        get() = tags.associate { tag ->
-            val infos = todoInfoMap[tag.id].orEmpty()
-            val infoRates = infos.mapNotNull { todoInfoAchievementRateMap[it.id] }
-            val avgRate = if (infoRates.isNotEmpty()) infoRates.sum() / infoRates.size else 0f
-            tag.id to avgRate
-        }
-
-    val todoInfos: ImmutableList<TodoInfoUiModel>
-        get() = selectedTag?.let { todoInfoMap[it.id] } ?: persistentListOf()
-
-    val todoSchedules: ImmutableList<TodoScheduleUiModel>
-        get() = selectedTodoInfo?.let { todoScheduleMap[it.id] } ?: persistentListOf()
-}
+    val infosByTagMap: ImmutableMap<Int, ImmutableList<TodoInfoUiModel>> = persistentMapOf(),
+    val schedulesByInfoMap: ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> = persistentMapOf(),
+    val expandedTagIds: ImmutableSet<Int> = persistentSetOf(),
+    val expandedInfoIds: ImmutableSet<Int> = persistentSetOf(),
+    val infoScheduleCountMap: ImmutableMap<Int, Int> = persistentMapOf(),
+    val infoAchievementRateMap: ImmutableMap<Int, Float> = persistentMapOf(),
+    val infoAllDoneMap: ImmutableMap<Int, Boolean> = persistentMapOf(),
+    val tagScheduleCountMap: ImmutableMap<Int, Int> = persistentMapOf(),
+    val tagAchievementRateMap: ImmutableMap<Int, Float> = persistentMapOf(),
+    val tagAllDoneMap: ImmutableMap<Int, Boolean> = persistentMapOf(),
+    val visibleTags: ImmutableList<TodoTagUiModel> = persistentListOf(),
+    val pendingDeleteTag: Pair<Int, String>? = null,
+) : UiState
 
 sealed class ScheduleIntent : UiIntent {
-    data object OnBackClick : ScheduleIntent()
-    data class OnTagClick(val tag: TodoTagUiModel) : ScheduleIntent()
-    data class OnInfoClick(val todoInfo: TodoInfoUiModel) : ScheduleIntent()
+    data class OnToggleTagExpand(val tagId: Int) : ScheduleIntent()
+    data class OnToggleInfoExpand(val infoId: Int) : ScheduleIntent()
     data class OnScheduleClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+    data object OnNavigateToAddTodo : ScheduleIntent()
+    data class OnSaveTag(val tagId: Int, val name: String, val color: Int) : ScheduleIntent()
+    data class OnDeleteTag(val tagId: Int) : ScheduleIntent()
+    data class OnRequestDeleteTag(val tagId: Int, val tagName: String) : ScheduleIntent()
+    data object OnClearPendingDeleteTag : ScheduleIntent()
+
+    // 수정하기
+    data class OnUpdateInfoClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+    data class OnUpdateDateClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+
+    // 삭제하기
+    data class OnDeleteSingleClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+    data class OnDeleteRemainingClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+
+    // 미루기
+    data class OnDelaySingleClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+    data class OnDelayAllClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+
+    // 메모
+    data class OnMemoClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
+    data class OnDeleteMemoClick(val schedule: TodoScheduleUiModel) : ScheduleIntent()
 }

@@ -158,7 +158,7 @@ private fun TagItem(
     ) {
         Box(
             modifier = Modifier
-                .size(24.dp)
+                .size(20.dp)
                 .clip(CircleShape)
                 .background(Color(tag.color)),
         )
@@ -167,7 +167,7 @@ private fun TagItem(
 
         Text(
             text = tag.name,
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
@@ -177,7 +177,7 @@ private fun TagItem(
                 Icon(
                     Icons.Filled.Delete,
                     contentDescription = "삭제",
-                    tint = EbbingTheme.colors.error,
+                    tint = EbbingTheme.colors.dark3,
                 )
             }
         }

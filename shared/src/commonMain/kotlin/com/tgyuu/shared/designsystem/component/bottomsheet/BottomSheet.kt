@@ -93,7 +93,7 @@ fun EbbingBottomSheetHeader(
             Text(
                 text = subTitle,
                 style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.dark3,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
         }
@@ -144,7 +144,7 @@ fun EbbingBottomSheetListItemDefault(
 
         Text(
             text = label,
-            style = if (checked) EbbingTheme.typography.bodyMSB else EbbingTheme.typography.bodyMM,
+            style = EbbingTheme.typography.bodyMM,
             color = textColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toKotlinLocalDate
 import java.time.LocalDate
 
 object WidgetUpdater {
@@ -41,7 +42,7 @@ object WidgetUpdater {
         val textAlpha = configRepository.getWidgetTextAlpha().firstOrNull() ?: 1f
         val sortType = configRepository.getSortType()
         val todoLists = todoRepository
-            .loadSchedulesByDate(LocalDate.now())
+            .loadSchedulesByDate(LocalDate.now().toKotlinLocalDate())
             .sortedWith(sortComparator(sortType))
 
         withContext(Dispatchers.IO) {
@@ -81,8 +82,8 @@ object WidgetUpdater {
 
         val now = LocalDate.now()
         val allSchedules = todoRepository.loadTodoSchedulesByDateRange(
-            now.withDayOfMonth(1),
-            now.withDayOfMonth(now.lengthOfMonth())
+            now.withDayOfMonth(1).toKotlinLocalDate(),
+            now.withDayOfMonth(now.lengthOfMonth()).toKotlinLocalDate()
         )
         val byDate = allSchedules.groupBy { it.date }.mapValues { (_, list) ->
             list.sortedWith(sortComparator(sortType))

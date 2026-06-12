@@ -31,7 +31,7 @@ fun EbbingDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Card(
-            colors = cardColors().copy(containerColor = EbbingTheme.colors.background),
+            colors = cardColors().copy(containerColor = EbbingTheme.colors.light3),
             shape = RoundedCornerShape(12.dp),
             modifier = modifier
                 .padding(horizontal = 32.dp)
@@ -54,7 +54,7 @@ fun EbbingDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Card(
-            colors = cardColors().copy(containerColor = EbbingTheme.colors.background),
+            colors = cardColors().copy(containerColor = EbbingTheme.colors.light3),
             shape = RoundedCornerShape(12.dp),
             modifier = modifier
                 .padding(horizontal = 32.dp)
@@ -90,7 +90,7 @@ fun EbbingDialogDefaultTop(
 
         Text(
             text = subText,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.dark3,
             textAlign = TextAlign.Center,
             style = EbbingTheme.typography.bodySM,
         )
@@ -117,7 +117,7 @@ fun EbbingDialogDefaultTop(
 
         Text(
             text = subText,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.dark3,
             style = EbbingTheme.typography.bodySM,
             textAlign = TextAlign.Center,
         )
@@ -148,7 +148,7 @@ fun EbbingDialogDefaultTop(
 
         Text(
             text = subText,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.dark3,
             textAlign = TextAlign.Center,
             style = EbbingTheme.typography.bodySM,
         )

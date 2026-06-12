@@ -1,9 +1,11 @@
 package com.tgyuu.shared.ui.feature.home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,9 +33,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.tgyuu.shared.domain.model.CalendarDefaultView
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomSheet
@@ -169,7 +173,6 @@ fun HomeScreen(
             onSortTypeClick = { viewModel.onIntent(HomeIntent.OnSortTypeClick) },
             onEditScheduleClick = { viewModel.onIntent(HomeIntent.OnEditScheduleClick(it)) },
             onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
-            onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
             modifier = modifier,
         )
     } else {
@@ -181,7 +184,7 @@ fun HomeScreen(
             onSortTypeClick = { viewModel.onIntent(HomeIntent.OnSortTypeClick) },
             onEditScheduleClick = { viewModel.onIntent(HomeIntent.OnEditScheduleClick(it)) },
             onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
-            onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
+            onCalendarViewChanged = { viewModel.onIntent(HomeIntent.OnCalendarViewChanged(it)) },
             modifier = modifier,
         )
     }
@@ -342,6 +345,10 @@ private suspend fun showDelayBottomSheet(
     bottomSheetState.show()
 }
 
+private fun snapToClosestOf(value: Float, candidates: List<Float>): Float {
+    return candidates.minByOrNull { kotlin.math.abs(it - value) } ?: value
+}
+
 @Composable
 private fun PhoneHomeScreen(
     workedDate: LocalDate,
@@ -351,7 +358,7 @@ private fun PhoneHomeScreen(
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
-    onSyncClick: () -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val localDensity = LocalDensity.current
@@ -359,9 +366,27 @@ private fun PhoneHomeScreen(
     val listState = rememberLazyListState()
     var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
-    var isExpanded by remember { mutableStateOf(false) }
-    var calendarHeight by remember { mutableStateOf(1000.dp) }
-    val animatedTopPadding by animateDpAsState(targetValue = if (isExpanded) 0.dp else calendarHeight)
+    var monthlyCalendarHeight by remember { mutableStateOf(1000.dp) }
+    var weeklyCalendarHeight by remember { mutableStateOf(0.dp) }
+    val monthlyCalendarHeightPx = with(localDensity) { monthlyCalendarHeight.toPx() }
+    val weeklyCalendarHeightPx = with(localDensity) { weeklyCalendarHeight.toPx() }
+    val offsetAnimatable = remember { Animatable(monthlyCalendarHeightPx) }
+    val animatedTopPadding = with(localDensity) { offsetAnimatable.value.toDp() }
+    val isCollapsed = offsetAnimatable.value <
+        (weeklyCalendarHeightPx.takeIf { it > 0f } ?: monthlyCalendarHeightPx) / 2
+
+    // calendarDefaultView 변경 시 offset 동기화
+    LaunchedEffect(state.calendarDefaultView, monthlyCalendarHeightPx, weeklyCalendarHeightPx) {
+        when (state.calendarDefaultView) {
+            CalendarDefaultView.DAILY -> offsetAnimatable.snapTo(0f)
+            CalendarDefaultView.WEEKLY -> {
+                if (weeklyCalendarHeightPx > 0f) offsetAnimatable.snapTo(weeklyCalendarHeightPx)
+            }
+            CalendarDefaultView.MONTHLY -> {
+                if (monthlyCalendarHeightPx > 0f) offsetAnimatable.snapTo(monthlyCalendarHeightPx)
+            }
+        }
+    }
 
     LaunchedEffect(workedDate) {
         calendarState.onDateSelect(workedDate)
@@ -376,16 +401,16 @@ private fun PhoneHomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .onGloballyPositioned { coordinates ->
-                    val height = with(localDensity) {
-                        coordinates.size.height.toDp()
-                    }
-                    calendarHeight = height
+                    val height = with(localDensity) { coordinates.size.height.toDp() }
+                    if (state.showWeekOnly) weeklyCalendarHeight = height
+                    else monthlyCalendarHeight = height
                 }
         ) {
             EbbingCalendar(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
                 startFromMonday = state.mondayStart,
+                showWeekOnly = state.showWeekOnly,
                 onSelectDate = {
                     if (selectedDate != it) {
                         scope.launch {
@@ -394,7 +419,6 @@ private fun PhoneHomeScreen(
                         }
                     }
                 },
-                onSyncClick = onSyncClick,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -411,13 +435,74 @@ private fun PhoneHomeScreen(
                 .background(EbbingTheme.colors.background)
         ) {
             Icon(
-                imageVector = if (!isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                imageVector = if (isCollapsed) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
                 contentDescription = null,
                 tint = EbbingTheme.colors.black,
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterHorizontally)
-                    .throttledClickable(throttleTime = 500L) { isExpanded = !isExpanded },
+                    .pointerInput(monthlyCalendarHeightPx, weeklyCalendarHeightPx) {
+                        detectDragGestures(
+                            onDragEnd = {
+                                scope.launch {
+                                    val snapTarget = snapToClosestOf(
+                                        value = offsetAnimatable.value,
+                                        candidates = buildList {
+                                            add(0f)
+                                            if (weeklyCalendarHeightPx > 0f) add(weeklyCalendarHeightPx)
+                                            add(monthlyCalendarHeightPx)
+                                        },
+                                    )
+                                    when (snapTarget) {
+                                        0f -> {
+                                            onCalendarViewChanged(CalendarDefaultView.DAILY)
+                                            offsetAnimatable.animateTo(0f, animationSpec = spring())
+                                        }
+                                        weeklyCalendarHeightPx -> {
+                                            onCalendarViewChanged(CalendarDefaultView.WEEKLY)
+                                            offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+                                        }
+                                        else -> {
+                                            onCalendarViewChanged(CalendarDefaultView.MONTHLY)
+                                            offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
+                                        }
+                                    }
+                                }
+                            },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                scope.launch {
+                                    val newValue = (offsetAnimatable.value + dragAmount.y)
+                                        .coerceIn(0f, monthlyCalendarHeightPx)
+                                    offsetAnimatable.snapTo(newValue)
+                                }
+                            },
+                        )
+                    }
+                    .throttledClickable(throttleTime = 500L) {
+                        when {
+                            isCollapsed -> {
+                                scope.launch {
+                                    offsetAnimatable.animateTo(monthlyCalendarHeightPx, animationSpec = spring())
+                                }
+                                onCalendarViewChanged(CalendarDefaultView.MONTHLY)
+                            }
+                            state.showWeekOnly -> {
+                                onCalendarViewChanged(CalendarDefaultView.DAILY)
+                                scope.launch {
+                                    offsetAnimatable.animateTo(0f, animationSpec = spring())
+                                }
+                            }
+                            else -> {
+                                scope.launch {
+                                    if (weeklyCalendarHeightPx > 0f) {
+                                        offsetAnimatable.animateTo(weeklyCalendarHeightPx, animationSpec = spring())
+                                    }
+                                }
+                                onCalendarViewChanged(CalendarDefaultView.WEEKLY)
+                            }
+                        }
+                    },
             )
 
             if (state.isLoading) {
@@ -467,7 +552,6 @@ private fun TabletHomeScreen(
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
-    onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -494,7 +578,6 @@ private fun TabletHomeScreen(
                     }
                 }
             },
-            onSyncClick = onSyncClick,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(0.8f)

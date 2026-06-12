@@ -16,12 +16,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,14 +31,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
+import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomSheet
+import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.ui.feature.tag.bottomsheet.ColorBottomSheet
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTagScreen(
     viewModel: EditTagViewModel,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+    val scope = rememberCoroutineScope()
+    val bottomSheetState = rememberEbbingBottomSheetState()
+
+    EbbingModalBottomSheet(
+        sheetState = bottomSheetState,
+        onDismissRequest = { scope.launch { bottomSheetState.hide() } },
+    )
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -75,7 +89,6 @@ fun EditTagScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Name Input
             NameContent(
                 name = state.name,
                 onNameChange = { viewModel.onIntent(EditTagIntent.OnNameChange(it)) },
@@ -84,10 +97,22 @@ fun EditTagScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Color Selection
             ColorContent(
                 colorValue = state.colorValue,
-                onColorClick = { viewModel.onIntent(EditTagIntent.OnColorDropDownClick) },
+                onColorClick = {
+                    scope.launch {
+                        bottomSheetState.setBottomSheetContent {
+                            ColorBottomSheet(
+                                currentColor = state.colorValue,
+                                onColorSelect = { color ->
+                                    viewModel.onIntent(EditTagIntent.OnColorChange(color))
+                                },
+                                onDismiss = { scope.launch { bottomSheetState.hide() } },
+                            )
+                        }
+                        bottomSheetState.show()
+                    }
+                },
             )
         }
 

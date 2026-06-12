@@ -30,7 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingCheck
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
@@ -84,7 +88,18 @@ fun MemoScreen(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Spacer(modifier = Modifier.height(24.dp))
+                    state.originSchedule?.let { schedule ->
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                                    append(schedule.title)
+                                }
+                                append(" 일정에\n메모를 ${if (schedule.memo.isNullOrEmpty()) "추가" else "수정"}해요")
+                            },
+                            style = EbbingTheme.typography.headingLSB,
+                            color = EbbingTheme.colors.black,
+                        )
+                    }
                     MemoContent(
                         memo = state.memo,
                         onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
@@ -105,7 +120,18 @@ fun MemoScreen(
                     .padding(20.dp)
                     .imePadding(),
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
+                state.originSchedule?.let { schedule ->
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                                append(schedule.title)
+                            }
+                            append(" 일정에\n메모를 ${if (schedule.memo.isNullOrEmpty()) "추가" else "수정"}해요")
+                        },
+                        style = EbbingTheme.typography.headingLSB,
+                        color = EbbingTheme.colors.black,
+                    )
+                }
                 MemoContent(
                     memo = state.memo,
                     onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
@@ -144,7 +170,7 @@ private fun MemoContent(
     Column(modifier = modifier) {
         Text(
             text = "메모",
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
         )
@@ -193,7 +219,7 @@ private fun PreviewContent(
     Column(modifier = modifier) {
         Text(
             text = "미리보기",
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
         )
@@ -232,7 +258,7 @@ private fun TodoListCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = schedule.title,
-                    style = EbbingTheme.typography.bodyMSB,
+                    style = EbbingTheme.typography.bodyMM,
                     color = EbbingTheme.colors.black,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -241,7 +267,7 @@ private fun TodoListCard(
                 Text(
                     text = schedule.name,
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark1,
+                    color = EbbingTheme.colors.dark3,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -277,7 +303,7 @@ private fun TodoListCard(
                 Text(
                     text = memo,
                     style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.dark1,
+                    color = EbbingTheme.colors.dark3,
                     modifier = Modifier.padding(start = 4.dp),
                 )
             }

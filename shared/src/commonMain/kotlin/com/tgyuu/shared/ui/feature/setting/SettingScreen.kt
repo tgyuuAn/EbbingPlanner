@@ -193,8 +193,8 @@ private fun VersionRow(
     ) {
         Text(
             text = "v$version",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark3,
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
         )
     }
 }
@@ -207,7 +207,7 @@ private fun SectionHeader(
     Text(
         text = text,
         style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        color = EbbingTheme.colors.dark3,
         modifier = modifier.padding(bottom = 8.dp),
     )
 }
@@ -227,8 +227,8 @@ private fun SettingRow(
     ) {
         Text(
             text = title,
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
 
@@ -255,15 +255,15 @@ private fun CalendarBody(
     ) {
         Text(
             text = "달력 시작 요일",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
 
         Row {
             Text(
                 text = "일요일",
-                style = EbbingTheme.typography.bodyMM,
+                style = EbbingTheme.typography.bodyMSB,
                 color = if (!mondayStart) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                 modifier = Modifier
                     .clickable { onUpdateStartDay(false) }
@@ -272,7 +272,7 @@ private fun CalendarBody(
 
             Text(
                 text = "월요일",
-                style = EbbingTheme.typography.bodyMM,
+                style = EbbingTheme.typography.bodyMSB,
                 color = if (mondayStart) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark3,
                 modifier = Modifier
                     .clickable { onUpdateStartDay(true) }
@@ -310,14 +310,14 @@ private fun NotificationBody(
     ) {
         Text(
             text = "알림",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
 
         Text(
             text = if (isEnabled) "ON" else "OFF",
-            style = EbbingTheme.typography.headingSSB,
+            style = EbbingTheme.typography.bodyMSB,
             color = if (isEnabled) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.dark2,
             modifier = Modifier.padding(end = 8.dp),
         )
@@ -366,8 +366,8 @@ private fun InAppReviewRow(
     ) {
         Text(
             text = "앱 리뷰 남기기",
-            style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark1,
+            style = EbbingTheme.typography.bodyMSB,
+            color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
 
