@@ -151,6 +151,10 @@ class HomeViewModel(
                 onNavigateToMemo(intent.schedule.id)
             }
 
+            is HomeIntent.OnCalendarViewChanged -> {
+                setState { copy(calendarDefaultView = intent.view) }
+            }
+
             HomeIntent.OnWidgetNudgeDismiss -> {
                 setState { copy(showWidgetNudgeDialog = false) }
             }

@@ -115,6 +115,7 @@ fun AddTodoScreen(
                     RepeatCycleBottomSheetContent(
                         repeatCycleList = state.repeatCycleList,
                         selectedRepeatCycle = state.repeatCycle,
+                        selectedDate = state.selectedDate,
                         onRepeatCycleSelected = { repeatCycle ->
                             viewModel.onIntent(AddTodoIntent.OnRepeatCycleChange(repeatCycle))
                             scope.launch {

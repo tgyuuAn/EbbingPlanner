@@ -42,6 +42,8 @@ import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.designsystem.model.displayName
 import com.tgyuu.domain.model.SortType
 import kotlinx.datetime.DateTimeUnit
+
+private const val TODO_LIST_PAGE_COUNT = 12_001 // ±16년(일)
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 import kotlinx.datetime.plus

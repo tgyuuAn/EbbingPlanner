@@ -36,6 +36,30 @@ data class CalendarDate(
     val dayOfMonth: Int = date.dayOfMonth
 }
 
+fun getWeekStart(date: LocalDate, startFromMonday: Boolean = false): LocalDate {
+    val iso = date.dayOfWeek.ordinal + 1 // MONDAY=1, ..., SUNDAY=7
+    val daysFromStart = if (startFromMonday) {
+        iso - 1
+    } else {
+        iso % 7
+    }
+    return date.minus(daysFromStart, DateTimeUnit.DAY)
+}
+
+fun weeksBetween(from: LocalDate, to: LocalDate, startFromMonday: Boolean = false): Int {
+    val fromWeekStart = getWeekStart(from, startFromMonday)
+    val toWeekStart = getWeekStart(to, startFromMonday)
+    return ((toWeekStart.toEpochDays() - fromWeekStart.toEpochDays()) / 7).toInt()
+}
+
+fun getWeekDates(date: LocalDate, startFromMonday: Boolean = false): List<CalendarDate> {
+    val weekStart = getWeekStart(date, startFromMonday)
+    return (0..6).map { offset ->
+        val d = weekStart.plus(offset, DateTimeUnit.DAY)
+        CalendarDate(d, isCurrentMonth = d.month == date.month)
+    }
+}
+
 fun getCalendarDates(date: LocalDate, startFromMonday: Boolean = false): List<CalendarDate> {
     val leadingCount = getLeadingEmptyCellCount(date, startFromMonday)
     val current = getCurrentMonthDatesToShow(date)

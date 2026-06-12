@@ -1,6 +1,8 @@
 package com.tgyuu.shared.ui.feature.setting.theme
 
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -49,10 +51,9 @@ fun ThemeScreen(
                 if (!state.isTreatment) {
                 Text(
                     text = "적용",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
-                    else EbbingTheme.typography.bodyMM,
+                    style = EbbingTheme.typography.bodyMM,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
+                    else EbbingTheme.colors.light1,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .clickable(enabled = state.isSaveEnabled) {
@@ -105,36 +106,34 @@ private fun ThemeSelector(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.fillMaxWidth(),
     ) {
         Theme.entries.forEach { theme ->
             val isSelected = theme == selectedTheme
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier.clickable { onThemeSelected(theme) },
             ) {
-                Box(
+                Spacer(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(45.dp)
                         .clip(CircleShape)
-                        .background(Color(theme.lightBg))
-                        .then(
-                            if (isSelected) Modifier.border(3.dp, EbbingTheme.colors.primaryDefault, CircleShape)
-                            else Modifier.border(1.dp, EbbingTheme.colors.light2, CircleShape)
-                        ),
+                        .background(Color(theme.lightBg)),
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = theme.displayName(),
-                    style = if (isSelected) EbbingTheme.typography.bodySSB
-                    else EbbingTheme.typography.bodySM,
-                    color = if (isSelected) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark2,
-                )
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isSelected,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    Text(
+                        text = "\u2713",
+                        style = EbbingTheme.typography.bodyMSB,
+                        color = EbbingTheme.colors.white,
+                    )
+                }
             }
         }
     }
@@ -148,7 +147,7 @@ private fun ThemePreview(
     Column(modifier = modifier) {
         Text(
             text = "미리보기",
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 12.dp),
         )
@@ -200,10 +199,3 @@ private fun PreviewCard(
     }
 }
 
-private fun Theme.displayName(): String = when (this) {
-    Theme.NORMAL -> "기본"
-    Theme.FOREST -> "숲"
-    Theme.SUNSET -> "노을"
-    Theme.MARINE -> "바다"
-    Theme.LILAC -> "라일락"
-}

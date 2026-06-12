@@ -124,5 +124,6 @@ class TodayTodoWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
 
     companion object {
         val TODO_LISTS = stringPreferencesKey("todoLists")
+        const val MAX_VISIBLE_TODOS = 20
     }
 }

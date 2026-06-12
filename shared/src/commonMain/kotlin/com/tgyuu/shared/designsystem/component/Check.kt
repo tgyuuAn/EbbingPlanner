@@ -4,7 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
@@ -29,9 +29,9 @@ fun EbbingCheck(
     )
 
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = CircleShape,
         border = BorderStroke(
-            width = 2.dp,
+            width = 1.dp,
             color = Color(colorValue),
         ),
         color = buttonColor,
@@ -41,7 +41,7 @@ fun EbbingCheck(
             imageVector = Icons.Default.Check,
             tint = EbbingTheme.colors.background,
             contentDescription = null,
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),
         )
     }
 }

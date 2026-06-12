@@ -16,6 +16,8 @@ val analyticsModule = module {
             Configuration(
                 apiKey = BuildConfig.AMPLITUDE_API_KEY,
                 context = androidContext(),
+                flushQueueSize = 30,
+                flushIntervalMillis = 30000,
             )
         )
     }

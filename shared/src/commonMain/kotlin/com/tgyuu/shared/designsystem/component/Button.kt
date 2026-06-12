@@ -38,7 +38,34 @@ fun EbbingSolidButton(
     ) {
         Text(
             text = label,
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
+        )
+    }
+}
+
+@Composable
+fun EbbingRoundSolidButton(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(100.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = EbbingTheme.colors.primaryDefault,
+            contentColor = EbbingTheme.colors.background,
+            disabledContainerColor = EbbingTheme.colors.light1,
+            disabledContentColor = EbbingTheme.colors.background,
+        ),
+        contentPadding = PaddingValues(horizontal = 40.dp, vertical = 12.dp),
+        modifier = modifier,
+    ) {
+        Text(
+            text = label,
+            style = EbbingTheme.typography.headingSB,
         )
     }
 }

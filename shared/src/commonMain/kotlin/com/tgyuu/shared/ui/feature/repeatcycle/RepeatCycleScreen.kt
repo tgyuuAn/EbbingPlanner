@@ -168,7 +168,7 @@ private fun RepeatCycleItem(
     ) {
         Text(
             text = repeatCycle.displayName,
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
@@ -177,7 +177,7 @@ private fun RepeatCycleItem(
             Icon(
                 Icons.Filled.Delete,
                 contentDescription = "삭제",
-                tint = EbbingTheme.colors.error,
+                tint = EbbingTheme.colors.dark3,
             )
         }
     }

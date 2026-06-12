@@ -285,7 +285,8 @@ class SyncRepositoryImpl constructor(
             }
         }
 
-        response.todoInfos.forEach { todoInfo ->
+        response.todoInfos.forEach { dto ->
+            val todoInfo = dto.toDomain()
             val tagExists = localTagDataSource.getTag(todoInfo.tagId) != null
             if (!tagExists) return@forEach
 

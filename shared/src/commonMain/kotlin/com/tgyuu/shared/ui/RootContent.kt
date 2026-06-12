@@ -70,6 +70,7 @@ import com.tgyuu.shared.ui.feature.setting.theme.ThemeViewModel
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.common.toFormattedString
 import kotlinx.datetime.LocalDate
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 private enum class BottomNavItem(
@@ -123,10 +124,17 @@ fun RootContent(
         )
     }
 
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val scheduleViewModel = remember {
         ScheduleViewModel(
             todoRepository = todoRepository,
-            onNavigateBack = { component.navigateToHome() },
+            analyticsHelper = analyticsHelper,
+            onNavigateToAddTodo = { date -> component.navigateToAddTodo(date) },
+            onNavigateToEditTodo = { scheduleId -> component.navigateToEditTodo(scheduleId) },
+            onNavigateToEditDate = { infoId -> component.navigateToEditDate(infoId) },
+            onNavigateToMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
+            onNavigateToEditMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
+            onShowSnackBar = { /* TODO: snackbar host */ },
         )
     }
 
