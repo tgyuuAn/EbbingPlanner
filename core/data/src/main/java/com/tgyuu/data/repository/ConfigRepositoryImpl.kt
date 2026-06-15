@@ -105,6 +105,12 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun setCalendarDefaultView(view: CalendarDefaultView) =
         localUserConfigDataSource.setCalendarDefaultView(view)
 
+    override fun getAutoBackupEnabled(): Flow<Boolean> =
+        localUserConfigDataSource.autoBackupEnabled
+
+    override suspend fun setAutoBackupEnabled(enabled: Boolean) =
+        localUserConfigDataSource.setAutoBackupEnabled(enabled)
+
     private suspend fun logNotificationConfigSilently() = runCatching {
         val uuid = localSyncDataSource.uuid.first()
         val enabled = localUserConfigDataSource.notificationEnabled.first()

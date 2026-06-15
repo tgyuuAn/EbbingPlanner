@@ -11,6 +11,9 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
+import com.tgyuu.domain.repository.FeatureFlag
+import com.tgyuu.domain.repository.FeatureFlagRepository
+import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.inappreview.InAppReviewManager
 import com.tgyuu.inappupdate.InAppUpdateManager
@@ -37,11 +40,13 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
+    private val syncRepository: SyncRepository,
     private val todoRepository: TodoRepository,
     private val alarmScheduler: AlarmScheduler,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
+    private val featureFlagRepository: FeatureFlagRepository,
     val inAppReviewManager: InAppReviewManager,
     val inAppUpdateManager: InAppUpdateManager,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
@@ -83,6 +88,22 @@ class SettingViewModel @Inject constructor(
                     .collect { setState { copy(mondayStart = it) } }
             }
 
+            launch {
+                featureFlagRepository.fetchAndAwait()
+                val featureEnabled = featureFlagRepository.getBoolean(FeatureFlag.USE_AUTO_BACKUP)
+                setState { copy(autoBackupFeatureEnabled = featureEnabled) }
+
+                if (featureEnabled) {
+                    configRepository.getAutoBackupEnabled()
+                        .collect { setState { copy(autoBackupEnabled = it) } }
+                }
+            }
+
+            launch {
+                val lastSyncTime = syncRepository.getLocalSyncedAt()
+                setState { copy(lastSyncTime = lastSyncTime) }
+            }
+
             configRepository.getNotificationEnabled()
                 .collect { setState { copy(notificationEnabled = it) } }
         }
@@ -110,6 +131,7 @@ class SettingViewModel @Inject constructor(
             is SettingIntent.OnUpdateClick -> onUpdateClick(intent.isImmediateUpdate)
             is SettingIntent.OnStartDayClick -> onStartDayClick(intent.content)
             is SettingIntent.OnUpdateStartDay -> onUpdateStartDay(intent.mondayStart)
+            SettingIntent.OnAutoBackupToggleClick -> onAutoBackupToggleClick()
         }
     }
 
@@ -240,6 +262,13 @@ class SettingViewModel @Inject constructor(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "StartDay")
         )
         eventBus.sendEvent(EbbingEvent.ShowBottomSheet(content))
+    }
+
+    private suspend fun onAutoBackupToggleClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AutoBackup_Toggle")
+        )
+        configRepository.setAutoBackupEnabled(!currentState.autoBackupEnabled)
     }
 
     private suspend fun onUpdateStartDay(mondayStart: Boolean) {

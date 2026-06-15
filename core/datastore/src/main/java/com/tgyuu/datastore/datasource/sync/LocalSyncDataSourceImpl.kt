@@ -2,6 +2,7 @@ package com.tgyuu.datastore.datasource.sync
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
@@ -86,11 +87,20 @@ class LocalSyncDataSourceImpl @Inject constructor(
         }
     }
 
+    override val backupPending: Flow<Boolean>
+        get() = dataStore.data
+            .map { prefs -> prefs[BACKUP_PENDING] ?: false }
+
+    override suspend fun setBackupPending(pending: Boolean) {
+        dataStore.edit { prefs -> prefs[BACKUP_PENDING] = pending }
+    }
+
     companion object {
         private val UUID = stringPreferencesKey("UUID")
         private val CONNECTED_UUID = stringPreferencesKey("CONNECTED_UUID")
         private val LAST_SYNC_TIME = stringPreferencesKey("LAST_SYNC_TIME")
         private val CONNECT_CODE = stringPreferencesKey("CONNECT_CODE")
         private val CONNECT_CODE_EXPIRATION_TIME = stringPreferencesKey("CODE_EXPIRATION_TIME")
+        private val BACKUP_PENDING = booleanPreferencesKey("BACKUP_PENDING")
     }
 }

@@ -70,6 +70,8 @@ import com.tgyuu.setting.graph.ui.bottomsheet.AlarmTimeBottomSheet
 import com.tgyuu.setting.graph.ui.bottomsheet.CalendarStartDayBottomSheet
 import com.tgyuu.setting.graph.ui.dialog.ConfirmClearDialog
 import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 private val SettingItemVerticalPadding = 16.dp
 private val SettingDividerBottomPadding = 16.dp
@@ -151,6 +153,7 @@ internal fun SettingRoute(
         onUpdateClick = { isImmediateUpdate ->
             viewModel.onIntent(SettingIntent.OnUpdateClick(isImmediateUpdate))
         },
+        onAutoBackupToggleClick = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) },
     )
 }
 
@@ -172,6 +175,7 @@ private fun SettingScreen(
     onStartDayClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
+    onAutoBackupToggleClick: () -> Unit,
 ) {
     var isShowClearConfirm by remember { mutableStateOf(false) }
     if (isShowClearConfirm) {
@@ -203,6 +207,7 @@ private fun SettingScreen(
             onStartDayClick = onStartDayClick,
             onInAppReviewClick = onInAppReviewClick,
             onUpdateClick = onUpdateClick,
+            onAutoBackupToggleClick = onAutoBackupToggleClick,
         )
     } else {
         TabletSettingScreen(
@@ -222,6 +227,7 @@ private fun SettingScreen(
             onStartDayClick = onStartDayClick,
             onInAppReviewClick = onInAppReviewClick,
             onUpdateClick = onUpdateClick,
+            onAutoBackupToggleClick = onAutoBackupToggleClick,
         )
     }
 }
@@ -244,6 +250,7 @@ private fun PhoneSettingScreen(
     onStartDayClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
+    onAutoBackupToggleClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -282,8 +289,12 @@ private fun PhoneSettingScreen(
             )
 
             DataBody(
+                autoBackupFeatureEnabled = state.autoBackupFeatureEnabled,
+                autoBackupEnabled = state.autoBackupEnabled,
+                lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
                 onSyncClick = onSyncClick,
                 onClearClick = onClearClick,
+                onAutoBackupToggleClick = onAutoBackupToggleClick,
             )
 
             ThemeBody(
@@ -331,6 +342,7 @@ private fun TabletSettingScreen(
     onStartDayClick: () -> Unit,
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
+    onAutoBackupToggleClick: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
@@ -368,8 +380,12 @@ private fun TabletSettingScreen(
                 )
 
                 DataBody(
+                    autoBackupFeatureEnabled = state.autoBackupFeatureEnabled,
+                    autoBackupEnabled = state.autoBackupEnabled,
+                    lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
                     onSyncClick = onSyncClick,
                     onClearClick = onClearClick,
+                    onAutoBackupToggleClick = onAutoBackupToggleClick,
                 )
             }
 
@@ -643,8 +659,12 @@ private fun TagRepeatCycleBody(
 
 @Composable
 private fun DataBody(
+    autoBackupFeatureEnabled: Boolean,
+    autoBackupEnabled: Boolean,
+    lastSyncTime: String?,
     onSyncClick: () -> Unit,
     onClearClick: () -> Unit,
+    onAutoBackupToggleClick: () -> Unit,
 ) {
     Text(
         text = "데이터",
@@ -672,6 +692,40 @@ private fun DataBody(
             contentDescription = "상세 내용",
             modifier = Modifier.padding(start = 4.dp),
         )
+    }
+
+    if (autoBackupFeatureEnabled) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = SettingItemVerticalPadding),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = stringResource(R.string.setting_auto_backup),
+                    style = EbbingTheme.typography.heading16SB,
+                    color = EbbingTheme.colors.textOnBackground,
+                    modifier = Modifier.weight(1f),
+                )
+
+                EbbingToggle(
+                    checked = autoBackupEnabled,
+                    onCheckedChange = { onAutoBackupToggleClick() },
+                )
+            }
+
+            if (lastSyncTime != null) {
+                Text(
+                    text = stringResource(R.string.setting_last_sync_time, lastSyncTime),
+                    style = EbbingTheme.typography.body14M,
+                    color = EbbingTheme.colors.textSub,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+        }
     }
 
     Row(
@@ -1057,6 +1111,13 @@ private fun PreviewSettingScreen() {
             onStartDayClick = {},
             onInAppReviewClick = {},
             onUpdateClick = {},
+            onAutoBackupToggleClick = {},
         )
     }
 }
+
+private val syncTimeFormatter: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")
+
+private fun formatSyncTime(time: ZonedDateTime): String =
+    time.toLocalDateTime().format(syncTimeFormatter)

@@ -11,6 +11,8 @@
     <string name="setting_version">현재 버전 정보 %1$s</string>
     <string name="setting_inquiry">문의</string>
     <string name="setting_contact_us">문의하기</string>
+    <string name="setting_auto_backup">자동 백업</string>
+    <string name="setting_last_sync_time">마지막 동기화: %1$s</string>
 
     <string name="onboarding_1_title">하루 만에 60%가 사라집니다</string>
     <string name="onboarding_1_description">Hermann Ebbinghaus의 연구에 따르면, 복습하지 않으면\n하루 만에 기억의 60% 이상이 소실됩니다.</string>

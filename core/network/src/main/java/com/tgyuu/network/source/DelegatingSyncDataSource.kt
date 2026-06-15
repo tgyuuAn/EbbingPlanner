@@ -5,6 +5,7 @@ import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
+import com.tgyuu.domain.repository.FeatureFlag
 import com.tgyuu.network.source.firestore.FirestoreSyncDataSource
 import java.time.ZonedDateTime
 import java.util.Date
@@ -19,7 +20,7 @@ class DelegatingSyncDataSource @Inject constructor(
 ) : SyncRemoteDataSource {
 
     private val delegate: SyncRemoteDataSource
-        get() = if (featureFlagDataSource.getBooleanSync(FeatureFlagDataSource.USE_SUPABASE_SYNC)) {
+        get() = if (featureFlagDataSource.getBoolean(FeatureFlag.USE_SUPABASE_SYNC)) {
             supabaseDataSource
         } else {
             firestoreDataSource

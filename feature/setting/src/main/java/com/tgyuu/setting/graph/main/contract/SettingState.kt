@@ -3,6 +3,7 @@ package com.tgyuu.setting.graph.main.contract
 import com.tgyuu.common.base.UiState
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
+import java.time.ZonedDateTime
 
 data class SettingState(
     val updateInfo: UpdateInfo? = null,
@@ -13,6 +14,9 @@ data class SettingState(
     val alarmMessage: String = DEFAULT_ALARM_MESSAGE,
     val alarmMessageBottomSheet: AlarmMessageBottomSheetState = AlarmMessageBottomSheetState(),
     val mondayStart: Boolean = false,
+    val autoBackupFeatureEnabled: Boolean = false,
+    val autoBackupEnabled: Boolean = false,
+    val lastSyncTime: ZonedDateTime? = null,
 ) : UiState
 
 data class AlarmMessageBottomSheetState(

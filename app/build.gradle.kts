@@ -83,6 +83,8 @@ dependencies {
     implementation(projects.feature.widget)
     baselineProfile(projects.baselineprofile)
 
+    testImplementation(libs.mockk)
+
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.adaptive.navigation.suite)
