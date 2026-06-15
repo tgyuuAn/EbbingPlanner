@@ -9,11 +9,8 @@ import com.tgyuu.sync.network.NetworkState
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
@@ -65,57 +62,68 @@ class AutoBackupManagerTest {
     }
 
     @Test
-    fun `네트워크 미연결 시 pending을 true로 설정한다`() = runTest {
+    fun `네트워크 미연결 시 백업하지 않고 pending 상태가 된다`() = runTest {
         networkState.value = NetworkState.NotConnected
 
         autoBackupManager.onAppStop()
 
         assertEquals(0, syncRepository.syncUpCallCount)
-        assertTrue(syncRepository.getBackupPending().first())
+
+        // 네트워크 복구 후 tryPendingBackup 호출 시 백업이 수행되어야 한다
+        networkState.value = NetworkState.Connected
+        autoBackupManager.tryPendingBackup()
+
+        assertEquals(1, syncRepository.syncUpCallCount)
     }
 
     @Test
-    fun `cool time 미경과 시 pending을 true로 설정한다`() = runTest {
+    fun `cool time 미경과 시 백업하지 않고 pending 상태가 된다`() = runTest {
         syncRepository.serverLastUpdatedAt = ZonedDateTime.now()
 
         autoBackupManager.onAppStop()
 
         assertEquals(0, syncRepository.syncUpCallCount)
-        assertTrue(syncRepository.getBackupPending().first())
     }
 
     @Test
-    fun `정상 조건에서 syncUpData를 호출하고 pending을 false로 설정한다`() = runTest {
+    fun `정상 조건에서 syncUpData를 호출한다`() = runTest {
         autoBackupManager.onAppStop()
 
         assertEquals(1, syncRepository.syncUpCallCount)
-        assertFalse(syncRepository.getBackupPending().first())
     }
 
     @Test
-    fun `syncUpData 실패 시 pending을 true로 설정한다`() = runTest {
+    fun `syncUpData 실패 시 pending 상태가 된다`() = runTest {
         syncRepository.shouldSyncFail = true
 
         autoBackupManager.onAppStop()
 
         assertEquals(1, syncRepository.syncUpCallCount)
-        assertTrue(syncRepository.getBackupPending().first())
+
+        // 실패 후 재시도 시 백업이 수행되어야 한다
+        syncRepository.shouldSyncFail = false
+        autoBackupManager.tryPendingBackup()
+
+        assertEquals(2, syncRepository.syncUpCallCount)
     }
 
     @Test
-    fun `tryPendingBackup은 pending이 false면 백업하지 않는다`() = runTest {
+    fun `tryPendingBackup은 pending이 아니면 백업하지 않는다`() = runTest {
         autoBackupManager.tryPendingBackup()
 
         assertEquals(0, syncRepository.syncUpCallCount)
     }
 
     @Test
-    fun `tryPendingBackup은 정상 조건에서 syncUpData를 호출하고 pending을 false로 설정한다`() = runTest {
-        syncRepository.setBackupPending(true)
+    fun `tryPendingBackup은 pending 상태에서 백업을 수행한다`() = runTest {
+        // onAppStop에서 네트워크 미연결로 pending 상태 만들기
+        networkState.value = NetworkState.NotConnected
+        autoBackupManager.onAppStop()
 
+        // 네트워크 복구
+        networkState.value = NetworkState.Connected
         autoBackupManager.tryPendingBackup()
 
         assertEquals(1, syncRepository.syncUpCallCount)
-        assertFalse(syncRepository.getBackupPending().first())
     }
 }

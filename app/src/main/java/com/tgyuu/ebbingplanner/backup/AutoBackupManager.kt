@@ -24,6 +24,7 @@ class AutoBackupManager @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
 ) {
     private var backupJob: Job? = null
+    private var backupPending: Boolean = false
 
     suspend fun onAppStop() {
         if (!featureFlagRepository.getBoolean(FeatureFlag.USE_AUTO_BACKUP)) return
@@ -33,13 +34,13 @@ class AutoBackupManager @Inject constructor(
 
         if (networkMonitor.networkState.value == NetworkState.Connected) {
             if (!isCoolTimeElapsed()) {
-                syncRepository.setBackupPending(true)
+                backupPending = true
                 return
             }
 
             cancelAndBackup()
         } else {
-            syncRepository.setBackupPending(true)
+            backupPending = true
         }
     }
 
@@ -49,8 +50,7 @@ class AutoBackupManager @Inject constructor(
         val enabled = configRepository.getAutoBackupEnabled().first()
         if (!enabled) return
 
-        val pending = syncRepository.getBackupPending().first()
-        if (!pending) return
+        if (!backupPending) return
 
         if (networkMonitor.networkState.value != NetworkState.Connected) return
         if (!isCoolTimeElapsed()) return
@@ -64,9 +64,9 @@ class AutoBackupManager @Inject constructor(
             suspendRunCatching {
                 syncRepository.syncUpData()
             }.onSuccess {
-                syncRepository.setBackupPending(false)
+                backupPending = false
             }.onFailure {
-                syncRepository.setBackupPending(true)
+                backupPending = true
             }
         }
     }
