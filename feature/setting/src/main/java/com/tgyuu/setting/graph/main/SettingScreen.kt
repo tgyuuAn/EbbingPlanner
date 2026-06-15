@@ -681,7 +681,7 @@ private fun DataBody(
             .clickable { onSyncClick() },
     ) {
         Text(
-            text = "다른 기기와 동기화 하기",
+            text = "다른 기기에서도 사용하기",
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),

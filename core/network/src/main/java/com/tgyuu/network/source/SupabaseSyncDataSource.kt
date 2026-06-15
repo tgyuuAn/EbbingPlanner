@@ -2,6 +2,7 @@ package com.tgyuu.network.source
 
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.sync.ConnectInfo
+import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
@@ -30,22 +31,28 @@ class SupabaseSyncDataSource @Inject constructor(
     private val supabase: SupabaseClient,
 ) : SyncRemoteDataSource {
 
-    override suspend fun getSyncInfo(uuid: String): ZonedDateTime? {
-        return supabase.from(TABLE_SYNC_INFO)
+    override suspend fun getSyncInfo(uuid: String): SyncInfoResult? {
+        val dto = supabase.from(TABLE_SYNC_INFO)
             .select { filter { eq("uuid", uuid) } }
             .decodeSingleOrNull<SyncInfoDto>()
-            ?.toDomain()
+            ?: return null
+
+        return SyncInfoResult(
+            lastUpdatedAt = dto.toLastUpdatedAt(),
+            deviceName = dto.deviceName,
+        )
     }
 
     override suspend fun uploadData(
         uuid: String,
+        deviceName: String,
         schedules: List<TodoScheduleForSync>,
         infos: List<TodoInfoForSync>,
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
     ): ZonedDateTime = coroutineScope {
         supabase.from(TABLE_SYNC_INFO)
-            .upsert(SyncInfoDto(uuid = uuid))
+            .upsert(SyncInfoDto(uuid = uuid, deviceName = deviceName))
 
         val schedulesJob = async {
             if (schedules.isNotEmpty()) {
@@ -82,7 +89,10 @@ class SupabaseSyncDataSource @Inject constructor(
 
         val now = ZonedDateTime.now()
         supabase.from(TABLE_SYNC_INFO)
-            .update({ set("last_updated_at", now.format(ISO_FORMAT)) }) {
+            .update({
+                set("last_updated_at", now.format(ISO_FORMAT))
+                set("device_name", deviceName)
+            }) {
                 filter { eq("uuid", uuid) }
             }
 
@@ -133,12 +143,12 @@ class SupabaseSyncDataSource @Inject constructor(
                 todoInfos = todoInfosDeferred.await().map { it.toDomain() },
                 repeatCycles = repeatCyclesDeferred.await().map { it.toDomain() },
                 tags = tagsDeferred.await().map { it.toDomain() },
-                syncedAt = syncInfoDeferred.await()?.toDomain(),
+                syncedAt = syncInfoDeferred.await()?.toLastUpdatedAt(),
             )
         }
     }
 
-    override suspend fun generateConnectCode(uuid: String, connectCode: String): ZonedDateTime {
+    override suspend fun generateConnectCode(uuid: String, connectCode: String, deviceName: String): ZonedDateTime {
         val expirationTime = LocalDateTime.now()
             .plusMinutes(10L)
             .atZone(ZoneId.systemDefault())
@@ -149,6 +159,7 @@ class SupabaseSyncDataSource @Inject constructor(
                     uuid = uuid,
                     connectCode = connectCode,
                     expirationTime = expirationTime.format(ISO_FORMAT),
+                    deviceName = deviceName,
                 )
             )
 
@@ -162,6 +173,39 @@ class SupabaseSyncDataSource @Inject constructor(
                 .decodeSingleOrNull<ConnectDto>()
                 ?.toDomain()
         }
+
+    override suspend fun markConnected(connectCode: String, connectorUuid: String, connectorDeviceName: String) {
+        supabase.from(TABLE_CONNECT_CODES).update(
+            {
+                set("connected_uuid", connectorUuid)
+                set("connected_device_name", connectorDeviceName)
+            },
+        ) {
+            filter { eq("connect_code", connectCode) }
+        }
+    }
+
+    override suspend fun getConnectedPeer(connectCode: String): ConnectedPeer? {
+        val dto = supabase.from(TABLE_CONNECT_CODES)
+            .select { filter { eq("connect_code", connectCode) } }
+            .decodeSingleOrNull<ConnectDto>()
+            ?: return null
+
+        val peerUuid = dto.connectedUuid
+        val peerName = dto.connectedDeviceName
+        if (peerUuid.isNullOrEmpty() || peerName.isNullOrEmpty()) return null
+
+        return ConnectedPeer(
+            uuid = peerUuid,
+            deviceName = peerName,
+        )
+    }
+
+    override suspend fun deleteConnectCode(connectCode: String) {
+        supabase.from(TABLE_CONNECT_CODES).delete {
+            filter { eq("connect_code", connectCode) }
+        }
+    }
 
     private companion object {
         private const val TABLE_SYNC_INFO = "sync_info"

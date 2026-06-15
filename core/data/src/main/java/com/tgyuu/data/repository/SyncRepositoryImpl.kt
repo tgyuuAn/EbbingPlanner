@@ -5,8 +5,11 @@ import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
 import com.tgyuu.datastore.datasource.sync.LocalSyncDataSource
-import com.tgyuu.domain.model.sync.ConnectInfo
+import com.tgyuu.deviceinfo.DeviceInfoProvider
+import com.tgyuu.domain.model.sync.ConnectResult
+import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
+import com.tgyuu.domain.model.sync.ServerSyncInfo
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
@@ -28,18 +31,26 @@ class SyncRepositoryImpl @Inject constructor(
     private val localRepeatCycleDataSource: LocalRepeatCycleDataSource,
     private val localSyncDataSource: LocalSyncDataSource,
     private val localSyncTransactionDataSource: LocalSyncTransactionDataSource,
+    private val deviceInfoProvider: DeviceInfoProvider,
 ) : SyncRepository {
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
     override suspend fun getUuid(): String = localSyncDataSource.uuid.first()
     override suspend fun getConnectedUuid(): String? = localSyncDataSource.connectedUuid.first()
-    override suspend fun getServerLastUpdatedAt(): ZonedDateTime? = coroutineScope {
+    override suspend fun getDeviceName(): String = deviceInfoProvider.getDeviceName()
+
+    override suspend fun getServerLastUpdatedAt(): ServerSyncInfo? = coroutineScope {
         val uuidDeferred = async { getUuid() }
         val connectedUuidDeferred = async { getConnectedUuid() }
 
         val uuid = uuidDeferred.await()
         val connectedUuid = connectedUuidDeferred.await()
 
-        syncDataSource.getSyncInfo(connectedUuid ?: uuid)
+        val result = syncDataSource.getSyncInfo(connectedUuid ?: uuid) ?: return@coroutineScope null
+
+        ServerSyncInfo(
+            lastUpdatedAt = result.lastUpdatedAt,
+            connectedDeviceName = result.deviceName,
+        )
     }
 
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
@@ -52,9 +63,12 @@ class SyncRepositoryImpl @Inject constructor(
 
     override suspend fun generateConnectCode(connectCode: String): ZonedDateTime =
         coroutineScope {
+            uploadData()
+
             val response = syncDataSource.generateConnectCode(
                 uuid = getUuid(),
                 connectCode = connectCode,
+                deviceName = getDeviceName(),
             )
 
             val codeExpirationJob = launch {
@@ -81,29 +95,83 @@ class SyncRepositoryImpl @Inject constructor(
         return null
     }
 
-    override suspend fun connectAnother(connectCode: String): ConnectInfo? {
-        val info = syncDataSource.connectAnother(connectCode).getOrThrow()
-            ?: return null
+    override suspend fun connectAnother(connectCode: String): ConnectResult {
+        if (getConnectedUuid() != null) return ConnectResult.AlreadyLinkedSelf
 
-        if (!info.isValid()) return null
+        val info = syncDataSource.connectAnother(connectCode).getOrThrow()
+            ?: return ConnectResult.InvalidOrExpired
+
+        if (!info.isValid()) return ConnectResult.InvalidOrExpired
 
         val myUuid = getUuid()
-        if (info.uuid == myUuid) return info
+        if (info.uuid == myUuid) return ConnectResult.Success(info)
+
+        val existingConnectedUuid = info.connectedUuid
+        if (!existingConnectedUuid.isNullOrEmpty() && existingConnectedUuid != myUuid) {
+            return ConnectResult.CodeAlreadyTaken
+        }
 
         localSyncDataSource.setLastSyncTime(null)
         localSyncDataSource.setConnectedUuid(info.uuid)
         replaceData()
-        return info
+
+        syncDataSource.markConnected(
+            connectCode = connectCode,
+            connectorUuid = myUuid,
+            connectorDeviceName = getDeviceName(),
+        )
+        localSyncDataSource.setLinkCode(connectCode)
+        return ConnectResult.Success(info)
     }
 
     override suspend fun disconnectAnother() {
+        localSyncDataSource.linkCode.first()?.let { syncDataSource.deleteConnectCode(it) }
         localSyncDataSource.setConnectedUuid(null)
         localSyncDataSource.setLastSyncTime(null)
+        localSyncDataSource.setPeer(null, null)
+        localSyncDataSource.setLinkCode(null)
+    }
+
+    override suspend fun setLinkCode(code: String?) = localSyncDataSource.setLinkCode(code)
+
+    override suspend fun getLinkCode(): String? = localSyncDataSource.linkCode.first()
+
+    override suspend fun isLinkAlive(): Boolean {
+        val code = localSyncDataSource.linkCode.first() ?: return false
+        return syncDataSource.getConnectedPeer(code) != null
+    }
+
+    override suspend fun clearLinkLocal() {
+        localSyncDataSource.setConnectedUuid(null)
+        localSyncDataSource.setLastSyncTime(null)
+        localSyncDataSource.setPeer(null, null)
+        localSyncDataSource.setLinkCode(null)
+    }
+
+    override suspend fun clearMyConnectCode() {
+        localSyncDataSource.setConnectCode(null)
+        localSyncDataSource.setConnectCodeExpirationTime(null)
+    }
+
+    override suspend fun pollConnectedPeer(): ConnectedPeer? {
+        val myConnectCode = localSyncDataSource.connectCode.first() ?: return null
+        return syncDataSource.getConnectedPeer(myConnectCode)
+    }
+
+    override suspend fun getStoredPeer(): ConnectedPeer? {
+        val uuid = localSyncDataSource.peerUuid.first() ?: return null
+        val deviceName = localSyncDataSource.peerDeviceName.first() ?: return null
+        return ConnectedPeer(uuid = uuid, deviceName = deviceName)
+    }
+
+    override suspend fun setStoredPeer(peer: ConnectedPeer?) {
+        localSyncDataSource.setPeer(peer?.uuid, peer?.deviceName)
     }
 
     private suspend fun uploadData(): ZonedDateTime = coroutineScope {
         val uuidDeferred = async { getUuid() }
         val linkedUuidDeferred = async { getConnectedUuid() }
+        val deviceNameDeferred = async { getDeviceName() }
 
         val schedules = async { loadSchedulesForSync() }
         val infos = async { loadTodoInfosForSync() }
@@ -112,9 +180,11 @@ class SyncRepositoryImpl @Inject constructor(
 
         val uuid = uuidDeferred.await()
         val linkedUuid = linkedUuidDeferred.await()
+        val deviceName = deviceNameDeferred.await()
 
         val response = syncDataSource.uploadData(
             uuid = linkedUuid ?: uuid,
+            deviceName = deviceName,
             schedules = schedules.await(),
             infos = infos.await(),
             repeatCycles = repeatCycles.await(),

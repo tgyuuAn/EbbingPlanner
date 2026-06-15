@@ -20,7 +20,6 @@ class FeatureFlagDataSource @Inject constructor(
         )
         remoteConfig.setDefaultsAsync(
             mapOf(
-                FeatureFlag.USE_SUPABASE_SYNC to false,
                 FeatureFlag.USE_AUTO_BACKUP to false,
             )
         )

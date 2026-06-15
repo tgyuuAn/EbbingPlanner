@@ -1,12 +1,18 @@
 package com.tgyuu.network.source
 
 import com.tgyuu.domain.model.sync.ConnectInfo
+import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
 import java.time.ZonedDateTime
 import java.util.Date
+
+data class SyncInfoResult(
+    val lastUpdatedAt: ZonedDateTime?,
+    val deviceName: String,
+)
 
 data class SyncDownloadResult(
     val schedules: List<TodoScheduleForSync>,
@@ -17,15 +23,19 @@ data class SyncDownloadResult(
 )
 
 interface SyncRemoteDataSource {
-    suspend fun getSyncInfo(uuid: String): ZonedDateTime?
+    suspend fun getSyncInfo(uuid: String): SyncInfoResult?
     suspend fun uploadData(
         uuid: String,
+        deviceName: String,
         schedules: List<TodoScheduleForSync>,
         infos: List<TodoInfoForSync>,
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
     ): ZonedDateTime
     suspend fun downloadData(uuid: String, lastSyncTime: Date): Result<SyncDownloadResult>
-    suspend fun generateConnectCode(uuid: String, connectCode: String): ZonedDateTime
+    suspend fun generateConnectCode(uuid: String, connectCode: String, deviceName: String): ZonedDateTime
     suspend fun connectAnother(connectCode: String): Result<ConnectInfo?>
+    suspend fun markConnected(connectCode: String, connectorUuid: String, connectorDeviceName: String)
+    suspend fun getConnectedPeer(connectCode: String): ConnectedPeer?
+    suspend fun deleteConnectCode(connectCode: String)
 }

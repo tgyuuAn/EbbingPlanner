@@ -4,20 +4,28 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,14 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowWidthSizeClass
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -45,7 +48,6 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.connect.ui.QrCodeCameraPreview
@@ -56,7 +58,6 @@ import com.tgyuu.sync.graph.main.ui.dialog.CameraPermissionDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmDisconnectDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncUpDialog
 import kotlinx.coroutines.launch
-import java.time.ZonedDateTime
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -191,85 +192,59 @@ internal fun SyncMainScreen(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
+        modifier = modifier.fillMaxSize(),
     ) {
         EbbingSubTopBar(
-            title = "동기화",
+            title = "다른 기기에서도 사용하기",
             onNavigationClick = if (state.isScanning) onDismissScan else onBackClick,
-            modifier = Modifier.padding(bottom = 20.dp),
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 20.dp),
         )
 
         if (state.isScanning) {
             ScanQrBody(
                 isLoading = state.isScanLoading,
                 onQrDetected = onQrDetected,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
             )
         } else {
-            val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    SyncInfoBody(state = state)
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                if (state.linkedUuid != null) {
+                    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                        ConnectedDeviceSection(
+                            state = state,
+                            onDisconnectClick = { isShowDisconnectDialog = true },
+                        )
 
-                    SyncUpBody(
-                        isConnected = state.linkedUuid != null,
-                        isSyncUpEnabled = state.isSyncUpEnabled,
-                        onSyncUpClick = {
-                            if (state.isSyncUpEnabled) isShowSyncDialog = true
-                            else showSyncedAlreadySnackBar()
-                        },
-                        onDisconnectClick = { isShowDisconnectDialog = true },
-                    )
+                        Spacer(modifier = Modifier.height(26.dp))
 
-                    QrBody(
-                        state = state,
-                        onClickGenerateCode = onClickGenerateCode,
-                        onScanQrClick = onScanQrClick,
-                    )
-
-                    DescriptionBody()
-                }
-            } else {
-                Row(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .fillMaxWidth(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f)
-                            .padding(end = 20.dp),
-                    ) {
-                        SyncInfoBody(state = state)
-
-                        SyncUpBody(
-                            isConnected = state.linkedUuid != null,
-                            isSyncUpEnabled = state.isSyncUpEnabled,
+                        LastSyncSection(
+                            state = state,
                             onSyncUpClick = {
                                 if (state.isSyncUpEnabled) isShowSyncDialog = true
                                 else showSyncedAlreadySnackBar()
                             },
-                            onDisconnectClick = { isShowDisconnectDialog = true },
                         )
+                    }
 
-                        QrBody(
+                    SectionDivider()
+                } else {
+                    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                        QrCardSection(
                             state = state,
                             onClickGenerateCode = onClickGenerateCode,
                             onScanQrClick = onScanQrClick,
-                            )
+                        )
                     }
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f)
-                            .padding(start = 20.dp),
-                    ) {
-                        DescriptionBody()
-                    }
+                    SectionDivider()
+                }
+
+                Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    AdvancedInfoSection(state = state)
                 }
             }
         }
@@ -277,119 +252,204 @@ internal fun SyncMainScreen(
 }
 
 @Composable
-private fun SyncInfoBody(state: SyncMainState) {
-    if (state.linkedUuid != null) {
-        LinkedUuidBody(
-            linkedUuid = state.linkedUuid,
-            lastSyncedAt = state.localLastSyncedAt,
-            lastUpdatedAt = state.serverLastUpdatedAt,
+private fun QrCardSection(
+    state: SyncMainState,
+    onClickGenerateCode: () -> Unit,
+    onScanQrClick: () -> Unit,
+) {
+    Text(
+        text = "새로운 기기와 연결",
+        style = EbbingTheme.typography.heading14SB,
+        color = EbbingTheme.colors.textOnBackground,
+        modifier = Modifier.padding(bottom = 16.dp),
+    )
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        QrActionCard(
+            label = "QR 생성하기",
+            description = "이 기기 일정을 다른 기기로 보내요",
+            buttonLabel = "QR 생성하기",
+            buttonIconRes = R.drawable.ic_qr_code,
+            onClick = onClickGenerateCode,
+            timerText = if (!state.isGenerateButtonEnabled) state.formattedRemainingTimeInSec else null,
         )
-    } else {
-        UuidBody(
-            uuid = state.uuid,
-            lastSyncedAt = state.localLastSyncedAt,
-            lastUpdatedAt = state.serverLastUpdatedAt,
+
+        QrActionCard(
+            label = "QR 스캔하기",
+            description = "다른 기기 일정을 이 기기로 가져와요",
+            warningText = "현재 기기의 일정은 다른 기기의 일정으로 교체됩니다.",
+            buttonLabel = "QR 스캔하기",
+            buttonIconRes = R.drawable.ic_line_scan,
+            onClick = onScanQrClick,
         )
     }
 }
 
 @Composable
-private fun UuidBody(
-    uuid: String,
-    lastSyncedAt: ZonedDateTime?,
-    lastUpdatedAt: ZonedDateTime?,
+private fun QrActionCard(
+    label: String,
+    description: String,
+    buttonLabel: String,
+    buttonIconRes: Int,
+    onClick: () -> Unit,
+    warningText: String? = null,
+    timerText: String? = null,
 ) {
-    Text(
-        text = "해당 디바이스의 고유 ID :",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = uuid,
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 12.dp)
-    )
+            .border(
+                width = 1.dp,
+                color = EbbingTheme.colors.strokeOutline,
+                shape = RoundedCornerShape(8.dp),
+            )
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(bottom = 20.dp),
+        ) {
+            Text(
+                text = label,
+                style = EbbingTheme.typography.body14M,
+                color = EbbingTheme.colors.textSub,
+            )
 
-    SyncTimestamps(lastSyncedAt = lastSyncedAt, lastUpdatedAt = lastUpdatedAt)
+            Text(
+                text = description,
+                style = EbbingTheme.typography.heading16SB,
+                color = EbbingTheme.colors.textOnBackground,
+            )
+
+            if (warningText != null) {
+                Text(
+                    text = warningText,
+                    style = EbbingTheme.typography.caption12R,
+                    color = EbbingTheme.colors.statusError,
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = EbbingTheme.colors.strokePrimary,
+                    shape = RoundedCornerShape(6.dp),
+                )
+                .clickable { onClick() }
+                .padding(vertical = 10.dp),
+        ) {
+            Image(
+                painter = painterResource(buttonIconRes),
+                contentDescription = buttonLabel,
+                modifier = Modifier.size(20.dp),
+            )
+
+            Spacer(modifier = Modifier.size(4.dp))
+
+            Text(
+                text = buttonLabel,
+                style = EbbingTheme.typography.heading14B,
+                color = EbbingTheme.colors.textPrimary,
+            )
+
+            if (timerText != null) {
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Text(
+                    text = timerText,
+                    style = EbbingTheme.typography.body14M,
+                    color = EbbingTheme.colors.primaryNormal,
+                )
+            }
+        }
+    }
 }
 
 @Composable
-private fun LinkedUuidBody(
-    linkedUuid: String,
-    lastSyncedAt: ZonedDateTime?,
-    lastUpdatedAt: ZonedDateTime?,
-) {
-    Text(
-        text = "연동 되어있는 ID :",
-        style = EbbingTheme.typography.heading14SB,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = linkedUuid,
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
+private fun SectionDivider() {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 12.dp)
-    )
-
-    SyncTimestamps(lastSyncedAt = lastSyncedAt, lastUpdatedAt = lastUpdatedAt)
-}
-
-@Composable
-private fun SyncTimestamps(
-    lastSyncedAt: ZonedDateTime?,
-    lastUpdatedAt: ZonedDateTime?,
-) {
-    Text(
-        text = "해당 기기의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-    )
-    Text(
-        text = lastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-    )
-    Text(
-        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-    )
-    Text(
-        text = lastUpdatedAt?.toLocalDateTime()?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-    )
-    HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp),
+            .padding(vertical = 26.dp)
+            .height(6.dp)
+            .background(EbbingTheme.colors.fillTextfield),
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SyncUpBody(
-    isConnected: Boolean,
-    isSyncUpEnabled: Boolean,
-    onSyncUpClick: () -> Unit,
+private fun ConnectedDeviceSection(
+    state: SyncMainState,
     onDisconnectClick: () -> Unit,
 ) {
     Text(
-        text = "데이터 동기화",
+        text = "연결된 기기",
         style = EbbingTheme.typography.body14M,
-        color = EbbingTheme.colors.textDisabled,
+        color = EbbingTheme.colors.textSub,
+        modifier = Modifier.padding(bottom = 12.dp),
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {},
+                onLongClick = onDisconnectClick,
+            )
+            .padding(vertical = 12.dp),
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(32.dp)
+                .background(
+                    color = EbbingTheme.colors.fillTextfield,
+                    shape = RoundedCornerShape(6.dp),
+                ),
+        ) {
+            Text(
+                text = state.connectedDeviceEmoji,
+                style = EbbingTheme.typography.heading16SB,
+            )
+        }
+
+        Text(
+            text = state.connectedDeviceName ?: "알 수 없는 기기",
+            style = EbbingTheme.typography.heading14SB,
+            color = EbbingTheme.colors.textOnBackground,
+        )
+
+        Text(
+            text = state.connectedDeviceUuidPrefix,
+            style = EbbingTheme.typography.body14M,
+            color = EbbingTheme.colors.textDisabled,
+        )
+    }
+
+    HorizontalDivider(
+        thickness = 1.dp,
+        color = EbbingTheme.colors.strokeOutline,
+    )
+}
+
+@Composable
+private fun LastSyncSection(
+    state: SyncMainState,
+    onSyncUpClick: () -> Unit,
+) {
+    Text(
+        text = "마지막 동기화",
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -397,127 +457,49 @@ private fun SyncUpBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 17.dp)
-            .clickable { onSyncUpClick() },
+            .clickable { onSyncUpClick() }
+            .padding(vertical = 4.dp),
     ) {
         Text(
-            text = "서버와 내 기기 동기화하기",
-            style = EbbingTheme.typography.heading18B,
-            color = if (isSyncUpEnabled) EbbingTheme.colors.textSub
-            else EbbingTheme.colors.textSub.copy(alpha = 0.5f),
+            text = state.localLastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
-            modifier = Modifier.padding(start = 4.dp),
+            contentDescription = null,
         )
     }
-
-    if (isConnected) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 17.dp)
-                .clickable { onDisconnectClick() },
-        ) {
-            Text(
-                text = "연동 해제하기",
-                style = EbbingTheme.typography.heading18B,
-                color = EbbingTheme.colors.textSub,
-                modifier = Modifier.weight(1f),
-            )
-
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_right),
-                contentDescription = "상세 내용",
-                modifier = Modifier.padding(start = 4.dp),
-            )
-        }
-    }
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.fillTextfield,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp),
-    )
 }
 
 @Composable
-private fun QrBody(
+private fun AdvancedInfoSection(
     state: SyncMainState,
-    onClickGenerateCode: () -> Unit,
-    onScanQrClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = "다른 기기와 연동",
-            style = EbbingTheme.typography.body14M,
-            color = EbbingTheme.colors.textDisabled,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
+    Text(
+        text = "고급 정보",
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textSub,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 17.dp)
-                .clickable { onClickGenerateCode() },
-        ) {
-            Text(
-                text = "내 기기 QR 생성",
-                style = EbbingTheme.typography.heading18B,
-                color = EbbingTheme.colors.textSub,
-                modifier = Modifier.weight(1f),
-            )
+    Text(
+        text = "해당 디바이스의 고유 ID :",
+        style = EbbingTheme.typography.body14M,
+        color = EbbingTheme.colors.textSub,
+        modifier = Modifier.padding(bottom = 8.dp),
+    )
 
-            if (!state.isGenerateButtonEnabled) {
-                Text(
-                    text = state.formattedRemainingTimeInSec,
-                    style = EbbingTheme.typography.body14M,
-                    color = EbbingTheme.colors.primaryNormal,
-                    modifier = Modifier.padding(end = 4.dp),
-                )
-            }
-
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_right),
-                contentDescription = "상세 내용",
-                modifier = Modifier.padding(start = 4.dp),
-            )
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 17.dp)
-                .clickable { onScanQrClick() },
-        ) {
-            Text(
-                text = "다른 기기 QR 스캔",
-                style = EbbingTheme.typography.heading18B,
-                color = EbbingTheme.colors.textSub,
-                modifier = Modifier.weight(1f),
-            )
-
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_right),
-                contentDescription = "상세 내용",
-                modifier = Modifier.padding(start = 4.dp),
-            )
-        }
-
-        HorizontalDivider(
-            color = EbbingTheme.colors.fillTextfield,
-            thickness = 1.dp,
-            modifier = Modifier.padding(vertical = 16.dp),
-        )
-
-    }
+    Text(
+        text = state.displayDeviceInfo,
+        style = EbbingTheme.typography.caption14R,
+        color = EbbingTheme.colors.primaryNormal,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp),
+    )
 }
 
 @Composable
@@ -539,34 +521,4 @@ private fun ScanQrBody(
             )
         }
     }
-}
-
-@Composable
-private fun DescriptionBody() {
-    Text(
-        text = buildAnnotatedString {
-            append("- 동기화는 기기의 변경 사항을 서버에 반영하고, 서버의 최신 데이터를 가져오는 양방향 동기화 방식입니다.\n")
-            append("- ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
-                append("수정한 데이터")
-            }
-            append("는 이 과정을 거쳐야 다른 기기와 공유됩니다.\n")
-            append("- 동기화 시 서로 다른 기기에서 수정한 내용이 있는 경우 ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
-                append("최근 수정된 데이터로 반영")
-            }
-            append("됩니다.\n")
-            append("- QR 코드는 ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
-                append("10분간 유효")
-            }
-            append("하며, 스캔하는 기기의 ")
-            withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
-                append("기존 데이터는 덮어씌워집니다.")
-            }
-        },
-        textAlign = TextAlign.Start,
-        style = EbbingTheme.typography.body16M,
-        color = EbbingTheme.colors.textSub,
-    )
 }

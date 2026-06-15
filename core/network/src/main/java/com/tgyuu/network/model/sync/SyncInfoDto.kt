@@ -10,8 +10,9 @@ data class SyncInfoDto(
     val uuid: String = "",
     @SerialName("connected_uuid") val connectedUuid: String? = null,
     @SerialName("last_updated_at") val lastUpdatedAt: String? = null,
+    @SerialName("device_name") val deviceName: String = "",
 ) {
-    fun toDomain(): ZonedDateTime? = lastUpdatedAt?.let { value ->
+    fun toLastUpdatedAt(): ZonedDateTime? = lastUpdatedAt?.let { value ->
         runCatching {
             ZonedDateTime.parse(value).withZoneSameInstant(ZoneId.systemDefault())
         }.getOrNull()

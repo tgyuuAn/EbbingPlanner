@@ -74,7 +74,7 @@ class AutoBackupManager @Inject constructor(
     private suspend fun isCoolTimeElapsed(): Boolean {
         val serverLastUpdatedAt = suspendRunCatching {
             syncRepository.getServerLastUpdatedAt()
-        }.getOrNull()
+        }.getOrNull()?.lastUpdatedAt
             ?: return true
 
         val elapsedMillis = Duration.between(serverLastUpdatedAt, ZonedDateTime.now()).toMillis()
