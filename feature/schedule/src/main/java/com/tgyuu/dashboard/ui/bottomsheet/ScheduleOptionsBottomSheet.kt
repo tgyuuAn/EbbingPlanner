@@ -349,7 +349,7 @@ private fun BottomSheetOptionItem(
     onClick: () -> Unit,
 ) {
     Box(
-        contentAlignment = Alignment.CenterStart,
+        contentAlignment = Alignment.TopStart,
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
