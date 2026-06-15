@@ -55,6 +55,9 @@ class AlarmScheduler @Inject constructor(
         alarmManager.cancel(buildPendingIntent(date))
     }
 
+    fun canScheduleExact(): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()
+
     private fun buildPendingIntent(date: LocalDate): PendingIntent =
         Intent(context, TodoAlarmReceiver::class.java).apply {
             putExtra("date", date.toString())
