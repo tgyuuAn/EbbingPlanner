@@ -144,6 +144,14 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[CALENDAR_DEFAULT_VIEW] = view.name }
     }
 
+    override val autoBackupEnabled: Flow<Boolean>
+        get() = dataStore.data
+            .map { prefs -> prefs[AUTO_BACKUP_ENABLED] ?: true }
+
+    override suspend fun setAutoBackupEnabled(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[AUTO_BACKUP_ENABLED] = enabled }
+    }
+
     override suspend fun consumeInAppReview(): Boolean {
         var shouldShow = false
         dataStore.edit { prefs ->
@@ -192,5 +200,6 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val TODO_REGISTERED_COUNT = intPreferencesKey("TODO_REGISTERED_COUNT")
         private val MONDAY_START = booleanPreferencesKey("MONDAY_START")
         private val CALENDAR_DEFAULT_VIEW = stringPreferencesKey("CALENDAR_DEFAULT_VIEW")
+        private val AUTO_BACKUP_ENABLED = booleanPreferencesKey("AUTO_BACKUP_ENABLED")
     }
 }

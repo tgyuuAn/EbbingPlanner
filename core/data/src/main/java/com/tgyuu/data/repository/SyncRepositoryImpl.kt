@@ -14,6 +14,7 @@ import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.network.source.SyncRemoteDataSource
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -277,6 +278,11 @@ class SyncRepositoryImpl @Inject constructor(
         localSyncDataSource.setLastSyncTime(response.syncedAt)
         response.syncedAt
     }
+
+    override fun getBackupPending(): Flow<Boolean> = localSyncDataSource.backupPending
+
+    override suspend fun setBackupPending(pending: Boolean) =
+        localSyncDataSource.setBackupPending(pending)
 
     private companion object {
         val EPOCH: LocalDateTime = LocalDateTime.of(1970, 1, 1, 0, 0)

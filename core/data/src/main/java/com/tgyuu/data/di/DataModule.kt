@@ -2,10 +2,12 @@ package com.tgyuu.data.di
 
 import com.tgyuu.data.repository.ConfigRepositoryImpl
 import com.tgyuu.data.repository.ErrorRepositoryImpl
+import com.tgyuu.data.repository.FeatureFlagRepositoryImpl
 import com.tgyuu.data.repository.SyncRepositoryImpl
 import com.tgyuu.data.repository.TodoRepositoryImpl
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ErrorRepository
+import com.tgyuu.domain.repository.FeatureFlagRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
 import dagger.Binds
@@ -33,4 +35,8 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindErrorRepository(errorRepositoryImpl: ErrorRepositoryImpl): ErrorRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFeatureFlagRepository(featureFlagRepositoryImpl: FeatureFlagRepositoryImpl): FeatureFlagRepository
 }

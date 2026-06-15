@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.LocalAnalyticsHelper
+import com.tgyuu.ebbingplanner.backup.AutoBackupManager
 import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -50,6 +51,7 @@ import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.sync.network.NetworkMonitor
+import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -72,6 +74,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
+    @Inject
+    lateinit var autoBackupManager: AutoBackupManager
+
     private var isInitialized = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +89,14 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             viewModel.initAppState()
             isInitialized = false
+        }
+
+        lifecycleScope.launch {
+            networkMonitor.networkState.collect { state ->
+                if (state == NetworkState.Connected) {
+                    autoBackupManager.tryPendingBackup()
+                }
+            }
         }
 
         setContent {
@@ -141,6 +154,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
+        if (!isChangingConfigurations) {
+            lifecycleScope.launch { autoBackupManager.onAppStop() }
+        }
+
         sendBroadcast(
             Intent(this, TodayTodoWidgetReceiver::class.java).apply {
                 action = RefreshAction.UPDATE_ACTION

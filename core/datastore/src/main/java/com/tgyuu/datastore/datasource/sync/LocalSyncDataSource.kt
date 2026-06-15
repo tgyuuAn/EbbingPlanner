@@ -15,4 +15,6 @@ interface LocalSyncDataSource {
     suspend fun setConnectCode(linkCode: String?)
     suspend fun setLastSyncTime(time: ZonedDateTime?)
     suspend fun setConnectCodeExpirationTime(time: ZonedDateTime?)
+    val backupPending: Flow<Boolean>
+    suspend fun setBackupPending(pending: Boolean)
 }

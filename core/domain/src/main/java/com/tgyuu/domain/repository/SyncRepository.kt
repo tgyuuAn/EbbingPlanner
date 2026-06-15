@@ -1,6 +1,7 @@
 package com.tgyuu.domain.repository
 
 import com.tgyuu.domain.model.sync.ConnectInfo
+import kotlinx.coroutines.flow.Flow
 import java.time.ZonedDateTime
 
 interface SyncRepository {
@@ -15,4 +16,6 @@ interface SyncRepository {
     suspend fun getConnectCodeExpiration(): ZonedDateTime?
     suspend fun connectAnother(connectCode: String): ConnectInfo?
     suspend fun disconnectAnother()
+    fun getBackupPending(): Flow<Boolean>
+    suspend fun setBackupPending(pending: Boolean)
 }

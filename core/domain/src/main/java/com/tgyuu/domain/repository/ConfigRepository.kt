@@ -37,6 +37,8 @@ interface ConfigRepository {
     suspend fun setMondayStart(enabled: Boolean)
     fun getCalendarDefaultView(): Flow<CalendarDefaultView>
     suspend fun setCalendarDefaultView(view: CalendarDefaultView)
+    fun getAutoBackupEnabled(): Flow<Boolean>
+    suspend fun setAutoBackupEnabled(enabled: Boolean)
 
     companion object {
         const val DEFAULT_ALARM_MESSAGE: String = "{할일} 을 확인하고, 잊지 말고 복습하세요!"
