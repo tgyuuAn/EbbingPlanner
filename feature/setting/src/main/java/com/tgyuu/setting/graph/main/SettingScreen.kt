@@ -254,7 +254,7 @@ private fun PhoneSettingScreen(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
-            title = "설정",
+            title = stringResource(R.string.setting_title),
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -346,7 +346,7 @@ private fun TabletSettingScreen(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
-            title = "설정",
+            title = stringResource(R.string.setting_title),
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -443,7 +443,7 @@ private fun NotificationBody(
     }
 
     Text(
-        text = "알림",
+        text = stringResource(R.string.setting_notification),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -459,7 +459,7 @@ private fun NotificationBody(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "알림 설정",
+            text = stringResource(R.string.setting_notification_setting),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -492,7 +492,7 @@ private fun NotificationBody(
                 .padding(vertical = SettingItemVerticalPadding),
         ) {
             Text(
-                text = "알림 시간",
+                text = stringResource(R.string.setting_alarm_time),
                 style = EbbingTheme.typography.heading16SB,
                 color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
@@ -524,7 +524,7 @@ private fun NotificationBody(
                 .clickable { onAlarmMessageClick() },
         ) {
             Text(
-                text = "알림 메시지",
+                text = stringResource(R.string.setting_alarm_message),
                 style = EbbingTheme.typography.heading16SB,
                 color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
@@ -532,7 +532,7 @@ private fun NotificationBody(
 
             Image(
                 painter = painterResource(R.drawable.ic_arrow_right),
-                contentDescription = "상세 내용",
+                contentDescription = stringResource(R.string.setting_detail_content),
                 modifier = Modifier.padding(start = 4.dp),
             )
         }
@@ -553,7 +553,7 @@ private fun CalendarStartDayBody(
     onStartDayClick: () -> Unit,
 ) {
     Text(
-        text = "달력",
+        text = stringResource(R.string.setting_calendar),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -566,16 +566,20 @@ private fun CalendarStartDayBody(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "달력 시작 요일",
+            text = stringResource(R.string.setting_calendar_start_day),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
+        val startDayText =
+            if (mondayStart) stringResource(R.string.setting_monday)
+            else stringResource(R.string.setting_sunday)
+
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                    append(if (mondayStart) "월요일" else "일요일")
+                    append(startDayText)
                 }
             },
             textAlign = TextAlign.End,
@@ -600,7 +604,7 @@ private fun TagRepeatCycleBody(
     onRepeatCycleManageClick: () -> Unit,
 ) {
     Text(
-        text = "태그 / 반복 주기",
+        text = stringResource(R.string.setting_tag_repeat_cycle),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -614,7 +618,7 @@ private fun TagRepeatCycleBody(
             .clickable { onTagManageClick() },
     ) {
         Text(
-            text = "태그 관리",
+            text = stringResource(R.string.setting_tag_manage),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -622,7 +626,7 @@ private fun TagRepeatCycleBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -635,7 +639,7 @@ private fun TagRepeatCycleBody(
             .clickable { onRepeatCycleManageClick() },
     ) {
         Text(
-            text = "반복 주기 관리",
+            text = stringResource(R.string.setting_repeat_cycle_manage),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -643,7 +647,7 @@ private fun TagRepeatCycleBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -667,7 +671,7 @@ private fun DataBody(
     onAutoBackupToggleClick: () -> Unit,
 ) {
     Text(
-        text = "데이터",
+        text = stringResource(R.string.setting_data),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -681,7 +685,7 @@ private fun DataBody(
             .clickable { onSyncClick() },
     ) {
         Text(
-            text = "다른 기기에서도 사용하기",
+            text = stringResource(R.string.setting_use_on_other_device),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -689,7 +693,7 @@ private fun DataBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -736,7 +740,7 @@ private fun DataBody(
             .clickable { onClearClick() },
     ) {
         Text(
-            text = "데이터 초기화 하기",
+            text = stringResource(R.string.setting_clear_data),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -744,7 +748,7 @@ private fun DataBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -763,7 +767,7 @@ private fun InquiryBody() {
     val context = LocalContext.current
 
     Text(
-        text = "문의",
+        text = stringResource(R.string.setting_inquiry),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -782,7 +786,7 @@ private fun InquiryBody() {
             },
     ) {
         Text(
-            text = "문의하기",
+            text = stringResource(R.string.setting_contact_us),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -790,7 +794,7 @@ private fun InquiryBody() {
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -814,7 +818,7 @@ private fun InAppReviewRow(onInAppReviewClick: () -> Unit) {
             .clickable { onInAppReviewClick() },
     ) {
         Text(
-            text = "앱 리뷰 작성",
+            text = stringResource(R.string.setting_app_review),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -822,7 +826,7 @@ private fun InAppReviewRow(onInAppReviewClick: () -> Unit) {
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -857,7 +861,7 @@ private fun AnnouncementBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -878,7 +882,7 @@ private fun AnnouncementBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -899,7 +903,7 @@ private fun AnnouncementBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -941,7 +945,7 @@ private fun ThemeBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -962,7 +966,7 @@ private fun ThemeBody(
 
         Image(
             painter = painterResource(R.drawable.ic_arrow_right),
-            contentDescription = "상세 내용",
+            contentDescription = stringResource(R.string.setting_detail_content),
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -1002,7 +1006,7 @@ private fun UpdateBody(
 
             Image(
                 painter = painterResource(R.drawable.ic_arrow_right),
-                contentDescription = "상세 내용",
+                contentDescription = stringResource(R.string.setting_detail_content),
                 modifier = Modifier
                     .padding(start = 4.dp)
                     .clickable { onUpdateClick(isImmediateUpdate) },

@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +56,7 @@ import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.designsystem.R
 import com.tgyuu.home.graph.addtodo.contract.NotificationState
 import com.tgyuu.home.graph.notification.ui.dialog.AlarmTimeDialog
 
@@ -170,7 +172,7 @@ private fun NotificationScreenPhone(
                 .verticalScroll(scrollState)
                 .padding(vertical = 20.dp),
         ) {
-            NotificationHeader(nudgeText = state.nudgeText)
+            NotificationHeader()
 
             NotificationToggleSection(
                 checked = state.notificationEnabled,
@@ -222,7 +224,7 @@ private fun NotificationScreenPhone(
 
         if (isTreatment) {
             EbbingSolidButton(
-                label = "저장",
+                label = stringResource(R.string.home_save),
                 onClick = {
                     analyticsHelper.logEvent(
                         AnalyticsEvent.Click(
@@ -318,7 +320,7 @@ private fun NotificationScreenTablet(
                     .padding(20.dp)
                     .padding(horizontal = 20.dp),
             ) {
-                NotificationHeader(nudgeText = state.nudgeText)
+                NotificationHeader()
 
                 NotificationToggleSection(
                     checked = state.notificationEnabled,
@@ -387,12 +389,12 @@ private fun NotificationTopBar(
     onSaveClick: () -> Unit,
 ) {
     EbbingSubTopBar(
-        title = "알림 설정",
+        title = stringResource(R.string.home_notification_title),
         onNavigationClick = onBackClick,
         rightComponent = {
             if (!isTreatment) {
                 Text(
-                    text = "저장",
+                    text = stringResource(R.string.home_save),
                     style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.primaryNormal,
                     modifier = Modifier
@@ -415,16 +417,16 @@ private fun NotificationTopBar(
 }
 
 @Composable
-private fun NotificationHeader(nudgeText: String) {
+private fun NotificationHeader() {
     Text(
-        text = nudgeText,
+        text = stringResource(R.string.home_notification_nudge),
         style = EbbingTheme.typography.heading24B,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(horizontal = 20.dp),
     )
 
     Text(
-        text = "알림을 설정하면 다음 복습일에 일정을 알려드려요.\n알림은 언제든 설정 탭에서 변경할 수 있어요.",
+        text = stringResource(R.string.home_notification_header_sub),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textDisabled,
         modifier = Modifier
@@ -447,7 +449,7 @@ private fun NotificationToggleSection(
             .padding(horizontal = 20.dp),
     ) {
         Text(
-            text = "알림 받기",
+            text = stringResource(R.string.home_notification_receive),
             style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textSub,
             modifier = Modifier.padding(end = 8.dp),
@@ -518,7 +520,7 @@ private fun AlarmTimeRow(
             .padding(bottom = 40.dp),
     ) {
         Text(
-            text = "알림 시간",
+            text = stringResource(R.string.home_alarm_time),
             style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textSub,
             modifier = Modifier.padding(end = 8.dp),
@@ -552,18 +554,34 @@ private fun AlarmMessageSection(
     onMessageChange: (String) -> Unit,
     onResetClick: () -> Unit,
 ) {
+    val errorMessage = when {
+        state.placeholderCount > 1 -> stringResource(R.string.home_alarm_placeholder_error)
+        !state.isValidLength -> stringResource(R.string.home_alarm_length_error)
+        else -> ""
+    }
+    val previewSample = stringResource(R.string.home_alarm_preview_sample)
+    val placeholderToken = stringResource(R.string.home_alarm_placeholder_token)
+    val previewMessage = when {
+        state.placeholderCount == 1 -> state.message.replace(placeholderToken, previewSample)
+        state.placeholderCount == 0 -> state.message
+        else -> ""
+    }
+    val lengthText = stringResource(R.string.home_alarm_length_text, state.messageLength)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
         Text(
-            text = "알림 메시지",
+            text = stringResource(R.string.home_alarm_message),
             style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textSub,
             modifier = Modifier.padding(bottom = 6.dp),
         )
 
+        val placeholderToken = stringResource(R.string.home_alarm_placeholder_token)
+        val placeholderDesc = stringResource(R.string.home_alarm_placeholder_desc)
         Text(
             text = buildAnnotatedString {
                 withStyle(
@@ -572,9 +590,9 @@ private fun AlarmMessageSection(
                         fontWeight = FontWeight.Bold
                     )
                 ) {
-                    append("{할일}")
+                    append(placeholderToken)
                 }
-                append("은 할 일 제목으로 자동 변환됩니다 (최대 1번)")
+                append(placeholderDesc)
             },
             style = EbbingTheme.typography.body14M,
             color = EbbingTheme.colors.textDisabled,
@@ -584,7 +602,7 @@ private fun AlarmMessageSection(
         EbbingTextInputDefault(
             value = state.message,
             onValueChange = onMessageChange,
-            hint = "알림 메시지를 입력하세요",
+            hint = stringResource(R.string.home_alarm_message_hint),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp),
@@ -597,14 +615,14 @@ private fun AlarmMessageSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = state.errorMessage,
+                text = errorMessage,
                 style = EbbingTheme.typography.caption12R,
                 color = EbbingTheme.colors.statusError,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
-                text = state.lengthText,
+                text = lengthText,
                 style = EbbingTheme.typography.caption12R,
                 color = if (state.isValidLength) EbbingTheme.colors.textDisabled else EbbingTheme.colors.statusError,
             )
@@ -612,8 +630,8 @@ private fun AlarmMessageSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (state.isValidPlaceholder && state.previewMessage.isNotEmpty()) {
-            MessagePreview(previewMessage = state.previewMessage)
+        if (state.isValidPlaceholder && previewMessage.isNotEmpty()) {
+            MessagePreview(previewMessage = previewMessage)
         }
 
         if (state.shouldShowResetButton) {
@@ -634,7 +652,7 @@ private fun MessagePreview(previewMessage: String) {
             .padding(vertical = 12.dp, horizontal = 16.dp),
     ) {
         Text(
-            text = "미리보기",
+            text = stringResource(R.string.home_alarm_preview),
             style = EbbingTheme.typography.caption12R,
             color = EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(bottom = 4.dp),
@@ -653,7 +671,7 @@ private fun ResetButton(
     onResetClick: () -> Unit,
 ) {
     Text(
-        text = "알림 메시지 기본값으로 복원",
+        text = stringResource(R.string.home_alarm_reset),
         style = EbbingTheme.typography.heading14SB,
         color = EbbingTheme.colors.textDisabled,
         modifier = Modifier

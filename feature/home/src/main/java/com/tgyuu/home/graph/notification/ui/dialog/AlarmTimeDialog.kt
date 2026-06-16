@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -39,8 +41,8 @@ internal fun AlarmTimeDialog(
         onDismissRequest = onDismissRequest,
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "알림 시간",
-                subText = "언제 남은 일정 알림을 보낼까요?",
+                title = stringResource(R.string.home_alarm_time),
+                subText = stringResource(R.string.home_alarm_time_sub),
             )
         },
         dialogBottom = {
@@ -63,7 +65,7 @@ internal fun AlarmTimeDialog(
                 )
 
                 EbbingSolidButton(
-                    label = "적용하기",
+                    label = stringResource(R.string.home_apply),
                     onClick = {
                         val adjustedHour = when {
                             newAmPm == "오후" && newHour == 12 -> 12

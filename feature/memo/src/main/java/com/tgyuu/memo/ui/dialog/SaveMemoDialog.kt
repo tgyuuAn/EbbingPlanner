@@ -1,6 +1,8 @@
 package com.tgyuu.memo.ui.dialog
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
@@ -15,14 +17,14 @@ internal fun SaveMemoDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "메모 저장 범위를 선택하세요",
-                subText = "한 일정만 또는 관련 일정 전체에\n저장할 수 있어요"
+                title = stringResource(R.string.memo_save_scope_title),
+                subText = stringResource(R.string.memo_save_scope_subtext)
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "선택한 일정만",
-                rightButtonText = "관련 일정 모두 (${relatedCount}개)",
+                leftButtonText = stringResource(R.string.memo_save_scope_single),
+                rightButtonText = stringResource(R.string.memo_save_scope_all, relatedCount),
                 onLeftButtonClick = onSaveToSingleClick,
                 onRightButtonClick = onSaveToAllClick,
             )

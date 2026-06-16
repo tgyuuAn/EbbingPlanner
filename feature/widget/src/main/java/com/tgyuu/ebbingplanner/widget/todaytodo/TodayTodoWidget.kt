@@ -13,6 +13,7 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
@@ -100,6 +101,7 @@ private fun TodayTodoWidgetContent(
     todoLists: List<TodoSchedule>,
     bitmaps: TodayTodoBitmaps,
 ) {
+    val context = LocalContext.current
     val backgroundImage = when (alpha) {
         0.25f -> R.drawable.shape_widget_background_25
         0.5f -> R.drawable.shape_widget_background_25
@@ -147,12 +149,12 @@ private fun TodayTodoWidgetContent(
                 if (bitmaps.header != null) {
                     Image(
                         provider = ImageProvider(bitmaps.header),
-                        contentDescription = "오늘 할 일",
+                        contentDescription = context.getString(com.tgyuu.designsystem.R.string.widget_today_todo),
                         colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                     )
                 } else {
                     Text(
-                        text = "오늘 할 일   ",
+                        text = context.getString(com.tgyuu.designsystem.R.string.widget_today_todo_spaced),
                         style = EbbingWidgetTypography.heading18B.copy(
                             color = LocalEbbingWidgetColors.current.textOnBackground,
                         ),
@@ -161,7 +163,10 @@ private fun TodayTodoWidgetContent(
                 if (bitmaps.doneCount != null) {
                     Image(
                         provider = ImageProvider(bitmaps.doneCount),
-                        contentDescription = "완료 ${todoListsDoneSize}개",
+                        contentDescription = context.getString(
+                            com.tgyuu.designsystem.R.string.widget_done_count,
+                            todoListsDoneSize,
+                        ),
                         colorFilter = ColorFilter.tint(doneCountColor),
                     )
                 } else {
@@ -175,7 +180,10 @@ private fun TodayTodoWidgetContent(
                 if (bitmaps.total != null) {
                     Image(
                         provider = ImageProvider(bitmaps.total),
-                        contentDescription = "전체 ${todoLists.size}개",
+                        contentDescription = context.getString(
+                            com.tgyuu.designsystem.R.string.widget_total_count,
+                            todoLists.size,
+                        ),
                         colorFilter = ColorFilter.tint(totalColor),
                     )
                 } else {
@@ -216,13 +224,13 @@ private fun TodayTodoWidgetContent(
             if (bitmaps.empty != null) {
                 Image(
                     provider = ImageProvider(bitmaps.empty),
-                    contentDescription = "오늘은 일정이 없어요",
+                    contentDescription = context.getString(com.tgyuu.designsystem.R.string.widget_empty_schedule),
                     colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
                     modifier = GlanceModifier.padding(vertical = 12.dp),
                 )
             } else {
                 Text(
-                    text = "오늘은 일정이 없어요",
+                    text = context.getString(com.tgyuu.designsystem.R.string.widget_empty_schedule),
                     style = EbbingWidgetTypography.heading16SB.copy(
                         textAlign = TextAlign.Start,
                         color = LocalEbbingWidgetColors.current.textSub,

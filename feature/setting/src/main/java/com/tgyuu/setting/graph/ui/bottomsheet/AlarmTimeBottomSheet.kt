@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.picker.EbbingPicker
@@ -35,8 +37,8 @@ internal fun AlarmTimeBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "알람 시간",
-            subTitle = "언제 남은 일정 알림을 보낼까요?"
+            title = stringResource(R.string.setting_alarm_time_title),
+            subTitle = stringResource(R.string.setting_alarm_time_subtitle)
         )
 
         EbbingPicker(
@@ -52,7 +54,7 @@ internal fun AlarmTimeBottomSheet(
         )
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(R.string.setting_apply_action),
             onClick = {
                 var hour = if (newAmPm == "오후") (newHour.toInt() + 12).toString() else newHour
                 if (hour == "24") {

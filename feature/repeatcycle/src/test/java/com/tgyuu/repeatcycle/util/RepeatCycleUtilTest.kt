@@ -1,10 +1,25 @@
 package com.tgyuu.repeatcycle.util
 
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class RepeatCycleUtilTest {
+
+    private val resourceProvider = object : ResourceProvider {
+        override fun getString(resId: Int): String = when (resId) {
+            R.string.repeat_interval_same_day_only -> "당일만"
+            R.string.repeat_interval_same_day -> "당일"
+            else -> ""
+        }
+
+        override fun getString(resId: Int, vararg formatArgs: Any): String = when (resId) {
+            R.string.repeat_interval_day -> "${formatArgs[0]}일"
+            else -> ""
+        }
+    }
 
     @Test
     fun `정상적인 숫자 문자열은 중복 없이 정렬된 리스트로 변환된다`() {
@@ -90,7 +105,7 @@ class RepeatCycleUtilTest {
         val input = listOf(0)
 
         // when
-        val actual = input.toPreviewIntervals()
+        val actual = input.toPreviewIntervals(resourceProvider)
 
         // then
         assertEquals("당일만", actual)
@@ -102,7 +117,7 @@ class RepeatCycleUtilTest {
         val input = listOf(0, 1, 3)
 
         // when
-        val actual = input.toPreviewIntervals()
+        val actual = input.toPreviewIntervals(resourceProvider)
 
         // then
         assertEquals("당일, 1일, 3일", actual)
@@ -114,7 +129,7 @@ class RepeatCycleUtilTest {
         val input = listOf(1, 2, 5)
 
         // when
-        val actual = input.toPreviewIntervals()
+        val actual = input.toPreviewIntervals(resourceProvider)
 
         // then
         assertEquals("1일, 2일, 5일", actual)
@@ -126,7 +141,7 @@ class RepeatCycleUtilTest {
         val input = emptyList<Int>()
 
         // when
-        val actual = input.toPreviewIntervals()
+        val actual = input.toPreviewIntervals(resourceProvider)
 
         // then
         assertEquals("올바른 형태로 작성해주세요.", actual)

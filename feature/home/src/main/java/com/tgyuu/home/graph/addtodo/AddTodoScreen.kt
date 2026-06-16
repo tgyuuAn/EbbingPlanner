@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -40,6 +41,7 @@ import com.tgyuu.common.util.EbbingPageTransitionAnimation
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingColors
@@ -247,12 +249,12 @@ private fun AddTodoScreenPhone(
             .imePadding()
     ) {
         EbbingSubTopBar(
-            title = "일정 추가",
+            title = stringResource(R.string.home_add_todo_title),
             onNavigationClick = onBackClick,
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "저장",
+                        text = stringResource(R.string.home_save),
                         style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                         color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
@@ -294,7 +296,7 @@ private fun AddTodoScreenPhone(
 
         if (state.isTreatment) {
             EbbingSolidButton(
-                label = "저장",
+                label = stringResource(R.string.home_save),
                 onClick = {
                     onSaveClick()
                     focusManager.clearFocus()
@@ -331,11 +333,11 @@ private fun AddTodoScreenTablet(
             .imePadding()
     ) {
         EbbingSubTopBar(
-            title = "일정 추가",
+            title = stringResource(R.string.home_add_todo_title),
             onNavigationClick = onBackClick,
             rightComponent = {
                 Text(
-                    text = "저장",
+                    text = stringResource(R.string.home_save),
                     style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                     modifier = Modifier
@@ -398,6 +400,12 @@ private fun TodoMainFormContent(
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
 ) {
+    val monthDayText = stringResource(
+        R.string.home_month_day,
+        state.selectedDate.monthValue,
+        state.selectedDate.dayOfMonth,
+    )
+    val addTodoHeaderSuffix = stringResource(R.string.home_add_todo_header_suffix)
     Text(
         text = buildAnnotatedString {
             withStyle(
@@ -406,9 +414,9 @@ private fun TodoMainFormContent(
                     color = EbbingTheme.colors.textPrimary,
                 )
             ) {
-                append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                append(monthDayText)
             }
-            append(" 부터\n시작하는 일정을 만들어요")
+            append(addTodoHeaderSuffix)
         },
         style = EbbingTheme.typography.heading24B,
         color = EbbingTheme.colors.textOnBackground,

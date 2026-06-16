@@ -10,6 +10,8 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.TodoSchedule
@@ -48,6 +50,7 @@ class HomeViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler?,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     internal val eventBus: EventBus,
     internal val inAppReviewManager: InAppReviewManager,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
@@ -277,7 +280,7 @@ class HomeViewModel @Inject constructor(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 지웠습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_schedule_deleted)))
     }
 
     private suspend fun onDeleteRemainingSchedule(schedule: TodoSchedule) {
@@ -307,7 +310,7 @@ class HomeViewModel @Inject constructor(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정 이후 연계된 일정들을 모두 지웠습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_remaining_deleted)))
     }
 
     private suspend fun onDelaySchedule(schedule: TodoSchedule, includeRestDays: Boolean = false) {
@@ -372,7 +375,7 @@ class HomeViewModel @Inject constructor(
         )
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_delayed_to_next_day)))
     }
 
     private suspend fun onDelayAllSchedules(
@@ -399,7 +402,7 @@ class HomeViewModel @Inject constructor(
                     properties = mapOf("schedule_id" to schedule.id),
                 )
             )
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("미룰 일정이 없습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_no_schedule_to_delay)))
             eventBus.sendEvent(EbbingEvent.HideBottomSheet)
             return
         }
@@ -468,7 +471,7 @@ class HomeViewModel @Inject constructor(
         )
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("${futureSchedules.size}개 일정을 미뤘습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_schedules_delayed, futureSchedules.size)))
     }
 
 
@@ -499,7 +502,7 @@ class HomeViewModel @Inject constructor(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 제거하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_memo_removed)))
     }
 
     private suspend fun onSortTypeClick(content: BottomSheetContent) {

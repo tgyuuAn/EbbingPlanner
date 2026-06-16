@@ -12,6 +12,8 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
@@ -44,6 +46,7 @@ class EditTodoViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
@@ -152,7 +155,7 @@ class EditTodoViewModel @Inject constructor(
             ?: emptySet()
 
         if (date in scheduledDates) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 해당 날짜에 일정이 있습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_date_already_has_schedule)))
             eventBus.sendEvent(EbbingEvent.HideBottomSheet)
             return
         }
@@ -193,7 +196,7 @@ class EditTodoViewModel @Inject constructor(
         )
 
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return
         }
 
@@ -229,7 +232,7 @@ class EditTodoViewModel @Inject constructor(
             }
         }
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정을 업데이트 하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_updated)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),

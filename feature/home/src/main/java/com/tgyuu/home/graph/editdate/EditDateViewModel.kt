@@ -12,6 +12,8 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.TodoSchedule
@@ -45,6 +47,7 @@ class EditDateViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
     private var originSchedules: List<TodoSchedule> = emptyList()
@@ -152,7 +155,7 @@ class EditDateViewModel @Inject constructor(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 요일을 휴식할 수는 없습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_all_rest_days)))
             return
         }
 
@@ -174,19 +177,19 @@ class EditDateViewModel @Inject constructor(
         )
 
         val tagId = currentState.tagId ?: run {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
             return
         }
 
         if (currentState.schedules.isEmpty()) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장할 일정이 없습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_no_schedule_to_save)))
             return
         }
 
         originSchedules.forEach { alarmScheduler.cancelDailyExact(it.date) }
 
         val infoId = originSchedules.firstOrNull()?.infoId ?: run {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
             return
         }
 
@@ -220,7 +223,7 @@ class EditDateViewModel @Inject constructor(
             }
         }
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정의 날짜 및 반복 주기를 변경하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_date_repeat_changed)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(currentState.selectedDate.toFormattedString()),

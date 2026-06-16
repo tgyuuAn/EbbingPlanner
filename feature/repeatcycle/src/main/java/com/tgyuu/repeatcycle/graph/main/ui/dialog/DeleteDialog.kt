@@ -1,9 +1,11 @@
 package com.tgyuu.repeatcycle.graph.main.ui.dialog
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
@@ -14,23 +16,27 @@ internal fun DeleteDialog(
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
+    val deleteDialogPrefix = stringResource(R.string.repeat_delete_dialog_prefix)
+    val deleteDialogHighlight = stringResource(R.string.repeat_delete_dialog_highlight)
+    val deleteDialogSuffix = stringResource(R.string.repeat_delete_dialog_suffix)
+
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("선택하신 반복 주기를 ")
+                    append(deleteDialogPrefix)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
-                        append("삭제")
+                        append(deleteDialogHighlight)
                     }
-                    append(" 하시겠습니까?")
+                    append(deleteDialogSuffix)
                 },
-                subText = "삭제한 반복 주기는 되돌릴 수 없으니 신중히 선택해 주세요."
+                subText = stringResource(R.string.repeat_delete_dialog_sub_text)
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "삭제",
+                leftButtonText = stringResource(R.string.repeat_dialog_back),
+                rightButtonText = stringResource(R.string.repeat_delete),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onDeleteClick,
             )

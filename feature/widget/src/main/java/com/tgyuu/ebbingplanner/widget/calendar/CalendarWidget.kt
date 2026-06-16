@@ -11,6 +11,7 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -165,6 +166,7 @@ private fun CalendarWidgetHeader(
     selectedDate: LocalDate,
     bitmaps: CalendarWidgetBitmaps,
 ) {
+    val context = LocalContext.current
     val today = LocalDate.now()
     Column(modifier = GlanceModifier.fillMaxWidth()) {
         Row(
@@ -174,13 +176,21 @@ private fun CalendarWidgetHeader(
             if (bitmaps.header != null) {
                 Image(
                     provider = ImageProvider(bitmaps.header),
-                    contentDescription = "${today.year}년 ${today.monthValue}월",
+                    contentDescription = context.getString(
+                        com.tgyuu.designsystem.R.string.widget_year_month,
+                        today.year,
+                        today.monthValue,
+                    ),
                     colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
             } else {
                 Text(
-                    text = "${today.year}년 ${today.monthValue}월",
+                    text = context.getString(
+                        com.tgyuu.designsystem.R.string.widget_year_month,
+                        today.year,
+                        today.monthValue,
+                    ),
                     style = EbbingWidgetTypography.heading16B.copy(
                         color = LocalEbbingWidgetColors.current.textOnBackground,
                     ),
@@ -380,6 +390,7 @@ private fun ColumnScope.SelectedDateTodoList(
     doneSize: Int,
     bitmaps: CalendarWidgetBitmaps,
 ) {
+    val context = LocalContext.current
     val today = LocalDate.now()
     val sectionHeaderBitmap: Bitmap? = if (selectedDate == today) {
         bitmaps.sectionToday
@@ -399,15 +410,29 @@ private fun ColumnScope.SelectedDateTodoList(
             if (sectionHeaderBitmap != null) {
                 Image(
                     provider = ImageProvider(sectionHeaderBitmap),
-                    contentDescription = if (selectedDate == today) "오늘 할 일"
-                    else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일",
+                    contentDescription = if (selectedDate == today) {
+                        context.getString(com.tgyuu.designsystem.R.string.widget_today_todo)
+                    } else {
+                        context.getString(
+                            com.tgyuu.designsystem.R.string.widget_month_day_todo,
+                            selectedDate.monthValue,
+                            selectedDate.dayOfMonth,
+                        )
+                    },
                     colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                 )
                 Spacer(modifier = GlanceModifier.width(8.dp))
             } else {
                 Text(
-                    text = if (selectedDate == today) "오늘 할 일   "
-                    else "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 할 일   ",
+                    text = if (selectedDate == today) {
+                        context.getString(com.tgyuu.designsystem.R.string.widget_today_todo_spaced)
+                    } else {
+                        context.getString(
+                            com.tgyuu.designsystem.R.string.widget_month_day_todo_spaced,
+                            selectedDate.monthValue,
+                            selectedDate.dayOfMonth,
+                        )
+                    },
                     style = EbbingWidgetTypography.heading16B.copy(
                         color = LocalEbbingWidgetColors.current.textOnBackground,
                     ),
@@ -449,7 +474,7 @@ private fun ColumnScope.SelectedDateTodoList(
     ) {
         if (todoLists.isEmpty()) {
             Text(
-                text = "오늘은 일정이 없어요",
+                text = context.getString(com.tgyuu.designsystem.R.string.widget_empty_schedule),
                 style = EbbingWidgetTypography.heading16SB.copy(
                     textAlign = TextAlign.Start,
                     color = LocalEbbingWidgetColors.current.textSub,

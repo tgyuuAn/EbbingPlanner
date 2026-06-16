@@ -18,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
@@ -41,16 +43,18 @@ fun AlarmMessageBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "알림 메시지 설정",
+            title = stringResource(R.string.setting_alarm_message_setting),
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
+        val placeholderToken = stringResource(R.string.setting_alarm_message_placeholder_token)
+        val placeholderGuide = stringResource(R.string.setting_alarm_message_placeholder_guide)
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal, fontWeight = FontWeight.Bold)) {
-                    append("{할일}")
+                    append(placeholderToken)
                 }
-                append("은 할 일 제목으로 자동 변환됩니다 (최대 1번)")
+                append(placeholderGuide)
             },
             style = EbbingTheme.typography.body14M,
             color = EbbingTheme.colors.textDisabled,
@@ -60,9 +64,20 @@ fun AlarmMessageBottomSheet(
         EbbingTextInputDefault(
             value = state.message,
             onValueChange = onMessageChange,
-            hint = "알림 메시지를 입력하세요",
+            hint = stringResource(R.string.setting_alarm_message_hint),
             modifier = Modifier.fillMaxWidth(),
         )
+
+        val errorMessage = when {
+            state.placeholderCount > 1 ->
+                stringResource(R.string.setting_alarm_message_error_placeholder)
+
+            !state.isValidLength ->
+                stringResource(R.string.setting_alarm_message_error_length)
+
+            else -> ""
+        }
+        val lengthText = stringResource(R.string.setting_alarm_message_length, state.message.length)
 
         Row(
             modifier = Modifier
@@ -71,14 +86,14 @@ fun AlarmMessageBottomSheet(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = state.errorMessage,
+                text = errorMessage,
                 style = EbbingTheme.typography.caption12R,
                 color = EbbingTheme.colors.statusError,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
-                text = state.lengthText,
+                text = lengthText,
                 style = EbbingTheme.typography.caption12R,
                 color = if (state.isValidLength) EbbingTheme.colors.textDisabled else EbbingTheme.colors.statusError,
             )
@@ -86,7 +101,17 @@ fun AlarmMessageBottomSheet(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (state.isValidPlaceholder && state.previewMessage.isNotEmpty()) {
+        val previewSampleWord = stringResource(R.string.setting_alarm_message_preview_sample)
+        val previewMessage = when (state.placeholderCount) {
+            1 -> state.message.replace(
+                AlarmMessageBottomSheetState.placeholderToken,
+                previewSampleWord,
+            )
+            0 -> state.message
+            else -> ""
+        }
+
+        if (state.isValidPlaceholder && previewMessage.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,13 +122,13 @@ fun AlarmMessageBottomSheet(
                     .padding(12.dp),
             ) {
                 Text(
-                    text = "미리보기",
+                    text = stringResource(R.string.setting_preview),
                     style = EbbingTheme.typography.caption12R,
                     color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
                 Text(
-                    text = state.previewMessage,
+                    text = previewMessage,
                     style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.textSub,
                 )
@@ -114,7 +139,7 @@ fun AlarmMessageBottomSheet(
 
         if (state.shouldShowResetButton) {
             Text(
-                text = "기본값으로 복원",
+                text = stringResource(R.string.setting_restore_default),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier
@@ -126,7 +151,7 @@ fun AlarmMessageBottomSheet(
         }
 
         EbbingSolidButton(
-            label = "적용",
+            label = stringResource(R.string.setting_apply),
             onClick = onUpdateClick,
             enabled = state.canApply,
             modifier = Modifier

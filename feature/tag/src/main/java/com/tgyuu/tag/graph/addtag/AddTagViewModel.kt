@@ -5,6 +5,8 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.repository.ExperimentRepository
@@ -23,6 +25,7 @@ class AddTagViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
@@ -73,7 +76,7 @@ class AddTagViewModel @Inject constructor(
         )
 
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_required_fields)))
             return
         }
 
@@ -81,7 +84,7 @@ class AddTagViewModel @Inject constructor(
             name = currentState.name.trim(),
             color = currentState.colorValue,
         )
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 태그를 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_added)))
         navigationBus.navigate(NavigationEvent.Up)
     }
 }

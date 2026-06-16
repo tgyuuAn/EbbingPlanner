@@ -73,26 +73,13 @@ data class NotificationState(
             return "$hour:$minute"
         }
 
-    val nudgeText: String = "바쁜 날에도\n복습일을 자동으로 챙겨드릴게요"
-    private val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
+    val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
 
     val isValidPlaceholder: Boolean = placeholderCount <= 1
 
     val isValidLength: Boolean = message.length <= 50
 
-    val previewMessage: String = when {
-        placeholderCount == 1 -> message.replace("{할일}", "영어 단어 복습")
-        placeholderCount == 0 -> message
-        else -> ""
-    }
-
-    val errorMessage: String = when {
-        placeholderCount > 1 -> "{할일}은 최대 1번만 사용할 수 있습니다"
-        !isValidLength -> "최대 50자까지 입력 가능합니다"
-        else -> ""
-    }
-
-    val lengthText: String = "${message.length} / 50자"
+    val messageLength: Int = message.length
 
     val shouldShowResetButton: Boolean = message != DEFAULT_ALARM_MESSAGE
 }

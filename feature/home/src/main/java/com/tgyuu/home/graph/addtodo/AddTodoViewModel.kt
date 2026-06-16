@@ -13,6 +13,8 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
@@ -50,6 +52,7 @@ class AddTodoViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(
     AddTodoState(
@@ -202,7 +205,7 @@ class AddTodoViewModel @Inject constructor(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 요일을 휴식할 수는 없습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_all_rest_days)))
             return
         }
 
@@ -229,7 +232,7 @@ class AddTodoViewModel @Inject constructor(
         )
 
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return
         }
 
@@ -275,7 +278,7 @@ class AddTodoViewModel @Inject constructor(
         val isFirstTodo = configRepository.markFirstTodoAdded()
         configRepository.incrementTodoRegisteredCount()
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_added)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(

@@ -7,6 +7,8 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
@@ -28,6 +30,7 @@ class ThemeViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<ThemeState, ThemeIntent>(
     ThemeState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })
 ) {
@@ -84,9 +87,13 @@ class ThemeViewModel @Inject constructor(
                 }.onSuccess {
                     setState { copy(originTheme = select) }
                     navigationBus.navigate(NavigationEvent.Up)
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("앱 테마를 변경하였습니다"))
+                    eventBus.sendEvent(
+                        EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_app_theme_changed))
+                    )
                 }.onFailure {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("테마 변경에 실패하였습니다"))
+                    eventBus.sendEvent(
+                        EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_theme_change_failed))
+                    )
                 }
             }
         }

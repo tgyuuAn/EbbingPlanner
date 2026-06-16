@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -35,6 +36,7 @@ import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.designsystem.R
 import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
@@ -116,12 +118,12 @@ private fun EditTodoScreen(
                 .imePadding(),
         ) {
             EbbingSubTopBar(
-                title = "일정 수정",
+                title = stringResource(R.string.home_edit_todo_title),
                 onNavigationClick = onBackClick,
                 rightComponent = {
                     if (!state.isTreatment) {
                         Text(
-                            text = "저장",
+                            text = stringResource(R.string.home_save),
                             style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                             color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                             modifier = Modifier
@@ -145,6 +147,12 @@ private fun EditTodoScreen(
                     .verticalScroll(scrollState)
                     .padding(20.dp),
             ) {
+                val monthDayText = stringResource(
+                    R.string.home_month_day,
+                    state.selectedDate.monthValue,
+                    state.selectedDate.dayOfMonth,
+                )
+                val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)
                 Text(
                     text = buildAnnotatedString {
                         withStyle(
@@ -153,9 +161,9 @@ private fun EditTodoScreen(
                                 color = EbbingTheme.colors.textPrimary,
                             )
                         ) {
-                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                            append(monthDayText)
                         }
-                        append(" 에\n진행하는 걸로 바꿀래요")
+                        append(editTodoHeaderSuffix)
                     },
                     style = EbbingTheme.typography.heading24B,
                     color = EbbingTheme.colors.textOnBackground,
@@ -183,7 +191,7 @@ private fun EditTodoScreen(
 
             if (state.isTreatment) {
                 EbbingSolidButton(
-                    label = "저장",
+                    label = stringResource(R.string.home_save),
                     onClick = {
                         onSaveClick()
                         focusManager.clearFocus()
@@ -201,11 +209,11 @@ private fun EditTodoScreen(
             modifier = modifier.fillMaxSize(),
         ) {
             EbbingSubTopBar(
-                title = "일정 수정",
+                title = stringResource(R.string.home_edit_todo_title),
                 onNavigationClick = onBackClick,
                 rightComponent = {
                     Text(
-                        text = "저장",
+                        text = stringResource(R.string.home_save),
                         style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                         color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
@@ -228,12 +236,18 @@ private fun EditTodoScreen(
                     .padding(20.dp)
                     .imePadding(),
             ) {
+                val monthDayText = stringResource(
+                    R.string.home_month_day,
+                    state.selectedDate.monthValue,
+                    state.selectedDate.dayOfMonth,
+                )
+                val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                            append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                            append(monthDayText)
                         }
-                        append(" 에\n진행하는 걸로 바꿀래요")
+                        append(editTodoHeaderSuffix)
                     },
                     style = EbbingTheme.typography.heading24B,
                     color = EbbingTheme.colors.textOnBackground,
