@@ -31,6 +31,7 @@ class RepeatCycleViewModel @Inject constructor(
     override suspend fun processIntent(intent: RepeatCycleIntent) {
         when (intent) {
             RepeatCycleIntent.OnBackClick -> onBackClick()
+            RepeatCycleIntent.OnAddClick -> onAddClick()
             is RepeatCycleIntent.OnDeleteClick -> onDeleteClick(intent.repeatCycle)
             is RepeatCycleIntent.OnEditClick -> onEditClick(intent.repeatCycle)
         }
@@ -41,6 +42,15 @@ class RepeatCycleViewModel @Inject constructor(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
         )
         navigationBus.navigate(NavigationEvent.Up)
+    }
+
+    private suspend fun onAddClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddRepeatCycle")
+        )
+        navigationBus.navigate(
+            NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute)
+        )
     }
 
     private suspend fun onDeleteClick(repeatCycle: RepeatCycleUiModel) {

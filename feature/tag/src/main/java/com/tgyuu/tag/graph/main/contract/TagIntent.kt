@@ -5,6 +5,7 @@ import com.tgyuu.designsystem.model.TodoTagUiModel
 
 sealed class TagIntent : UiIntent {
     data object OnBackClick : TagIntent()
+    data object OnAddClick : TagIntent()
     data class OnEditClick(val tag: TodoTagUiModel) : TagIntent()
     data class OnDeleteClick(val tag: TodoTagUiModel) : TagIntent()
 }
