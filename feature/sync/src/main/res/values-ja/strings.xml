@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 共通 -->
+    <string name="sync_back">戻る</string>
+    <string name="sync_cancel">キャンセル</string>
+    <string name="sync_allow">許可</string>
+    <string name="sync_disconnect">連携を解除</string>
+    <string name="sync_sync">同期</string>
+
+    <!-- ネットワーク -->
+    <string name="sync_network_disconnected">ネットワークに接続されていません。</string>
+    <string name="sync_network_connected">ネットワークに接続しました。</string>
+    <string name="sync_network_connect_action">接続する</string>
+    <string name="sync_network_required">ネットワークに接続されていません。</string>
+    <string name="sync_network_check">ネットワーク接続を確認してください。</string>
+
+    <!-- メイン画面 -->
+    <string name="sync_title">他の端末でも使う</string>
+    <string name="sync_connected_device">連携中の端末</string>
+    <string name="sync_unknown_device">不明な端末</string>
+    <string name="sync_last_sync">最終同期</string>
+    <string name="sync_no_record">記録なし</string>
+    <string name="sync_manual_hint">自動では同期されません。タップして手動で同期してください。</string>
+    <string name="sync_advanced_info">詳細情報</string>
+    <string name="sync_device_id_label">この端末の固有ID：</string>
+    <string name="sync_new_device_section">新しい端末と連携</string>
+    <string name="sync_generate_qr">QRを生成</string>
+    <string name="sync_generate_qr_desc">この端末の予定を他の端末へ送ります</string>
+    <string name="sync_scan_qr">QRをスキャン</string>
+    <string name="sync_scan_qr_desc">他の端末の予定をこの端末へ取り込みます</string>
+    <string name="sync_scan_qr_warning">この端末の予定は他の端末の予定に置き換えられます。</string>
+
+    <!-- スナックバー / 結果メッセージ -->
+    <string name="sync_peer_disconnected">相手の端末で連携が解除されました。</string>
+    <string name="sync_synced">データを同期しました。</string>
+    <string name="sync_sync_failed">同期に失敗しました。</string>
+    <string name="sync_disconnect_success">連携の解除に成功しました。</string>
+    <string name="sync_disconnect_failed">連携の解除に失敗しました。</string>
+    <string name="sync_generate_failed">QRコードの生成に失敗しました。もう一度お試しください。</string>
+    <string name="sync_connect_success">連携に成功しました。</string>
+    <string name="sync_connect_failed">連携に失敗しました。もう一度お試しください。</string>
+    <string name="sync_code_invalid_or_expired">生成されていないコードか、有効期限が切れています。</string>
+    <string name="sync_already_linked_self">すでに他の端末と連携しています。連携を解除してからもう一度お試しください。</string>
+    <string name="sync_code_already_taken">すでに他の端末と連携されたコードです。</string>
+    <string name="sync_already_latest">すでにデータは最新の状態です。</string>
+    <string name="sync_peer_connected">%1$sと連携しました。</string>
+
+    <!-- カメラ権限ダイアログ -->
+    <string name="sync_camera_permission_title">カメラ権限が必要です</string>
+    <string name="sync_camera_permission_rationale">QRコードをスキャンするにはカメラ権限が必要です。</string>
+    <string name="sync_camera_permission_rationale_settings">QRコードをスキャンするには設定でカメラ権限を許可してください。</string>
+    <string name="sync_go_settings">設定へ移動</string>
+
+    <!-- 同期確認ダイアログ -->
+    <string name="sync_confirm_sync_title">データを同期しますか？</string>
+    <string name="sync_confirm_sync_desc_1">異なる端末で変更されたデータがある場合、</string>
+    <string name="sync_confirm_sync_desc_highlight_1">より新しく更新された方が反映</string>
+    <string name="sync_confirm_sync_desc_2">"されます。\n重要なデータは"</string>
+    <string name="sync_confirm_sync_desc_highlight_2">同期前に必ず確認</string>
+    <string name="sync_confirm_sync_desc_3">してください。</string>
+
+    <!-- 連携解除確認ダイアログ -->
+    <string name="sync_confirm_disconnect_title">端末の連携を解除しますか？</string>
+    <string name="sync_confirm_disconnect_desc">保存されているデータはそのまま保持されます。\nいつでも再連携できます。</string>
+
+    <!-- QRボトムシート -->
+    <string name="sync_qr_code_title">連携QRコード</string>
+    <string name="sync_remaining_time">残り時間: %1$s</string>
+    <string name="sync_scan_this_qr">他の端末でこのQRコードをスキャンしてください。</string>
+</resources>

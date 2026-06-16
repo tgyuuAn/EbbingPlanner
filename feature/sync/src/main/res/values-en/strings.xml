@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="sync_back">Back</string>
+    <string name="sync_cancel">Cancel</string>
+    <string name="sync_allow">Allow</string>
+    <string name="sync_disconnect">Disconnect</string>
+    <string name="sync_sync">Sync</string>
+
+    <!-- Network -->
+    <string name="sync_network_disconnected">No network connection.</string>
+    <string name="sync_network_connected">Connected to the network.</string>
+    <string name="sync_network_connect_action">Connect</string>
+    <string name="sync_network_required">No network connection.</string>
+    <string name="sync_network_check">Please check your network connection.</string>
+
+    <!-- Main screen -->
+    <string name="sync_title">Use on Other Devices</string>
+    <string name="sync_connected_device">Connected device</string>
+    <string name="sync_unknown_device">Unknown device</string>
+    <string name="sync_last_sync">Last sync</string>
+    <string name="sync_no_record">No record</string>
+    <string name="sync_manual_hint">It doesn\'t sync automatically. Tap to sync manually.</string>
+    <string name="sync_advanced_info">Advanced info</string>
+    <string name="sync_device_id_label">This device\'s unique ID:</string>
+    <string name="sync_new_device_section">Connect a new device</string>
+    <string name="sync_generate_qr">Generate QR</string>
+    <string name="sync_generate_qr_desc">Send this device\'s schedule to another device</string>
+    <string name="sync_scan_qr">Scan QR</string>
+    <string name="sync_scan_qr_desc">Bring another device\'s schedule to this device</string>
+    <string name="sync_scan_qr_warning">This device\'s schedule will be replaced with the other device\'s schedule.</string>
+
+    <!-- Snackbar / result messages -->
+    <string name="sync_peer_disconnected">The other device disconnected.</string>
+    <string name="sync_synced">Data has been synced.</string>
+    <string name="sync_sync_failed">Sync failed.</string>
+    <string name="sync_disconnect_success">Disconnected successfully.</string>
+    <string name="sync_disconnect_failed">Failed to disconnect.</string>
+    <string name="sync_generate_failed">Failed to generate QR code. Please try again.</string>
+    <string name="sync_connect_success">Connected successfully.</string>
+    <string name="sync_connect_failed">Failed to connect. Please try again.</string>
+    <string name="sync_code_invalid_or_expired">The code is invalid or has expired.</string>
+    <string name="sync_already_linked_self">You are already connected to another device. Please disconnect first and try again.</string>
+    <string name="sync_code_already_taken">This code is already linked to another device.</string>
+    <string name="sync_already_latest">Your data is already up to date.</string>
+    <string name="sync_peer_connected">Connected to %1$s.</string>
+
+    <!-- Camera permission dialog -->
+    <string name="sync_camera_permission_title">Camera permission required</string>
+    <string name="sync_camera_permission_rationale">Camera permission is required to scan QR codes.</string>
+    <string name="sync_camera_permission_rationale_settings">To scan QR codes, please allow camera permission in Settings.</string>
+    <string name="sync_go_settings">Go to Settings</string>
+
+    <!-- Sync confirmation dialog -->
+    <string name="sync_confirm_sync_title">Sync your data?</string>
+    <string name="sync_confirm_sync_desc_1">"If data was edited on different devices, "</string>
+    <string name="sync_confirm_sync_desc_highlight_1">the most recently updated version</string>
+    <string name="sync_confirm_sync_desc_2">" will be applied.\nFor important data, "</string>
+    <string name="sync_confirm_sync_desc_highlight_2">be sure to review it before syncing</string>
+    <string name="sync_confirm_sync_desc_3">.</string>
+
+    <!-- Disconnect confirmation dialog -->
+    <string name="sync_confirm_disconnect_title">Disconnect this device?</string>
+    <string name="sync_confirm_disconnect_desc">Your saved data will be kept.\n You can reconnect anytime.</string>
+
+    <!-- QR bottom sheet -->
+    <string name="sync_qr_code_title">Sync QR code</string>
+    <string name="sync_remaining_time">Time left: %1$s</string>
+    <string name="sync_scan_this_qr">Scan this QR code from another device.</string>
+</resources>
