@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ fun NetworkBanner(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .height(60.dp)
                     .background(EbbingTheme.colors.statusError)
                     .padding(horizontal = 20.dp),
@@ -87,6 +89,7 @@ fun NetworkBanner(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .height(60.dp)
                     .background(EbbingTheme.colors.statusSuccess)
                     .padding(horizontal = 20.dp),
