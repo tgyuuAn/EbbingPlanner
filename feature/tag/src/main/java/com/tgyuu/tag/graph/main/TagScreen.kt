@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,6 +44,7 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDef
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.tag.graph.main.contract.TagIntent
 import com.tgyuu.tag.graph.main.contract.TagState
@@ -62,6 +65,7 @@ internal fun TagRoute(
     TagScreen(
         state = state,
         onBackClick = { viewModel.onIntent(TagIntent.OnBackClick) },
+        onAddClick = { viewModel.onIntent(TagIntent.OnAddClick) },
         onEditClick = { viewModel.onIntent(TagIntent.OnEditClick(it)) },
         onDeleteClick = { viewModel.onIntent(TagIntent.OnDeleteClick(it)) },
     )
@@ -71,6 +75,7 @@ internal fun TagRoute(
 private fun TagScreen(
     state: TagState,
     onBackClick: () -> Unit,
+    onAddClick: () -> Unit,
     onEditClick: (TodoTagUiModel) -> Unit,
     onDeleteClick: (TodoTagUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -102,9 +107,33 @@ private fun TagScreen(
             EbbingSubTopBar(
                 title = "태그 관리",
                 onNavigationClick = onBackClick,
+                rightComponent = {
+                    Text(
+                        text = "추가",
+                        style = EbbingTheme.typography.body16M,
+                        color = EbbingTheme.colors.primaryNormal,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clickable { onAddClick() },
+                    )
+                },
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+            if (state.tagList.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "등록된 태그가 없어요.\n우측 상단 + 버튼을 눌러 태그를 추가해보세요.",
+                        style = EbbingTheme.typography.body14M,
+                        textAlign = TextAlign.Center,
+                        color = EbbingTheme.colors.textDisabled,
+                    )
+                }
+            } else if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 LazyColumn(
                     state = listState,
                     contentPadding = PaddingValues(bottom = 100.dp),
@@ -205,6 +234,7 @@ private fun PreviewTag() {
                 )
             ),
             onBackClick = {},
+            onAddClick = {},
             onEditClick = {},
             onDeleteClick = {},
         )
