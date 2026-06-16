@@ -34,6 +34,7 @@ class TagViewModel @Inject constructor(
     override suspend fun processIntent(intent: TagIntent) {
         when (intent) {
             TagIntent.OnBackClick -> onBackClick()
+            TagIntent.OnAddClick -> onAddClick()
             is TagIntent.OnDeleteClick -> onDeleteClick(intent.tag)
             is TagIntent.OnEditClick -> onEditClick(intent.tag)
         }
@@ -44,6 +45,15 @@ class TagViewModel @Inject constructor(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
         )
         navigationBus.navigate(NavigationEvent.Up)
+    }
+
+    private suspend fun onAddClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddTag")
+        )
+        navigationBus.navigate(
+            NavigationEvent.To(TagGraph.AddTagRoute)
+        )
     }
 
     private suspend fun onDeleteClick(tag: TodoTagUiModel) {

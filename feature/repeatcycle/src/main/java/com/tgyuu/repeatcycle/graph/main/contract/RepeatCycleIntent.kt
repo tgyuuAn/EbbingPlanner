@@ -5,6 +5,7 @@ import com.tgyuu.designsystem.model.RepeatCycleUiModel
 
 sealed class RepeatCycleIntent : UiIntent {
     data object OnBackClick : RepeatCycleIntent()
+    data object OnAddClick : RepeatCycleIntent()
     data class OnEditClick(val repeatCycle: RepeatCycleUiModel) : RepeatCycleIntent()
     data class OnDeleteClick(val repeatCycle: RepeatCycleUiModel) : RepeatCycleIntent()
 }

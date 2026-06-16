@@ -321,6 +321,8 @@
     <string name="tag_added">새로운 태그를 추가하였습니다</string>
     <string name="tag_updated">태그를 수정하였습니다</string>
     <string name="tag_deleted">태그를 삭제하였습니다</string>
+    <string name="tag_add_button">추가</string>
+    <string name="tag_empty_message">등록된 태그가 없어요.\n우측 상단 + 버튼을 눌러 태그를 추가해보세요.</string>
 
     <!-- ===================== Memo ===================== -->
     <string name="memo_label">메모</string>
@@ -369,6 +371,8 @@
     <string name="repeat_interval_same_day_only">당일만</string>
     <string name="repeat_interval_same_day">당일</string>
     <string name="repeat_interval_day">%1$d일</string>
+    <string name="repeat_add_button">추가</string>
+    <string name="repeat_empty_message">등록된 반복 주기가 없어요.\n우측 상단 + 버튼을 눌러 반복 주기를 추가해보세요.</string>
 
     <!-- ===================== Widget ===================== -->
     <string name="widget_year_month">%1$d년 %2$d월</string>
