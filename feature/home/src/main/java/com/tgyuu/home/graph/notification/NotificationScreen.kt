@@ -560,7 +560,7 @@ private fun AlarmMessageSection(
         else -> ""
     }
     val previewSample = stringResource(R.string.home_alarm_preview_sample)
-    val placeholderToken = stringResource(R.string.home_alarm_placeholder_token)
+    val placeholderToken = state.placeholderToken
     val previewMessage = when {
         state.placeholderCount == 1 -> state.message.replace(placeholderToken, previewSample)
         state.placeholderCount == 0 -> state.message
@@ -580,7 +580,7 @@ private fun AlarmMessageSection(
             modifier = Modifier.padding(bottom = 6.dp),
         )
 
-        val placeholderToken = stringResource(R.string.home_alarm_placeholder_token)
+        val placeholderToken = state.placeholderToken
         val placeholderDesc = stringResource(R.string.home_alarm_placeholder_desc)
         Text(
             text = buildAnnotatedString {

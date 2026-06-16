@@ -47,7 +47,7 @@ fun AlarmMessageBottomSheet(
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
-        val placeholderToken = stringResource(R.string.setting_alarm_message_placeholder_token)
+        val placeholderToken = state.placeholderToken
         val placeholderGuide = stringResource(R.string.setting_alarm_message_placeholder_guide)
         Text(
             text = buildAnnotatedString {
@@ -104,7 +104,7 @@ fun AlarmMessageBottomSheet(
         val previewSampleWord = stringResource(R.string.setting_alarm_message_preview_sample)
         val previewMessage = when (state.placeholderCount) {
             1 -> state.message.replace(
-                AlarmMessageBottomSheetState.placeholderToken,
+                state.placeholderToken,
                 previewSampleWord,
             )
             0 -> state.message

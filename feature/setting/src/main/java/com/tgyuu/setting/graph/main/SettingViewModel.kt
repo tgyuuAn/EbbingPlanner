@@ -192,12 +192,17 @@ class SettingViewModel @Inject constructor(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "NotificationMessage")
         )
         val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
         setState {
+            val resolvedMessage =
+                if (alarmMessage.isEmpty() || alarmMessage == DEFAULT_ALARM_MESSAGE) defaultMessage
+                else alarmMessage
             copy(
                 alarmMessageBottomSheet = AlarmMessageBottomSheetState(
                     defaultMessage = defaultMessage,
-                    message = alarmMessage.ifEmpty { defaultMessage },
-                    originMessage = alarmMessage.ifEmpty { defaultMessage },
+                    message = resolvedMessage,
+                    originMessage = resolvedMessage,
+                    placeholderToken = placeholderToken,
                 )
             )
         }

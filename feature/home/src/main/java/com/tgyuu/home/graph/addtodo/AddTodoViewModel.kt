@@ -89,6 +89,7 @@ class AddTodoViewModel @Inject constructor(
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
         val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
         val storedMessage = configRepository.getAlarmMessage()
         val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) defaultMessage else storedMessage
 
@@ -100,6 +101,7 @@ class AddTodoViewModel @Inject constructor(
                     defaultMessage = defaultMessage,
                     message = message,
                     originMessage = message,
+                    placeholderToken = placeholderToken,
                 )
             )
         }

@@ -37,7 +37,9 @@ class NotificationHelperImpl @Inject constructor(
 
         val contentTitle = context.getString(com.tgyuu.designsystem.R.string.notification_content_title)
         val messageTemplate = configRepository.getAlarmMessage()
-        val contentText = messageTemplate.replace("{할일}", schedules.first().title)
+        val contentText = ConfigRepository.PLACEHOLDER_TOKENS.fold(messageTemplate) { acc, token ->
+            acc.replace(token, schedules.first().title)
+        }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(com.tgyuu.ebbingplanner.R.drawable.ic_notification)

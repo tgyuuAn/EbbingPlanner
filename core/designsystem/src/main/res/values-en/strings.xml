@@ -167,9 +167,9 @@
     <string name="home_alarm_time_sub">When should we send the reminder for remaining tasks?</string>
     <string name="home_alarm_message">Notification message</string>
     <string name="home_alarm_message_hint">Enter a notification message</string>
-    <string name="home_alarm_placeholder_token">{할일}</string>
+    <string name="alarm_placeholder_token">{task}</string>
     <string name="home_alarm_placeholder_desc"> is automatically replaced with the task title (up to once)</string>
-    <string name="home_alarm_placeholder_error">{할일} can be used at most once</string>
+    <string name="home_alarm_placeholder_error">{task} can be used at most once</string>
     <string name="home_alarm_length_error">You can enter up to 50 characters</string>
     <string name="home_alarm_length_text">%1$d / 50</string>
     <string name="home_alarm_preview">Preview</string>
@@ -280,10 +280,9 @@
     <string name="setting_no_schedule_today">No schedule for today.</string>
     <string name="setting_widget_theme_changed">Widget theme changed</string>
     <string name="setting_alarm_message_setting">Notification message settings</string>
-    <string name="setting_alarm_message_placeholder_token">{할일}</string>
     <string name="setting_alarm_message_placeholder_guide"> is automatically replaced with the to-do title (up to once)</string>
     <string name="setting_alarm_message_hint">Enter a notification message</string>
-    <string name="setting_alarm_message_error_placeholder">{할일} can be used at most once</string>
+    <string name="setting_alarm_message_error_placeholder">{task} can be used at most once</string>
     <string name="setting_alarm_message_error_length">You can enter up to 50 characters</string>
     <string name="setting_alarm_message_length">%1$d / 50</string>
     <string name="setting_alarm_message_preview_sample">English word review</string>
@@ -404,7 +403,7 @@
     <string name="repeat_display_daily_days">Daily (%1$d days)</string>
     <string name="repeat_display_error">Please enter a valid format.</string>
     <string name="tag_unassigned">Unassigned</string>
-    <string name="default_alarm_message">Check {할일} and don\'t forget to review!</string>
+    <string name="default_alarm_message">Check {task} and don\'t forget to review!</string>
     <string name="alarm_channel_name">Task reminders</string>
     <string name="alarm_channel_desc">Ebbing Planner schedule notification channel</string>
 

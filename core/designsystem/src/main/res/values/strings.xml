@@ -167,7 +167,7 @@
     <string name="home_alarm_time_sub">언제 남은 일정 알림을 보낼까요?</string>
     <string name="home_alarm_message">알림 메시지</string>
     <string name="home_alarm_message_hint">알림 메시지를 입력하세요</string>
-    <string name="home_alarm_placeholder_token">{할일}</string>
+    <string name="alarm_placeholder_token">{할일}</string>
     <string name="home_alarm_placeholder_desc">은 할 일 제목으로 자동 변환됩니다 (최대 1번)</string>
     <string name="home_alarm_placeholder_error">{할일}은 최대 1번만 사용할 수 있습니다</string>
     <string name="home_alarm_length_error">최대 50자까지 입력 가능합니다</string>
@@ -280,7 +280,6 @@
     <string name="setting_no_schedule_today">금일 스케줄이 없어요.</string>
     <string name="setting_widget_theme_changed">위젯 테마를 변경하였습니다</string>
     <string name="setting_alarm_message_setting">알림 메시지 설정</string>
-    <string name="setting_alarm_message_placeholder_token">{할일}</string>
     <string name="setting_alarm_message_placeholder_guide">은 할 일 제목으로 자동 변환됩니다 (최대 1번)</string>
     <string name="setting_alarm_message_hint">알림 메시지를 입력하세요</string>
     <string name="setting_alarm_message_error_placeholder">{할일}은 최대 1번만 사용할 수 있습니다</string>

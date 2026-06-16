@@ -122,7 +122,7 @@ class ConfigRepositoryImpl @Inject constructor(
             enabled = enabled,
             alarmTime = String.format("%02d:%02d", hour, minute),
             message = message,
-            usesPlaceholder = message.contains("{할일}"),
+            usesPlaceholder = ConfigRepository.PLACEHOLDER_TOKENS.any { message.contains(it) },
             isDefault = message == ConfigRepository.DEFAULT_ALARM_MESSAGE,
         )
     }

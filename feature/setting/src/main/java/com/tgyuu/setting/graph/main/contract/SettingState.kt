@@ -22,6 +22,7 @@ data class AlarmMessageBottomSheetState(
     val defaultMessage: String = "",
     val message: String = defaultMessage,
     val originMessage: String = "",
+    val placeholderToken: String = "{할일}",
 ) {
     val placeholderCount: Int = Regex.escape(placeholderToken).toRegex().findAll(message).count()
 
@@ -38,8 +39,6 @@ data class AlarmMessageBottomSheetState(
     val shouldShowResetButton: Boolean = message != defaultMessage
 
     companion object {
-        // Structural token replaced by the to-do title at runtime; not a user-facing label.
-        const val placeholderToken: String = "{할일}"
         const val MAX_LENGTH: Int = 50
     }
 }

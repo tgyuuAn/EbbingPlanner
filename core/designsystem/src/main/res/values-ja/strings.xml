@@ -167,9 +167,9 @@
     <string name="home_alarm_time_sub">残りの予定の通知をいつ送りますか？</string>
     <string name="home_alarm_message">通知メッセージ</string>
     <string name="home_alarm_message_hint">通知メッセージを入力してください</string>
-    <string name="home_alarm_placeholder_token">{할일}</string>
+    <string name="alarm_placeholder_token">{タスク}</string>
     <string name="home_alarm_placeholder_desc">はやること名に自動変換されます（最大1回）</string>
-    <string name="home_alarm_placeholder_error">{할일}は最大1回まで使用できます</string>
+    <string name="home_alarm_placeholder_error">{タスク}は最大1回まで使用できます</string>
     <string name="home_alarm_length_error">最大50文字まで入力できます</string>
     <string name="home_alarm_length_text">%1$d / 50文字</string>
     <string name="home_alarm_preview">プレビュー</string>
@@ -280,10 +280,9 @@
     <string name="setting_no_schedule_today">本日のスケジュールはありません。</string>
     <string name="setting_widget_theme_changed">ウィジェットのテーマを変更しました</string>
     <string name="setting_alarm_message_setting">通知メッセージ設定</string>
-    <string name="setting_alarm_message_placeholder_token">{할일}</string>
     <string name="setting_alarm_message_placeholder_guide">はタスクのタイトルに自動変換されます（最大1回）</string>
     <string name="setting_alarm_message_hint">通知メッセージを入力してください</string>
-    <string name="setting_alarm_message_error_placeholder">{할일}は最大1回まで使用できます</string>
+    <string name="setting_alarm_message_error_placeholder">{タスク}は最大1回まで使用できます</string>
     <string name="setting_alarm_message_error_length">最大50文字まで入力できます</string>
     <string name="setting_alarm_message_length">%1$d / 50文字</string>
     <string name="setting_alarm_message_preview_sample">英単語の復習</string>
@@ -404,7 +403,7 @@
     <string name="repeat_display_daily_days">毎日 (%1$d日)</string>
     <string name="repeat_display_error">正しい形式で入力してください。</string>
     <string name="tag_unassigned">未指定</string>
-    <string name="default_alarm_message">{할일}を確認して、忘れずに復習しましょう！</string>
+    <string name="default_alarm_message">{タスク}を確認して、忘れずに復習しましょう！</string>
     <string name="alarm_channel_name">タスク通知</string>
     <string name="alarm_channel_desc">エビングプランナーの予定通知チャンネル</string>
 

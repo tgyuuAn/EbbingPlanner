@@ -65,6 +65,7 @@ data class NotificationState(
     val defaultMessage: String = "",
     val message: String = defaultMessage,
     val originMessage: String = defaultMessage,
+    val placeholderToken: String = "{할일}",
 ) {
     val formattedAlarmTime: String
         get() {
@@ -73,7 +74,7 @@ data class NotificationState(
             return "$hour:$minute"
         }
 
-    val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
+    val placeholderCount: Int = Regex.escape(placeholderToken).toRegex().findAll(message).count()
 
     val isValidPlaceholder: Boolean = placeholderCount <= 1
 
