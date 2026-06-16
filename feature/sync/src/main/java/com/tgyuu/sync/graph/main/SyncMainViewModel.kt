@@ -259,7 +259,12 @@ class SyncMainViewModel @Inject constructor(
             }
         }.onFailure { error ->
             errorBus.sendError(error)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar(error.message ?: "동기화에 실패하였습니다."))
+            val message = if (error.isNetworkError()) {
+                "네트워크 연결을 확인해 주세요."
+            } else {
+                error.message ?: "동기화에 실패하였습니다."
+            }
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(message))
         }.also {
             setState { copy(isNetworkLoading = false) }
         }
@@ -288,7 +293,12 @@ class SyncMainViewModel @Inject constructor(
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 성공하였습니다."))
         }.onFailure { error ->
             errorBus.sendError(error)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 실패하였습니다."))
+            val message = if (error.isNetworkError()) {
+                "네트워크 연결을 확인해 주세요."
+            } else {
+                "연동 해제에 실패하였습니다."
+            }
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(message))
         }.also {
             setState { copy(isNetworkLoading = false) }
         }
@@ -322,7 +332,12 @@ class SyncMainViewModel @Inject constructor(
             eventBus.sendEvent(ShowBottomSheet(content))
         }.onFailure { error ->
             errorBus.sendError(error)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("QR 코드 생성에 실패했습니다. 네트워크를 확인해 주세요."))
+            val message = if (error.isNetworkError()) {
+                "네트워크 연결을 확인해 주세요."
+            } else {
+                "QR 코드 생성에 실패했습니다. 다시 시도해 주세요."
+            }
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(message))
         }
     }
 
