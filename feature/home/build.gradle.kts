@@ -25,4 +25,5 @@ dependencies {
     implementation(projects.core.inAppReview)
 
     implementation(libs.accompanist.permission)
+    testImplementation(libs.mockk)
 }
