@@ -35,7 +35,7 @@ class NotificationHelperImpl @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val contentTitle = "에빙 플래너 일정 알림"
+        val contentTitle = context.getString(com.tgyuu.designsystem.R.string.notification_content_title)
         val messageTemplate = configRepository.getAlarmMessage()
         val contentText = messageTemplate.replace("{할일}", schedules.first().title)
 

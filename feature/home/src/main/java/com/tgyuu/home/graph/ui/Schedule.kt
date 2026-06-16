@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toRelativeDayDescription
+import com.tgyuu.designsystem.util.toRelativeDayLabel
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingCheck
@@ -98,7 +98,7 @@ private fun ScheduleCard(
         )
 
         Text(
-            text = schedule.toRelativeDayDescription(),
+            text = schedule.toRelativeDayLabel(),
             style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.textOnBackground,
@@ -190,7 +190,7 @@ private fun ScheduleCheckCard(
             )
 
             Text(
-                text = schedule.toRelativeDayDescription(),
+                text = schedule.toRelativeDayLabel(),
                 style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
                 color = EbbingTheme.colors.textOnBackground,

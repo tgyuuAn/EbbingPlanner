@@ -407,4 +407,18 @@
     <string name="default_alarm_message">{할일} 을 확인하고, 잊지 말고 복습하세요!</string>
     <string name="alarm_channel_name">할 일 알림</string>
     <string name="alarm_channel_desc">에빙 플래너 일정 알림 채널</string>
+
+    <!-- ===================== App ===================== -->
+    <string name="nav_home">홈</string>
+    <string name="nav_schedule">모아보기</string>
+    <string name="nav_setting">설정</string>
+    <string name="date_today">오늘</string>
+    <string name="date_days_after">%1$d일 후</string>
+    <string name="date_days_before">%1$d일 전</string>
+    <string name="update_title">새로운 버전이 출시 되었어요!</string>
+    <string name="update_view_notes">업데이트 내용 보러가기</string>
+    <string name="update_close">닫기</string>
+    <string name="update_button">업데이트</string>
+    <string name="exit_confirm_snackbar">뒤로 가기를 한 번 더 누르면 앱이 종료돼요</string>
+    <string name="notification_content_title">에빙 플래너 일정 알림</string>
 </resources>

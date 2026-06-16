@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.tgyuu.common.util.NoRippleInteractionSource
@@ -76,12 +77,12 @@ internal fun AppBottomBar(
                         ) {
                             Icon(
                                 painter = painterResource(topLevelRoute.iconDrawableId),
-                                contentDescription = topLevelRoute.contentDescription,
+                                contentDescription = stringResource(topLevelRoute.contentDescriptionRes),
                                 modifier = Modifier.size(32.dp),
                             )
 
                             Text(
-                                text = topLevelRoute.title,
+                                text = stringResource(topLevelRoute.titleRes),
                                 style = EbbingTheme.typography.caption12R,
                             )
                         }

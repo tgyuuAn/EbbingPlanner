@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
@@ -229,7 +230,7 @@ private fun TabletContent(
                                 },
                                 label = {
                                     Text(
-                                        text = dest.title,
+                                        text = stringResource(dest.titleRes),
                                         style = EbbingTheme.typography.body18M,
                                         textAlign = TextAlign.Center,
                                     )
@@ -276,6 +277,7 @@ private fun HandleDoubleBackToExit(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val exitMessage = stringResource(com.tgyuu.designsystem.R.string.exit_confirm_snackbar)
     var backPressedTime by remember { mutableLongStateOf(0L) }
 
     BackHandler(enabled = appState.isRootRoute) {
@@ -284,7 +286,7 @@ private fun HandleDoubleBackToExit(
             activity?.finish()
         } else {
             scope.launch {
-                snackBarHostState.showSnackbar("뒤로 가기를 한 번 더 누르면 앱이 종료돼요")
+                snackBarHostState.showSnackbar(exitMessage)
             }
             backPressedTime = System.currentTimeMillis()
         }

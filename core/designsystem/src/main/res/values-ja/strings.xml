@@ -407,4 +407,18 @@
     <string name="default_alarm_message">{할일}を確認して、忘れずに復習しましょう！</string>
     <string name="alarm_channel_name">タスク通知</string>
     <string name="alarm_channel_desc">エビングプランナーの予定通知チャンネル</string>
+
+    <!-- ===================== App ===================== -->
+    <string name="nav_home">ホーム</string>
+    <string name="nav_schedule">まとめ</string>
+    <string name="nav_setting">設定</string>
+    <string name="date_today">今日</string>
+    <string name="date_days_after">%1$d日後</string>
+    <string name="date_days_before">%1$d日前</string>
+    <string name="update_title">新しいバージョンが公開されました！</string>
+    <string name="update_view_notes">アップデート内容を見る</string>
+    <string name="update_close">閉じる</string>
+    <string name="update_button">アップデート</string>
+    <string name="exit_confirm_snackbar">もう一度戻るを押すとアプリが終了します</string>
+    <string name="notification_content_title">エビングプランナーの予定通知</string>
 </resources>

@@ -57,7 +57,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.dashboard.contract.ScheduleIntent
 import com.tgyuu.dashboard.contract.ScheduleState
 import com.tgyuu.dashboard.ui.bottomsheet.ScheduleDeleteBottomSheet
@@ -76,6 +75,7 @@ import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoInfoUiModel
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.util.toRelativeDayLabel
 import com.tgyuu.domain.model.DefaultTodoTag
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -692,7 +692,7 @@ private fun ScheduleCard(
         )
 
         Text(
-            text = schedule.date.toRelativeDayDescription(),
+            text = schedule.date.toRelativeDayLabel(),
             style = EbbingTheme.typography.caption12R,
             color = subColor,
             textDecoration = textDecoration,

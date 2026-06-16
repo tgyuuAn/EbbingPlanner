@@ -407,4 +407,18 @@
     <string name="default_alarm_message">Check {할일} and don\'t forget to review!</string>
     <string name="alarm_channel_name">Task reminders</string>
     <string name="alarm_channel_desc">Ebbing Planner schedule notification channel</string>
+
+    <!-- ===================== App ===================== -->
+    <string name="nav_home">Home</string>
+    <string name="nav_schedule">Schedules</string>
+    <string name="nav_setting">Settings</string>
+    <string name="date_today">Today</string>
+    <string name="date_days_after">In %1$d days</string>
+    <string name="date_days_before">%1$d days ago</string>
+    <string name="update_title">A new version is available!</string>
+    <string name="update_view_notes">See what\'s new</string>
+    <string name="update_close">Close</string>
+    <string name="update_button">Update</string>
+    <string name="exit_confirm_snackbar">Press back again to exit the app</string>
+    <string name="notification_content_title">Ebbing Planner reminder</string>
 </resources>

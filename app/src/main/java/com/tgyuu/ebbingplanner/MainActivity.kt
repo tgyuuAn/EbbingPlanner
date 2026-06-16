@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity() {
                                     navigationBus.navigate(
                                         To(
                                             SettingGraph.WebViewRoute(
-                                                title = "공지사항",
+                                                title = getString(com.tgyuu.designsystem.R.string.setting_announcement),
                                                 url = BuildConfig.EBBING_NOTICE_URL,
                                             )
                                         )

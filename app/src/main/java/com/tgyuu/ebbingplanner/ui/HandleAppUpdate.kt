@@ -27,7 +27,7 @@ import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.model.UpdateState
-import com.tgyuu.ebbingplanner.R
+import com.tgyuu.designsystem.R as DesignR
 
 @Composable
 internal fun HandleAppUpdate(
@@ -84,11 +84,11 @@ private fun SoftUpdateDialog(
         onDismissRequest = onDismissRequest,
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = stringResource(R.string.update_title),
+                title = stringResource(DesignR.string.update_title),
                 subText = updateInfo.noticeMsg,
                 descriptionComposable = {
                     Text(
-                        text = "업데이트 내용 보러가기",
+                        text = stringResource(DesignR.string.update_view_notes),
                         color = EbbingTheme.colors.primaryDeep,
                         style = EbbingTheme.typography.body14M,
                         textDecoration = TextDecoration.Underline,
@@ -100,8 +100,8 @@ private fun SoftUpdateDialog(
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "닫기",
-                rightButtonText = "업데이트",
+                leftButtonText = stringResource(DesignR.string.update_close),
+                rightButtonText = stringResource(DesignR.string.update_button),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onUpdateClick,
             )
@@ -119,11 +119,11 @@ private fun HardUpdateDialog(
         onDismissRequest = {},
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = stringResource(R.string.update_title),
+                title = stringResource(DesignR.string.update_title),
                 subText = updateInfo.noticeMsg,
                 descriptionComposable = {
                     Text(
-                        text = "업데이트 내용 보러가기",
+                        text = stringResource(DesignR.string.update_view_notes),
                         color = EbbingTheme.colors.primaryDeep,
                         style = EbbingTheme.typography.body14M,
                         textDecoration = TextDecoration.Underline,
@@ -135,7 +135,7 @@ private fun HardUpdateDialog(
         },
         dialogBottom = {
             EbbingSolidButton(
-                label = "업데이트",
+                label = stringResource(DesignR.string.update_button),
                 onClick = onUpdateClick,
                 modifier = Modifier
                     .fillMaxWidth()
