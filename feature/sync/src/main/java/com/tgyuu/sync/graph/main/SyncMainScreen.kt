@@ -488,6 +488,13 @@ private fun LastSyncSection(
             contentDescription = null,
         )
     }
+
+    Text(
+        text = "자동으로 동기화되지 않아요. 눌러서 직접 동기화해 주세요.",
+        style = EbbingTheme.typography.caption12R,
+        color = EbbingTheme.colors.textSub,
+        modifier = Modifier.padding(top = 8.dp),
+    )
 }
 
 @Composable
