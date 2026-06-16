@@ -13,6 +13,7 @@ data class SyncMainState(
     val localLastSyncedAt: ZonedDateTime? = null,
     val serverLastUpdatedAt: ZonedDateTime? = null,
     val isNetworkLoading: Boolean = true,
+    val isInitialLoading: Boolean = true,
     val isSyncUpEnabled: Boolean = true,
     // QR 연동
     val connectCode: String = "",

@@ -208,6 +208,15 @@ internal fun SyncMainScreen(
                     .weight(1f)
                     .padding(horizontal = 20.dp),
             )
+        } else if (state.isInitialLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+            ) {
+                CircularProgressIndicator(color = EbbingTheme.colors.primaryNormal)
+            }
         } else {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 if (state.linkedUuid != null) {
