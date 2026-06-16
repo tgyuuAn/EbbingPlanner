@@ -153,6 +153,8 @@ class SyncMainViewModel @Inject constructor(
         localLastSyncedAtJob.join()
         connectInfoJob.join()
         disconnectWatchJob.join()
+
+        setState { copy(isInitialLoading = false) }
     }
 
     override suspend fun processIntent(intent: SyncIntent) {
