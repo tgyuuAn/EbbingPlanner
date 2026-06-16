@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="setting_theme">Theme</string>
+    <string name="setting_theme_color_change">Change app theme</string>
+    <string name="setting_widget_alpha_change">Change widget theme / opacity</string>
+
+    <string name="setting_guidance">Guide</string>
+    <string name="setting_announcement">Announcements</string>
+    <string name="setting_privacy_policy">Privacy Policy</string>
+    <string name="setting_term">Terms of Service</string>
+    <string name="setting_version">Current version %1$s</string>
+    <string name="setting_inquiry">Inquiry</string>
+    <string name="setting_contact_us">Contact us</string>
+    <string name="setting_auto_backup">Auto backup</string>
+    <string name="setting_last_sync_time">Last sync: %1$s</string>
+
+    <string name="onboarding_1_title">60% disappears in a single day</string>
+    <string name="onboarding_1_description">According to Hermann Ebbinghaus\'s research, without review\nover 60% of your memory is lost within a day.</string>
+    <string name="onboarding_2_title">Review is essential to prevent forgetting</string>
+    <string name="onboarding_2_description">You need to review at the right time along the forgetting curve\nto retain memory longer.</string>
+    <string name="onboarding_3_title">Personalized review cycles &amp; reminders</string>
+    <string name="onboarding_3_description">Ebbing Planner calculates the optimal review cycle\nand sends reminders automatically.</string>
+    <string name="onboarding_4_title">Get started right now</string>
+    <string name="onboarding_4_description">Start your systematic review journey\nwith Ebbing Planner right now!</string>
+
+    <string name="next">Next</string>
+    <string name="start">Get started</string>
+
+    <!-- ===================== Sync ===================== -->
     <!-- Common -->
     <string name="sync_back">Back</string>
     <string name="sync_cancel">Cancel</string>
@@ -23,6 +50,8 @@
     <string name="sync_manual_hint">It doesn\'t sync automatically. Tap to sync manually.</string>
     <string name="sync_advanced_info">Advanced info</string>
     <string name="sync_device_id_label">This device\'s unique ID:</string>
+    <string name="sync_copy_device_info">Copy advanced info</string>
+    <string name="sync_device_info_copied">Advanced info copied.</string>
     <string name="sync_new_device_section">Connect a new device</string>
     <string name="sync_generate_qr">Generate QR</string>
     <string name="sync_generate_qr_desc">Send this device\'s schedule to another device</string>

@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="setting_theme">テーマ</string>
+    <string name="setting_theme_color_change">アプリのテーマを変更</string>
+    <string name="setting_widget_alpha_change">ウィジェットのテーマ・透明度を変更</string>
+
+    <string name="setting_guidance">ご案内</string>
+    <string name="setting_announcement">お知らせ</string>
+    <string name="setting_privacy_policy">プライバシーポリシー</string>
+    <string name="setting_term">利用規約</string>
+    <string name="setting_version">現在のバージョン %1$s</string>
+    <string name="setting_inquiry">お問い合わせ</string>
+    <string name="setting_contact_us">お問い合わせする</string>
+    <string name="setting_auto_backup">自動バックアップ</string>
+    <string name="setting_last_sync_time">最終同期: %1$s</string>
+
+    <string name="onboarding_1_title">1日で60%が失われます</string>
+    <string name="onboarding_1_description">ヘルマン・エビングハウスの研究によると、復習しないと\n1日で記憶の60%以上が失われます。</string>
+    <string name="onboarding_2_title">忘却を防ぐには復習が必須</string>
+    <string name="onboarding_2_description">忘却曲線に合わせて適切なタイミングで復習することで\n記憶を長く保てます。</string>
+    <string name="onboarding_3_title">カスタム復習サイクル＆通知</string>
+    <string name="onboarding_3_description">エビングプランナーが最適な復習サイクルを計算し\n自動で通知をお送りします。</string>
+    <string name="onboarding_4_title">今すぐ始めましょう</string>
+    <string name="onboarding_4_description">エビングプランナーと一緒に体系的な復習の旅を\n今すぐ始めてみましょう！</string>
+
+    <string name="next">次へ</string>
+    <string name="start">始める</string>
+
+    <!-- ===================== Sync ===================== -->
     <!-- 共通 -->
     <string name="sync_back">戻る</string>
     <string name="sync_cancel">キャンセル</string>
@@ -23,6 +50,8 @@
     <string name="sync_manual_hint">自動では同期されません。タップして手動で同期してください。</string>
     <string name="sync_advanced_info">詳細情報</string>
     <string name="sync_device_id_label">この端末の固有ID：</string>
+    <string name="sync_copy_device_info">詳細情報をコピー</string>
+    <string name="sync_device_info_copied">詳細情報をコピーしました。</string>
     <string name="sync_new_device_section">新しい端末と連携</string>
     <string name="sync_generate_qr">QRを生成</string>
     <string name="sync_generate_qr_desc">この端末の予定を他の端末へ送ります</string>

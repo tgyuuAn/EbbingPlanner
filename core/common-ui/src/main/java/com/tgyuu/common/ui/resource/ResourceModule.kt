@@ -1,7 +1,5 @@
-package com.tgyuu.sync.di
+package com.tgyuu.common.ui.resource
 
-import com.tgyuu.sync.util.ResourceProvider
-import com.tgyuu.sync.util.ResourceProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

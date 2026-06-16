@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.sync.R
+import com.tgyuu.designsystem.R
 import kotlinx.coroutines.delay
 
 @Composable

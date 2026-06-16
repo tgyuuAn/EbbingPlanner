@@ -15,10 +15,10 @@ import com.tgyuu.domain.model.Timer
 import com.tgyuu.domain.model.sync.ConnectResult
 import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.repository.SyncRepository
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
-import com.tgyuu.sync.R
-import com.tgyuu.sync.util.ResourceProvider
 import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.network.NetworkMonitor

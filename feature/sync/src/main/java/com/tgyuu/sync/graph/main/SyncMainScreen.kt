@@ -34,9 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,9 +49,8 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.util.clickable
-import com.tgyuu.designsystem.R as DesignR
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
-import com.tgyuu.sync.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.connect.ui.QrCodeCameraPreview
 import com.tgyuu.sync.graph.main.contract.SyncIntent
@@ -71,6 +72,8 @@ internal fun SyncMainRoute(
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     var showPermissionDialog by remember { mutableStateOf(false) }
     val alreadyLatestMessage = stringResource(R.string.sync_already_latest)
+    val clipboardManager = LocalClipboardManager.current
+    val deviceInfoCopiedMessage = stringResource(R.string.sync_device_info_copied)
 
     LaunchedEffect(viewModel) {
         viewModel.loadInitData()
@@ -144,6 +147,12 @@ internal fun SyncMainRoute(
         },
         onDismissScan = { viewModel.onIntent(SyncIntent.OnDismissScan) },
         onQrDetected = { viewModel.onIntent(SyncIntent.OnQrDetected(it)) },
+        onCopyDeviceInfo = {
+            clipboardManager.setText(AnnotatedString(state.displayDeviceInfo))
+            scope.launch {
+                viewModel.eventBus.sendEvent(EbbingEvent.ShowSnackBar(deviceInfoCopiedMessage))
+            }
+        },
     )
 }
 
@@ -162,6 +171,7 @@ internal fun SyncMainScreen(
     onDismissScan: () -> Unit,
     onQrDetected: (String) -> Unit,
     showSyncedAlreadySnackBar: () -> Unit,
+    onCopyDeviceInfo: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isShowSyncDialog by remember { mutableStateOf(false) }
@@ -259,7 +269,10 @@ internal fun SyncMainScreen(
                 }
 
                 Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                    AdvancedInfoSection(state = state)
+                    AdvancedInfoSection(
+                        state = state,
+                        onCopyClick = onCopyDeviceInfo,
+                    )
                 }
             }
         }
@@ -284,7 +297,7 @@ private fun QrCardSection(
             label = stringResource(R.string.sync_generate_qr),
             description = stringResource(R.string.sync_generate_qr_desc),
             buttonLabel = stringResource(R.string.sync_generate_qr),
-            buttonIconRes = DesignR.drawable.ic_qr_code,
+            buttonIconRes = R.drawable.ic_qr_code,
             onClick = onClickGenerateCode,
             timerText = if (!state.isGenerateButtonEnabled) state.formattedRemainingTimeInSec else null,
         )
@@ -294,7 +307,7 @@ private fun QrCardSection(
             description = stringResource(R.string.sync_scan_qr_desc),
             warningText = stringResource(R.string.sync_scan_qr_warning),
             buttonLabel = stringResource(R.string.sync_scan_qr),
-            buttonIconRes = DesignR.drawable.ic_line_scan,
+            buttonIconRes = R.drawable.ic_line_scan,
             onClick = onScanQrClick,
         )
     }
@@ -445,7 +458,7 @@ private fun ConnectedDeviceSection(
         Spacer(modifier = Modifier.weight(1f))
 
         Image(
-            painter = painterResource(DesignR.drawable.ic_close),
+            painter = painterResource(R.drawable.ic_close),
             contentDescription = stringResource(R.string.sync_disconnect),
             colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
             modifier = Modifier
@@ -488,7 +501,7 @@ private fun LastSyncSection(
         )
 
         Image(
-            painter = painterResource(DesignR.drawable.ic_arrow_right),
+            painter = painterResource(R.drawable.ic_arrow_right),
             contentDescription = null,
         )
     }
@@ -504,6 +517,7 @@ private fun LastSyncSection(
 @Composable
 private fun AdvancedInfoSection(
     state: SyncMainState,
+    onCopyClick: () -> Unit,
 ) {
     Text(
         text = stringResource(R.string.sync_advanced_info),
@@ -519,14 +533,29 @@ private fun AdvancedInfoSection(
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
-    Text(
-        text = state.displayDeviceInfo,
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 20.dp),
-    )
+    ) {
+        Text(
+            text = state.displayDeviceInfo,
+            style = EbbingTheme.typography.caption14R,
+            color = EbbingTheme.colors.primaryNormal,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_copy),
+            contentDescription = stringResource(R.string.sync_copy_device_info),
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
+            modifier = Modifier
+                .size(20.dp)
+                .clickable { onCopyClick() },
+        )
+    }
 }
 
 @Composable

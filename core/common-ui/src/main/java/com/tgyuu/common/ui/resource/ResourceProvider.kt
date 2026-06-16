@@ -1,4 +1,4 @@
-package com.tgyuu.sync.util
+package com.tgyuu.common.ui.resource
 
 import androidx.annotation.StringRes
 
