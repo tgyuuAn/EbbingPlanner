@@ -19,11 +19,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.sync.R
 import kotlinx.coroutines.delay
 
 @Composable
@@ -62,13 +64,13 @@ fun NetworkBanner(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "네트워크가 연결되지 않았습니다.",
+                    text = stringResource(R.string.sync_network_disconnected),
                     style = EbbingTheme.typography.heading14SB,
                     color = EbbingTheme.colors.textOnPrimary,
                     modifier = Modifier.weight(1f),
                 )
                 Text(
-                    text = "연결하기",
+                    text = stringResource(R.string.sync_network_connect_action),
                     style = EbbingTheme.typography.heading14SB,
                     color = EbbingTheme.colors.textOnPrimary,
                     textDecoration = TextDecoration.Underline,
@@ -96,7 +98,7 @@ fun NetworkBanner(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "네트워크에 연결되었습니다.",
+                    text = stringResource(R.string.sync_network_connected),
                     style = EbbingTheme.typography.heading14SB,
                     color = EbbingTheme.colors.textOnPrimary,
                     modifier = Modifier.weight(1f),

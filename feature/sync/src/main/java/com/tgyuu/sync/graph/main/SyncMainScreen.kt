@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,8 +47,9 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.util.clickable
-import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.R as DesignR
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.sync.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.sync.graph.connect.ui.QrCodeCameraPreview
 import com.tgyuu.sync.graph.main.contract.SyncIntent
@@ -68,6 +70,7 @@ internal fun SyncMainRoute(
     val context = LocalContext.current
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     var showPermissionDialog by remember { mutableStateOf(false) }
+    val alreadyLatestMessage = stringResource(R.string.sync_already_latest)
 
     LaunchedEffect(viewModel) {
         viewModel.loadInitData()
@@ -106,7 +109,7 @@ internal fun SyncMainRoute(
         onSyncUpClick = { viewModel.onIntent(SyncIntent.OnSyncUpClick) },
         showSyncedAlreadySnackBar = {
             scope.launch {
-                viewModel.eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 데이터가 최신상태 입니다."))
+                viewModel.eventBus.sendEvent(EbbingEvent.ShowSnackBar(alreadyLatestMessage))
             }
         },
         onDisconnectClick = { viewModel.onIntent(SyncIntent.OnDisconnectClick) },
@@ -198,7 +201,7 @@ internal fun SyncMainScreen(
         modifier = modifier.fillMaxSize(),
     ) {
         EbbingSubTopBar(
-            title = "다른 기기에서도 사용하기",
+            title = stringResource(R.string.sync_title),
             onNavigationClick = if (state.isScanning) onDismissScan else onBackClick,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
@@ -270,7 +273,7 @@ private fun QrCardSection(
     onScanQrClick: () -> Unit,
 ) {
     Text(
-        text = "새로운 기기와 연결",
+        text = stringResource(R.string.sync_new_device_section),
         style = EbbingTheme.typography.heading14SB,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(bottom = 16.dp),
@@ -278,20 +281,20 @@ private fun QrCardSection(
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         QrActionCard(
-            label = "QR 생성하기",
-            description = "이 기기 일정을 다른 기기로 보내요",
-            buttonLabel = "QR 생성하기",
-            buttonIconRes = R.drawable.ic_qr_code,
+            label = stringResource(R.string.sync_generate_qr),
+            description = stringResource(R.string.sync_generate_qr_desc),
+            buttonLabel = stringResource(R.string.sync_generate_qr),
+            buttonIconRes = DesignR.drawable.ic_qr_code,
             onClick = onClickGenerateCode,
             timerText = if (!state.isGenerateButtonEnabled) state.formattedRemainingTimeInSec else null,
         )
 
         QrActionCard(
-            label = "QR 스캔하기",
-            description = "다른 기기 일정을 이 기기로 가져와요",
-            warningText = "현재 기기의 일정은 다른 기기의 일정으로 교체됩니다.",
-            buttonLabel = "QR 스캔하기",
-            buttonIconRes = R.drawable.ic_line_scan,
+            label = stringResource(R.string.sync_scan_qr),
+            description = stringResource(R.string.sync_scan_qr_desc),
+            warningText = stringResource(R.string.sync_scan_qr_warning),
+            buttonLabel = stringResource(R.string.sync_scan_qr),
+            buttonIconRes = DesignR.drawable.ic_line_scan,
             onClick = onScanQrClick,
         )
     }
@@ -399,7 +402,7 @@ private fun ConnectedDeviceSection(
     onDisconnectClick: () -> Unit,
 ) {
     Text(
-        text = "연결된 기기",
+        text = stringResource(R.string.sync_connected_device),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 12.dp),
@@ -428,7 +431,7 @@ private fun ConnectedDeviceSection(
         }
 
         Text(
-            text = state.connectedDeviceName ?: "알 수 없는 기기",
+            text = state.connectedDeviceName ?: stringResource(R.string.sync_unknown_device),
             style = EbbingTheme.typography.heading14SB,
             color = EbbingTheme.colors.textOnBackground,
         )
@@ -442,8 +445,8 @@ private fun ConnectedDeviceSection(
         Spacer(modifier = Modifier.weight(1f))
 
         Image(
-            painter = painterResource(R.drawable.ic_close),
-            contentDescription = "연동 해제",
+            painter = painterResource(DesignR.drawable.ic_close),
+            contentDescription = stringResource(R.string.sync_disconnect),
             colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
             modifier = Modifier
                 .size(24.dp)
@@ -463,7 +466,7 @@ private fun LastSyncSection(
     onSyncUpClick: () -> Unit,
 ) {
     Text(
-        text = "마지막 동기화",
+        text = stringResource(R.string.sync_last_sync),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
@@ -477,20 +480,21 @@ private fun LastSyncSection(
             .padding(vertical = 4.dp),
     ) {
         Text(
-            text = state.localLastSyncedAt?.toLocalDateTime()?.toFormattedString() ?: "기록 없음",
+            text = state.localLastSyncedAt?.toLocalDateTime()?.toFormattedString()
+                ?: stringResource(R.string.sync_no_record),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
         Image(
-            painter = painterResource(R.drawable.ic_arrow_right),
+            painter = painterResource(DesignR.drawable.ic_arrow_right),
             contentDescription = null,
         )
     }
 
     Text(
-        text = "자동으로 동기화되지 않아요. 눌러서 직접 동기화해 주세요.",
+        text = stringResource(R.string.sync_manual_hint),
         style = EbbingTheme.typography.caption12R,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(top = 8.dp),
@@ -502,14 +506,14 @@ private fun AdvancedInfoSection(
     state: SyncMainState,
 ) {
     Text(
-        text = "고급 정보",
+        text = stringResource(R.string.sync_advanced_info),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
     Text(
-        text = "해당 디바이스의 고유 ID :",
+        text = stringResource(R.string.sync_device_id_label),
         style = EbbingTheme.typography.body14M,
         color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
