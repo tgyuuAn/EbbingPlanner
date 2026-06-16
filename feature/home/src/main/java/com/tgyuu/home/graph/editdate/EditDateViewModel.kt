@@ -60,7 +60,7 @@ class EditDateViewModel @Inject constructor(
             )
         )
 
-        setState { copy(repeatCycle = DefaultRepeatCycles.first().toUiModel()) }
+        setState { copy(repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider)) }
 
         viewModelScope.launch {
             val infoId = savedStateHandle.get<Int>("infoId")
@@ -94,7 +94,7 @@ class EditDateViewModel @Inject constructor(
         todoRepository.recentAddedRepeatCycleId?.let {
             viewModelScope.launch {
                 val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
-                setState { copy(repeatCycle = newRepeatCycle.toUiModel()) }
+                setState { copy(repeatCycle = newRepeatCycle.toUiModel(resourceProvider)) }
             }
         }
     }
@@ -102,7 +102,7 @@ class EditDateViewModel @Inject constructor(
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels()) }
+        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: EditDateIntent) {

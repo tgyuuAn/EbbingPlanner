@@ -3,7 +3,6 @@ package com.tgyuu.repeatcycle.graph.editrepeatcycle.contract
 import com.tgyuu.common.base.UiState
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.RepeatCycle.Companion.DISPLAY_ERROR
 import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.model.Experiment.SaveButtonPosition
 import com.tgyuu.repeatcycle.util.parsingIntervals
@@ -20,7 +19,7 @@ data class EditRepeatCycleState(
         parsingIntervals(intervals)
             .getOrDefault(emptyList())
             .toPreviewIntervals(it)
-    } ?: DISPLAY_ERROR
+    } ?: ""
 
     val isSaveEnabled = intervals.isNotEmpty()
 }

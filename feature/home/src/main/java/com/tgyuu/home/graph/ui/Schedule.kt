@@ -24,7 +24,7 @@ import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingCheck
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.LocalDate
 
@@ -90,7 +90,7 @@ private fun ScheduleCard(
             text = stringResource(
                 R.string.home_schedule_date_day,
                 schedule.toFormattedString(),
-                schedule.dayOfWeek.toKorean(),
+                schedule.dayOfWeek.toShortLabel(),
             ),
             style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
@@ -182,7 +182,7 @@ private fun ScheduleCheckCard(
                 text = stringResource(
                 R.string.home_schedule_date_day,
                 schedule.toFormattedString(),
-                schedule.dayOfWeek.toKorean(),
+                schedule.dayOfWeek.toShortLabel(),
             ),
                 style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,

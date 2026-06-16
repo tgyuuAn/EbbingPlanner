@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.PlatformTextStyle
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.ebbingAnimateColorAsState
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import java.time.LocalDate
@@ -51,10 +53,12 @@ internal fun CalendarBody(
     startFromMonday: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val bodyDescription = stringResource(R.string.ds_cd_calendar_body)
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.semantics { contentDescription = "달력 바디" },
+        modifier = modifier.semantics { contentDescription = bodyDescription },
     ) {
         items(
             items = getCalendarDates(currentDate, startFromMonday),
@@ -79,11 +83,13 @@ internal fun WeekCalendarBody(
     startFromMonday: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val weekBodyDescription = stringResource(R.string.ds_cd_calendar_week_body)
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .semantics { contentDescription = "주간 달력 바디" },
+            .semantics { contentDescription = weekBodyDescription },
     ) {
         getWeekDates(weekReferenceDate, startFromMonday).forEach { calendarDate ->
             CalendarDayItem(

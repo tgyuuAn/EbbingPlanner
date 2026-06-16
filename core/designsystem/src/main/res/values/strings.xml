@@ -379,4 +379,28 @@
     <string name="widget_empty_schedule">오늘은 일정이 없어요</string>
     <string name="widget_done_count">완료 %1$d개</string>
     <string name="widget_total_count">전체 %1$d개</string>
+
+    <!-- ===================== Core / DesignSystem ===================== -->
+    <string name="ds_priority_format">우선도 : %1$d</string>
+    <string name="ds_year_month">%1$d년 %2$d월</string>
+    <string name="ds_cd_back">뒤로 가기 버튼</string>
+    <string name="ds_cd_more">오른쪽 버튼</string>
+    <string name="ds_cd_calendar_body">달력 바디</string>
+    <string name="ds_cd_calendar_week_body">주간 달력 바디</string>
+    <string name="ds_cd_calendar_header">달력 헤더</string>
+    <string name="ds_cd_calendar_controller">달력 컨트롤러</string>
+    <string name="ds_cd_go_today">오늘로 이동</string>
+    <string name="ds_cd_sync">데이터 동기화</string>
+    <string name="ds_pm">오후</string>
+    <string name="ds_am">오전</string>
+    <string name="sort_created">생성순</string>
+    <string name="sort_name">이름순</string>
+    <string name="sort_priority">우선순</string>
+    <string name="repeat_display_daily">매일하기</string>
+    <string name="repeat_display_daily_days">매일하기 (%1$d일)</string>
+    <string name="repeat_display_error">올바른 형태로 작성해주세요.</string>
+    <string name="tag_unassigned">미지정</string>
+    <string name="default_alarm_message">{할일} 을 확인하고, 잊지 말고 복습하세요!</string>
+    <string name="alarm_channel_name">할 일 알림</string>
+    <string name="alarm_channel_desc">에빙 플래너 일정 알림 채널</string>
 </resources>

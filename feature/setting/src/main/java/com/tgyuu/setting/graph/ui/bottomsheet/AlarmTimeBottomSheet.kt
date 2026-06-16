@@ -22,11 +22,14 @@ internal fun AlarmTimeBottomSheet(
     originMinute: String,
     onUpdateClick: (String, String) -> Unit,
 ) {
-    var newAmPm by remember { mutableStateOf(if (originHour.toInt() >= 12) "오후" else "오전") }
+    val pmLabel = stringResource(R.string.ds_pm)
+    val amLabel = stringResource(R.string.ds_am)
+
+    var newAmPm by remember { mutableStateOf(if (originHour.toInt() >= 12) pmLabel else amLabel) }
     var newHour by remember { mutableStateOf(originHour) }
     var newMinute by remember { mutableStateOf(originMinute) }
 
-    val initialAmPm = if (originHour.toInt() >= 12) "오후" else "오전"
+    val initialAmPm = if (originHour.toInt() >= 12) pmLabel else amLabel
     val initialHour =
         if (originHour.toInt() >= 12) (originHour.toInt() - 12).toString() else originHour
     val initialMinute = originMinute
@@ -45,6 +48,7 @@ internal fun AlarmTimeBottomSheet(
             initialAmPm = initialAmPm,
             initialHour = initialHour,
             initialMinute = initialMinute,
+            amPmItems = listOf(pmLabel, amLabel),
             onValueChange = { amPm, hour, minute ->
                 newAmPm = amPm
                 newHour = hour.toString()
@@ -56,7 +60,7 @@ internal fun AlarmTimeBottomSheet(
         EbbingSolidButton(
             label = stringResource(R.string.setting_apply_action),
             onClick = {
-                var hour = if (newAmPm == "오후") (newHour.toInt() + 12).toString() else newHour
+                var hour = if (newAmPm == pmLabel) (newHour.toInt() + 12).toString() else newHour
                 if (hour == "24") {
                     hour = "0"
                 }

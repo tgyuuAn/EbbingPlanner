@@ -42,6 +42,7 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.model.displayName
 import com.tgyuu.domain.model.SortType
 import java.time.LocalDate
 
@@ -140,7 +141,7 @@ private fun TodoHeader(
                 .padding(end = 16.dp)
         ) {
             Text(
-                text = sortType.displayName,
+                text = sortType.displayName(),
                 style = EbbingTheme.typography.heading16B,
                 color = EbbingTheme.colors.textOnBackground
             )

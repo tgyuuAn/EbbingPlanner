@@ -68,7 +68,7 @@ class RepeatCycleViewModel @Inject constructor(
 
     internal fun loadTags() = viewModelScope.launch {
         val repeatCycleList = todoRepository.loadRepeatCycles()
-        setState { copy(repeatCycleList = repeatCycleList.toUiModels()) }
+        setState { copy(repeatCycleList = repeatCycleList.toUiModels(resourceProvider)) }
     }
 
     private suspend fun deleteRepeatCycle(repeatCycle: RepeatCycleUiModel) {

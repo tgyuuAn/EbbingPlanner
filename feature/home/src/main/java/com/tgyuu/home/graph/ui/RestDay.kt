@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingChip
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import kotlinx.collections.immutable.ImmutableSet
 import java.time.DayOfWeek
@@ -37,7 +37,7 @@ internal fun RestDayContent(
     ) {
         DayOfWeek.entries.forEach {
             EbbingChip(
-                label = it.toKorean(),
+                label = it.toShortLabel(),
                 selected = it in restDays,
                 onChipClicked = { onRestDayChange(it) },
                 modifier = Modifier.weight(1f),

@@ -15,6 +15,7 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
+import com.tgyuu.designsystem.model.displayName
 import com.tgyuu.domain.model.SortType
 
 @Composable
@@ -38,7 +39,7 @@ internal fun SortTypeBottomSheet(
         ) {
             SortType.entries.forEach { sortType ->
                 EbbingBottomSheetListItemDefault(
-                    label = sortType.displayName,
+                    label = sortType.displayName(),
                     checked = sortType == newSortType,
                     onChecked = { newSortType = sortType },
                 )

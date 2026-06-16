@@ -16,7 +16,6 @@ import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.RepeatCycle.Companion.DISPLAY_ERROR
 
 @Composable
 internal fun RepeatCycleContent(
@@ -75,10 +74,12 @@ internal fun PreviewContent(
         modifier = Modifier.padding(top = 32.dp),
     )
 
+    val errorText = stringResource(R.string.repeat_display_error)
+
     Text(
         text = preview,
         style = EbbingTheme.typography.heading14SB,
-        color = if (preview == DISPLAY_ERROR) EbbingTheme.colors.statusError else EbbingTheme.colors.textDisabled,
+        color = if (preview == errorText) EbbingTheme.colors.statusError else EbbingTheme.colors.textDisabled,
         textAlign = TextAlign.Start,
         modifier = Modifier
             .padding(top = 8.dp)

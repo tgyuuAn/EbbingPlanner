@@ -72,7 +72,7 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingRoundSolidButton
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoInfoUiModel
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
@@ -684,7 +684,7 @@ private fun ScheduleCard(
                 R.string.schedule_card_date,
                 schedule.date.monthValue,
                 schedule.date.dayOfMonth,
-                schedule.date.dayOfWeek.toKorean(),
+                schedule.date.dayOfWeek.toShortLabel(),
             ),
             style = dateStyle,
             color = dateColor,

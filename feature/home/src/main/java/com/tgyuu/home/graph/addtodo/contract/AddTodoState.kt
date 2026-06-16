@@ -7,7 +7,6 @@ import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.model.Experiment.SaveButtonPosition
 import kotlinx.collections.immutable.ImmutableList
@@ -63,8 +62,9 @@ data class NotificationState(
     val notificationEnabled: Boolean = false,
     val alarmHour: Int = 0,
     val alarmMinute: Int = 0,
-    val message: String = DEFAULT_ALARM_MESSAGE,
-    val originMessage: String = DEFAULT_ALARM_MESSAGE,
+    val defaultMessage: String = "",
+    val message: String = defaultMessage,
+    val originMessage: String = defaultMessage,
 ) {
     val formattedAlarmTime: String
         get() {
@@ -81,5 +81,5 @@ data class NotificationState(
 
     val messageLength: Int = message.length
 
-    val shouldShowResetButton: Boolean = message != DEFAULT_ALARM_MESSAGE
+    val shouldShowResetButton: Boolean = message != defaultMessage
 }

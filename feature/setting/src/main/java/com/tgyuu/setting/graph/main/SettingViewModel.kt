@@ -70,7 +70,12 @@ class SettingViewModel @Inject constructor(
             }
 
             launch {
-                val message = configRepository.getAlarmMessage()
+                val storedMessage = configRepository.getAlarmMessage()
+                val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) {
+                    resourceProvider.getString(R.string.default_alarm_message)
+                } else {
+                    storedMessage
+                }
                 setState { copy(alarmMessage = message) }
             }
 
@@ -186,11 +191,13 @@ class SettingViewModel @Inject constructor(
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "NotificationMessage")
         )
+        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
         setState {
             copy(
                 alarmMessageBottomSheet = AlarmMessageBottomSheetState(
-                    message = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
-                    originMessage = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
+                    defaultMessage = defaultMessage,
+                    message = alarmMessage.ifEmpty { defaultMessage },
+                    originMessage = alarmMessage.ifEmpty { defaultMessage },
                 )
             )
         }
@@ -207,7 +214,7 @@ class SettingViewModel @Inject constructor(
         setState {
             copy(
                 alarmMessageBottomSheet = alarmMessageBottomSheet.copy(
-                    message = DEFAULT_ALARM_MESSAGE
+                    message = alarmMessageBottomSheet.defaultMessage
                 )
             )
         }

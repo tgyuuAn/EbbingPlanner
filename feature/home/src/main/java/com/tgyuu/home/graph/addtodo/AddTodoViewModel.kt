@@ -59,7 +59,7 @@ class AddTodoViewModel @Inject constructor(
         selectedDate = (savedStateHandle.get<String>("selectedDate")
             ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")).toLocalDateOrThrow(),
         tag = DefaultTodoTag.toUiModel(),
-        repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+        repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider),
         saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) },
     )
 ) {
@@ -72,6 +72,12 @@ class AddTodoViewModel @Inject constructor(
             )
         )
 
+        setState {
+            copy(
+                tag = tag?.copy(name = resourceProvider.getString(R.string.tag_unassigned))
+            )
+        }
+
         initNotificationState()
 
         viewModelScope.launch {
@@ -82,13 +88,16 @@ class AddTodoViewModel @Inject constructor(
 
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
-        val message = configRepository.getAlarmMessage()
+        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val storedMessage = configRepository.getAlarmMessage()
+        val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) defaultMessage else storedMessage
 
         setState {
             copy(
                 notificationState = notificationState.copy(
                     alarmHour = hour,
                     alarmMinute = minute,
+                    defaultMessage = defaultMessage,
                     message = message,
                     originMessage = message,
                 )
@@ -109,7 +118,7 @@ class AddTodoViewModel @Inject constructor(
         todoRepository.recentAddedRepeatCycleId?.let {
             viewModelScope.launch {
                 val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
-                setState { copy(repeatCycle = newRepeatCycle.toUiModel()) }
+                setState { copy(repeatCycle = newRepeatCycle.toUiModel(resourceProvider)) }
             }
         }
     }
@@ -122,7 +131,7 @@ class AddTodoViewModel @Inject constructor(
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels()) }
+        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {
@@ -337,7 +346,7 @@ class AddTodoViewModel @Inject constructor(
         setState {
             copy(
                 notificationState = notificationState.copy(
-                    message = DEFAULT_ALARM_MESSAGE
+                    message = notificationState.defaultMessage
                 )
             )
         }

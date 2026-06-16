@@ -12,6 +12,7 @@ class RepeatCycleUtilTest {
         override fun getString(resId: Int): String = when (resId) {
             R.string.repeat_interval_same_day_only -> "당일만"
             R.string.repeat_interval_same_day -> "당일"
+            R.string.repeat_display_error -> "올바른 형태로 작성해주세요."
             else -> ""
         }
 

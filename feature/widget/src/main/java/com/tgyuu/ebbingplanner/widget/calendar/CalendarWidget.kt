@@ -43,7 +43,7 @@ import com.google.gson.reflect.TypeToken
 import com.tgyuu.designsystem.component.calendar.CalendarDate
 import com.tgyuu.designsystem.component.calendar.getCalendarDates
 import com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.widget.R
@@ -236,13 +236,13 @@ private fun CalendarWidgetHeader(
                 if (dowBitmap != null) {
                     Image(
                         provider = ImageProvider(dowBitmap),
-                        contentDescription = dow.toKorean(),
+                        contentDescription = dow.toShortLabel(),
                         colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textSub),
                         modifier = GlanceModifier.defaultWeight(),
                     )
                 } else {
                     Text(
-                        text = dow.toKorean(),
+                        text = dow.toShortLabel(),
                         style = EbbingWidgetTypography.body14M.copy(
                             textAlign = TextAlign.Center,
                             color = LocalEbbingWidgetColors.current.textSub,

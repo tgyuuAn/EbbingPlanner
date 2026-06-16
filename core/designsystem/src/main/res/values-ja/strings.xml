@@ -379,4 +379,28 @@
     <string name="widget_empty_schedule">今日の予定はありません</string>
     <string name="widget_done_count">完了 %1$d件</string>
     <string name="widget_total_count">全体 %1$d件</string>
+
+    <!-- ===================== Core / DesignSystem ===================== -->
+    <string name="ds_priority_format">優先度 : %1$d</string>
+    <string name="ds_year_month">%1$d年%2$d月</string>
+    <string name="ds_cd_back">戻るボタン</string>
+    <string name="ds_cd_more">右ボタン</string>
+    <string name="ds_cd_calendar_body">カレンダー本体</string>
+    <string name="ds_cd_calendar_week_body">週間カレンダー本体</string>
+    <string name="ds_cd_calendar_header">カレンダーヘッダー</string>
+    <string name="ds_cd_calendar_controller">カレンダーコントローラー</string>
+    <string name="ds_cd_go_today">今日へ移動</string>
+    <string name="ds_cd_sync">データ同期</string>
+    <string name="ds_pm">午後</string>
+    <string name="ds_am">午前</string>
+    <string name="sort_created">作成順</string>
+    <string name="sort_name">名前順</string>
+    <string name="sort_priority">優先順</string>
+    <string name="repeat_display_daily">毎日</string>
+    <string name="repeat_display_daily_days">毎日 (%1$d日)</string>
+    <string name="repeat_display_error">正しい形式で入力してください。</string>
+    <string name="tag_unassigned">未指定</string>
+    <string name="default_alarm_message">{할일}を確認して、忘れずに復習しましょう！</string>
+    <string name="alarm_channel_name">タスク通知</string>
+    <string name="alarm_channel_desc">エビングプランナーの予定通知チャンネル</string>
 </resources>

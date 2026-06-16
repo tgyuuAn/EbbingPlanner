@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -34,13 +35,15 @@ internal fun CalendarController(
     showSyncButton: Boolean = true,
     onSyncClick: () -> Unit = {},
 ) {
+    val controllerDescription = stringResource(R.string.ds_cd_calendar_controller)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
-            .semantics { contentDescription = "달력 컨트롤러" },
+            .semantics { contentDescription = controllerDescription },
     ) {
         val today = LocalDate.now()
         val isOnToday = YearMonth.from(currentDate) == YearMonth.from(today) &&
@@ -50,7 +53,7 @@ internal fun CalendarController(
             if (!isOnToday) {
                 Image(
                     painter = painterResource(R.drawable.ic_return),
-                    contentDescription = "이전 달",
+                    contentDescription = stringResource(R.string.ds_cd_go_today),
                     colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                     modifier = Modifier.size(16.dp),
                 )
@@ -60,7 +63,7 @@ internal fun CalendarController(
         }
 
         Text(
-            text = "${currentDate.year}년 ${currentDate.monthValue}월",
+            text = stringResource(R.string.ds_year_month, currentDate.year, currentDate.monthValue),
             textAlign = TextAlign.Center,
             style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textOnBackground,
@@ -75,7 +78,7 @@ internal fun CalendarController(
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_link),
-                    contentDescription = "데이터 동기화",
+                    contentDescription = stringResource(R.string.ds_cd_sync),
                     colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                     modifier = Modifier.size(28.dp),
                 )

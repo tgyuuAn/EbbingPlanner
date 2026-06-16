@@ -2,7 +2,6 @@ package com.tgyuu.setting.graph.main.contract
 
 import com.tgyuu.common.base.UiState
 import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import java.time.ZonedDateTime
 
 data class SettingState(
@@ -11,7 +10,7 @@ data class SettingState(
     val notificationEnabled: Boolean = true,
     val alarmHour: String = "",
     val alarmMinute: String = "",
-    val alarmMessage: String = DEFAULT_ALARM_MESSAGE,
+    val alarmMessage: String = "",
     val alarmMessageBottomSheet: AlarmMessageBottomSheetState = AlarmMessageBottomSheetState(),
     val mondayStart: Boolean = false,
     val autoBackupFeatureEnabled: Boolean = false,
@@ -20,7 +19,8 @@ data class SettingState(
 ) : UiState
 
 data class AlarmMessageBottomSheetState(
-    val message: String = DEFAULT_ALARM_MESSAGE,
+    val defaultMessage: String = "",
+    val message: String = defaultMessage,
     val originMessage: String = "",
 ) {
     val placeholderCount: Int = Regex.escape(placeholderToken).toRegex().findAll(message).count()
@@ -35,7 +35,7 @@ data class AlarmMessageBottomSheetState(
 
     val canApply: Boolean = isValid && isChanged
 
-    val shouldShowResetButton: Boolean = message != DEFAULT_ALARM_MESSAGE
+    val shouldShowResetButton: Boolean = message != defaultMessage
 
     companion object {
         // Structural token replaced by the to-do title at runtime; not a user-facing label.

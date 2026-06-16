@@ -6,7 +6,7 @@ import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -210,7 +210,7 @@ object WidgetUpdater {
         com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek(mondayStart)
             .forEachIndexed { index, dow ->
                 PretendardBitmapRenderer.renderAndSave(
-                    context, dow.toKorean(),
+                    context, dow.toShortLabel(),
                     PretendardBitmapRenderer.Weight.MEDIUM, 14f, white,
                     filename = "calendar_dow_$index.png",
                 )
