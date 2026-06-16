@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.analytics.LocalAnalyticsHelper
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -23,13 +25,13 @@ internal fun InAppReviewDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "에빙플래너가 도움이 되었나요?",
-                subText = "남겨주신 리뷰를 바탕으로 \n더 편리한 서비스를 만들겠습니다.",
+                title = stringResource(R.string.home_review_title),
+                subText = stringResource(R.string.home_review_sub),
             )
         },
         dialogBottom = {
             EbbingSolidButton(
-                label = "리뷰 작성하기",
+                label = stringResource(R.string.home_review_button),
                 onClick = {
                     analyticsHelper.logEvent(
                         AnalyticsEvent.Click(

@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
@@ -25,7 +27,7 @@ internal fun DelayBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "미루기 방법")
+        EbbingBottomSheetHeader(title = stringResource(R.string.home_delay_method))
 
         Column(
             modifier = Modifier
@@ -33,7 +35,7 @@ internal fun DelayBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = "이 일정만 미루기",
+                text = stringResource(R.string.home_delay_single),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
@@ -45,7 +47,7 @@ internal fun DelayBottomSheet(
             )
 
             Text(
-                text = "이후 일정 모두 미루기",
+                text = stringResource(R.string.home_delay_all),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,

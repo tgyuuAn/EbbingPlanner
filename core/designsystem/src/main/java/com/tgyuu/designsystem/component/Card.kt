@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -103,7 +104,7 @@ fun TodoListCard(
                             }
 
                             Text(
-                                text = "우선도 : ${todo.priority}",
+                                text = stringResource(R.string.ds_priority_format, todo.priority),
                                 style = EbbingTheme.typography.heading14SB,
                                 color = EbbingTheme.colors.textSub,
                                 maxLines = 1,

@@ -16,13 +16,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toRelativeDayDescription
+import com.tgyuu.designsystem.util.toRelativeDayLabel
 import com.tgyuu.common.util.EbbingVisibleAnimation
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingCheck
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.LocalDate
 
@@ -34,7 +36,7 @@ internal fun ScheduleContent(
     EbbingVisibleAnimation(schedules.isNotEmpty()) {
         Column(modifier = modifier) {
             Text(
-                text = "${schedules.size} 개의 학습 일정",
+                text = stringResource(R.string.home_study_schedule_count, schedules.size),
                 style = EbbingTheme.typography.heading20B,
                 color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(top = 32.dp),
@@ -85,14 +87,18 @@ private fun ScheduleCard(
         )
 
         Text(
-            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
+            text = stringResource(
+                R.string.home_schedule_date_day,
+                schedule.toFormattedString(),
+                schedule.dayOfWeek.toShortLabel(),
+            ),
             style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.textOnBackground,
         )
 
         Text(
-            text = schedule.toRelativeDayDescription(),
+            text = schedule.toRelativeDayLabel(),
             style = EbbingTheme.typography.body16M,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.textOnBackground,
@@ -111,7 +117,7 @@ internal fun ScheduleCheckContent(
     EbbingVisibleAnimation(schedules.isNotEmpty()) {
         Column(modifier = modifier) {
             Text(
-                text = "${schedules.size} 개의 학습 일정",
+                text = stringResource(R.string.home_study_schedule_count, schedules.size),
                 style = EbbingTheme.typography.heading20B,
                 color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(top = 32.dp)
@@ -173,14 +179,18 @@ private fun ScheduleCheckCard(
             )
 
             Text(
-                text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
+                text = stringResource(
+                R.string.home_schedule_date_day,
+                schedule.toFormattedString(),
+                schedule.dayOfWeek.toShortLabel(),
+            ),
                 style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
                 color = EbbingTheme.colors.textOnBackground,
             )
 
             Text(
-                text = schedule.toRelativeDayDescription(),
+                text = schedule.toRelativeDayLabel(),
                 style = EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
                 color = EbbingTheme.colors.textOnBackground,

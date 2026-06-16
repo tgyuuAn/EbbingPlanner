@@ -6,6 +6,8 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
@@ -26,6 +28,7 @@ class TagViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<TagState, TagIntent>(TagState()) {
 
     override suspend fun processIntent(intent: TagIntent) {
@@ -81,6 +84,6 @@ class TagViewModel @Inject constructor(
     private suspend fun deleteTag(tag: TodoTagUiModel) {
         todoRepository.deleteTag(tag.toDomainModel())
         setState { copy(tagList = tagList.filterNot { it.id == tag.id }.toImmutableList()) }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그를 삭제하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_deleted)))
     }
 }

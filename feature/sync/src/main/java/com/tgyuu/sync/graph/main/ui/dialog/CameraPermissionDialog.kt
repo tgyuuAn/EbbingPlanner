@@ -1,9 +1,11 @@
 package com.tgyuu.sync.graph.main.ui.dialog
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
+import com.tgyuu.designsystem.R
 
 @Composable
 fun CameraPermissionDialog(
@@ -14,18 +16,22 @@ fun CameraPermissionDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "카메라 권한 필요",
+                title = stringResource(R.string.sync_camera_permission_title),
                 subText = if (shouldShowRationale) {
-                    "QR 코드를 스캔하려면 설정에서 카메라 권한을 허용해주세요."
+                    stringResource(R.string.sync_camera_permission_rationale_settings)
                 } else {
-                    "QR 코드를 스캔하려면 카메라 권한이 필요합니다."
+                    stringResource(R.string.sync_camera_permission_rationale)
                 },
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "취소",
-                rightButtonText = if (shouldShowRationale) "설정으로 이동" else "허용",
+                leftButtonText = stringResource(R.string.sync_cancel),
+                rightButtonText = if (shouldShowRationale) {
+                    stringResource(R.string.sync_go_settings)
+                } else {
+                    stringResource(R.string.sync_allow)
+                },
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onAcceptClick,
             )

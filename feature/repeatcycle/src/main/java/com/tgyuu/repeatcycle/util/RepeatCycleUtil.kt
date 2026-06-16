@@ -1,6 +1,7 @@
 package com.tgyuu.repeatcycle.util
 
-import com.tgyuu.domain.model.RepeatCycle.Companion.DISPLAY_ERROR
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 
 internal fun parsingIntervals(intervals: String): Result<List<Int>> = runCatching {
     intervals.split(",")
@@ -14,13 +15,17 @@ internal fun parsingIntervals(intervals: String): Result<List<Int>> = runCatchin
         .toList()
 }
 
-fun List<Int>.toPreviewIntervals(): String {
-    if (isEmpty()) return DISPLAY_ERROR
+fun List<Int>.toPreviewIntervals(resourceProvider: ResourceProvider): String {
+    if (isEmpty()) return resourceProvider.getString(R.string.repeat_display_error)
 
     return when {
-        this.size == 1 && this.first() == 0 -> "당일만"
+        this.size == 1 && this.first() == 0 -> resourceProvider.getString(R.string.repeat_interval_same_day_only)
         else -> this.joinToString(", ") { day ->
-            if (day == 0) "당일" else "${day}일"
+            if (day == 0) {
+                resourceProvider.getString(R.string.repeat_interval_same_day)
+            } else {
+                resourceProvider.getString(R.string.repeat_interval_day, day)
+            }
         }
     }
 }

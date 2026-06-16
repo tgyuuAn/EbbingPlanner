@@ -9,10 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.designsystem.R
 import io.github.alexzhirkevich.qrose.options.QrBallShape
 import io.github.alexzhirkevich.qrose.options.QrFrameShape
 import io.github.alexzhirkevich.qrose.options.QrPixelShape
@@ -30,7 +32,7 @@ fun QrCodeBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "연동 QR 코드")
+        EbbingBottomSheetHeader(title = stringResource(R.string.sync_qr_code_title))
 
         val painter = rememberQrCodePainter(data = qrContent) {
             shapes {
@@ -42,7 +44,7 @@ fun QrCodeBottomSheet(
 
         Image(
             painter = painter,
-            contentDescription = "연동 QR 코드",
+            contentDescription = stringResource(R.string.sync_qr_code_title),
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .aspectRatio(1f)
@@ -50,7 +52,7 @@ fun QrCodeBottomSheet(
         )
 
         Text(
-            text = "남은 시간: $formattedRemainingTime",
+            text = stringResource(R.string.sync_remaining_time, formattedRemainingTime),
             style = EbbingTheme.typography.body14M,
             color = EbbingTheme.colors.primaryNormal,
             textAlign = TextAlign.Center,
@@ -58,7 +60,7 @@ fun QrCodeBottomSheet(
         )
 
         Text(
-            text = "다른 기기에서 이 QR 코드를 스캔해주세요.",
+            text = stringResource(R.string.sync_scan_this_qr),
             style = EbbingTheme.typography.body14M,
             color = EbbingTheme.colors.textDisabled,
             textAlign = TextAlign.Center,

@@ -1,9 +1,11 @@
 package com.tgyuu.setting.graph.ui.dialog
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
@@ -14,23 +16,27 @@ internal fun ConfirmClearDialog(
     onDismissRequest: () -> Unit,
     onClearClick: () -> Unit,
 ) {
+    val clearDialogPrefix = stringResource(R.string.setting_clear_dialog_title_prefix)
+    val clearDialogHighlight = stringResource(R.string.setting_clear_dialog_title_highlight)
+    val clearDialogSuffix = stringResource(R.string.setting_clear_dialog_title_suffix)
+
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("데이터를 ")
+                    append(clearDialogPrefix)
                     withStyle(SpanStyle(color = EbbingTheme.colors.statusError)) {
-                        append("초기화")
+                        append(clearDialogHighlight)
                     }
-                    append(" 하시겠습니까?")
+                    append(clearDialogSuffix)
                 },
-                subText = "삭제한 데이터는 되돌릴 수 없습니다."
+                subText = stringResource(R.string.setting_clear_dialog_subtext)
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "초기화",
+                leftButtonText = stringResource(R.string.setting_back),
+                rightButtonText = stringResource(R.string.setting_clear),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onClearClick,
             )

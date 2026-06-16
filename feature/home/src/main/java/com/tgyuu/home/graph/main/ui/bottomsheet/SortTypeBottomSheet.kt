@@ -9,10 +9,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
+import com.tgyuu.designsystem.model.displayName
 import com.tgyuu.domain.model.SortType
 
 @Composable
@@ -27,7 +30,7 @@ internal fun SortTypeBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "정렬 순서")
+        EbbingBottomSheetHeader(title = stringResource(R.string.home_sort_order))
 
         Column(
             modifier = Modifier
@@ -36,14 +39,14 @@ internal fun SortTypeBottomSheet(
         ) {
             SortType.entries.forEach { sortType ->
                 EbbingBottomSheetListItemDefault(
-                    label = sortType.displayName,
+                    label = sortType.displayName(),
                     checked = sortType == newSortType,
                     onChecked = { newSortType = sortType },
                 )
             }
 
             EbbingSolidButton(
-                label = "적용하기",
+                label = stringResource(R.string.home_apply),
                 onClick = { onClickUpdate(newSortType) },
                 modifier = Modifier
                     .fillMaxWidth()

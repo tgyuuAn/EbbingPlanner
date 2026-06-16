@@ -9,6 +9,8 @@ import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.FeatureFlag
@@ -47,6 +49,7 @@ class SettingViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
     private val featureFlagRepository: FeatureFlagRepository,
+    private val resourceProvider: ResourceProvider,
     val inAppReviewManager: InAppReviewManager,
     val inAppUpdateManager: InAppUpdateManager,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
@@ -67,7 +70,12 @@ class SettingViewModel @Inject constructor(
             }
 
             launch {
-                val message = configRepository.getAlarmMessage()
+                val storedMessage = configRepository.getAlarmMessage()
+                val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) {
+                    resourceProvider.getString(R.string.default_alarm_message)
+                } else {
+                    storedMessage
+                }
                 setState { copy(alarmMessage = message) }
             }
 
@@ -139,21 +147,30 @@ class SettingViewModel @Inject constructor(
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Notice")
         )
-        navigateToWebView("공지사항", BuildConfig.EBBING_NOTICE_URL)
+        navigateToWebView(
+            resourceProvider.getString(R.string.setting_announcement),
+            BuildConfig.EBBING_NOTICE_URL,
+        )
     }
 
     private suspend fun onPrivacyAndPolicyClick() {
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "PrivacyAndPolicy")
         )
-        navigateToWebView("개인정보처리방침", BuildConfig.EBBING_PRIVACY_AND_POLICY_URL)
+        navigateToWebView(
+            resourceProvider.getString(R.string.setting_privacy_policy),
+            BuildConfig.EBBING_PRIVACY_AND_POLICY_URL,
+        )
     }
 
     private suspend fun onTermsOfUseClick() {
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "TermsOfUse")
         )
-        navigateToWebView("이용약관", BuildConfig.EBBING_TERMS_OF_USE_URL)
+        navigateToWebView(
+            resourceProvider.getString(R.string.setting_term),
+            BuildConfig.EBBING_TERMS_OF_USE_URL,
+        )
     }
 
     private suspend fun onNotificationToggleClick() {
@@ -174,11 +191,18 @@ class SettingViewModel @Inject constructor(
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "NotificationMessage")
         )
+        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
         setState {
+            val resolvedMessage =
+                if (alarmMessage.isEmpty() || alarmMessage == DEFAULT_ALARM_MESSAGE) defaultMessage
+                else alarmMessage
             copy(
                 alarmMessageBottomSheet = AlarmMessageBottomSheetState(
-                    message = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
-                    originMessage = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
+                    defaultMessage = defaultMessage,
+                    message = resolvedMessage,
+                    originMessage = resolvedMessage,
+                    placeholderToken = placeholderToken,
                 )
             )
         }
@@ -195,7 +219,7 @@ class SettingViewModel @Inject constructor(
         setState {
             copy(
                 alarmMessageBottomSheet = alarmMessageBottomSheet.copy(
-                    message = DEFAULT_ALARM_MESSAGE
+                    message = alarmMessageBottomSheet.defaultMessage
                 )
             )
         }
@@ -306,7 +330,11 @@ class SettingViewModel @Inject constructor(
         }
 
         setState { copy(alarmHour = hour, alarmMinute = minute) }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 시간을 $hour:$minute 로 변경했어요"))
+        eventBus.sendEvent(
+            EbbingEvent.ShowSnackBar(
+                resourceProvider.getString(R.string.setting_alarm_time_changed, "$hour:$minute")
+            )
+        )
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 
@@ -314,7 +342,9 @@ class SettingViewModel @Inject constructor(
         val message = currentState.alarmMessageBottomSheet.message
         configRepository.updateAlarmMessage(message)
         setState { copy(alarmMessage = message) }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 메시지를 변경했어요"))
+        eventBus.sendEvent(
+            EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_alarm_message_changed))
+        )
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 
@@ -326,7 +356,9 @@ class SettingViewModel @Inject constructor(
         suspendRunCatching {
             todoRepository.clearData()
         }.onSuccess {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장된 데이터를 초기화 했어요"))
+            eventBus.sendEvent(
+                EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_data_cleared))
+            )
         }
     }
 }

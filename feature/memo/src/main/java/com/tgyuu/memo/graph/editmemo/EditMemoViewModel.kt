@@ -9,6 +9,8 @@ import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.memo.graph.editmemo.contract.EditMemoIntent
@@ -28,6 +30,7 @@ class EditMemoViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditMemoState, EditMemoIntent>(EditMemoState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
@@ -89,7 +92,7 @@ class EditMemoViewModel @Inject constructor(
         )
 
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.memo_required_fields)))
             return
         }
 
@@ -108,7 +111,7 @@ class EditMemoViewModel @Inject constructor(
         setState { copy(showSaveDialog = false) }
         val schedule = currentState.originSchedule ?: return
         todoRepository.updateTodo(schedule.copy(memo = currentState.memo))
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 수정하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.memo_updated)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(schedule.date.toFormattedString()),
@@ -124,7 +127,7 @@ class EditMemoViewModel @Inject constructor(
 
         todoRepository.updateTodos(relatedSchedules.map { it.copy(memo = currentState.memo) })
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("현재 일정 포함 ${relatedSchedules.size}개에 메모를 수정하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.memo_updated_all, relatedSchedules.size)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(originSchedule.date.toFormattedString()),

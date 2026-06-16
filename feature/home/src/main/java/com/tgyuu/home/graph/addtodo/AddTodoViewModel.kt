@@ -13,6 +13,8 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
@@ -50,13 +52,14 @@ class AddTodoViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(
     AddTodoState(
         selectedDate = (savedStateHandle.get<String>("selectedDate")
             ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")).toLocalDateOrThrow(),
         tag = DefaultTodoTag.toUiModel(),
-        repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+        repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider),
         saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) },
     )
 ) {
@@ -69,6 +72,12 @@ class AddTodoViewModel @Inject constructor(
             )
         )
 
+        setState {
+            copy(
+                tag = tag?.copy(name = resourceProvider.getString(R.string.tag_unassigned))
+            )
+        }
+
         initNotificationState()
 
         viewModelScope.launch {
@@ -79,15 +88,20 @@ class AddTodoViewModel @Inject constructor(
 
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
-        val message = configRepository.getAlarmMessage()
+        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
+        val storedMessage = configRepository.getAlarmMessage()
+        val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) defaultMessage else storedMessage
 
         setState {
             copy(
                 notificationState = notificationState.copy(
                     alarmHour = hour,
                     alarmMinute = minute,
+                    defaultMessage = defaultMessage,
                     message = message,
                     originMessage = message,
+                    placeholderToken = placeholderToken,
                 )
             )
         }
@@ -106,7 +120,7 @@ class AddTodoViewModel @Inject constructor(
         todoRepository.recentAddedRepeatCycleId?.let {
             viewModelScope.launch {
                 val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
-                setState { copy(repeatCycle = newRepeatCycle.toUiModel()) }
+                setState { copy(repeatCycle = newRepeatCycle.toUiModel(resourceProvider)) }
             }
         }
     }
@@ -119,7 +133,7 @@ class AddTodoViewModel @Inject constructor(
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels()) }
+        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {
@@ -202,7 +216,7 @@ class AddTodoViewModel @Inject constructor(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 요일을 휴식할 수는 없습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_all_rest_days)))
             return
         }
 
@@ -229,7 +243,7 @@ class AddTodoViewModel @Inject constructor(
         )
 
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return
         }
 
@@ -275,7 +289,7 @@ class AddTodoViewModel @Inject constructor(
         val isFirstTodo = configRepository.markFirstTodoAdded()
         configRepository.incrementTodoRegisteredCount()
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_added)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(
@@ -334,7 +348,7 @@ class AddTodoViewModel @Inject constructor(
         setState {
             copy(
                 notificationState = notificationState.copy(
-                    message = DEFAULT_ALARM_MESSAGE
+                    message = notificationState.defaultMessage
                 )
             )
         }

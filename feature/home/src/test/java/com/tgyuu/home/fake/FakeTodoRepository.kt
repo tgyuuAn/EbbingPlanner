@@ -197,6 +197,13 @@ class FakeTodoRepository : TodoRepository {
         todoSchedules.forEach { updateTodo(it) }
     }
 
+    override suspend fun toggleDone(id: Int) {
+        val index = schedules.indexOfFirst { it.id == id }
+        if (index != -1) {
+            schedules[index] = schedules[index].copy(isDone = !schedules[index].isDone)
+        }
+    }
+
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) {
         schedules.removeIf { it.id == todoSchedule.id }
     }

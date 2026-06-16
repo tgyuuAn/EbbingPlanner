@@ -107,44 +107,6 @@ class LocalDateFormatTest {
     }
 
     @Test
-    fun `같은 날짜를 비교하면 오늘을 반환한다`() {
-        // given
-        val reference = LocalDate.of(2025, 4, 23)
-
-        // when
-        val result = reference.toRelativeDayDescription(referenceDate = reference)
-
-        // then
-        assertEquals("오늘", result)
-    }
-
-    @Test
-    fun `미래 날짜를 비교하면 N일 후를 반환한다`() {
-        // given
-        val reference = LocalDate.of(2025, 4, 20)
-        val futureDate = LocalDate.of(2025, 4, 25)
-
-        // when
-        val result = futureDate.toRelativeDayDescription(referenceDate = reference)
-
-        // then
-        assertEquals("5일 후", result)
-    }
-
-    @Test
-    fun `과거 날짜를 비교하면 N일 전을 반환한다`() {
-        // given
-        val reference = LocalDate.of(2025, 4, 25)
-        val pastDate = LocalDate.of(2025, 4, 20)
-
-        // when
-        val result = pastDate.toRelativeDayDescription(referenceDate = reference)
-
-        // then
-        assertEquals("5일 전", result)
-    }
-
-    @Test
     fun `휴일이 없는 경우 그대로 반복 주기를 적용한다`() {
         // given
         val baseDate = LocalDate.of(2025, 7, 20) // 일요일

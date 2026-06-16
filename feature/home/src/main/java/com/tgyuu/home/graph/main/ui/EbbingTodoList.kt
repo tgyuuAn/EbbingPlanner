@@ -34,12 +34,15 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.model.displayName
 import com.tgyuu.domain.model.SortType
 import java.time.LocalDate
 
@@ -112,11 +115,16 @@ private fun TodoHeader(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 8.dp)
     ) {
-        val dateText = if (displayDate == LocalDate.now()) "오늘"
-        else "${displayDate.monthValue}월 ${displayDate.dayOfMonth}일"
+        val dateText = if (displayDate == LocalDate.now()) stringResource(R.string.home_today)
+        else stringResource(
+            R.string.home_month_day,
+            displayDate.monthValue,
+            displayDate.dayOfMonth,
+        )
+        val todoCountLabel = stringResource(R.string.home_todo_count_label, dateText)
         Text(
             text = buildAnnotatedString {
-                append("$dateText 할 일 ")
+                append(todoCountLabel)
                 withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                     append(count.toString())
                 }
@@ -133,7 +141,7 @@ private fun TodoHeader(
                 .padding(end = 16.dp)
         ) {
             Text(
-                text = sortType.displayName,
+                text = sortType.displayName(),
                 style = EbbingTheme.typography.heading16B,
                 color = EbbingTheme.colors.textOnBackground
             )
@@ -191,8 +199,11 @@ private fun TodoPage(
         }
     } else {
         Text(
-            text = "${date.monthValue}월 ${date.dayOfMonth}일 스케줄이 없어요.\n" +
-                    "우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
+            text = stringResource(
+                R.string.home_empty_schedule,
+                date.monthValue,
+                date.dayOfMonth,
+            ),
             style = EbbingTheme.typography.body14M,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.textDisabled,

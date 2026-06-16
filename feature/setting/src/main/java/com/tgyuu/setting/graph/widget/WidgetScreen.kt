@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -145,12 +146,12 @@ private fun PhoneWidgetScreen(
 
     Column(modifier = modifier.fillMaxSize().imePadding()) {
         EbbingSubTopBar(
-            title = "위젯 테마 변경",
+            title = stringResource(R.string.setting_widget_theme_change),
             onNavigationClick = onBackClick,
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "적용",
+                        text = stringResource(R.string.setting_apply),
                         style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                         color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
@@ -173,7 +174,7 @@ private fun PhoneWidgetScreen(
                 .padding(20.dp),
         ) {
             Text(
-                text = "위젯 테마를 변경해요.",
+                text = stringResource(R.string.setting_change_widget_theme),
                 style = EbbingTheme.typography.heading24B,
                 color = EbbingTheme.colors.textOnBackground,
             )
@@ -207,7 +208,7 @@ private fun PhoneWidgetScreen(
 
         if (state.isTreatment) {
             EbbingSolidButton(
-                label = "적용",
+                label = stringResource(R.string.setting_apply),
                 onClick = {
                     onSaveClick()
                     focusManager.clearFocus()
@@ -234,11 +235,11 @@ private fun TabletWidgetScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "위젯 테마 변경",
+            title = stringResource(R.string.setting_widget_theme_change),
             onNavigationClick = onBackClick,
             rightComponent = {
                 Text(
-                    text = "적용",
+                    text = stringResource(R.string.setting_apply),
                     style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                     modifier = Modifier
@@ -266,7 +267,7 @@ private fun TabletWidgetScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Text(
-                    text = "위젯 테마를 변경해요.",
+                    text = stringResource(R.string.setting_change_widget_theme),
                     style = EbbingTheme.typography.heading24B,
                     color = EbbingTheme.colors.textOnBackground,
                 )
@@ -315,7 +316,7 @@ internal fun ThemeBody(
     onThemeChange: (Theme) -> Unit,
 ) {
     Text(
-        text = "테마",
+        text = stringResource(R.string.setting_theme),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -363,7 +364,7 @@ internal fun AlphaBody(
     onTextAlphaChange: (Float) -> Unit,
 ) {
     Text(
-        text = "배경 투명도",
+        text = stringResource(R.string.setting_background_alpha),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -383,14 +384,17 @@ internal fun AlphaBody(
         )
 
         Text(
-            text = "${(selectedBackgroundAlpha * 100).roundToInt()} %",
+            text = stringResource(
+                R.string.setting_alpha_percent,
+                (selectedBackgroundAlpha * 100).roundToInt(),
+            ),
             style = EbbingTheme.typography.body16M,
             color = EbbingTheme.colors.textOnBackground,
         )
     }
 
     Text(
-        text = "내용 투명도",
+        text = stringResource(R.string.setting_content_alpha),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -410,7 +414,10 @@ internal fun AlphaBody(
         )
 
         Text(
-            text = "${(selectedTextAlpha * 100).roundToInt()} %",
+            text = stringResource(
+                R.string.setting_alpha_percent,
+                (selectedTextAlpha * 100).roundToInt(),
+            ),
             style = EbbingTheme.typography.body16M,
             color = EbbingTheme.colors.textOnBackground,
         )
@@ -436,7 +443,7 @@ internal fun PreviewBody(
     val animatedLight = animateEbbingColors(lightColors)
 
     Text(
-        text = "미리보기",
+        text = stringResource(R.string.setting_preview),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -498,9 +505,10 @@ private fun WidgetCard(
                     )
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
+                val todayTodoLabel = stringResource(R.string.setting_widget_today_todo)
                 Text(
                     text = buildAnnotatedString {
-                        append("오늘 할 일  ")
+                        append(todayTodoLabel)
 
                         withStyle(SpanStyle(color = EbbingTheme.colors.primaryDeep.copy(textAlpha))) {
                             append("0")
@@ -521,7 +529,7 @@ private fun WidgetCard(
             }
 
             Text(
-                text = "금일 스케줄이 없어요.",
+                text = stringResource(R.string.setting_no_schedule_today),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textOnBackground.copy(alpha = textAlpha),
                 textAlign = TextAlign.Center,
@@ -532,7 +540,7 @@ private fun WidgetCard(
         }
 
         Text(
-            text = if (isDarkMode) "다크" else "라이트",
+            text = if (isDarkMode) stringResource(R.string.setting_dark) else stringResource(R.string.setting_light),
             style = EbbingTheme.typography.heading14SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier

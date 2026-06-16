@@ -1,6 +1,7 @@
 plugins {
     id("ebbing.android.library")
     id("ebbing.android.compose")
+    id("ebbing.android.hilt")
 }
 
 android {

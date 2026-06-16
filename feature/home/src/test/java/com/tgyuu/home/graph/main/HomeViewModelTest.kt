@@ -2,12 +2,15 @@ package com.tgyuu.home.graph.main
 
 import com.tgyuu.analytics.NoOpAnalyticsHelper
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.fake.FakeConfigRepository
 import com.tgyuu.home.fake.FakeTodoRepository
 import com.tgyuu.home.graph.main.contract.HomeIntent
 import com.tgyuu.home.model.toUiModel
+import com.tgyuu.inappreview.InAppReviewManager
 import com.tgyuu.navigation.NavigationBus
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -46,7 +49,12 @@ class HomeViewModelTest {
             navigationBus = navigationBus,
             alarmScheduler = null,
             analyticsHelper = NoOpAnalyticsHelper(),
+            resourceProvider = object : ResourceProvider {
+                override fun getString(resId: Int): String = ""
+                override fun getString(resId: Int, vararg formatArgs: Any): String = ""
+            },
             eventBus = eventBus,
+            inAppReviewManager = mockk(relaxed = true),
         )
     }
 

@@ -6,7 +6,7 @@ import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.TodoSchedule
@@ -149,7 +149,8 @@ object WidgetUpdater {
         val doneSize = todoLists.count { it.isDone }
 
         PretendardBitmapRenderer.renderAndSave(
-            context, "오늘 할 일   ",
+            context,
+            context.getString(com.tgyuu.designsystem.R.string.widget_today_todo_spaced),
             PretendardBitmapRenderer.Weight.BOLD, 18f, white,
             filename = "todo_header.png",
         )
@@ -164,7 +165,8 @@ object WidgetUpdater {
             filename = "todo_total.png",
         )
         PretendardBitmapRenderer.renderAndSave(
-            context, "오늘은 일정이 없어요",
+            context,
+            context.getString(com.tgyuu.designsystem.R.string.widget_empty_schedule),
             PretendardBitmapRenderer.Weight.SEMI_BOLD, 16f, white,
             filename = "todo_empty.png",
         )
@@ -195,7 +197,12 @@ object WidgetUpdater {
     ) {
         val white = android.graphics.Color.WHITE
         PretendardBitmapRenderer.renderAndSave(
-            context, "${now.year}년 ${now.monthValue}월",
+            context,
+            context.getString(
+                com.tgyuu.designsystem.R.string.widget_year_month,
+                now.year,
+                now.monthValue,
+            ),
             PretendardBitmapRenderer.Weight.BOLD, 16f, white,
             filename = "calendar_header.png",
         )
@@ -203,20 +210,26 @@ object WidgetUpdater {
         com.tgyuu.designsystem.component.calendar.getEbbingDayOfWeek(mondayStart)
             .forEachIndexed { index, dow ->
                 PretendardBitmapRenderer.renderAndSave(
-                    context, dow.toKorean(),
+                    context, dow.toShortLabel(),
                     PretendardBitmapRenderer.Weight.MEDIUM, 14f, white,
                     filename = "calendar_dow_$index.png",
                 )
             }
 
         PretendardBitmapRenderer.renderAndSave(
-            context, "오늘 할 일",
+            context,
+            context.getString(com.tgyuu.designsystem.R.string.widget_today_todo),
             PretendardBitmapRenderer.Weight.BOLD, 16f, white,
             filename = "calendar_section_today.png",
         )
         (1..now.lengthOfMonth()).forEach { day ->
             PretendardBitmapRenderer.renderAndSave(
-                context, "${now.monthValue}월 ${day}일 할 일",
+                context,
+                context.getString(
+                    com.tgyuu.designsystem.R.string.widget_month_day_todo,
+                    now.monthValue,
+                    day,
+                ),
                 PretendardBitmapRenderer.Weight.BOLD, 16f, white,
                 filename = "calendar_section_day_$day.png",
             )

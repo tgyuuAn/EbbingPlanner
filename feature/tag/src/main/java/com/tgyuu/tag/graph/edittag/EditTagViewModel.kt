@@ -7,6 +7,8 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.repository.ExperimentRepository
@@ -27,6 +29,7 @@ class EditTagViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
 
     init {
@@ -95,7 +98,7 @@ class EditTagViewModel @Inject constructor(
         )
 
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_required_fields)))
             return
         }
 
@@ -105,7 +108,7 @@ class EditTagViewModel @Inject constructor(
                 color = currentState.colorValue,
             )
         )
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그를 수정하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_updated)))
         navigationBus.navigate(NavigationEvent.Up)
     }
 }

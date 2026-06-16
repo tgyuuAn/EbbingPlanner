@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +42,7 @@ import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
+import com.tgyuu.designsystem.R
 import com.tgyuu.home.graph.ui.bottomsheet.RepeatCycleBottomSheet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -170,12 +172,12 @@ private fun EditDateScreenPhone(
             .imePadding(),
     ) {
         EbbingSubTopBar(
-            title = "일정 수정",
+            title = stringResource(R.string.home_edit_todo_title),
             onNavigationClick = onBackClick,
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "저장",
+                        text = stringResource(R.string.home_save),
                         style = EbbingTheme.typography.body16M,
                         color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier
@@ -223,7 +225,7 @@ private fun EditDateScreenPhone(
 
         if (state.isTreatment) {
             EbbingSolidButton(
-                label = "저장",
+                label = stringResource(R.string.home_save),
                 onClick = {
                     onSaveClick(isDoneSchedules)
                     focusManager.clearFocus()
@@ -255,11 +257,11 @@ private fun EditDateScreenTablet(
 
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "일정 수정",
+            title = stringResource(R.string.home_edit_todo_title),
             onNavigationClick = onBackClick,
             rightComponent = {
                 Text(
-                    text = "저장",
+                    text = stringResource(R.string.home_save),
                     style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.primaryNormal,
                     modifier = Modifier
@@ -327,12 +329,18 @@ private fun EditDateMainFormContent(
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
 ) {
+    val monthDayText = stringResource(
+        R.string.home_month_day,
+        state.selectedDate.monthValue,
+        state.selectedDate.dayOfMonth,
+    )
+    val editDateHeaderSuffix = stringResource(R.string.home_edit_date_header_suffix)
     Text(
         text = buildAnnotatedString {
             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                append("${state.selectedDate.monthValue}월 ${state.selectedDate.dayOfMonth}일")
+                append(monthDayText)
             }
-            append(" 부터\n시작하는 일정으로 바꿔요")
+            append(editDateHeaderSuffix)
         },
         style = EbbingTheme.typography.heading24B,
         color = EbbingTheme.colors.textOnBackground,
@@ -353,9 +361,7 @@ private fun EditDateMainFormContent(
 @Composable
 private fun DescriptionBody() {
     Text(
-        text = "- 일정이 변경되면 기존 일정의 완료 여부는 초기화 됩니다.\n" +
-                "- 위 체크 박스에서 새로운 일정에 완료 여부를 설정할 수 있습니다.\n" +
-                "- 일정을 변경하게 되면 기존 일정에 있던 메모들이 제거됩니다.",
+        text = stringResource(R.string.home_edit_date_description),
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textDisabled,

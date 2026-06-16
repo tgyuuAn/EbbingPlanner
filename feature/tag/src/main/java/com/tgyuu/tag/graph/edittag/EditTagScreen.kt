@@ -25,6 +25,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -79,12 +80,12 @@ private fun EditTagScreen(
 
     Column(modifier = modifier.fillMaxSize().imePadding()) {
         EbbingSubTopBar(
-            title = "태그 수정",
+            title = stringResource(R.string.tag_edit_title),
             onNavigationClick = onBackClick,
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "저장",
+                        text = stringResource(R.string.tag_save),
                         style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                         color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
@@ -108,7 +109,7 @@ private fun EditTagScreen(
                 .padding(20.dp),
         ) {
             Text(
-                text = "${state.originTag?.name} 태그를 수정해요",
+                text = stringResource(R.string.tag_edit_headline, state.originTag?.name ?: ""),
                 style = EbbingTheme.typography.heading24B,
                 color = EbbingTheme.colors.textOnBackground,
             )
@@ -126,7 +127,7 @@ private fun EditTagScreen(
 
         if (state.isTreatment) {
             EbbingSolidButton(
-                label = "저장",
+                label = stringResource(R.string.tag_save),
                 onClick = {
                     onSaveClick()
                     focusManager.clearFocus()
@@ -150,7 +151,7 @@ private fun NameContent(
     var isInputFocused by remember { mutableStateOf(false) }
 
     Text(
-        text = "태그 이름",
+        text = stringResource(R.string.tag_name_label),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -158,7 +159,7 @@ private fun NameContent(
 
     EbbingTextInputDefault(
         value = name,
-        hint = "태그의 이름은 무엇인가요?",
+        hint = stringResource(R.string.tag_name_hint),
         keyboardType = KeyboardType.Text,
         onValueChange = onNameChange,
         limit = 20,
@@ -196,7 +197,7 @@ private fun ColorContent(
             .clickable { onColorDropDownClick() },
     ) {
         Text(
-            text = "색상",
+            text = stringResource(R.string.tag_color),
             style = EbbingTheme.typography.body18M,
             color = EbbingTheme.colors.textOnBackground,
         )

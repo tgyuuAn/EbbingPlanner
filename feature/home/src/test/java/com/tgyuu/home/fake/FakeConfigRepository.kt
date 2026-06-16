@@ -1,10 +1,12 @@
 package com.tgyuu.home.fake
 
+import com.tgyuu.domain.model.CalendarDefaultView
 import com.tgyuu.domain.model.SortType
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.model.UpdateInfo
 import com.tgyuu.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 
 class FakeConfigRepository : ConfigRepository {
@@ -84,4 +86,23 @@ class FakeConfigRepository : ConfigRepository {
     override suspend fun getClearSyncFlag(): Boolean = false
 
     override suspend fun markFirstTodoAdded(): Boolean = false
+
+    override suspend fun consumeInAppReview(): Boolean = false
+
+    override suspend fun incrementTodoRegisteredCount() {}
+
+    override fun getTodoRegisteredCount(): Flow<Int> = MutableStateFlow(0)
+
+    override fun getMondayStart(): Flow<Boolean> = flowOf(false)
+
+    override suspend fun setMondayStart(enabled: Boolean) {}
+
+    override fun getCalendarDefaultView(): Flow<CalendarDefaultView> =
+        flowOf(CalendarDefaultView.MONTHLY)
+
+    override suspend fun setCalendarDefaultView(view: CalendarDefaultView) {}
+
+    override fun getAutoBackupEnabled(): Flow<Boolean> = flowOf(false)
+
+    override suspend fun setAutoBackupEnabled(enabled: Boolean) {}
 }

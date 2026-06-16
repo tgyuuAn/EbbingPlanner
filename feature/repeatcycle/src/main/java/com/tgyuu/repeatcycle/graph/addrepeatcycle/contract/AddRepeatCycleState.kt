@@ -1,7 +1,7 @@
 package com.tgyuu.repeatcycle.graph.addrepeatcycle.contract
 
 import com.tgyuu.common.base.UiState
-import com.tgyuu.domain.model.RepeatCycle.Companion.DISPLAY_ERROR
+import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.model.Experiment.SaveButtonPosition
 import com.tgyuu.repeatcycle.util.parsingIntervals
@@ -12,11 +12,15 @@ data class AddRepeatCycleState(
     val intervals: String = "",
     val restDays: Set<DayOfWeek> = emptySet(),
     val saveButtonPositionVariant: SaveButtonPosition.Variant = SaveButtonPosition.Variant.CONTROL,
+    val resourceProvider: ResourceProvider? = null,
 ) : UiState {
     val isTreatment = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
-    val previewRepeatCycle = parsingIntervals(intervals)
-        .getOrDefault(emptyList())
-        .toPreviewIntervals()
+    val previewRepeatCycle = resourceProvider?.let {
+        parsingIntervals(intervals)
+            .getOrDefault(emptyList())
+            .toPreviewIntervals(it)
+    } ?: ""
 
-    val isSaveEnabled = intervals.isNotEmpty() && previewRepeatCycle != DISPLAY_ERROR
+    val isSaveEnabled =
+        intervals.isNotEmpty() && parsingIntervals(intervals).getOrNull()?.isNotEmpty() == true
 }

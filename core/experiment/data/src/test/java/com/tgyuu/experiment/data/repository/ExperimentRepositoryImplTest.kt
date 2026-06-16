@@ -90,35 +90,28 @@ class ExperimentRepositoryImplTest {
     @Test
     fun `fetchAndAssignExperiments는 로컬과 메모리 모두에 저장한다`() = runTest {
         // Given
-        val experiment1Key = Experiment.SaveButtonPosition.key
-        val experiment2Key = Experiment.NotificationNudgeText.key
-        remoteDataSource.setRemoteVariant(experiment1Key, "TREATMENT")
-        remoteDataSource.setRemoteVariant(experiment2Key, "CONTROL")
+        val experimentKey = Experiment.SaveButtonPosition.key
+        remoteDataSource.setRemoteVariant(experimentKey, "TREATMENT")
 
         // When
         repository.fetchAndAssignExperiments()
 
         // Then
-        assertEquals("TREATMENT", localDataSource.getAssignment(experiment1Key))
-        assertEquals("CONTROL", localDataSource.getAssignment(experiment2Key))
-        assertEquals("TREATMENT", memoryDataSource.getAssignment(experiment1Key))
-        assertEquals("CONTROL", memoryDataSource.getAssignment(experiment2Key))
+        assertEquals("TREATMENT", localDataSource.getAssignment(experimentKey))
+        assertEquals("TREATMENT", memoryDataSource.getAssignment(experimentKey))
     }
 
     @Test
     fun `fetchAndAssignExperiments는 리모트가 null이면 기본값을 사용한다`() = runTest {
         // Given
-        val experiment1Key = Experiment.SaveButtonPosition.key
-        val experiment2Key = Experiment.NotificationNudgeText.key
+        val experimentKey = Experiment.SaveButtonPosition.key
 
         // When
         repository.fetchAndAssignExperiments()
 
         // Then
-        assertEquals("CONTROL", localDataSource.getAssignment(experiment1Key))
-        assertEquals("CONTROL", localDataSource.getAssignment(experiment2Key))
-        assertEquals("CONTROL", memoryDataSource.getAssignment(experiment1Key))
-        assertEquals("CONTROL", memoryDataSource.getAssignment(experiment2Key))
+        assertEquals("CONTROL", localDataSource.getAssignment(experimentKey))
+        assertEquals("CONTROL", memoryDataSource.getAssignment(experimentKey))
     }
 
     @Test

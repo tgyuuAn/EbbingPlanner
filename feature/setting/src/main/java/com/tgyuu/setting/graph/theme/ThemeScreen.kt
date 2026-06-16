@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -134,12 +135,12 @@ private fun PhoneThemeLayout(
 ) {
     Column(modifier = modifier.fillMaxSize().imePadding()) {
         EbbingSubTopBar(
-            title = "테마 변경",
+            title = stringResource(R.string.setting_theme_change),
             onNavigationClick = onBackClick,
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "적용",
+                        text = stringResource(R.string.setting_apply),
                         style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                         color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                         modifier = Modifier
@@ -164,7 +165,7 @@ private fun PhoneThemeLayout(
                 .padding(20.dp),
         ) {
             Text(
-                text = "앱 테마를 변경해요.",
+                text = stringResource(R.string.setting_change_app_theme),
                 style = EbbingTheme.typography.heading24B,
                 color = EbbingTheme.colors.textOnBackground,
             )
@@ -183,7 +184,7 @@ private fun PhoneThemeLayout(
 
         if (state.isTreatment) {
             EbbingSolidButton(
-                label = "적용",
+                label = stringResource(R.string.setting_apply),
                 onClick = {
                     onSaveClick()
                     focusManager.clearFocus()
@@ -213,11 +214,11 @@ private fun TabletThemeLayout(
             .padding(horizontal = 20.dp),
     ) {
         EbbingSubTopBar(
-            title = "테마 변경",
+            title = stringResource(R.string.setting_theme_change),
             onNavigationClick = onBackClick,
             rightComponent = {
                 Text(
-                    text = "적용",
+                    text = stringResource(R.string.setting_apply),
                     style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
                     modifier = Modifier
@@ -244,7 +245,7 @@ private fun TabletThemeLayout(
                     .padding(20.dp),
             ) {
                 Text(
-                    text = "앱 테마를 변경해요.",
+                    text = stringResource(R.string.setting_change_app_theme),
                     style = EbbingTheme.typography.heading24B,
                     color = EbbingTheme.colors.textOnBackground,
                 )
@@ -276,7 +277,7 @@ internal fun ThemeBody(
     onThemeChange: (Theme) -> Unit,
 ) {
     Text(
-        text = "테마",
+        text = stringResource(R.string.setting_theme),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -333,7 +334,7 @@ internal fun PreviewBody(
     val animatedLight = animateEbbingColors(lightColors)
 
     Text(
-        text = "미리보기",
+        text = stringResource(R.string.setting_preview),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -411,7 +412,7 @@ private fun TodoListCard(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "에빙 플래너 미리보기",
+                                text = stringResource(R.string.setting_ebbing_planner_preview),
                                 style = EbbingTheme.typography.body16M,
                                 color = EbbingTheme.colors.textOnBackground,
                                 maxLines = 1,
@@ -420,7 +421,7 @@ private fun TodoListCard(
                             )
 
                             Text(
-                                text = "에빙 플래너 미리보기",
+                                text = stringResource(R.string.setting_ebbing_planner_preview),
                                 style = EbbingTheme.typography.body16M,
                                 color = EbbingTheme.colors.textSub,
                                 maxLines = 1,
@@ -440,7 +441,7 @@ private fun TodoListCard(
                                 )
 
                                 Text(
-                                    text = "우선도 : 0",
+                                    text = stringResource(R.string.setting_priority_zero),
                                     style = EbbingTheme.typography.heading14SB,
                                     color = EbbingTheme.colors.textSub,
                                     maxLines = 1,
@@ -480,7 +481,7 @@ private fun TodoListCard(
                 )
 
                 Text(
-                    text = "에빙 플래너 미리보기",
+                    text = stringResource(R.string.setting_ebbing_planner_preview),
                     style = EbbingTheme.typography.heading14SB,
                     color = EbbingTheme.colors.textSub,
                     modifier = Modifier.weight(1f),
@@ -489,7 +490,7 @@ private fun TodoListCard(
         }
 
         Text(
-            text = if (isDarkMode) "다크" else "라이트",
+            text = if (isDarkMode) stringResource(R.string.setting_dark) else stringResource(R.string.setting_light),
             style = EbbingTheme.typography.heading14SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier

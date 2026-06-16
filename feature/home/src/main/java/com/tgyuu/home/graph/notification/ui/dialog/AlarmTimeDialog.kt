@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -22,11 +24,14 @@ internal fun AlarmTimeDialog(
     onDismissRequest: () -> Unit,
     onConfirmClick: (Int, Int) -> Unit,
 ) {
-    var newAmPm by remember { mutableStateOf(if (initialHour >= 12) "오후" else "오전") }
+    val pmLabel = stringResource(R.string.ds_pm)
+    val amLabel = stringResource(R.string.ds_am)
+
+    var newAmPm by remember { mutableStateOf(if (initialHour >= 12) pmLabel else amLabel) }
     var newHour by remember { mutableStateOf(initialHour) }
     var newMinute by remember { mutableStateOf(initialMinute) }
 
-    val pickerInitialAmPm = if (initialHour >= 12) "오후" else "오전"
+    val pickerInitialAmPm = if (initialHour >= 12) pmLabel else amLabel
     val pickerInitialHour = when {
         initialHour == 0 -> "12"
         initialHour > 12 -> (initialHour - 12).toString()
@@ -39,8 +44,8 @@ internal fun AlarmTimeDialog(
         onDismissRequest = onDismissRequest,
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "알림 시간",
-                subText = "언제 남은 일정 알림을 보낼까요?",
+                title = stringResource(R.string.home_alarm_time),
+                subText = stringResource(R.string.home_alarm_time_sub),
             )
         },
         dialogBottom = {
@@ -54,6 +59,7 @@ internal fun AlarmTimeDialog(
                     initialAmPm = pickerInitialAmPm,
                     initialHour = pickerInitialHour,
                     initialMinute = pickerInitialMinute,
+                    amPmItems = listOf(pmLabel, amLabel),
                     onValueChange = { amPm, hour, minute ->
                         newAmPm = amPm
                         newHour = hour
@@ -63,12 +69,12 @@ internal fun AlarmTimeDialog(
                 )
 
                 EbbingSolidButton(
-                    label = "적용하기",
+                    label = stringResource(R.string.home_apply),
                     onClick = {
                         val adjustedHour = when {
-                            newAmPm == "오후" && newHour == 12 -> 12
-                            newAmPm == "오후" -> newHour + 12
-                            newAmPm == "오전" && newHour == 12 -> 0
+                            newAmPm == pmLabel && newHour == 12 -> 12
+                            newAmPm == pmLabel -> newHour + 12
+                            newAmPm == amLabel && newHour == 12 -> 0
                             else -> newHour
                         }
                         onConfirmClick(adjustedHour, newMinute)

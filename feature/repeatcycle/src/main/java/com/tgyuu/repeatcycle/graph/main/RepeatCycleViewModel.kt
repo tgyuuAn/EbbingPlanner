@@ -6,6 +6,8 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
@@ -26,6 +28,7 @@ class RepeatCycleViewModel @Inject constructor(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<RepeatCycleState, RepeatCycleIntent>(RepeatCycleState()) {
 
     override suspend fun processIntent(intent: RepeatCycleIntent) {
@@ -75,12 +78,12 @@ class RepeatCycleViewModel @Inject constructor(
 
     internal fun loadTags() = viewModelScope.launch {
         val repeatCycleList = todoRepository.loadRepeatCycles()
-        setState { copy(repeatCycleList = repeatCycleList.toUiModels()) }
+        setState { copy(repeatCycleList = repeatCycleList.toUiModels(resourceProvider)) }
     }
 
     private suspend fun deleteRepeatCycle(repeatCycle: RepeatCycleUiModel) {
         todoRepository.deleteRepeatCycle(repeatCycle.toDomainModel())
         setState { copy(repeatCycleList = repeatCycleList.filterNot { it.id == repeatCycle.id }.toImmutableList()) }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 삭제하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_deleted)))
     }
 }

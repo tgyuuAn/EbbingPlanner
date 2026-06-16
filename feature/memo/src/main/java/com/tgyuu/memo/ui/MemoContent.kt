@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +35,7 @@ import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 
@@ -44,7 +46,7 @@ internal fun MemoContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "메모",
+        text = stringResource(R.string.memo_label),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -52,7 +54,7 @@ internal fun MemoContent(
 
     EbbingTextInputDefault(
         value = memo,
-        hint = "어떤 메모를 남겨둘까요?",
+        hint = stringResource(R.string.memo_input_hint),
         keyboardType = KeyboardType.Text,
         onValueChange = onMemoChange,
         limit = 100,
@@ -81,7 +83,7 @@ internal fun PreviewContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "미리보기",
+        text = stringResource(R.string.memo_preview_label),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -179,7 +181,7 @@ private fun TodoListCard(
                             )
 
                             Text(
-                                text = "우선도 : ${todo.priority}",
+                                text = stringResource(R.string.memo_priority_format, todo.priority),
                                 style = EbbingTheme.typography.heading14SB,
                                 color = EbbingTheme.colors.textSub,
                                 maxLines = 1,

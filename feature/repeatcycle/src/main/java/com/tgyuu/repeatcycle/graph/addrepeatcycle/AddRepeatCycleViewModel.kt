@@ -5,6 +5,8 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.repository.ExperimentRepository
@@ -25,7 +27,8 @@ class AddRepeatCycleViewModel @Inject constructor(
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
-) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
+    private val resourceProvider: ResourceProvider,
+) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) }, resourceProvider = resourceProvider)) {
 
     init {
         analyticsHelper.logEvent(
@@ -57,13 +60,13 @@ class AddRepeatCycleViewModel @Inject constructor(
 
     private suspend fun saveRepeatCycle() {
         if (currentState.intervals.isEmpty()) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_required)))
             return
         }
 
         parsingIntervals(currentState.intervals).onSuccess { intervals ->
             if (intervals.isEmpty()) {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기가 적절하지 않습니다."))
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_invalid)))
                 return
             }
 
@@ -75,10 +78,10 @@ class AddRepeatCycleViewModel @Inject constructor(
                 )
             )
             todoRepository.addRepeatCycle(intervals = intervals)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 추가하였습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_added)))
             navigationBus.navigate(NavigationEvent.Up)
         }.onFailure {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기가 적절하지 않습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_invalid)))
             return
         }
     }

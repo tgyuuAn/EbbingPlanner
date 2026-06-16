@@ -15,6 +15,8 @@ import com.tgyuu.domain.model.Timer
 import com.tgyuu.domain.model.sync.ConnectResult
 import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.repository.SyncRepository
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.sync.graph.main.contract.SyncIntent
@@ -44,6 +46,7 @@ class SyncMainViewModel @Inject constructor(
     internal val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
     private val timer: Timer,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
     private var timerJob: Job? = null
     private var pollingJob: Job? = null
@@ -60,7 +63,7 @@ class SyncMainViewModel @Inject constructor(
             if (!alive) {
                 disconnectPollingJob?.cancel()
                 syncRepository.clearLinkLocal()
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("상대 기기에서 연동을 해제했습니다."))
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_peer_disconnected)))
             }
         }
 
@@ -236,7 +239,7 @@ class SyncMainViewModel @Inject constructor(
 
     private fun syncUpData() = viewModelScope.launch {
         if (networkMonitor.networkState.value != NetworkState.Connected) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_network_required)))
             return@launch
         }
 
@@ -244,7 +247,7 @@ class SyncMainViewModel @Inject constructor(
         suspendRunCatching {
             syncRepository.syncUpData()
         }.onSuccess {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("데이터를 동기화 하였습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_synced)))
             setState {
                 copy(
                     localLastSyncedAt = it,
@@ -260,9 +263,9 @@ class SyncMainViewModel @Inject constructor(
         }.onFailure { error ->
             errorBus.sendError(error)
             val message = if (error.isNetworkError()) {
-                "네트워크 연결을 확인해 주세요."
+                resourceProvider.getString(R.string.sync_network_check)
             } else {
-                error.message ?: "동기화에 실패하였습니다."
+                error.message ?: resourceProvider.getString(R.string.sync_sync_failed)
             }
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(message))
         }.also {
@@ -272,7 +275,7 @@ class SyncMainViewModel @Inject constructor(
 
     private fun disconnectAnother() = viewModelScope.launch {
         if (networkMonitor.networkState.value != NetworkState.Connected) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_network_required)))
             return@launch
         }
 
@@ -290,13 +293,13 @@ class SyncMainViewModel @Inject constructor(
                 )
             }
 
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동 해제에 성공하였습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_disconnect_success)))
         }.onFailure { error ->
             errorBus.sendError(error)
             val message = if (error.isNetworkError()) {
-                "네트워크 연결을 확인해 주세요."
+                resourceProvider.getString(R.string.sync_network_check)
             } else {
-                "연동 해제에 실패하였습니다."
+                resourceProvider.getString(R.string.sync_disconnect_failed)
             }
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(message))
         }.also {
@@ -312,7 +315,7 @@ class SyncMainViewModel @Inject constructor(
         )
 
         if (networkMonitor.networkState.value != NetworkState.Connected) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_network_required)))
             return
         }
 
@@ -333,9 +336,9 @@ class SyncMainViewModel @Inject constructor(
         }.onFailure { error ->
             errorBus.sendError(error)
             val message = if (error.isNetworkError()) {
-                "네트워크 연결을 확인해 주세요."
+                resourceProvider.getString(R.string.sync_network_check)
             } else {
-                "QR 코드 생성에 실패했습니다. 다시 시도해 주세요."
+                resourceProvider.getString(R.string.sync_generate_failed)
             }
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(message))
         }
@@ -350,7 +353,7 @@ class SyncMainViewModel @Inject constructor(
         )
 
         if (networkMonitor.networkState.value != NetworkState.Connected) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("네트워크가 연결되어 있지 않습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_network_required)))
             isProcessing.set(false)
             return
         }
@@ -366,22 +369,22 @@ class SyncMainViewModel @Inject constructor(
             when (result) {
                 is ConnectResult.Success -> {
                     setState { copy(connectedDeviceName = result.info.deviceName.ifEmpty { null }) }
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("연동에 성공하였습니다."))
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_connect_success)))
                     loadInitData()
                 }
 
                 ConnectResult.InvalidOrExpired -> {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("생성되지 않은 코드이거나, 유효시간이 만료되었습니다."))
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_code_invalid_or_expired)))
                     isProcessing.set(false)
                 }
 
                 ConnectResult.AlreadyLinkedSelf -> {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 다른 기기와 연동되어 있습니다. 연동을 해제한 후 다시 시도해 주세요."))
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_already_linked_self)))
                     isProcessing.set(false)
                 }
 
                 ConnectResult.CodeAlreadyTaken -> {
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 다른 기기와 연동된 코드입니다."))
+                    eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_code_already_taken)))
                     isProcessing.set(false)
                 }
             }
@@ -389,9 +392,9 @@ class SyncMainViewModel @Inject constructor(
             setState { copy(isScanLoading = false) }
             errorBus.sendError(error)
             val message = if (error.isNetworkError()) {
-                "네트워크 연결을 확인해 주세요."
+                resourceProvider.getString(R.string.sync_network_check)
             } else {
-                "연동에 실패했습니다. 다시 시도해 주세요."
+                resourceProvider.getString(R.string.sync_connect_failed)
             }
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(message))
             isProcessing.set(false)
@@ -450,7 +453,7 @@ class SyncMainViewModel @Inject constructor(
                 isGenerateButtonEnabled = true,
             )
         }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("${peer.deviceName} 기기와 연동되었습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_peer_connected, peer.deviceName)))
         loadInitData()
     }
 
@@ -483,7 +486,7 @@ class SyncMainViewModel @Inject constructor(
                 serverLastUpdatedAt = null,
             )
         }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("상대 기기에서 연동을 해제했습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_peer_disconnected)))
         loadInitData()
     }
 

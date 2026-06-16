@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
@@ -63,7 +64,7 @@ fun EbbingSubTopBar(
     ) {
         Image(
             painter = painterResource(R.drawable.ic_arrow_left),
-            contentDescription = "뒤로 가기 버튼",
+            contentDescription = stringResource(R.string.ds_cd_back),
             colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -91,7 +92,7 @@ fun PreviewTopBar() {
             rightComponent = {
                 Image(
                     painter = painterResource(R.drawable.ic_close),
-                    contentDescription = "오른쪽 버튼",
+                    contentDescription = stringResource(R.string.ds_cd_more),
                     colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
