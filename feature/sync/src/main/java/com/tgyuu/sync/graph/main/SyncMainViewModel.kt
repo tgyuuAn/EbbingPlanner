@@ -90,15 +90,21 @@ class SyncMainViewModel @Inject constructor(
             setState { copy(localLastSyncedAt = lastSyncedAt) }
         }
 
+        // 동기화 쿨타임은 서버가 아니라 이 디바이스의 마지막 동기화 기준 10초
+        val syncUpEnabledJob = launch {
+            val localSyncedAt = syncRepository.getLocalSyncedAt()
+            val isSyncUpEnabled = localSyncedAt == null ||
+                    Duration.between(localSyncedAt, ZonedDateTime.now())
+                        .toMillis() >= SYNC_UP_COOL_TIME
+            setState { copy(isSyncUpEnabled = isSyncUpEnabled) }
+        }
+
         val serverLastUpdatedAtJob = launch {
             val connectedUuid = syncRepository.getConnectedUuid()
             suspendRunCatching {
                 syncRepository.getServerLastUpdatedAt()
             }.onSuccess { serverSyncInfo ->
                 val serverLastUpdatedAt = serverSyncInfo?.lastUpdatedAt
-                val isSyncUpEnabled = serverLastUpdatedAt == null ||
-                        Duration.between(serverLastUpdatedAt, ZonedDateTime.now())
-                            .toMillis() >= SYNC_UP_COOL_TIME
                 val connectedDeviceName = if (connectedUuid != null) {
                     serverSyncInfo?.connectedDeviceName
                 } else {
@@ -108,7 +114,6 @@ class SyncMainViewModel @Inject constructor(
                     copy(
                         serverLastUpdatedAt = serverLastUpdatedAt,
                         connectedDeviceName = connectedDeviceName,
-                        isSyncUpEnabled = isSyncUpEnabled,
                         localLastSyncedAt = if (isConnected) serverLastUpdatedAt else localLastSyncedAt,
                     )
                 }
@@ -149,8 +154,9 @@ class SyncMainViewModel @Inject constructor(
         uuidJob.join()
         deviceNameJob.join()
         linkedUuidJob.join()
-        serverLastUpdatedAtJob.join()
         localLastSyncedAtJob.join()
+        syncUpEnabledJob.join()
+        serverLastUpdatedAtJob.join()
         connectInfoJob.join()
         disconnectWatchJob.join()
 
