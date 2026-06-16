@@ -4,12 +4,9 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -381,7 +379,6 @@ private fun SectionDivider() {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ConnectedDeviceSection(
     state: SyncMainState,
@@ -399,12 +396,6 @@ private fun ConnectedDeviceSection(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .combinedClickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {},
-                onLongClick = onDisconnectClick,
-            )
             .padding(vertical = 12.dp),
     ) {
         Box(
@@ -432,6 +423,17 @@ private fun ConnectedDeviceSection(
             text = state.connectedDeviceUuidPrefix,
             style = EbbingTheme.typography.body14M,
             color = EbbingTheme.colors.textDisabled,
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Image(
+            painter = painterResource(R.drawable.ic_close),
+            contentDescription = "연동 해제",
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onDisconnectClick() },
         )
     }
 
