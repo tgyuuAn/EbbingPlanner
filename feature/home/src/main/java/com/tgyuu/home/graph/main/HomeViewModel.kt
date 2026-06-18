@@ -552,7 +552,7 @@ class HomeViewModel @Inject constructor(
         schedules: List<TodoSchedule>,
     ): ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> {
         return schedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.toUiModels()
+            list.sortedBy { it.date }.toUiModels()
         }.toImmutableMap()
     }
 
