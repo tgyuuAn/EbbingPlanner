@@ -15,10 +15,10 @@ import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
-
-private const val CALENDAR_PAGE_COUNT = 12_001 // ±500년(월), ±115년(주)
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+
+private const val CALENDAR_PAGE_COUNT = 12_001 // ±500년(월), ±115년(주)
 
 @Composable
 fun EbbingCalendar(
