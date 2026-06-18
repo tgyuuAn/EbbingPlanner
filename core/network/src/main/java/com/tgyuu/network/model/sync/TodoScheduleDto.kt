@@ -3,22 +3,23 @@ package com.tgyuu.network.model.sync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.network.util.toLocalDateTimeFromUtc
 import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
 data class TodoScheduleDto(
-    val id: Int = -1,
-    val uuid: String = "",
-    @SerialName("info_id") val infoId: Int = -1,
-    val date: String = "",
-    val memo: String = "",
-    val priority: Int = 0,
-    @SerialName("is_done") val isDone: Boolean = false,
-    @SerialName("is_deleted") val isDeleted: Boolean = false,
-    @SerialName("created_at") val createdAt: String = "",
-    @SerialName("updated_at") val updatedAt: String = "",
+    @EncodeDefault val id: Int = -1,
+    @EncodeDefault val uuid: String = "",
+    @EncodeDefault @SerialName("info_id") val infoId: Int = -1,
+    @EncodeDefault val date: String = "",
+    @EncodeDefault val memo: String = "",
+    @EncodeDefault val priority: Int = 0,
+    @EncodeDefault @SerialName("is_done") val isDone: Boolean = false,
+    @EncodeDefault @SerialName("is_deleted") val isDeleted: Boolean = false,
+    @EncodeDefault @SerialName("created_at") val createdAt: String = "",
+    @EncodeDefault @SerialName("updated_at") val updatedAt: String = "",
     @SerialName("uploaded_at") val uploadedAt: String? = null,
 ) {
     fun toDomain(): TodoScheduleForSync = TodoScheduleForSync(
