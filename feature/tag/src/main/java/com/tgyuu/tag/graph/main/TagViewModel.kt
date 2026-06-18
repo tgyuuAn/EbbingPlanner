@@ -38,9 +38,6 @@ class TagViewModel(
     }
 
     private suspend fun onAddClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddTag")
-        )
         navigationBus.navigate(
             NavigationEvent.To(TagGraph.AddTagRoute)
         )

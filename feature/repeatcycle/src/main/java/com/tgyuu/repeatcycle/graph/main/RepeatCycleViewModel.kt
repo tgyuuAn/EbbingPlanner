@@ -38,9 +38,6 @@ class RepeatCycleViewModel(
     }
 
     private suspend fun onAddClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddRepeatCycle")
-        )
         navigationBus.navigate(
             NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute)
         )
