@@ -484,7 +484,10 @@ private fun ColumnScope.SelectedDateTodoList(
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
             ) {
-                items(items = todoLists) { item ->
+                items(
+                    items = todoLists,
+                    itemId = { it.id.toLong() },
+                ) { item ->
                     TodoItemRow(
                         todo = item,
                         modifier = GlanceModifier.fillMaxWidth()

@@ -244,7 +244,10 @@ private fun TodayTodoWidgetContent(
                 modifier = GlanceModifier.fillMaxSize()
                     .padding(top = 6.dp),
             ) {
-                items(items = todoLists.fastMapIndexed { i, it -> i to it }) { (index, item) ->
+                items(
+                    items = todoLists.fastMapIndexed { i, it -> i to it },
+                    itemId = { (_, item) -> item.id.toLong() },
+                ) { (index, item) ->
                     val titleBitmap = if (item.isDone) bitmaps.titlesDone.getOrNull(index)
                         else bitmaps.titles.getOrNull(index)
                     TodoItemRow(
