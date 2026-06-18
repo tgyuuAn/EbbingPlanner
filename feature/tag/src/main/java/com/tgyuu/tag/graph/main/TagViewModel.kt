@@ -25,6 +25,7 @@ class TagViewModel(
     override suspend fun processIntent(intent: TagIntent) {
         when (intent) {
             TagIntent.OnBackClick -> onBackClick()
+            TagIntent.OnAddClick -> onAddClick()
             is TagIntent.OnDeleteClick -> onDeleteClick(intent.tag)
             is TagIntent.OnEditClick -> onEditClick(intent.tag)
         }
@@ -32,6 +33,12 @@ class TagViewModel(
 
     private suspend fun onBackClick() {
         navigationBus.navigate(NavigationEvent.Up)
+    }
+
+    private suspend fun onAddClick() {
+        navigationBus.navigate(
+            NavigationEvent.To(TagGraph.AddTagRoute)
+        )
     }
 
     private suspend fun onDeleteClick(tag: TodoTagUiModel) {

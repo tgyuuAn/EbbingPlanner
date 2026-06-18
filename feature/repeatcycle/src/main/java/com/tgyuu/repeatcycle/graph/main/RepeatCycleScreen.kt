@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
@@ -42,6 +44,7 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDef
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleState
@@ -61,6 +64,7 @@ internal fun RepeatCycleRoute(
     RepeatCycleScreen(
         state = state,
         onBackClick = { viewModel.onIntent(RepeatCycleIntent.OnBackClick) },
+        onAddClick = { viewModel.onIntent(RepeatCycleIntent.OnAddClick) },
         onEditClick = { viewModel.onIntent(RepeatCycleIntent.OnEditClick(it)) },
         onDeleteClick = { viewModel.onIntent(RepeatCycleIntent.OnDeleteClick(it)) },
     )
@@ -70,6 +74,7 @@ internal fun RepeatCycleRoute(
 private fun RepeatCycleScreen(
     state: RepeatCycleState,
     onBackClick: () -> Unit,
+    onAddClick: () -> Unit,
     onEditClick: (RepeatCycleUiModel) -> Unit,
     onDeleteClick: (RepeatCycleUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -102,9 +107,33 @@ private fun RepeatCycleScreen(
             EbbingSubTopBar(
                 title = "반복 주기 관리",
                 onNavigationClick = onBackClick,
+                rightComponent = {
+                    Text(
+                        text = "추가",
+                        style = EbbingTheme.typography.body16M,
+                        color = EbbingTheme.colors.primaryNormal,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clickable { onAddClick() },
+                    )
+                },
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+            if (state.repeatCycleList.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "등록된 반복 주기가 없어요.\n우측 상단 추가 버튼을 눌러 반복 주기를 추가해보세요.",
+                        style = EbbingTheme.typography.body14M,
+                        textAlign = TextAlign.Center,
+                        color = EbbingTheme.colors.textDisabled,
+                    )
+                }
+            } else if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 LazyColumn(
                     state = listState,
                     contentPadding = PaddingValues(bottom = 100.dp),
@@ -193,6 +222,7 @@ private fun PreviewRepeatCycle() {
                 )
             ),
             onBackClick = {},
+            onAddClick = {},
             onEditClick = {},
             onDeleteClick = {},
         )

@@ -25,6 +25,7 @@ class RepeatCycleViewModel(
     override suspend fun processIntent(intent: RepeatCycleIntent) {
         when (intent) {
             RepeatCycleIntent.OnBackClick -> onBackClick()
+            RepeatCycleIntent.OnAddClick -> onAddClick()
             is RepeatCycleIntent.OnDeleteClick -> onDeleteClick(intent.repeatCycle)
             is RepeatCycleIntent.OnEditClick -> onEditClick(intent.repeatCycle)
         }
@@ -32,6 +33,12 @@ class RepeatCycleViewModel(
 
     private suspend fun onBackClick() {
         navigationBus.navigate(NavigationEvent.Up)
+    }
+
+    private suspend fun onAddClick() {
+        navigationBus.navigate(
+            NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute)
+        )
     }
 
     private suspend fun onDeleteClick(repeatCycle: RepeatCycleUiModel) {
