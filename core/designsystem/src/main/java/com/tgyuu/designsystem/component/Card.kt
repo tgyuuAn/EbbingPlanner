@@ -3,15 +3,18 @@ package com.tgyuu.designsystem.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -94,12 +97,28 @@ fun TodoListCard(
                         ) {
                             FlowRow(modifier = Modifier.weight(1f)) {
                                 todosWithSameInfo.forEach {
-                                    EbbingCheck(
-                                        checked = it.isDone,
-                                        colorValue = it.color,
-                                        onCheckedChange = {},
-                                        modifier = Modifier.size(20.dp),
-                                    )
+                                    val isCurrent = it.id == todo.id
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        EbbingCheck(
+                                            checked = it.isDone,
+                                            colorValue = it.color,
+                                            onCheckedChange = {},
+                                            modifier = Modifier.size(20.dp),
+                                        )
+
+                                        Spacer(modifier = Modifier.height(2.dp))
+
+                                        Box(
+                                            modifier = Modifier
+                                                .height(2.dp)
+                                                .width(12.dp)
+                                                .clip(RoundedCornerShape(1.dp))
+                                                .background(
+                                                    if (isCurrent) Color(it.color)
+                                                    else Color.Transparent
+                                                ),
+                                        )
+                                    }
                                 }
                             }
 
