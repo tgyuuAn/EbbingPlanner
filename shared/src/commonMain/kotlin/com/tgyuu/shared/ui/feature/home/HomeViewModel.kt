@@ -314,7 +314,8 @@ class HomeViewModel(
         schedules: List<TodoSchedule>,
     ): ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> {
         return schedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.map { it.toUiModel() }.toImmutableList()
+            // 회차(동그라미) 순서가 실제 복습 순서와 맞도록 날짜순 정렬
+            list.sortedBy { it.date }.map { it.toUiModel() }.toImmutableList()
         }.toImmutableMap()
     }
 
