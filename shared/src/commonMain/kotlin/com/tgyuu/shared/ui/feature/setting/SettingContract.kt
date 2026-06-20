@@ -3,6 +3,7 @@ package com.tgyuu.shared.ui.feature.setting
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
+import com.tgyuu.shared.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 
 @Immutable
 data class SettingState(
@@ -10,8 +11,49 @@ data class SettingState(
     val appVersion: String = "1.0.0",
     val isNotificationEnabled: Boolean = true,
     val alarmTime: String = "오후 6시 30분",
+    val alarmHour: Int = 18,
+    val alarmMinute: Int = 30,
+    val alarmMessage: String = DEFAULT_ALARM_MESSAGE,
+    val alarmMessageBottomSheet: AlarmMessageBottomSheetState = AlarmMessageBottomSheetState(),
     val mondayStart: Boolean = false,
+    val autoBackupFeatureEnabled: Boolean = false,
+    val autoBackupEnabled: Boolean = true,
+    val lastSyncTime: String? = null,
 ) : UiState
+
+@Immutable
+data class AlarmMessageBottomSheetState(
+    val message: String = DEFAULT_ALARM_MESSAGE,
+    val originMessage: String = "",
+) {
+    val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
+
+    val isValidPlaceholder: Boolean = placeholderCount <= 1
+
+    val isValidLength: Boolean = message.length <= 50
+
+    val isValid: Boolean = isValidPlaceholder && isValidLength
+
+    val previewMessage: String = when (placeholderCount) {
+        1 -> message.replace("{할일}", "영어 단어 복습")
+        0 -> message
+        else -> ""
+    }
+
+    val errorMessage: String = when {
+        placeholderCount > 1 -> "{할일}은 최대 1번만 사용할 수 있습니다"
+        !isValidLength -> "최대 50자까지 입력 가능합니다"
+        else -> ""
+    }
+
+    val lengthText: String = "${message.length} / 50자"
+
+    val isChanged: Boolean = message != originMessage
+
+    val canApply: Boolean = isValid && isChanged
+
+    val shouldShowResetButton: Boolean = message != DEFAULT_ALARM_MESSAGE
+}
 
 sealed class SettingIntent : UiIntent {
     data object OnBackClick : SettingIntent()
@@ -23,11 +65,17 @@ sealed class SettingIntent : UiIntent {
     data object OnThemeClick : SettingIntent()
     data object OnNotificationClick : SettingIntent()
     data class OnNotificationToggle(val enabled: Boolean) : SettingIntent()
+    data class OnUpdateAlarmTime(val hour: Int, val minute: Int) : SettingIntent()
+    data object OnAlarmMessageOpen : SettingIntent()
+    data class OnAlarmMessageChange(val message: String) : SettingIntent()
+    data object OnAlarmMessageReset : SettingIntent()
+    data object OnApplyAlarmMessage : SettingIntent()
     data object OnInAppReviewClick : SettingIntent()
     data object OnPrivacyPolicyClick : SettingIntent()
     data object OnTermsOfUseClick : SettingIntent()
     data object OnWidgetClick : SettingIntent()
     data class OnUpdateStartDay(val mondayStart: Boolean) : SettingIntent()
+    data object OnAutoBackupToggleClick : SettingIntent()
     data object OnNoticeClick : SettingIntent()
     data object OnInquiryClick : SettingIntent()
 }

@@ -33,6 +33,7 @@ fun SelectedDateBottomSheetContent(
             calendarState = calendarState,
             schedulesByDateMap = schedulesByDateMap,
             onSelectDate = { newSelectedDate = it },
+            showSyncButton = false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),

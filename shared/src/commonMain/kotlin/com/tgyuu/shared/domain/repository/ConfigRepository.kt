@@ -29,6 +29,10 @@ interface ConfigRepository {
 
     fun getMondayStart(): Flow<Boolean>
     suspend fun setMondayStart(enabled: Boolean)
+
+    fun getAutoBackupEnabled(): Flow<Boolean>
+    suspend fun setAutoBackupEnabled(enabled: Boolean)
+
     suspend fun consumeInAppReview(): Boolean
 
     suspend fun getClearSyncFlag(): Boolean

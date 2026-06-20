@@ -1,34 +1,28 @@
 package com.tgyuu.shared.ui.feature.tag
 
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,12 +32,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
+import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
+import com.tgyuu.shared.designsystem.component.EbbingOutlinedButton
+import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
+import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 
@@ -53,131 +53,118 @@ fun TagScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
-    var tagToDelete by remember { mutableStateOf<TodoTagUiModel?>(null) }
+    var selectedTag by remember { mutableStateOf<TodoTagUiModel?>(null) }
+    var isShowDialog by remember { mutableStateOf(false) }
 
-    tagToDelete?.let { toDelete ->
-        DeleteTagDialog(
-            tagName = toDelete.name,
-            onConfirm = {
-                viewModel.onIntent(TagIntent.OnDeleteClick(toDelete))
-                tagToDelete = null
-            },
-            onDismiss = { tagToDelete = null },
-        )
+    selectedTag?.let { selected ->
+        if (isShowDialog) {
+            DeleteTagDialog(
+                tagName = selected.name,
+                onConfirm = {
+                    viewModel.onIntent(TagIntent.OnDeleteClick(selected))
+                    isShowDialog = false
+                    selectedTag = null
+                },
+                onDismiss = { isShowDialog = false },
+            )
+        }
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
-    Column(modifier = Modifier.fillMaxSize()) {
-        EbbingSubTopBar(
-            title = "태그 관리",
-            onNavigationClick = { viewModel.onIntent(TagIntent.OnBackClick) },
-            rightComponent = {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "태그 추가",
-                    tint = EbbingTheme.colors.primaryDefault,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .size(28.dp)
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(EbbingTheme.colors.light3)
-                        .clickable { viewModel.onIntent(TagIntent.OnAddClick) }
-                        .padding(4.dp),
-                )
-            },
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
+        val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
 
-        HorizontalDivider(
-            color = EbbingTheme.colors.light2,
-            thickness = 1.dp,
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { selectedTag = null },
+        ) {
+            EbbingSubTopBar(
+                title = "태그 관리",
+                onNavigationClick = { viewModel.onIntent(TagIntent.OnBackClick) },
+                rightComponent = {
+                    Text(
+                        text = "추가",
+                        style = EbbingTheme.typography.bodyMM,
+                        color = EbbingTheme.colors.primaryDefault,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clickable { viewModel.onIntent(TagIntent.OnAddClick) },
+                    )
+                },
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
 
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator(color = EbbingTheme.colors.primaryDefault)
-            }
-        } else if (state.tagList.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "태그가 없습니다.\n우측 상단 + 버튼을 눌러 태그를 추가해보세요.",
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark2,
-                )
-            }
-        } else if (isWide) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize().padding(20.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(items = state.tagList, key = { it.id }) { tag ->
-                    TagItem(tag = tag, onClick = { viewModel.onIntent(TagIntent.OnEditClick(tag)) }, onDeleteClick = { tagToDelete = tag })
+            if (state.tagList.isEmpty()) {
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "등록된 태그가 없어요.\n우측 상단 추가 버튼을 눌러 태그를 추가해보세요.",
+                        style = EbbingTheme.typography.bodySM,
+                        textAlign = TextAlign.Center,
+                        color = EbbingTheme.colors.dark3,
+                    )
                 }
-                item { Spacer(modifier = Modifier.height(24.dp)) }
-                item { Spacer(modifier = Modifier.height(24.dp)) }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(items = state.tagList, key = { it.id }) { tag ->
-                    TagItem(tag = tag, onClick = { viewModel.onIntent(TagIntent.OnEditClick(tag)) }, onDeleteClick = { tagToDelete = tag })
+            } else if (isWide) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    contentPadding = PaddingValues(bottom = 100.dp),
+                    modifier = Modifier.padding(20.dp).imePadding(),
+                ) {
+                    items(items = state.tagList, key = { it.id }) { tag ->
+                        EbbingBottomSheetListItemDefault(
+                            label = tag.name,
+                            color = tag.color,
+                            checked = tag.id == selectedTag?.id,
+                            onChecked = { selectedTag = tag },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                        )
+                    }
                 }
-                item { Spacer(modifier = Modifier.height(24.dp)) }
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(bottom = 100.dp),
+                    modifier = Modifier.padding(20.dp).imePadding(),
+                ) {
+                    items(items = state.tagList, key = { it.id }) { tag ->
+                        EbbingBottomSheetListItemDefault(
+                            label = tag.name,
+                            color = tag.color,
+                            checked = tag.id == selectedTag?.id,
+                            onChecked = { selectedTag = tag },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
             }
         }
-    }
-    } // BoxWithConstraints
-}
 
-@Composable
-private fun TagItem(
-    tag: TodoTagUiModel,
-    onClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(EbbingTheme.colors.light3)
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
+        AnimatedVisibility(
+            visible = selectedTag != null && selectedTag?.id != 1,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+            exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 }),
             modifier = Modifier
-                .size(20.dp)
-                .clip(CircleShape)
-                .background(Color(tag.color)),
-        )
+                .align(Alignment.BottomCenter)
+                .widthIn(max = 400.dp)
+                .fillMaxWidth()
+                .padding(20.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
+            ) {
+                EbbingOutlinedButton(
+                    label = "삭제",
+                    onClick = { isShowDialog = true },
+                    modifier = Modifier.weight(1f),
+                )
 
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Text(
-            text = tag.name,
-            style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
-            modifier = Modifier.weight(1f),
-        )
-
-        if (tag.id != 1) { // 기본 태그는 삭제 불가
-            IconButton(onClick = onDeleteClick) {
-                Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = "삭제",
-                    tint = EbbingTheme.colors.dark3,
+                EbbingSolidButton(
+                    label = "수정",
+                    onClick = { selectedTag?.let { viewModel.onIntent(TagIntent.OnEditClick(it)) } },
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -190,31 +177,27 @@ private fun DeleteTagDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    EbbingDialog(onDismissRequest = onDismiss) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        ) {
-            Text(
-                text = "태그 삭제",
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.padding(top = 40.dp),
+    EbbingDialog(
+        dialogTop = {
+            EbbingDialogDefaultTop(
+                title = buildAnnotatedString {
+                    append("$tagName 태그를 ")
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                        append("삭제")
+                    }
+                    append(" 하시겠습니까?")
+                },
+                subText = "삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요.",
             )
-
-            Text(
-                text = "'$tagName' 태그를 삭제하시겠습니까?",
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark1,
-                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
-            )
-
+        },
+        dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "취소",
+                leftButtonText = "뒤로",
                 rightButtonText = "삭제",
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )
-        }
-    }
+        },
+        onDismissRequest = onDismiss,
+    )
 }

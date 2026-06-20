@@ -644,13 +644,19 @@ private fun DeleteTagDialog(
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = buildAnnotatedString { append("$tagName 태그를 삭제하시겠습니까?") },
-                subText = "이 태그는 현재 연결된 모든 일정에서 함께 삭제되며,삭제 후에는 복구할 수 없습니다.",
+                title = buildAnnotatedString {
+                    append("$tagName 태그를 ")
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                        append("삭제")
+                    }
+                    append(" 하시겠습니까?")
+                },
+                subText = "삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요.",
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "취소",
+                leftButtonText = "뒤로",
                 rightButtonText = "삭제",
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onDeleteClick,

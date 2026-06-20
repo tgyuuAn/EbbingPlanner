@@ -83,6 +83,7 @@ fun EditTodoScreen(
                             rest = " 에\n진행하는 걸로 바꿀래요",
                             style = EbbingTheme.typography.headingLSB,
                             color = EbbingTheme.colors.black,
+                            highlightColor = EbbingTheme.colors.primaryDefault,
                             modifier = Modifier.clickable {
                                 viewModel.onIntent(EditTodoIntent.OnSelectedDateDropDownClick)
                             },
@@ -121,6 +122,7 @@ fun EditTodoScreen(
                         rest = " 에\n진행하는 걸로 바꿀래요",
                         style = EbbingTheme.typography.headingLSB,
                         color = EbbingTheme.colors.black,
+                        highlightColor = EbbingTheme.colors.primaryDefault,
                         modifier = Modifier.clickable {
                             viewModel.onIntent(EditTodoIntent.OnSelectedDateDropDownClick)
                         },

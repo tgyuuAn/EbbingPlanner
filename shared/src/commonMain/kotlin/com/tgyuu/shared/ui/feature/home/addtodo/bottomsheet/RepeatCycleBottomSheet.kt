@@ -125,6 +125,7 @@ fun RepeatCycleBottomSheetContent(
                     onSelectDate = { date ->
                         dailyEndDate = if (date > selectedDate) date else null
                     },
+                    showSyncButton = false,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),

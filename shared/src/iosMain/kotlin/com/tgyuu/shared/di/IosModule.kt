@@ -1,5 +1,8 @@
 package com.tgyuu.shared.di
 
+import com.tgyuu.shared.data.source.StubSyncDataSource
+import com.tgyuu.shared.data.source.SupabaseSyncDataSource
+import com.tgyuu.shared.data.source.SyncDataSource
 import com.tgyuu.shared.database.EbbingDatabase
 import com.tgyuu.shared.database.createEbbingDatabase
 import com.tgyuu.shared.platform.InAppReviewManager
@@ -12,49 +15,55 @@ import com.tgyuu.shared.database.dao.RepeatCyclesDao
 import com.tgyuu.shared.database.dao.TodoSchedulesDao
 import com.tgyuu.shared.database.dao.TodoTagsDao
 import com.tgyuu.shared.database.dao.TodoWithSchedulesDao
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 /**
- * iOS-specific Koin module - provides database instance and platform services
+ * iOS-specific Koin module - provides database, platform services, and Supabase sync.
+ *
+ * @param supabaseUrl / supabaseKey: Info.plist에서 읽어 Swift가 전달. 비어 있으면 Stub으로 폴백.
  */
-val iosModule = module {
+fun iosModule(supabaseUrl: String, supabaseKey: String) = module {
     single<EbbingDatabase> { createEbbingDatabase() }
     single { Settings() }
     single { InAppReviewManager() }
+
+    if (supabaseUrl.isNotBlank() && supabaseKey.isNotBlank()) {
+        single<SupabaseClient> {
+            createSupabaseClient(supabaseUrl = supabaseUrl, supabaseKey = supabaseKey) {
+                install(Postgrest)
+            }
+        }
+        single<SyncDataSource> { SupabaseSyncDataSource(get()) }
+    } else {
+        single<SyncDataSource> { StubSyncDataSource() }
+    }
 }
 
 /**
  * Returns all iOS modules including shared
  */
-fun getIosModules() = listOf(iosModule) + getSharedModules()
+fun getIosModules(supabaseUrl: String, supabaseKey: String) =
+    listOf(iosModule(supabaseUrl, supabaseKey)) + getSharedModules()
 
 /**
- * Initialize Koin for iOS with Firebase integration.
+ * Initialize Koin for iOS.
  * Call from Swift:
- *   IosModuleKt.doInitKoin()
- *
- * For Firebase integration, call initKoinWithFirebase() instead.
+ *   IosModuleKt.doInitKoin(supabaseUrl:..., supabaseKey:...)
  */
-fun initKoin() {
+fun initKoin(supabaseUrl: String, supabaseKey: String) {
     startKoin {
-        modules(getIosModules())
+        modules(getIosModules(supabaseUrl, supabaseKey))
     }
 }
 
 /**
- * Initialize Koin with Firebase services.
- * Call from Swift after FirebaseApp.configure():
- *
- *   IosModuleKt.doInitKoinWithFirebase(
- *       onLogError: { msg in FirebaseErrorBridge.shared.logError(message: msg) },
- *       onSetErrorUserId: { uid in FirebaseErrorBridge.shared.setUserId(uid) },
- *       onClearErrorUserId: { FirebaseErrorBridge.shared.clearUserId() },
- *       onLogAnalyticsEvent: { name, params in FirebaseAnalyticsBridge.shared.logEvent(name: name, parameters: params as? [String: Any]) },
- *       onSetAnalyticsUserId: { uid in FirebaseAnalyticsBridge.shared.setUserId(uid) }
- *   )
+ * Initialize Koin with Firebase services. Call from Swift after FirebaseApp.configure().
  */
 fun initKoinWithFirebase(
     onLogError: (String) -> Unit,
@@ -62,10 +71,12 @@ fun initKoinWithFirebase(
     onClearErrorUserId: () -> Unit,
     onLogAnalyticsEvent: (String, Map<String, Any?>) -> Unit,
     onSetAnalyticsUserId: (String?) -> Unit,
+    supabaseUrl: String,
+    supabaseKey: String,
 ) {
     startKoin {
         modules(
-            getIosModules() + module {
+            getIosModules(supabaseUrl, supabaseKey) + module {
                 // Override default debug implementations with Firebase
                 single<ErrorDataSource> {
                     FirebaseErrorDataSource(

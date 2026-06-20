@@ -92,6 +92,8 @@ fun RootContent(
     val todoRepository = koinInject<TodoRepository>()
     val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val featureFlagRepository = koinInject<com.tgyuu.shared.domain.repository.FeatureFlagRepository>()
+    val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
     val inAppReviewManager = koinInject<InAppReviewManager>()
 
     // Check if first app open → show onboarding
@@ -142,6 +144,8 @@ fun RootContent(
         SettingViewModel(
             todoRepository = todoRepository,
             configRepository = configRepository,
+            featureFlagRepository = featureFlagRepository,
+            syncRepository = syncRepository,
             onNavigateBack = { component.navigateToHome() },
             onNavigateToTag = { component.navigateToTag() },
             onNavigateToRepeatCycle = { component.navigateToRepeatCycle() },

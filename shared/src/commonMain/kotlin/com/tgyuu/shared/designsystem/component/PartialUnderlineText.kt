@@ -10,7 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
 /**
@@ -25,12 +28,16 @@ fun EbbingPartialUnderlineText(
     style: TextStyle,
     color: Color,
     modifier: Modifier = Modifier,
+    highlightColor: Color = color,
 ) {
     var underlineEndX by remember { mutableFloatStateOf(0f) }
     var baselineY by remember { mutableFloatStateOf(0f) }
 
     Text(
-        text = underlinedPart + rest,
+        text = buildAnnotatedString {
+            withStyle(SpanStyle(color = highlightColor)) { append(underlinedPart) }
+            append(rest)
+        },
         style = style.copy(color = color),
         onTextLayout = { layout ->
             if (underlinedPart.isNotEmpty()) {
@@ -44,7 +51,7 @@ fun EbbingPartialUnderlineText(
                 val strokeWidth = 1.5.dp.toPx()
                 val y = baselineY + 2.dp.toPx()
                 drawLine(
-                    color = color,
+                    color = highlightColor,
                     start = Offset(0f, y),
                     end = Offset(underlineEndX, y),
                     strokeWidth = strokeWidth,

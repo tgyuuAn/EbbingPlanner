@@ -86,6 +86,9 @@ amplitude = "1.21.3"
 ## Ktor
 ktor = "3.1.1"
 
+## Supabase (supabase-kt, KMP)
+supabase = "3.1.4"
+
 ## Accompanist
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
@@ -198,6 +201,7 @@ ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-conte
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
