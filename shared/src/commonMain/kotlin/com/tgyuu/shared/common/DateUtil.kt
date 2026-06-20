@@ -129,6 +129,22 @@ fun generateValidSchedules(
 }
 
 /**
+ * 매일하기 스케줄 생성
+ *
+ * 일반 반복주기(generateValidSchedules)와 달리, 쉬는 요일을 만나면
+ * 다음 평일로 미루지 않고 해당 날짜를 "제거"한다.
+ * 따라서 쉬는 요일이 많을수록 마지막 날짜는 그대로 유지되고 일정 개수가 줄어든다.
+ */
+fun generateDailySchedules(
+    baseDate: LocalDate,
+    intervals: List<Int>,
+    restDays: Set<DayOfWeek>,
+): List<LocalDate> =
+    intervals
+        .map { interval -> baseDate.plus(interval, DateTimeUnit.DAY) }
+        .filter { it.dayOfWeek !in restDays }
+
+/**
  * 휴일 제외 다음 유효한 날짜 계산
  */
 private fun LocalDate.nextValidDate(restDays: Set<DayOfWeek>): LocalDate {
