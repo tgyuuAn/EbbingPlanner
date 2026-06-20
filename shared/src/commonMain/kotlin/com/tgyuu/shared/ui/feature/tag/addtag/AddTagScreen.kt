@@ -36,6 +36,29 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomS
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.feature.tag.bottomsheet.ColorBottomSheet
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.tag_manage_title
+import ebbingplanner.shared.generated.resources.tag_add_button
+import ebbingplanner.shared.generated.resources.tag_empty_message
+import ebbingplanner.shared.generated.resources.tag_delete
+import ebbingplanner.shared.generated.resources.tag_edit
+import ebbingplanner.shared.generated.resources.tag_back
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_prefix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_highlight
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
+import ebbingplanner.shared.generated.resources.tag_add_title
+import ebbingplanner.shared.generated.resources.tag_edit_title
+import ebbingplanner.shared.generated.resources.tag_save
+import ebbingplanner.shared.generated.resources.tag_add_headline
+import ebbingplanner.shared.generated.resources.tag_edit_headline
+import ebbingplanner.shared.generated.resources.tag_name_label
+import ebbingplanner.shared.generated.resources.tag_name_hint
+import ebbingplanner.shared.generated.resources.tag_color
+import ebbingplanner.shared.generated.resources.tag_color_select_title
+import ebbingplanner.shared.generated.resources.tag_apply
+import ebbingplanner.shared.generated.resources.common_clear
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,12 +79,12 @@ fun AddTagScreen(
         modifier = modifier.fillMaxSize(),
     ) {
         EbbingSubTopBar(
-            title = "태그 추가",
+            title = stringResource(Res.string.tag_add_title),
             onNavigationClick = { viewModel.onIntent(AddTagIntent.OnBackClick) },
             rightComponent = {
                 if (!state.isTreatment) {
                 Text(
-                    text = "저장",
+                    text = stringResource(Res.string.tag_save),
                     style = EbbingTheme.typography.headingSSB,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
                     else EbbingTheme.colors.dark3,
@@ -83,7 +106,7 @@ fun AddTagScreen(
                 .imePadding(),
         ) {
             Text(
-                text = "새로운 태그를 추가해요",
+                text = stringResource(Res.string.tag_add_headline),
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 12.dp, bottom = 32.dp),
@@ -118,7 +141,7 @@ fun AddTagScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = "저장",
+                label = stringResource(Res.string.tag_save),
                 onClick = { viewModel.onIntent(AddTagIntent.OnSaveClick) },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier
@@ -139,7 +162,7 @@ private fun NameContent(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "태그 이름",
+            text = stringResource(Res.string.tag_name_label),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -152,14 +175,14 @@ private fun NameContent(
             EbbingTextInputDefault(
                 value = name,
                 onValueChange = onNameChange,
-                hint = "태그의 이름은 무엇인가요?",
+                hint = stringResource(Res.string.tag_name_hint),
                 modifier = Modifier.weight(1f),
             )
 
             if (name.isNotEmpty()) {
                 Icon(
                     imageVector = Icons.Filled.Clear,
-                    contentDescription = "지우기",
+                    contentDescription = stringResource(Res.string.common_clear),
                     tint = EbbingTheme.colors.dark2,
                     modifier = Modifier
                         .padding(start = 8.dp)
@@ -188,7 +211,7 @@ private fun ColorContent(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "색상",
+            text = stringResource(Res.string.tag_color),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),

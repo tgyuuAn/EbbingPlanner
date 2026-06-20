@@ -29,6 +29,29 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.tag_manage_title
+import ebbingplanner.shared.generated.resources.tag_add_button
+import ebbingplanner.shared.generated.resources.tag_empty_message
+import ebbingplanner.shared.generated.resources.tag_delete
+import ebbingplanner.shared.generated.resources.tag_edit
+import ebbingplanner.shared.generated.resources.tag_back
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_prefix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_highlight
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
+import ebbingplanner.shared.generated.resources.tag_add_title
+import ebbingplanner.shared.generated.resources.tag_edit_title
+import ebbingplanner.shared.generated.resources.tag_save
+import ebbingplanner.shared.generated.resources.tag_add_headline
+import ebbingplanner.shared.generated.resources.tag_edit_headline
+import ebbingplanner.shared.generated.resources.tag_name_label
+import ebbingplanner.shared.generated.resources.tag_name_hint
+import ebbingplanner.shared.generated.resources.tag_color
+import ebbingplanner.shared.generated.resources.tag_color_select_title
+import ebbingplanner.shared.generated.resources.tag_apply
+import ebbingplanner.shared.generated.resources.common_clear
+import org.jetbrains.compose.resources.stringResource
 
 // 6 color families with 6 shades each (dark to light)
 val TAG_COLORS = listOf(
@@ -65,7 +88,7 @@ fun ColorBottomSheet(
         modifier = modifier.padding(bottom = 32.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "색상 선택",
+            title = stringResource(Res.string.tag_color_select_title),
         )
 
         LazyVerticalGrid(
@@ -86,7 +109,7 @@ fun ColorBottomSheet(
         }
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(Res.string.tag_apply),
             onClick = {
                 onColorSelect(selectedColor)
                 onDismiss()

@@ -84,4 +84,50 @@
     <string name="sync_confirm_sync_desc_3">してください。</string>
     <string name="sync_confirm_disconnect_title">端末の連携を解除しますか？</string>
     <string name="sync_confirm_disconnect_desc">保存されているデータはそのまま保持されます。\nいつでも再連携できます。</string>
+
+    <!-- 共通 -->
+    <string name="common_clear">クリア</string>
+
+    <!-- タグ -->
+    <string name="tag_manage_title">タグの管理</string>
+    <string name="tag_add_button">追加</string>
+    <string name="tag_empty_message">登録されたタグがありません。\n右上の＋ボタンを押してタグを追加してみましょう。</string>
+    <string name="tag_delete">削除</string>
+    <string name="tag_edit">編集</string>
+    <string name="tag_back">戻る</string>
+    <string name="tag_delete_confirm_prefix">"%1$s タグを"</string>
+    <string name="tag_delete_confirm_highlight"></string>
+    <string name="tag_delete_confirm_suffix">削除しますか？</string>
+    <string name="tag_delete_confirm_subtext">削除したタグは元に戻せませんので、慎重に選択してください。</string>
+    <string name="tag_add_title">タグを追加</string>
+    <string name="tag_edit_title">タグを編集</string>
+    <string name="tag_save">保存</string>
+    <string name="tag_add_headline">新しいタグを追加します</string>
+    <string name="tag_edit_headline">%1$s タグを編集します</string>
+    <string name="tag_name_label">タグ名</string>
+    <string name="tag_name_hint">タグの名前は何ですか？</string>
+    <string name="tag_color">色</string>
+    <string name="tag_color_select_title">色を選択</string>
+    <string name="tag_apply">適用する</string>
+
+    <!-- 繰り返し周期 -->
+    <string name="repeat_manage_title">繰り返し周期の管理</string>
+    <string name="repeat_add_button">追加</string>
+    <string name="repeat_empty_message">登録された繰り返し周期がありません。\n右上の＋ボタンを押して繰り返し周期を追加してみましょう。</string>
+    <string name="repeat_delete">削除</string>
+    <string name="repeat_edit">編集</string>
+    <string name="repeat_dialog_back">戻る</string>
+    <string name="repeat_delete_dialog_prefix">"選択した繰り返し周期を"</string>
+    <string name="repeat_delete_dialog_highlight">削除</string>
+    <string name="repeat_delete_dialog_suffix">しますか？</string>
+    <string name="repeat_delete_dialog_sub_text">削除した繰り返し周期は元に戻せませんので、慎重に選択してください。</string>
+    <string name="repeat_add_title">繰り返し周期の追加</string>
+    <string name="repeat_edit_title">繰り返し周期の編集</string>
+    <string name="repeat_save">保存</string>
+    <string name="repeat_add_headline">自分だけの繰り返し周期を追加しましょう。</string>
+    <string name="repeat_edit_headline">自分だけの繰り返し周期を編集しましょう。</string>
+    <string name="repeat_cycle_label">繰り返し周期</string>
+    <string name="repeat_cycle_input_hint">どの周期で予定を繰り返しますか？</string>
+    <string name="repeat_cycle_input_guide">\' , \' を基準に数字を区切ってください\n当日を含める場合は 0 を入力してください\n1000 未満の数字のみ入力できます。\n ex) 0, 1, 3, 7, 15</string>
+    <string name="repeat_cycle_preview_label">予想される繰り返し周期</string>
 </resources>

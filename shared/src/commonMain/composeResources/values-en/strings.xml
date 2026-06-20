@@ -84,4 +84,50 @@
     <string name="sync_confirm_sync_desc_3">.</string>
     <string name="sync_confirm_disconnect_title">Disconnect this device?</string>
     <string name="sync_confirm_disconnect_desc">Your saved data will be kept.\n You can reconnect anytime.</string>
+
+    <!-- Common -->
+    <string name="common_clear">Clear</string>
+
+    <!-- Tags -->
+    <string name="tag_manage_title">Manage Tags</string>
+    <string name="tag_add_button">Add</string>
+    <string name="tag_empty_message">No tags yet.\nTap the + button in the top right to add one.</string>
+    <string name="tag_delete">Delete</string>
+    <string name="tag_edit">Edit</string>
+    <string name="tag_back">Back</string>
+    <string name="tag_delete_confirm_prefix">"Delete the %1$s tag"</string>
+    <string name="tag_delete_confirm_highlight"></string>
+    <string name="tag_delete_confirm_suffix">?</string>
+    <string name="tag_delete_confirm_subtext">Deleted tags can\'t be restored, so please choose carefully.</string>
+    <string name="tag_add_title">Add Tag</string>
+    <string name="tag_edit_title">Edit Tag</string>
+    <string name="tag_save">Save</string>
+    <string name="tag_add_headline">Add a new tag</string>
+    <string name="tag_edit_headline">Edit the %1$s tag</string>
+    <string name="tag_name_label">Tag Name</string>
+    <string name="tag_name_hint">What\'s the name of the tag?</string>
+    <string name="tag_color">Color</string>
+    <string name="tag_color_select_title">Select color</string>
+    <string name="tag_apply">Apply</string>
+
+    <!-- Repeat cycle -->
+    <string name="repeat_manage_title">Manage repeat cycles</string>
+    <string name="repeat_add_button">Add</string>
+    <string name="repeat_empty_message">No repeat cycles yet.\nTap the + button in the top right to add one.</string>
+    <string name="repeat_delete">Delete</string>
+    <string name="repeat_edit">Edit</string>
+    <string name="repeat_dialog_back">Back</string>
+    <string name="repeat_delete_dialog_prefix">"Delete the selected repeat "</string>
+    <string name="repeat_delete_dialog_highlight">cycle</string>
+    <string name="repeat_delete_dialog_suffix">?</string>
+    <string name="repeat_delete_dialog_sub_text">A deleted repeat cycle cannot be restored, so please choose carefully.</string>
+    <string name="repeat_add_title">Add repeat cycle</string>
+    <string name="repeat_edit_title">Edit repeat cycle</string>
+    <string name="repeat_save">Save</string>
+    <string name="repeat_add_headline">Add your own repeat cycle.</string>
+    <string name="repeat_edit_headline">Edit your own repeat cycle.</string>
+    <string name="repeat_cycle_label">Repeat cycle</string>
+    <string name="repeat_cycle_input_hint">How often should the schedule repeat?</string>
+    <string name="repeat_cycle_input_guide">Separate numbers with \' , \'\nEnter 0 to include the same day\nOnly numbers under 1000 are allowed.\n ex) 0, 1, 3, 7, 15</string>
+    <string name="repeat_cycle_preview_label">Expected repeat cycle</string>
 </resources>

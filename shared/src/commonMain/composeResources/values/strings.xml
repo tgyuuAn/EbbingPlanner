@@ -84,4 +84,50 @@
     <string name="sync_confirm_sync_desc_3">해주세요.</string>
     <string name="sync_confirm_disconnect_title">기기 연동을 해제 할까요?</string>
     <string name="sync_confirm_disconnect_desc">저장되어 있는 데이터는 그대로 보존됩니다.\n 언제든지 다시 연동할 수 있습니다.</string>
+
+    <!-- 공통 -->
+    <string name="common_clear">지우기</string>
+
+    <!-- 태그 -->
+    <string name="tag_manage_title">태그 관리</string>
+    <string name="tag_add_button">추가</string>
+    <string name="tag_empty_message">등록된 태그가 없어요.\n우측 상단 + 버튼을 눌러 태그를 추가해보세요.</string>
+    <string name="tag_delete">삭제</string>
+    <string name="tag_edit">수정</string>
+    <string name="tag_back">뒤로</string>
+    <string name="tag_delete_confirm_prefix">"%1$s 태그를 "</string>
+    <string name="tag_delete_confirm_highlight">삭제</string>
+    <string name="tag_delete_confirm_suffix">" 하시겠습니까?"</string>
+    <string name="tag_delete_confirm_subtext">삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요.</string>
+    <string name="tag_add_title">태그 추가</string>
+    <string name="tag_edit_title">태그 수정</string>
+    <string name="tag_save">저장</string>
+    <string name="tag_add_headline">새로운 태그를 추가해요</string>
+    <string name="tag_edit_headline">%1$s 태그를 수정해요</string>
+    <string name="tag_name_label">태그 이름</string>
+    <string name="tag_name_hint">태그의 이름은 무엇인가요?</string>
+    <string name="tag_color">색상</string>
+    <string name="tag_color_select_title">색상 선택</string>
+    <string name="tag_apply">적용하기</string>
+
+    <!-- 반복 주기 -->
+    <string name="repeat_manage_title">반복 주기 관리</string>
+    <string name="repeat_add_button">추가</string>
+    <string name="repeat_empty_message">등록된 반복 주기가 없어요.\n우측 상단 + 버튼을 눌러 반복 주기를 추가해보세요.</string>
+    <string name="repeat_delete">삭제</string>
+    <string name="repeat_edit">수정</string>
+    <string name="repeat_dialog_back">뒤로</string>
+    <string name="repeat_delete_dialog_prefix">"선택하신 반복 주기를 "</string>
+    <string name="repeat_delete_dialog_highlight">삭제</string>
+    <string name="repeat_delete_dialog_suffix">" 하시겠습니까?"</string>
+    <string name="repeat_delete_dialog_sub_text">삭제한 반복 주기는 되돌릴 수 없으니 신중히 선택해 주세요.</string>
+    <string name="repeat_add_title">반복 주기 추가</string>
+    <string name="repeat_edit_title">반복 주기 수정</string>
+    <string name="repeat_save">저장</string>
+    <string name="repeat_add_headline">나만의 반복 주기를 추가해요.</string>
+    <string name="repeat_edit_headline">나만의 반복 주기를 수정해요.</string>
+    <string name="repeat_cycle_label">반복 주기</string>
+    <string name="repeat_cycle_input_hint">어떤 주기로 일정을 반복할까요?</string>
+    <string name="repeat_cycle_input_guide">\' , \'를 기준으로 숫자를 분리해주세요\n당일을 포함하려면 0을 기입해주세요\n1000 미만의 숫자만 입력하실 수 있습니다.\n ex) 0, 1, 3, 7, 15</string>
+    <string name="repeat_cycle_preview_label">예상 반복 주기</string>
 </resources>

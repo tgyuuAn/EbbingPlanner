@@ -46,6 +46,29 @@ import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoTagUiModel
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.tag_manage_title
+import ebbingplanner.shared.generated.resources.tag_add_button
+import ebbingplanner.shared.generated.resources.tag_empty_message
+import ebbingplanner.shared.generated.resources.tag_delete
+import ebbingplanner.shared.generated.resources.tag_edit
+import ebbingplanner.shared.generated.resources.tag_back
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_prefix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_highlight
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
+import ebbingplanner.shared.generated.resources.tag_add_title
+import ebbingplanner.shared.generated.resources.tag_edit_title
+import ebbingplanner.shared.generated.resources.tag_save
+import ebbingplanner.shared.generated.resources.tag_add_headline
+import ebbingplanner.shared.generated.resources.tag_edit_headline
+import ebbingplanner.shared.generated.resources.tag_name_label
+import ebbingplanner.shared.generated.resources.tag_name_hint
+import ebbingplanner.shared.generated.resources.tag_color
+import ebbingplanner.shared.generated.resources.tag_color_select_title
+import ebbingplanner.shared.generated.resources.tag_apply
+import ebbingplanner.shared.generated.resources.common_clear
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TagScreen(
@@ -79,11 +102,11 @@ fun TagScreen(
                 .clickable { selectedTag = null },
         ) {
             EbbingSubTopBar(
-                title = "태그 관리",
+                title = stringResource(Res.string.tag_manage_title),
                 onNavigationClick = { viewModel.onIntent(TagIntent.OnBackClick) },
                 rightComponent = {
                     Text(
-                        text = "추가",
+                        text = stringResource(Res.string.tag_add_button),
                         style = EbbingTheme.typography.bodyMM,
                         color = EbbingTheme.colors.primaryDefault,
                         modifier = Modifier
@@ -100,7 +123,7 @@ fun TagScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "등록된 태그가 없어요.\n우측 상단 추가 버튼을 눌러 태그를 추가해보세요.",
+                        text = stringResource(Res.string.tag_empty_message),
                         style = EbbingTheme.typography.bodySM,
                         textAlign = TextAlign.Center,
                         color = EbbingTheme.colors.dark3,
@@ -156,13 +179,13 @@ fun TagScreen(
                 modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
             ) {
                 EbbingOutlinedButton(
-                    label = "삭제",
+                    label = stringResource(Res.string.tag_delete),
                     onClick = { isShowDialog = true },
                     modifier = Modifier.weight(1f),
                 )
 
                 EbbingSolidButton(
-                    label = "수정",
+                    label = stringResource(Res.string.tag_edit),
                     onClick = { selectedTag?.let { viewModel.onIntent(TagIntent.OnEditClick(it)) } },
                     modifier = Modifier.weight(1f),
                 )
@@ -179,21 +202,24 @@ private fun DeleteTagDialog(
 ) {
     EbbingDialog(
         dialogTop = {
+            val deletePrefix = stringResource(Res.string.tag_delete_confirm_prefix, tagName)
+            val deleteHighlight = stringResource(Res.string.tag_delete_confirm_highlight)
+            val deleteSuffix = stringResource(Res.string.tag_delete_confirm_suffix)
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("$tagName 태그를 ")
+                    append(deletePrefix)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
-                        append("삭제")
+                        append(deleteHighlight)
                     }
-                    append(" 하시겠습니까?")
+                    append(deleteSuffix)
                 },
-                subText = "삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요.",
+                subText = stringResource(Res.string.tag_delete_confirm_subtext),
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "삭제",
+                leftButtonText = stringResource(Res.string.tag_back),
+                rightButtonText = stringResource(Res.string.tag_delete),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )
