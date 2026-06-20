@@ -32,6 +32,39 @@ import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.sync_screen_title
+import ebbingplanner.shared.generated.resources.sync_back
+import ebbingplanner.shared.generated.resources.sync_sync
+import ebbingplanner.shared.generated.resources.sync_disconnect
+import ebbingplanner.shared.generated.resources.sync_no_record
+import ebbingplanner.shared.generated.resources.sync_no_record_or_network
+import ebbingplanner.shared.generated.resources.sync_generating
+import ebbingplanner.shared.generated.resources.sync_device_id_label
+import ebbingplanner.shared.generated.resources.sync_device_last_update_label
+import ebbingplanner.shared.generated.resources.sync_server_last_update_label
+import ebbingplanner.shared.generated.resources.sync_linked_id_label
+import ebbingplanner.shared.generated.resources.sync_section_title
+import ebbingplanner.shared.generated.resources.sync_do_sync
+import ebbingplanner.shared.generated.resources.sync_manual_hint
+import ebbingplanner.shared.generated.resources.sync_disconnect_action
+import ebbingplanner.shared.generated.resources.sync_connect_action
+import ebbingplanner.shared.generated.resources.sync_guide_1
+import ebbingplanner.shared.generated.resources.sync_guide_highlight_1
+import ebbingplanner.shared.generated.resources.sync_guide_2
+import ebbingplanner.shared.generated.resources.sync_guide_3
+import ebbingplanner.shared.generated.resources.sync_guide_highlight_2
+import ebbingplanner.shared.generated.resources.sync_guide_4
+import ebbingplanner.shared.generated.resources.sync_guide_5
+import ebbingplanner.shared.generated.resources.sync_confirm_sync_title
+import ebbingplanner.shared.generated.resources.sync_confirm_sync_desc_1
+import ebbingplanner.shared.generated.resources.sync_confirm_sync_desc_highlight_1
+import ebbingplanner.shared.generated.resources.sync_confirm_sync_desc_2
+import ebbingplanner.shared.generated.resources.sync_confirm_sync_desc_highlight_2
+import ebbingplanner.shared.generated.resources.sync_confirm_sync_desc_3
+import ebbingplanner.shared.generated.resources.sync_confirm_disconnect_title
+import ebbingplanner.shared.generated.resources.sync_confirm_disconnect_desc
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SyncScreen(
@@ -68,7 +101,7 @@ fun SyncScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         EbbingSubTopBar(
-            title = "동기화",
+            title = stringResource(Res.string.sync_screen_title),
             onNavigationClick = { viewModel.onIntent(SyncIntent.OnBackClick) },
             modifier = Modifier.padding(bottom = 20.dp),
         )
@@ -77,9 +110,9 @@ fun SyncScreen(
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f).verticalScroll(scrollState)) {
                     if (state.linkedUuid != null) {
-                        LinkedUuidBody(linkedUuid = state.linkedUuid ?: "", lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                        LinkedUuidBody(linkedUuid = state.linkedUuid ?: "", lastSyncedAt = state.localLastSyncedAt?.toString() ?: stringResource(Res.string.sync_no_record), lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: stringResource(Res.string.sync_no_record_or_network))
                     } else {
-                        UuidBody(uuid = state.uuid, lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                        UuidBody(uuid = state.uuid, lastSyncedAt = state.localLastSyncedAt?.toString() ?: stringResource(Res.string.sync_no_record), lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: stringResource(Res.string.sync_no_record_or_network))
                     }
                     SyncUpBody(
                         isConnected = state.linkedUuid != null,
@@ -96,9 +129,9 @@ fun SyncScreen(
         } else {
             Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
                 if (state.linkedUuid != null) {
-                    LinkedUuidBody(linkedUuid = state.linkedUuid ?: "", lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                    LinkedUuidBody(linkedUuid = state.linkedUuid ?: "", lastSyncedAt = state.localLastSyncedAt?.toString() ?: stringResource(Res.string.sync_no_record), lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: stringResource(Res.string.sync_no_record_or_network))
                 } else {
-                    UuidBody(uuid = state.uuid, lastSyncedAt = state.localLastSyncedAt?.toString() ?: "기록 없음", lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: "기록이 없거나 네트워크가 없음")
+                    UuidBody(uuid = state.uuid, lastSyncedAt = state.localLastSyncedAt?.toString() ?: stringResource(Res.string.sync_no_record), lastUpdatedAt = state.serverLastUpdatedAt?.toString() ?: stringResource(Res.string.sync_no_record_or_network))
                 }
                 SyncUpBody(
                     isConnected = state.linkedUuid != null,
@@ -123,14 +156,14 @@ private fun UuidBody(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "해당 디바이스의 고유 ID :",
+            text = stringResource(Res.string.sync_device_id_label),
             style = EbbingTheme.typography.bodySR,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
         Text(
-            text = uuid.ifEmpty { "생성 중..." },
+            text = uuid.ifEmpty { stringResource(Res.string.sync_generating) },
             style = EbbingTheme.typography.bodySR,
             color = EbbingTheme.colors.primaryDefault,
             modifier = Modifier
@@ -139,7 +172,7 @@ private fun UuidBody(
         )
 
         Text(
-            text = "해당 기기의 마지막 업데이트 시점 : ",
+            text = stringResource(Res.string.sync_device_last_update_label),
             style = EbbingTheme.typography.bodySR,
             color = EbbingTheme.colors.black,
             modifier = Modifier
@@ -157,7 +190,7 @@ private fun UuidBody(
         )
 
         Text(
-            text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
+            text = stringResource(Res.string.sync_server_last_update_label),
             style = EbbingTheme.typography.bodySR,
             color = EbbingTheme.colors.black,
             modifier = Modifier
@@ -191,7 +224,7 @@ private fun LinkedUuidBody(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "연동 되어있는 ID :",
+            text = stringResource(Res.string.sync_linked_id_label),
             style = EbbingTheme.typography.bodySSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -207,7 +240,7 @@ private fun LinkedUuidBody(
         )
 
         Text(
-            text = "해당 기기의 마지막 업데이트 시점 : ",
+            text = stringResource(Res.string.sync_device_last_update_label),
             style = EbbingTheme.typography.bodySR,
             color = EbbingTheme.colors.black,
             modifier = Modifier
@@ -225,7 +258,7 @@ private fun LinkedUuidBody(
         )
 
         Text(
-            text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
+            text = stringResource(Res.string.sync_server_last_update_label),
             style = EbbingTheme.typography.bodySR,
             color = EbbingTheme.colors.black,
             modifier = Modifier
@@ -261,7 +294,7 @@ private fun SyncUpBody(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "데이터 동기화 / 다른 기기와 연동",
+            text = stringResource(Res.string.sync_section_title),
             style = EbbingTheme.typography.bodySM,
             color = EbbingTheme.colors.dark2,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -275,7 +308,7 @@ private fun SyncUpBody(
                 .padding(vertical = 17.dp),
         ) {
             Text(
-                text = "서버와 내 기기 동기화하기",
+                text = stringResource(Res.string.sync_do_sync),
                 style = EbbingTheme.typography.headingSSB,
                 color = if (isSyncUpEnabled) EbbingTheme.colors.dark1
                 else EbbingTheme.colors.dark1.copy(alpha = 0.5f),
@@ -290,7 +323,7 @@ private fun SyncUpBody(
         }
 
         Text(
-            text = "자동으로 동기화되지 않아요. 눌러서 직접 동기화해 주세요.",
+            text = stringResource(Res.string.sync_manual_hint),
             style = EbbingTheme.typography.captionR12,
             color = EbbingTheme.colors.dark2,
         )
@@ -304,7 +337,7 @@ private fun SyncUpBody(
                     .padding(vertical = 17.dp),
             ) {
                 Text(
-                    text = "연동 해제하기",
+                    text = stringResource(Res.string.sync_disconnect_action),
                     style = EbbingTheme.typography.headingSSB,
                     color = EbbingTheme.colors.dark1,
                     modifier = Modifier.weight(1f),
@@ -325,7 +358,7 @@ private fun SyncUpBody(
                     .padding(vertical = 17.dp),
             ) {
                 Text(
-                    text = "다른 기기와 연동하기",
+                    text = stringResource(Res.string.sync_connect_action),
                     style = EbbingTheme.typography.headingSSB,
                     color = EbbingTheme.colors.dark1,
                     modifier = Modifier.weight(1f),
@@ -351,20 +384,27 @@ private fun SyncUpBody(
 private fun DescriptionBody(
     modifier: Modifier = Modifier,
 ) {
+    val guide1 = stringResource(Res.string.sync_guide_1)
+    val guideHighlight1 = stringResource(Res.string.sync_guide_highlight_1)
+    val guide2 = stringResource(Res.string.sync_guide_2)
+    val guide3 = stringResource(Res.string.sync_guide_3)
+    val guideHighlight2 = stringResource(Res.string.sync_guide_highlight_2)
+    val guide4 = stringResource(Res.string.sync_guide_4)
+    val guide5 = stringResource(Res.string.sync_guide_5)
     Text(
         text = buildAnnotatedString {
-            append("- 동기화는 기기의 변경 사항을 서버에 반영하고, 서버의 최신 데이터를 가져오는  양방향 동기화 방식입니다.\n")
+            append(guide1)
             append("- ")
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("수정한 데이터")
+                append(guideHighlight1)
             }
-            append("는 이 과정을 거쳐야 다른 기기와 공유됩니다.\n")
-            append("- 동기화 시 서로 다른 기기에서 수정한 내용이 있는 경우 ")
+            append(guide2)
+            append(guide3)
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("최근 수정된 데이터로 반영")
+                append(guideHighlight2)
             }
-            append("됩니다.\n")
-            append("- 동기화 전 반드시 중요한 데이터를 백업하거나 최신 상태를 확인해주세요.")
+            append(guide4)
+            append(guide5)
         },
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.bodyMM,
@@ -384,23 +424,28 @@ private fun SyncUpConfirmDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "데이터를 동기화 할까요?",
+                text = stringResource(Res.string.sync_confirm_sync_title),
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
+            val desc1 = stringResource(Res.string.sync_confirm_sync_desc_1)
+            val descHighlight1 = stringResource(Res.string.sync_confirm_sync_desc_highlight_1)
+            val desc2 = stringResource(Res.string.sync_confirm_sync_desc_2)
+            val descHighlight2 = stringResource(Res.string.sync_confirm_sync_desc_highlight_2)
+            val desc3 = stringResource(Res.string.sync_confirm_sync_desc_3)
             Text(
                 text = buildAnnotatedString {
-                    append("서로 다른 기기에서 수정된 데이터가 있을 경우, ")
+                    append(desc1)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
-                        append("더 늦게 업데이트된 쪽으로 반영")
+                        append(descHighlight1)
                     }
-                    append("됩니다.\n중요한 데이터는 ")
+                    append(desc2)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
-                        append("동기화 전에 반드시 확인")
+                        append(descHighlight2)
                     }
-                    append("해주세요.")
+                    append(desc3)
                 },
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
@@ -409,8 +454,8 @@ private fun SyncUpConfirmDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "동기화",
+                leftButtonText = stringResource(Res.string.sync_back),
+                rightButtonText = stringResource(Res.string.sync_sync),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )
@@ -429,14 +474,14 @@ private fun DisconnectConfirmDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "기기 연동을 해제 할까요?",
+                text = stringResource(Res.string.sync_confirm_disconnect_title),
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
-                text = "저장되어 있는 데이터는 그대로 보존됩니다.\n 언제든지 다시 연동할 수 있습니다.",
+                text = stringResource(Res.string.sync_confirm_disconnect_desc),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
                 textAlign = TextAlign.Center,
@@ -444,8 +489,8 @@ private fun DisconnectConfirmDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "연동 해제",
+                leftButtonText = stringResource(Res.string.sync_back),
+                rightButtonText = stringResource(Res.string.sync_disconnect),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )

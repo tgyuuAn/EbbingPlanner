@@ -51,4 +51,37 @@
     <string name="setting_alarm_message_hint">Enter a notification message</string>
     <string name="setting_preview">Preview</string>
     <string name="setting_restore_default">Restore default</string>
+
+    <!-- Sync screen -->
+    <string name="sync_screen_title">Sync</string>
+    <string name="sync_back">Back</string>
+    <string name="sync_sync">Sync</string>
+    <string name="sync_disconnect">Disconnect</string>
+    <string name="sync_no_record">No record</string>
+    <string name="sync_no_record_or_network">No record or no network</string>
+    <string name="sync_generating">Generating...</string>
+    <string name="sync_device_id_label">This device\'s unique ID :</string>
+    <string name="sync_device_last_update_label">"This device's last update : "</string>
+    <string name="sync_server_last_update_label">"This ID's last update on server : "</string>
+    <string name="sync_linked_id_label">Linked ID :</string>
+    <string name="sync_section_title">Data sync / Link with other devices</string>
+    <string name="sync_do_sync">Sync server with this device</string>
+    <string name="sync_manual_hint">It doesn\'t sync automatically. Tap to sync manually.</string>
+    <string name="sync_disconnect_action">Disconnect</string>
+    <string name="sync_connect_action">Link with another device</string>
+    <string name="sync_guide_1">"- Sync is a two-way method that reflects this device's changes to the server and fetches the latest data from the server.\n"</string>
+    <string name="sync_guide_highlight_1">Edited data</string>
+    <string name="sync_guide_2">" must go through this process to be shared with other devices.\n"</string>
+    <string name="sync_guide_3">"- During sync, if there are edits made on different devices, "</string>
+    <string name="sync_guide_highlight_2">the most recently edited data is applied</string>
+    <string name="sync_guide_4">".\n"</string>
+    <string name="sync_guide_5">- Before syncing, be sure to back up important data or check the latest state.</string>
+    <string name="sync_confirm_sync_title">Sync your data?</string>
+    <string name="sync_confirm_sync_desc_1">"If data was edited on different devices, "</string>
+    <string name="sync_confirm_sync_desc_highlight_1">the most recently updated version</string>
+    <string name="sync_confirm_sync_desc_2">" will be applied.\nFor important data, "</string>
+    <string name="sync_confirm_sync_desc_highlight_2">be sure to review it before syncing</string>
+    <string name="sync_confirm_sync_desc_3">.</string>
+    <string name="sync_confirm_disconnect_title">Disconnect this device?</string>
+    <string name="sync_confirm_disconnect_desc">Your saved data will be kept.\n You can reconnect anytime.</string>
 </resources>
