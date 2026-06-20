@@ -211,7 +211,7 @@ class LocalDateFormatTest {
     @Test
     fun `매일하기는 연속된 날짜를 생성한다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20)
+        val baseDate = LocalDate(2025, 7, 20)
         val intervals = listOf(0, 1, 2, 3, 4)
         val restDays = emptySet<DayOfWeek>()
 
@@ -221,11 +221,11 @@ class LocalDateFormatTest {
         // then
         assertEquals(
             listOf(
-                LocalDate.of(2025, 7, 20),
-                LocalDate.of(2025, 7, 21),
-                LocalDate.of(2025, 7, 22),
-                LocalDate.of(2025, 7, 23),
-                LocalDate.of(2025, 7, 24),
+                LocalDate(2025, 7, 20),
+                LocalDate(2025, 7, 21),
+                LocalDate(2025, 7, 22),
+                LocalDate(2025, 7, 23),
+                LocalDate(2025, 7, 24),
             ),
             result
         )
@@ -234,7 +234,7 @@ class LocalDateFormatTest {
     @Test
     fun `매일하기에서 쉬는날은 미루지 않고 제거한다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val baseDate = LocalDate(2025, 7, 20) // 일요일
         val intervals = listOf(0, 1, 2, 3, 4, 5, 6)
         val restDays = setOf(DayOfWeek.SUNDAY)
 
@@ -244,12 +244,12 @@ class LocalDateFormatTest {
         // then - 일요일인 7/20, 7/27은 제거됨
         assertEquals(
             listOf(
-                LocalDate.of(2025, 7, 21), // 월
-                LocalDate.of(2025, 7, 22), // 화
-                LocalDate.of(2025, 7, 23), // 수
-                LocalDate.of(2025, 7, 24), // 목
-                LocalDate.of(2025, 7, 25), // 금
-                LocalDate.of(2025, 7, 26), // 토
+                LocalDate(2025, 7, 21), // 월
+                LocalDate(2025, 7, 22), // 화
+                LocalDate(2025, 7, 23), // 수
+                LocalDate(2025, 7, 24), // 목
+                LocalDate(2025, 7, 25), // 금
+                LocalDate(2025, 7, 26), // 토
             ),
             result
         )
@@ -258,7 +258,7 @@ class LocalDateFormatTest {
     @Test
     fun `매일하기에서 토요일과 일요일을 쉬는날로 설정하면 주말이 모두 제거된다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 21) // 월요일
+        val baseDate = LocalDate(2025, 7, 21) // 월요일
         val intervals = (0..13).toList() // 2주
         val restDays = setOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
 
@@ -277,7 +277,7 @@ class LocalDateFormatTest {
     @Test
     fun `매일하기에서 쉬는날이 없으면 모든 날짜가 포함된다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20)
+        val baseDate = LocalDate(2025, 7, 20)
         val intervals = (0..29).toList() // 30일
         val restDays = emptySet<DayOfWeek>()
 
@@ -286,14 +286,14 @@ class LocalDateFormatTest {
 
         // then
         assertEquals(30, result.size)
-        assertEquals(LocalDate.of(2025, 7, 20), result.first())
-        assertEquals(LocalDate.of(2025, 8, 18), result.last())
+        assertEquals(LocalDate(2025, 7, 20), result.first())
+        assertEquals(LocalDate(2025, 8, 18), result.last())
     }
 
     @Test
     fun `매일하기에서 당일만 선택하면 하루만 생성된다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20)
+        val baseDate = LocalDate(2025, 7, 20)
         val intervals = listOf(0)
         val restDays = emptySet<DayOfWeek>()
 
@@ -301,13 +301,13 @@ class LocalDateFormatTest {
         val result = generateDailySchedules(baseDate, intervals, restDays)
 
         // then
-        assertEquals(listOf(LocalDate.of(2025, 7, 20)), result)
+        assertEquals(listOf(LocalDate(2025, 7, 20)), result)
     }
 
     @Test
     fun `매일하기에서 당일이 쉬는날이면 빈 리스트를 반환한다`() {
         // given
-        val baseDate = LocalDate.of(2025, 7, 20) // 일요일
+        val baseDate = LocalDate(2025, 7, 20) // 일요일
         val intervals = listOf(0)
         val restDays = setOf(DayOfWeek.SUNDAY)
 

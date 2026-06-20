@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
 import com.tgyuu.shared.domain.model.Experiment
+import com.tgyuu.shared.domain.model.RepeatCycle
+import com.tgyuu.shared.common.generateDailySchedules
 import com.tgyuu.shared.common.generateValidSchedules
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
@@ -33,11 +35,19 @@ data class AddTodoState(
     val isModified: Boolean = title.isNotEmpty() || priority.isNotEmpty() || restDays.isNotEmpty()
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
-            generateValidSchedules(
-                baseDate = selectedDate,
-                intervals = it.intervals.toList(),
-                restDays = restDays.toSet()
-            )
+            if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
+                generateDailySchedules(
+                    baseDate = selectedDate,
+                    intervals = it.intervals.toList(),
+                    restDays = restDays.toSet()
+                )
+            } else {
+                generateValidSchedules(
+                    baseDate = selectedDate,
+                    intervals = it.intervals.toList(),
+                    restDays = restDays.toSet()
+                )
+            }
         } ?: emptyList()
 }
 

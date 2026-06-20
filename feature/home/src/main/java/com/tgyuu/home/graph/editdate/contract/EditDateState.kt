@@ -2,7 +2,7 @@ package com.tgyuu.home.graph.editdate.contract
 
 import androidx.compose.runtime.Immutable
 import com.tgyuu.common.base.UiState
-import com.tgyuu.common.generateValidSchedules
+import com.tgyuu.common.generateDailySchedules
 import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
@@ -32,7 +32,7 @@ data class EditDateState(
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
-                generateValidSchedules(
+                generateDailySchedules(
                     baseDate = selectedDate,
                     intervals = it.intervals.toList(),
                     restDays = restDays.toSet()
