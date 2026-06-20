@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 共通 -->
+    <string name="common_cancel">キャンセル</string>
+
+    <!-- 時間 (午前/午後) -->
+    <string name="ds_am">午前</string>
+    <string name="ds_pm">午後</string>
+
+    <!-- 設定セクションヘッダー -->
     <string name="setting_notification">通知</string>
     <string name="setting_calendar">カレンダー</string>
     <string name="setting_tag_repeat_cycle">タグ・繰り返し周期</string>
@@ -7,4 +15,40 @@
     <string name="setting_theme">テーマ</string>
     <string name="setting_guidance">ご案内</string>
     <string name="setting_inquiry">お問い合わせ</string>
+
+    <!-- 設定画面 -->
+    <string name="setting_title">設定</string>
+    <string name="setting_tag_manage">タグ管理</string>
+    <string name="setting_repeat_cycle_manage">繰り返し周期の管理</string>
+    <string name="setting_sync_with_other_device">他の端末と同期する</string>
+    <string name="setting_auto_backup">自動バックアップ</string>
+    <string name="setting_last_sync_time">最終同期: %1$s</string>
+    <string name="setting_clear_data">データを初期化する</string>
+    <string name="setting_theme_color_change">アプリのテーマを変更</string>
+    <string name="setting_widget_alpha_change">ウィジェットの透明度を変更</string>
+    <string name="setting_announcement">お知らせ</string>
+    <string name="setting_privacy_policy">プライバシーポリシー</string>
+    <string name="setting_term">利用規約</string>
+    <string name="setting_version">現在のバージョン %1$s</string>
+    <string name="setting_calendar_start_day">週の開始曜日</string>
+    <string name="setting_monday">月曜日</string>
+    <string name="setting_sunday">日曜日</string>
+    <string name="setting_notification_setting">通知設定</string>
+    <string name="setting_alarm_time">通知時間</string>
+    <string name="setting_alarm_message">通知メッセージ</string>
+    <string name="setting_contact_us">お問い合わせする</string>
+    <string name="setting_app_review">レビューを書く</string>
+    <string name="setting_clear_data_dialog_title">データの初期化</string>
+    <string name="setting_clear_data_dialog_message">すべてのデータが削除されます。\n続行しますか？</string>
+    <string name="setting_clear">初期化</string>
+    <string name="setting_apply">適用</string>
+    <string name="setting_apply_action">適用する</string>
+    <string name="setting_alarm_time_title">アラーム時間</string>
+    <string name="setting_alarm_time_subtitle">残りの予定の通知をいつ送りますか？</string>
+    <string name="setting_alarm_message_setting">通知メッセージ設定</string>
+    <string name="alarm_placeholder_token">{タスク}</string>
+    <string name="setting_alarm_message_placeholder_guide">はタスクのタイトルに自動変換されます（最大1回）</string>
+    <string name="setting_alarm_message_hint">通知メッセージを入力してください</string>
+    <string name="setting_preview">プレビュー</string>
+    <string name="setting_restore_default">デフォルトに戻す</string>
 </resources>

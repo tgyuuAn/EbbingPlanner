@@ -58,6 +58,43 @@ import ebbingplanner.shared.generated.resources.setting_inquiry
 import ebbingplanner.shared.generated.resources.setting_notification
 import ebbingplanner.shared.generated.resources.setting_tag_repeat_cycle
 import ebbingplanner.shared.generated.resources.setting_theme
+import ebbingplanner.shared.generated.resources.common_cancel
+import ebbingplanner.shared.generated.resources.ds_am
+import ebbingplanner.shared.generated.resources.ds_pm
+import ebbingplanner.shared.generated.resources.setting_title
+import ebbingplanner.shared.generated.resources.setting_tag_manage
+import ebbingplanner.shared.generated.resources.setting_repeat_cycle_manage
+import ebbingplanner.shared.generated.resources.setting_sync_with_other_device
+import ebbingplanner.shared.generated.resources.setting_auto_backup
+import ebbingplanner.shared.generated.resources.setting_last_sync_time
+import ebbingplanner.shared.generated.resources.setting_clear_data
+import ebbingplanner.shared.generated.resources.setting_theme_color_change
+import ebbingplanner.shared.generated.resources.setting_widget_alpha_change
+import ebbingplanner.shared.generated.resources.setting_announcement
+import ebbingplanner.shared.generated.resources.setting_privacy_policy
+import ebbingplanner.shared.generated.resources.setting_term
+import ebbingplanner.shared.generated.resources.setting_version
+import ebbingplanner.shared.generated.resources.setting_calendar_start_day
+import ebbingplanner.shared.generated.resources.setting_monday
+import ebbingplanner.shared.generated.resources.setting_sunday
+import ebbingplanner.shared.generated.resources.setting_notification_setting
+import ebbingplanner.shared.generated.resources.setting_alarm_time
+import ebbingplanner.shared.generated.resources.setting_alarm_message
+import ebbingplanner.shared.generated.resources.setting_contact_us
+import ebbingplanner.shared.generated.resources.setting_app_review
+import ebbingplanner.shared.generated.resources.setting_clear_data_dialog_title
+import ebbingplanner.shared.generated.resources.setting_clear_data_dialog_message
+import ebbingplanner.shared.generated.resources.setting_clear
+import ebbingplanner.shared.generated.resources.setting_apply
+import ebbingplanner.shared.generated.resources.setting_apply_action
+import ebbingplanner.shared.generated.resources.setting_alarm_time_title
+import ebbingplanner.shared.generated.resources.setting_alarm_time_subtitle
+import ebbingplanner.shared.generated.resources.setting_alarm_message_setting
+import ebbingplanner.shared.generated.resources.alarm_placeholder_token
+import ebbingplanner.shared.generated.resources.setting_alarm_message_placeholder_guide
+import ebbingplanner.shared.generated.resources.setting_alarm_message_hint
+import ebbingplanner.shared.generated.resources.setting_preview
+import ebbingplanner.shared.generated.resources.setting_restore_default
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -143,7 +180,7 @@ fun SettingScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingMainTopBar(
-            title = "설정",
+            title = stringResource(Res.string.setting_title),
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -195,12 +232,12 @@ private fun TagRepeatCycleBody(
     SectionHeader(text = stringResource(Res.string.setting_tag_repeat_cycle))
 
     SettingRow(
-        title = "태그 관리",
+        title = stringResource(Res.string.setting_tag_manage),
         onClick = onTagManageClick,
     )
 
     SettingRow(
-        title = "반복 주기 관리",
+        title = stringResource(Res.string.setting_repeat_cycle_manage),
         onClick = onRepeatCycleManageClick,
     )
 
@@ -219,7 +256,7 @@ private fun DataBody(
     SectionHeader(text = stringResource(Res.string.setting_data))
 
     SettingRow(
-        title = "다른 기기와 동기화 하기",
+        title = stringResource(Res.string.setting_sync_with_other_device),
         onClick = onSyncClick,
     )
 
@@ -234,7 +271,7 @@ private fun DataBody(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "자동 백업",
+                    text = stringResource(Res.string.setting_auto_backup),
                     style = EbbingTheme.typography.bodyMSB,
                     color = EbbingTheme.colors.black,
                     modifier = Modifier.weight(1f),
@@ -248,7 +285,7 @@ private fun DataBody(
 
             if (lastSyncTime != null) {
                 Text(
-                    text = "마지막 동기화 시간 : $lastSyncTime",
+                    text = stringResource(Res.string.setting_last_sync_time, lastSyncTime),
                     style = EbbingTheme.typography.bodySM,
                     color = EbbingTheme.colors.dark3,
                     modifier = Modifier.padding(top = 4.dp),
@@ -258,7 +295,7 @@ private fun DataBody(
     }
 
     SettingRow(
-        title = "데이터 초기화 하기",
+        title = stringResource(Res.string.setting_clear_data),
         onClick = onClearClick,
     )
 
@@ -273,12 +310,12 @@ private fun ThemeBody(
     SectionHeader(text = stringResource(Res.string.setting_theme))
 
     SettingRow(
-        title = "테마 색상 변경",
+        title = stringResource(Res.string.setting_theme_color_change),
         onClick = onThemeManageClick,
     )
 
     SettingRow(
-        title = "위젯 알파 변경",
+        title = stringResource(Res.string.setting_widget_alpha_change),
         onClick = onWidgetAlphaClick,
     )
 
@@ -294,17 +331,17 @@ private fun AnnouncementBody(
     SectionHeader(text = stringResource(Res.string.setting_guidance))
 
     SettingRow(
-        title = "공지사항",
+        title = stringResource(Res.string.setting_announcement),
         onClick = onNoticeClick,
     )
 
     SettingRow(
-        title = "개인정보처리방침",
+        title = stringResource(Res.string.setting_privacy_policy),
         onClick = onPrivacyPolicyClick,
     )
 
     SettingRow(
-        title = "이용약관",
+        title = stringResource(Res.string.setting_term),
         onClick = onTermsClick,
     )
 
@@ -323,7 +360,7 @@ private fun VersionRow(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "현재 버전 정보 v$version",
+            text = stringResource(Res.string.setting_version, "v$version"),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
         )
@@ -385,16 +422,18 @@ private fun CalendarBody(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "달력 시작 요일",
+            text = stringResource(Res.string.setting_calendar_start_day),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
 
+        val startDayLabel = if (mondayStart) stringResource(Res.string.setting_monday)
+        else stringResource(Res.string.setting_sunday)
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                    append(if (mondayStart) "월요일" else "일요일")
+                    append(startDayLabel)
                 }
             },
             textAlign = TextAlign.End,
@@ -448,7 +487,7 @@ private fun NotificationBody(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "알림 설정",
+            text = stringResource(Res.string.setting_notification_setting),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
@@ -468,7 +507,7 @@ private fun NotificationBody(
                 .padding(vertical = SettingItemVerticalPadding),
         ) {
             Text(
-                text = "알림 시간",
+                text = stringResource(Res.string.setting_alarm_time),
                 style = EbbingTheme.typography.bodyMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.weight(1f),
@@ -495,7 +534,7 @@ private fun NotificationBody(
                 .clickable { onAlarmMessageClick() },
         ) {
             Text(
-                text = "알림 메시지",
+                text = stringResource(Res.string.setting_alarm_message),
                 style = EbbingTheme.typography.bodyMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.weight(1f),
@@ -519,7 +558,7 @@ private fun InquiryBody(
     SectionHeader(text = stringResource(Res.string.setting_inquiry))
 
     SettingRow(
-        title = "문의하기",
+        title = stringResource(Res.string.setting_contact_us),
         onClick = onInquiryClick,
     )
 
@@ -539,7 +578,7 @@ private fun InAppReviewRow(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "앱 리뷰 남기기",
+            text = stringResource(Res.string.setting_app_review),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
@@ -564,14 +603,14 @@ private fun ClearDataDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "데이터 초기화",
+                text = stringResource(Res.string.setting_clear_data_dialog_title),
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
-                text = "모든 데이터가 삭제됩니다.\n계속하시겠습니까?",
+                text = stringResource(Res.string.setting_clear_data_dialog_message),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -579,8 +618,8 @@ private fun ClearDataDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "취소",
-                rightButtonText = "초기화",
+                leftButtonText = stringResource(Res.string.common_cancel),
+                rightButtonText = stringResource(Res.string.setting_clear),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )
@@ -596,7 +635,9 @@ private fun AlarmTimeBottomSheetContent(
     originMinute: Int,
     onUpdateClick: (Int, Int) -> Unit,
 ) {
-    val pickerAmPm = if (originHour >= 12) "오후" else "오전"
+    val amText = stringResource(Res.string.ds_am)
+    val pmText = stringResource(Res.string.ds_pm)
+    val pickerAmPm = if (originHour >= 12) pmText else amText
     val pickerHour = when {
         originHour == 0 -> "12"
         originHour > 12 -> (originHour - 12).toString()
@@ -614,8 +655,8 @@ private fun AlarmTimeBottomSheetContent(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "알람 시간",
-            subTitle = "언제 남은 일정 알림을 보낼까요?",
+            title = stringResource(Res.string.setting_alarm_time_title),
+            subTitle = stringResource(Res.string.setting_alarm_time_subtitle),
         )
 
         EbbingPicker(
@@ -631,12 +672,12 @@ private fun AlarmTimeBottomSheetContent(
         )
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(Res.string.setting_apply_action),
             onClick = {
                 val adjustedHour = when {
-                    newAmPm == "오후" && newHour == 12 -> 12
-                    newAmPm == "오후" -> newHour + 12
-                    newAmPm == "오전" && newHour == 12 -> 0
+                    newAmPm == pmText && newHour == 12 -> 12
+                    newAmPm == pmText -> newHour + 12
+                    newAmPm == amText && newHour == 12 -> 0
                     else -> newHour
                 }
                 onUpdateClick(adjustedHour, newMinute)
@@ -661,16 +702,18 @@ private fun AlarmMessageBottomSheetContent(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "알림 메시지 설정",
+            title = stringResource(Res.string.setting_alarm_message_setting),
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
+        val placeholderToken = stringResource(Res.string.alarm_placeholder_token)
+        val placeholderGuide = stringResource(Res.string.setting_alarm_message_placeholder_guide)
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault, fontWeight = FontWeight.Bold)) {
-                    append("{할일}")
+                    append(placeholderToken)
                 }
-                append("은 할 일 제목으로 자동 변환됩니다 (최대 1번)")
+                append(placeholderGuide)
             },
             style = EbbingTheme.typography.bodySM,
             color = EbbingTheme.colors.dark3,
@@ -680,7 +723,7 @@ private fun AlarmMessageBottomSheetContent(
         EbbingTextInputDefault(
             value = sheetState.message,
             onValueChange = onMessageChange,
-            hint = "알림 메시지를 입력하세요",
+            hint = stringResource(Res.string.setting_alarm_message_hint),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -717,7 +760,7 @@ private fun AlarmMessageBottomSheetContent(
                     .padding(12.dp),
             ) {
                 Text(
-                    text = "미리보기",
+                    text = stringResource(Res.string.setting_preview),
                     style = EbbingTheme.typography.captionR12,
                     color = EbbingTheme.colors.dark3,
                     modifier = Modifier.padding(bottom = 4.dp),
@@ -734,7 +777,7 @@ private fun AlarmMessageBottomSheetContent(
 
         if (sheetState.shouldShowResetButton) {
             Text(
-                text = "기본값으로 복원",
+                text = stringResource(Res.string.setting_restore_default),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.primaryDefault,
                 modifier = Modifier
@@ -746,7 +789,7 @@ private fun AlarmMessageBottomSheetContent(
         }
 
         EbbingSolidButton(
-            label = "적용",
+            label = stringResource(Res.string.setting_apply),
             onClick = onUpdateClick,
             enabled = sheetState.canApply,
             modifier = Modifier
@@ -768,7 +811,7 @@ private fun CalendarStartDayBottomSheetContent(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "달력 시작 요일")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.setting_calendar_start_day))
 
         Column(
             modifier = Modifier
@@ -776,19 +819,19 @@ private fun CalendarStartDayBottomSheetContent(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             EbbingBottomSheetListItemDefault(
-                label = "월요일",
+                label = stringResource(Res.string.setting_monday),
                 checked = newMondayStart,
                 onChecked = { newMondayStart = true },
             )
 
             EbbingBottomSheetListItemDefault(
-                label = "일요일",
+                label = stringResource(Res.string.setting_sunday),
                 checked = !newMondayStart,
                 onChecked = { newMondayStart = false },
             )
 
             EbbingSolidButton(
-                label = "적용하기",
+                label = stringResource(Res.string.setting_apply_action),
                 onClick = { onUpdateClick(newMondayStart) },
                 modifier = Modifier
                     .fillMaxWidth()

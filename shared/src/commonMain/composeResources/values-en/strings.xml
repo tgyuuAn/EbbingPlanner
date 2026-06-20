@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Common -->
+    <string name="common_cancel">Cancel</string>
+
+    <!-- Time (AM/PM) -->
+    <string name="ds_am">AM</string>
+    <string name="ds_pm">PM</string>
+
+    <!-- Settings section headers -->
     <string name="setting_notification">Notifications</string>
     <string name="setting_calendar">Calendar</string>
     <string name="setting_tag_repeat_cycle">Tags / Repeat cycle</string>
@@ -7,4 +15,40 @@
     <string name="setting_theme">Theme</string>
     <string name="setting_guidance">Guide</string>
     <string name="setting_inquiry">Inquiry</string>
+
+    <!-- Settings screen -->
+    <string name="setting_title">Settings</string>
+    <string name="setting_tag_manage">Manage tags</string>
+    <string name="setting_repeat_cycle_manage">Manage repeat cycle</string>
+    <string name="setting_sync_with_other_device">Sync with other devices</string>
+    <string name="setting_auto_backup">Auto backup</string>
+    <string name="setting_last_sync_time">Last sync: %1$s</string>
+    <string name="setting_clear_data">Reset data</string>
+    <string name="setting_theme_color_change">Change app theme</string>
+    <string name="setting_widget_alpha_change">Change widget opacity</string>
+    <string name="setting_announcement">Announcements</string>
+    <string name="setting_privacy_policy">Privacy Policy</string>
+    <string name="setting_term">Terms of Service</string>
+    <string name="setting_version">Current version %1$s</string>
+    <string name="setting_calendar_start_day">First day of week</string>
+    <string name="setting_monday">Monday</string>
+    <string name="setting_sunday">Sunday</string>
+    <string name="setting_notification_setting">Notification settings</string>
+    <string name="setting_alarm_time">Notification time</string>
+    <string name="setting_alarm_message">Notification message</string>
+    <string name="setting_contact_us">Contact us</string>
+    <string name="setting_app_review">Write a review</string>
+    <string name="setting_clear_data_dialog_title">Reset data</string>
+    <string name="setting_clear_data_dialog_message">All data will be deleted.\nDo you want to continue?</string>
+    <string name="setting_clear">Reset</string>
+    <string name="setting_apply">Apply</string>
+    <string name="setting_apply_action">Apply</string>
+    <string name="setting_alarm_time_title">Alarm time</string>
+    <string name="setting_alarm_time_subtitle">When should we send reminders for upcoming schedules?</string>
+    <string name="setting_alarm_message_setting">Notification message settings</string>
+    <string name="alarm_placeholder_token">{task}</string>
+    <string name="setting_alarm_message_placeholder_guide"> is automatically replaced with the to-do title (up to once)</string>
+    <string name="setting_alarm_message_hint">Enter a notification message</string>
+    <string name="setting_preview">Preview</string>
+    <string name="setting_restore_default">Restore default</string>
 </resources>

@@ -20,7 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.ds_am
+import ebbingplanner.shared.generated.resources.ds_pm
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EbbingPicker(
@@ -45,7 +49,9 @@ fun EbbingPicker(
         ) {
             val scope = rememberCoroutineScope()
 
-            val amPmItems = remember { listOf("오후", "오전") }
+            val pmText = stringResource(Res.string.ds_pm)
+            val amText = stringResource(Res.string.ds_am)
+            val amPmItems = remember(pmText, amText) { listOf(pmText, amText) }
             val hourItems = remember { (1..12).map { it.toString() } }
             val minuteItems = remember { (0..59).map { it.toString().padStart(2, '0') } }
 
