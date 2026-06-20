@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="setting_notification">通知</string>
+    <string name="setting_calendar">カレンダー</string>
+    <string name="setting_tag_repeat_cycle">タグ・繰り返し周期</string>
+    <string name="setting_data">データ</string>
+    <string name="setting_theme">テーマ</string>
+    <string name="setting_guidance">ご案内</string>
+    <string name="setting_inquiry">お問い合わせ</string>
+</resources>

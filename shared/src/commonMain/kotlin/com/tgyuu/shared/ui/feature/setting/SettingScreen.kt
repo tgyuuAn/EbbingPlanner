@@ -50,7 +50,16 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomShee
 import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.shared.designsystem.component.picker.EbbingPicker
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.setting_calendar
+import ebbingplanner.shared.generated.resources.setting_data
+import ebbingplanner.shared.generated.resources.setting_guidance
+import ebbingplanner.shared.generated.resources.setting_inquiry
+import ebbingplanner.shared.generated.resources.setting_notification
+import ebbingplanner.shared.generated.resources.setting_tag_repeat_cycle
+import ebbingplanner.shared.generated.resources.setting_theme
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -183,7 +192,7 @@ private fun TagRepeatCycleBody(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
 ) {
-    SectionHeader(text = "태그 / 반복 주기")
+    SectionHeader(text = stringResource(Res.string.setting_tag_repeat_cycle))
 
     SettingRow(
         title = "태그 관리",
@@ -207,7 +216,7 @@ private fun DataBody(
     onClearClick: () -> Unit,
     onAutoBackupToggle: () -> Unit,
 ) {
-    SectionHeader(text = "데이터")
+    SectionHeader(text = stringResource(Res.string.setting_data))
 
     SettingRow(
         title = "다른 기기와 동기화 하기",
@@ -261,7 +270,7 @@ private fun ThemeBody(
     onThemeManageClick: () -> Unit,
     onWidgetAlphaClick: () -> Unit,
 ) {
-    SectionHeader(text = "테마")
+    SectionHeader(text = stringResource(Res.string.setting_theme))
 
     SettingRow(
         title = "테마 색상 변경",
@@ -282,7 +291,7 @@ private fun AnnouncementBody(
     onTermsClick: () -> Unit,
     onNoticeClick: () -> Unit,
 ) {
-    SectionHeader(text = "안내")
+    SectionHeader(text = stringResource(Res.string.setting_guidance))
 
     SettingRow(
         title = "공지사항",
@@ -367,7 +376,7 @@ private fun CalendarBody(
     mondayStart: Boolean,
     onClick: () -> Unit,
 ) {
-    SectionHeader(text = "달력")
+    SectionHeader(text = stringResource(Res.string.setting_calendar))
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -430,7 +439,7 @@ private fun NotificationBody(
     onAlarmTimeClick: () -> Unit,
     onAlarmMessageClick: () -> Unit,
 ) {
-    SectionHeader(text = "알림")
+    SectionHeader(text = stringResource(Res.string.setting_notification))
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -507,7 +516,7 @@ private fun NotificationBody(
 private fun InquiryBody(
     onInquiryClick: () -> Unit,
 ) {
-    SectionHeader(text = "문의")
+    SectionHeader(text = stringResource(Res.string.setting_inquiry))
 
     SettingRow(
         title = "문의하기",
