@@ -279,12 +279,28 @@ private fun TodoListCard(
                         ) {
                             FlowRow(modifier = Modifier.weight(1f)) {
                                 todosWithSameInfo.forEach {
-                                    EbbingCheck(
-                                        checked = it.isDone,
-                                        colorValue = it.color,
-                                        onCheckedChange = {},
-                                        modifier = Modifier.size(16.dp),
-                                    )
+                                    val isCurrent = it.id == todo.id
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        EbbingCheck(
+                                            checked = it.isDone,
+                                            colorValue = it.color,
+                                            onCheckedChange = {},
+                                            modifier = Modifier.size(16.dp),
+                                        )
+
+                                        Spacer(modifier = Modifier.height(2.dp))
+
+                                        Box(
+                                            modifier = Modifier
+                                                .height(2.dp)
+                                                .width(10.dp)
+                                                .clip(RoundedCornerShape(1.dp))
+                                                .background(
+                                                    if (isCurrent) Color(it.color)
+                                                    else Color.Transparent
+                                                ),
+                                        )
+                                    }
                                 }
                             }
 
