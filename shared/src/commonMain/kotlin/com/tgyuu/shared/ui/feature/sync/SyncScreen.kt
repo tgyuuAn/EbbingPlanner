@@ -289,6 +289,12 @@ private fun SyncUpBody(
             )
         }
 
+        Text(
+            text = "자동으로 동기화되지 않아요. 눌러서 직접 동기화해 주세요.",
+            style = EbbingTheme.typography.captionR12,
+            color = EbbingTheme.colors.dark2,
+        )
+
         if (isConnected) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -423,7 +429,7 @@ private fun DisconnectConfirmDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "연동된 ID를 해제 할까요?",
+                text = "기기 연동을 해제 할까요?",
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
