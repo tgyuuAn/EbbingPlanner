@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.tgyuu.shared.designsystem.component.EbbingPartialUnderlineText
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
@@ -280,6 +281,7 @@ private fun AddTodoFormContent(
         rest = " 부터\n시작하는 일정을 만들어요",
         style = EbbingTheme.typography.headingLSB,
         color = EbbingTheme.colors.black,
+        highlightColor = EbbingTheme.colors.primaryDefault,
         modifier = Modifier.clickable(onClick = onDateClick),
     )
 
@@ -320,24 +322,25 @@ private fun ConfirmExitDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "작성 중인 내용이 있습니다",
+                text = "작성 중인 일정이 사라져요!",
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
-                text = "정말 나가시겠습니까?",
+                text = "지금 뒤로 가면 일정이 저장되지 않습니다.\n계속 이어서 작성해 보세요.",
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
             )
 
             EbbingDialogBottom(
-                leftButtonText = "계속 작성",
-                rightButtonText = "나가기",
-                onLeftButtonClick = onContinueClick,
-                onRightButtonClick = onExitClick,
+                leftButtonText = "작성 중단하기",
+                rightButtonText = "이어서 작성하기",
+                onLeftButtonClick = onExitClick,
+                onRightButtonClick = onContinueClick,
             )
         }
     }

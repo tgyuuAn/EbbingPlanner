@@ -89,7 +89,7 @@ fun SyncScreen(
                         onDisconnectClick = { showDisconnectDialog = true },
                     )
                 }
-                Column(modifier = Modifier.weight(1f).padding(start = 24.dp)) {
+                Column(modifier = Modifier.weight(1f).padding(start = 20.dp)) {
                     DescriptionBody()
                 }
             }
@@ -378,14 +378,24 @@ private fun SyncUpConfirmDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "동기화",
+                text = "데이터를 동기화 할까요?",
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
-                text = "서버와 동기화를 진행합니다.\n충돌 시 최근 데이터가 우선됩니다.",
+                text = buildAnnotatedString {
+                    append("서로 다른 기기에서 수정된 데이터가 있을 경우, ")
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
+                        append("더 늦게 업데이트된 쪽으로 반영")
+                    }
+                    append("됩니다.\n중요한 데이터는 ")
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.error)) {
+                        append("동기화 전에 반드시 확인")
+                    }
+                    append("해주세요.")
+                },
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
                 textAlign = TextAlign.Center,
@@ -393,7 +403,7 @@ private fun SyncUpConfirmDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "취소",
+                leftButtonText = "뒤로",
                 rightButtonText = "동기화",
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
@@ -413,14 +423,14 @@ private fun DisconnectConfirmDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "연결 해제",
+                text = "연동된 ID를 해제 할까요?",
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
-                text = "연결을 해제하시겠습니까?\n기존 데이터는 유지됩니다.",
+                text = "저장되어 있는 데이터는 그대로 보존됩니다.\n 언제든지 다시 연동할 수 있습니다.",
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
                 textAlign = TextAlign.Center,
@@ -428,8 +438,8 @@ private fun DisconnectConfirmDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "취소",
-                rightButtonText = "해제",
+                leftButtonText = "뒤로",
+                rightButtonText = "연동 해제",
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )

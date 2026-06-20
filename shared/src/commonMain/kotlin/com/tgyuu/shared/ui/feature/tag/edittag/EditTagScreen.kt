@@ -76,18 +76,18 @@ fun EditTagScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        HorizontalDivider(
-            color = EbbingTheme.colors.light2,
-            thickness = 1.dp,
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(20.dp)
                 .imePadding(),
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "${state.originTag?.name ?: ""} 태그를 수정해요",
+                style = EbbingTheme.typography.headingLSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.padding(top = 12.dp, bottom = 32.dp),
+            )
 
             NameContent(
                 name = state.name,
@@ -139,7 +139,7 @@ private fun NameContent(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "이름",
+            text = "태그 이름",
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -152,7 +152,7 @@ private fun NameContent(
             EbbingTextInputDefault(
                 value = name,
                 onValueChange = onNameChange,
-                hint = "태그 이름을 입력하세요",
+                hint = "태그의 이름은 무엇인가요?",
                 modifier = Modifier.weight(1f),
             )
 

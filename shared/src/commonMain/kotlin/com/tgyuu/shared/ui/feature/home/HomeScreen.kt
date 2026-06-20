@@ -173,6 +173,7 @@ fun HomeScreen(
             onSortTypeClick = { viewModel.onIntent(HomeIntent.OnSortTypeClick) },
             onEditScheduleClick = { viewModel.onIntent(HomeIntent.OnEditScheduleClick(it)) },
             onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
+            onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
             modifier = modifier,
         )
     } else {
@@ -185,6 +186,7 @@ fun HomeScreen(
             onEditScheduleClick = { viewModel.onIntent(HomeIntent.OnEditScheduleClick(it)) },
             onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
             onCalendarViewChanged = { viewModel.onIntent(HomeIntent.OnCalendarViewChanged(it)) },
+            onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
             modifier = modifier,
         )
     }
@@ -359,6 +361,7 @@ private fun PhoneHomeScreen(
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onCalendarViewChanged: (CalendarDefaultView) -> Unit,
+    onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val localDensity = LocalDensity.current
@@ -419,6 +422,7 @@ private fun PhoneHomeScreen(
                         }
                     }
                 },
+                onSyncClick = onSyncClick,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -552,6 +556,7 @@ private fun TabletHomeScreen(
     onSortTypeClick: () -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
+    onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -578,6 +583,7 @@ private fun TabletHomeScreen(
                     }
                 }
             },
+            onSyncClick = onSyncClick,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(0.8f)

@@ -109,6 +109,13 @@ class ConfigRepositoryImpl(
         settings.putBoolean(KEY_MONDAY_START, enabled)
     }
 
+    override fun getAutoBackupEnabled(): Flow<Boolean> =
+        settings.observeBoolean(KEY_AUTO_BACKUP_ENABLED, true)
+
+    override suspend fun setAutoBackupEnabled(enabled: Boolean) {
+        settings.putBoolean(KEY_AUTO_BACKUP_ENABLED, enabled)
+    }
+
     override suspend fun consumeInAppReview(): Boolean {
         val hasShown = settings.getBoolean(KEY_HAS_SHOWN_IN_APP_REVIEW, false)
         if (!hasShown) {
@@ -148,6 +155,7 @@ class ConfigRepositoryImpl(
         private const val KEY_WIDGET_TEXT_ALPHA = "WIDGET_TEXT_ALPHA"
         private const val KEY_HAS_EVER_ADDED_TODO = "HAS_EVER_ADDED_TODO"
         private const val KEY_MONDAY_START = "MONDAY_START"
+        private const val KEY_AUTO_BACKUP_ENABLED = "AUTO_BACKUP_ENABLED"
         private const val KEY_HAS_SHOWN_IN_APP_REVIEW = "HAS_SHOWN_IN_APP_REVIEW"
     }
 }

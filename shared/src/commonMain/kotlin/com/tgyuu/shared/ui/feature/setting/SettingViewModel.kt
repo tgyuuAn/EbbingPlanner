@@ -2,7 +2,13 @@ package com.tgyuu.shared.ui.feature.setting
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.common.appVersionName
+import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.domain.repository.ConfigRepository
+import com.tgyuu.shared.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
+import com.tgyuu.shared.domain.repository.FeatureFlag
+import com.tgyuu.shared.domain.repository.FeatureFlagRepository
+import com.tgyuu.shared.domain.repository.SyncRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -10,6 +16,8 @@ import kotlinx.coroutines.launch
 class SettingViewModel(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository? = null,
+    private val featureFlagRepository: FeatureFlagRepository? = null,
+    private val syncRepository: SyncRepository? = null,
     private val onNavigateBack: () -> Unit,
     private val onNavigateToTag: () -> Unit,
     private val onNavigateToRepeatCycle: () -> Unit,
@@ -30,19 +38,52 @@ class SettingViewModel(
     }
 
     init {
+        val version = appVersionName()
+        if (version.isNotEmpty()) {
+            setState { copy(appVersion = version) }
+        }
         loadNotificationState()
         loadMondayStart()
+        loadAutoBackup()
+    }
+
+    private fun loadAutoBackup() {
+        viewModelScope.launch {
+            featureFlagRepository?.fetchAndAwait()
+            val featureEnabled = featureFlagRepository?.getBoolean(FeatureFlag.USE_AUTO_BACKUP) ?: false
+            setState { copy(autoBackupFeatureEnabled = featureEnabled) }
+
+            if (featureEnabled) {
+                val lastSync = runCatching { syncRepository?.getLocalSyncedAt() }.getOrNull()
+                setState { copy(lastSyncTime = lastSync?.toFormattedString()) }
+                configRepository?.getAutoBackupEnabled()
+                    ?.collect { setState { copy(autoBackupEnabled = it) } }
+            }
+        }
     }
 
     private fun loadNotificationState() {
         viewModelScope.launch {
             val enabled = configRepository?.getNotificationEnabled()?.first() ?: true
             val (hour, minute) = configRepository?.getAlarmTime() ?: Pair(18, 30)
-            val period = if (hour < 12) "오전" else "오후"
-            val displayHour = if (hour % 12 == 0) 12 else hour % 12
-            val timeStr = "$period ${displayHour}시 ${minute.toString().padStart(2, '0')}분"
-            setState { copy(isNotificationEnabled = enabled, alarmTime = timeStr) }
+            val message = configRepository?.getAlarmMessage()?.ifEmpty { DEFAULT_ALARM_MESSAGE }
+                ?: DEFAULT_ALARM_MESSAGE
+            setState {
+                copy(
+                    isNotificationEnabled = enabled,
+                    alarmHour = hour,
+                    alarmMinute = minute,
+                    alarmTime = formatAlarmTime(hour, minute),
+                    alarmMessage = message,
+                )
+            }
         }
+    }
+
+    private fun formatAlarmTime(hour: Int, minute: Int): String {
+        val period = if (hour < 12) "오전" else "오후"
+        val displayHour = if (hour % 12 == 0) 12 else hour % 12
+        return "$period ${displayHour}시 ${minute.toString().padStart(2, '0')}분"
     }
 
     private fun loadMondayStart() {
@@ -63,11 +104,17 @@ class SettingViewModel(
             SettingIntent.OnThemeClick -> onNavigateToTheme()
             SettingIntent.OnNotificationClick -> onNavigateToNotification()
             is SettingIntent.OnNotificationToggle -> toggleNotification(intent.enabled)
+            is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
+            SettingIntent.OnAlarmMessageOpen -> openAlarmMessageSheet()
+            is SettingIntent.OnAlarmMessageChange -> changeAlarmMessage(intent.message)
+            SettingIntent.OnAlarmMessageReset -> resetAlarmMessage()
+            SettingIntent.OnApplyAlarmMessage -> applyAlarmMessage()
             SettingIntent.OnInAppReviewClick -> onRequestInAppReview()
             SettingIntent.OnPrivacyPolicyClick -> onOpenUrl(PRIVACY_POLICY_URL)
             SettingIntent.OnTermsOfUseClick -> onOpenUrl(TERMS_OF_USE_URL)
             SettingIntent.OnWidgetClick -> onNavigateToWidget()
             is SettingIntent.OnUpdateStartDay -> updateStartDay(intent.mondayStart)
+            SettingIntent.OnAutoBackupToggleClick -> onAutoBackupToggleClick()
             SettingIntent.OnNoticeClick -> onOpenUrl(NOTICE_URL)
             SettingIntent.OnInquiryClick -> onOpenUrl(INQUIRY_URL)
         }
@@ -78,9 +125,54 @@ class SettingViewModel(
         setState { copy(mondayStart = mondayStart) }
     }
 
+    private suspend fun onAutoBackupToggleClick() {
+        configRepository?.setAutoBackupEnabled(!currentState.autoBackupEnabled)
+    }
+
     private suspend fun toggleNotification(enabled: Boolean) {
         configRepository?.setNotificationEnabled(enabled)
         setState { copy(isNotificationEnabled = enabled) }
+    }
+
+    private suspend fun updateAlarmTime(hour: Int, minute: Int) {
+        configRepository?.updateAlarmTime(hour.toString(), minute.toString())
+        setState {
+            copy(
+                alarmHour = hour,
+                alarmMinute = minute,
+                alarmTime = formatAlarmTime(hour, minute),
+            )
+        }
+        onShowSnackbar("알림 시간이 변경되었습니다")
+    }
+
+    private fun openAlarmMessageSheet() {
+        val current = currentState.alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE }
+        setState {
+            copy(
+                alarmMessageBottomSheet = AlarmMessageBottomSheetState(
+                    message = current,
+                    originMessage = current,
+                ),
+            )
+        }
+    }
+
+    private fun changeAlarmMessage(message: String) {
+        setState { copy(alarmMessageBottomSheet = alarmMessageBottomSheet.copy(message = message)) }
+    }
+
+    private fun resetAlarmMessage() {
+        setState {
+            copy(alarmMessageBottomSheet = alarmMessageBottomSheet.copy(message = DEFAULT_ALARM_MESSAGE))
+        }
+    }
+
+    private suspend fun applyAlarmMessage() {
+        val message = currentState.alarmMessageBottomSheet.message
+        configRepository?.updateAlarmMessage(message)
+        setState { copy(alarmMessage = message) }
+        onShowSnackbar("알림 메시지를 변경했어요")
     }
 
     private fun clearData() {

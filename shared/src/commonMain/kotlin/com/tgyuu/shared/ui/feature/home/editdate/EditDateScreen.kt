@@ -92,6 +92,7 @@ fun EditDateScreen(
                         rest = " 부터\n시작하는 일정으로 바꿔요",
                         style = EbbingTheme.typography.headingLSB,
                         color = EbbingTheme.colors.black,
+                        highlightColor = EbbingTheme.colors.primaryDefault,
                         modifier = Modifier.clickable {
                             viewModel.onIntent(EditDateIntent.OnSelectedDateDropDownClick)
                         },
@@ -140,6 +141,7 @@ fun EditDateScreen(
                     rest = " 부터\n시작하는 일정으로 바꿔요",
                     style = EbbingTheme.typography.headingLSB,
                     color = EbbingTheme.colors.black,
+                    highlightColor = EbbingTheme.colors.primaryDefault,
                     modifier = Modifier.clickable {
                         viewModel.onIntent(EditDateIntent.OnSelectedDateDropDownClick)
                     },

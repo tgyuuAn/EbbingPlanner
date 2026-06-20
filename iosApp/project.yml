@@ -10,6 +10,10 @@ settings:
   base:
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
+    # shared 프레임워크는 iosSimulatorArm64(arm64)로만 빌드되므로
+    # 시뮬레이터 빌드에서 x86_64를 제외해 링크 실패를 방지한다.
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": x86_64
+    ONLY_ACTIVE_ARCH: "YES"
 
 targets:
   iosApp:
@@ -71,3 +75,17 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.tgyuu.ebbingplanner
+
+# 위젯 익스텐션은 단독 실행할 수 없으므로, 호스트 앱 iosApp을
+# 기본 실행 스킴으로 공유해 위젯 스킴이 잘못 선택되는 것을 방지한다.
+schemes:
+  iosApp:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    archive:
+      config: Release

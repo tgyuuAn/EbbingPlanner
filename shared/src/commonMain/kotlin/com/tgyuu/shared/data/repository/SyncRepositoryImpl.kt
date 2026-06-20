@@ -1,7 +1,9 @@
 package com.tgyuu.shared.data.repository
 
 import com.tgyuu.shared.common.now
+import com.tgyuu.shared.data.source.SyncData
 import com.tgyuu.shared.data.source.SyncDataSource
+import com.tgyuu.shared.database.model.toEntity
 import com.tgyuu.shared.database.dao.RepeatCyclesDao
 import com.tgyuu.shared.database.dao.SyncDao
 import com.tgyuu.shared.database.dao.TodoSchedulesDao
@@ -50,11 +52,11 @@ class SyncRepositoryImpl(
         val uuid = getUuid()
         val lastSyncTime = getLocalSyncedAt()
 
-        // Download remote changes first
-        if (lastSyncTime != null) {
-            syncDataSource.downloadData(uuid, lastSyncTime).onSuccess { syncData ->
-                // TODO: Merge downloaded data with local using updatedAt comparison
-            }
+        // Download remote changes first (연동된 기기가 있으면 그 기기 데이터를 받음)
+        val downloadUuid = getConnectedUuid() ?: uuid
+        val downloadSince = lastSyncTime ?: LocalDateTime(2000, 1, 1, 0, 0, 0)
+        syncDataSource.downloadData(downloadUuid, downloadSince).onSuccess { syncData ->
+            applyDownloadedData(syncData)
         }
 
         // Upload local changes
@@ -73,6 +75,46 @@ class SyncRepositoryImpl(
         settings.putString(KEY_LOCAL_SYNCED_AT, syncedAt.toString())
         settings.putString(KEY_SERVER_LAST_UPDATED, syncedAt.toString())
         return syncedAt
+    }
+
+    /**
+     * 다운로드한 데이터를 로컬 DB에 머지한다. (last-write-wins: updatedAt이 더 최신인 것만 반영)
+     */
+    private suspend fun applyDownloadedData(data: SyncData) {
+        // 1) 삽입/업데이트 (isDeleted 아닌 항목)
+        data.repeatCycles.forEach { rc ->
+            if (!rc.isDeleted) {
+                val local = repeatCyclesDao?.getRepeatCycle(rc.id)
+                if (local == null) repeatCyclesDao?.insertRepeatCycle(rc.toEntity())
+                else if (rc.updatedAt >= local.updatedAt) repeatCyclesDao?.updateRepeatCycle(rc.toEntity())
+            }
+        }
+        data.tags.forEach { tag ->
+            if (!tag.isDeleted) {
+                val local = tagsDao?.getTag(tag.id)
+                if (local == null) tagsDao?.insertTag(tag.toEntity())
+                else if (tag.updatedAt >= local.updatedAt) tagsDao?.updateTag(tag.toEntity())
+            }
+        }
+        data.todoInfos.forEach { info ->
+            if (tagsDao?.getTag(info.tagId) == null) return@forEach
+            val local = schedulesDao.loadTodoInfoEntity(info.id)
+            if (local == null) schedulesDao.insertTodoInfo(info.toEntity())
+            else if (info.updatedAt >= local.updatedAt) schedulesDao.updateTodoInfo(info.toEntity())
+        }
+        data.schedules.forEach { s ->
+            if (!s.isDeleted) {
+                if (schedulesDao.loadTodoInfoEntity(s.infoId) == null) return@forEach
+                val local = schedulesDao.loadTodoScheduleEntity(s.id)
+                if (local == null) schedulesDao.insertTodoSchedule(s.toEntity())
+                else if (s.updatedAt >= local.updatedAt) schedulesDao.updateTodoSchedule(s.toEntity())
+            }
+        }
+
+        // 2) 삭제 (FK 제약 고려: 스케줄 → 태그/반복주기 순)
+        data.schedules.forEach { if (it.isDeleted) schedulesDao.hardDeleteSchedule(it.id) }
+        data.tags.forEach { if (it.isDeleted) tagsDao?.hardDeleteTag(it.id) }
+        data.repeatCycles.forEach { if (it.isDeleted) repeatCyclesDao?.hardDeleteRepeatCycle(it.id) }
     }
 
     override suspend fun generateConnectCode(connectCode: String): LocalDateTime {

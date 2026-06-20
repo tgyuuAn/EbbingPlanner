@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4146A945CD15E1CE993E50EF /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0AD8AE9C88DBD1FFBA2358FD /* Secrets.plist */; };
 		4333AA3CCBAF451893621143 /* EbbingPlannerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91238F3C9A0E4494E140C0B3 /* EbbingPlannerWidget.swift */; };
 		4AB704C7D831C67237D46E9C /* FirebaseSyncBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F57D35DAA05B93B48FF8154 /* FirebaseSyncBridge.swift */; };
-		7E5A4D8304701E4480C859ED /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1AAC2E85B84D1D9A58C062 /* Pods_iosApp.framework */; };
+		6241B5C34E4F15128ED77CF6 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455B83E474B7E41C5B515510 /* Pods_iosApp.framework */; };
 		A5ECB83A94CBA1C95B3FB32A /* FirebaseErrorBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F44F0E6E246AB4B8BDAEEAF /* FirebaseErrorBridge.swift */; };
 		A684ADA1BD7B7C95B8058719 /* shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C5238AC229500570E67FDB9D /* shared.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		BFACF4D3D77B2467F007599D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 902E29824DB2E4278F8E6ECD /* GoogleService-Info.plist */; };
 		C47E8E7AB85C8B706FEC5D8E /* EbbingPlannerWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E38172513E3F77E33635171A /* EbbingPlannerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CC38D4F51AC8335130D1C35E /* EbbingPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0122956141A7451E81839E0F /* EbbingPlannerApp.swift */; };
+		D357B2D19012EBE44E5891D9 /* Secrets.example.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CA464F61F84B6E286C507F0 /* Secrets.example.plist */; };
 		FEBF8D9E41316D8D1EC3F216 /* shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5238AC229500570E67FDB9D /* shared.framework */; };
 /* End PBXBuildFile section */
 
@@ -54,16 +56,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		00618EFE4984C4F62DE5A936 /* Pods-iosApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debug.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debug.xcconfig"; sourceTree = "<group>"; };
 		0122956141A7451E81839E0F /* EbbingPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbbingPlannerApp.swift; sourceTree = "<group>"; };
+		0AD8AE9C88DBD1FFBA2358FD /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.plist; sourceTree = "<group>"; };
 		0C3FBE3C34D4030B255DD997 /* EbbingPlannerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbbingPlannerWidget.entitlements; sourceTree = "<group>"; };
 		0F44F0E6E246AB4B8BDAEEAF /* FirebaseErrorBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseErrorBridge.swift; sourceTree = "<group>"; };
-		1ECA9A6EFBE289CB77383318 /* Pods-iosApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debug.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debug.xcconfig"; sourceTree = "<group>"; };
+		455B83E474B7E41C5B515510 /* Pods_iosApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F57D35DAA05B93B48FF8154 /* FirebaseSyncBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSyncBridge.swift; sourceTree = "<group>"; };
-		6F3F523CB7D968FEE7280737 /* Pods-iosApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.release.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.release.xcconfig"; sourceTree = "<group>"; };
+		6CA464F61F84B6E286C507F0 /* Secrets.example.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.example.plist; sourceTree = "<group>"; };
 		902E29824DB2E4278F8E6ECD /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		91238F3C9A0E4494E140C0B3 /* EbbingPlannerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbbingPlannerWidget.swift; sourceTree = "<group>"; };
-		BE1AAC2E85B84D1D9A58C062 /* Pods_iosApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5238AC229500570E67FDB9D /* shared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = shared.framework; path = ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework; sourceTree = "<group>"; };
+		DD15FA45404C87C9239E3E3C /* Pods-iosApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.release.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.release.xcconfig"; sourceTree = "<group>"; };
 		DDB66A78DE8C03C61948120A /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E38172513E3F77E33635171A /* EbbingPlannerWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = EbbingPlannerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5BAD04B82744B4AE088EBAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -77,7 +81,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEBF8D9E41316D8D1EC3F216 /* shared.framework in Frameworks */,
-				7E5A4D8304701E4480C859ED /* Pods_iosApp.framework in Frameworks */,
+				6241B5C34E4F15128ED77CF6 /* Pods_iosApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,7 +95,7 @@
 				325944CBC27CEAAED12EF47E /* iosApp */,
 				D24A68DBC44C20C314D511BD /* Frameworks */,
 				87BAAC17C31431FF934226AD /* Products */,
-				DF5616F342A7D7DAB87B5D6E /* Pods */,
+				FD27402644505340DB898449 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,6 +108,8 @@
 				4F57D35DAA05B93B48FF8154 /* FirebaseSyncBridge.swift */,
 				902E29824DB2E4278F8E6ECD /* GoogleService-Info.plist */,
 				E77A39B925C3B8068C37CD7A /* Info.plist */,
+				6CA464F61F84B6E286C507F0 /* Secrets.example.plist */,
+				0AD8AE9C88DBD1FFBA2358FD /* Secrets.plist */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -131,16 +137,16 @@
 			isa = PBXGroup;
 			children = (
 				C5238AC229500570E67FDB9D /* shared.framework */,
-				BE1AAC2E85B84D1D9A58C062 /* Pods_iosApp.framework */,
+				455B83E474B7E41C5B515510 /* Pods_iosApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		DF5616F342A7D7DAB87B5D6E /* Pods */ = {
+		FD27402644505340DB898449 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				1ECA9A6EFBE289CB77383318 /* Pods-iosApp.debug.xcconfig */,
-				6F3F523CB7D968FEE7280737 /* Pods-iosApp.release.xcconfig */,
+				00618EFE4984C4F62DE5A936 /* Pods-iosApp.debug.xcconfig */,
+				DD15FA45404C87C9239E3E3C /* Pods-iosApp.release.xcconfig */,
 			);
 			name = Pods;
 			path = Pods;
@@ -168,14 +174,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 71F9A4449042839E99DAA767 /* Build configuration list for PBXNativeTarget "iosApp" */;
 			buildPhases = (
-				46395CF3725E1C44070B15D5 /* [CP] Check Pods Manifest.lock */,
+				23DBE543796B46971B6DA534 /* [CP] Check Pods Manifest.lock */,
 				221A6D8EC541C274536B85FE /* Build Shared Framework */,
 				24263A071B7867EA3FC7201B /* Sources */,
 				3F39742A3E7CEB49CA03A691 /* Resources */,
 				5140D3D7C07E80C1114DE8E2 /* Frameworks */,
 				3A3C1C91FFFACB3AF8283753 /* Embed Foundation Extensions */,
 				22361975309806525E5C5DE0 /* Embed Frameworks */,
-				718EFA0C933417A9769A2244 /* [CP] Embed Pods Frameworks */,
+				2B8D904D15D4DCE4BD733C08 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -232,6 +238,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFACF4D3D77B2467F007599D /* GoogleService-Info.plist in Resources */,
+				D357B2D19012EBE44E5891D9 /* Secrets.example.plist in Resources */,
+				4146A945CD15E1CE993E50EF /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +265,7 @@
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64\nelse\n  ./gradlew :shared:linkDebugFrameworkIosArm64\nfi\n";
 		};
-		46395CF3725E1C44070B15D5 /* [CP] Check Pods Manifest.lock */ = {
+		23DBE543796B46971B6DA534 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -279,7 +287,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		718EFA0C933417A9769A2244 /* [CP] Embed Pods Frameworks */ = {
+		2B8D904D15D4DCE4BD733C08 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -347,7 +355,7 @@
 		};
 		4A2BF49CDD870525FFDF4F8F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6F3F523CB7D968FEE7280737 /* Pods-iosApp.release.xcconfig */;
+			baseConfigurationReference = DD15FA45404C87C9239E3E3C /* Pods-iosApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/EbbingPlanner.entitlements;
@@ -416,6 +424,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -444,7 +453,7 @@
 		};
 		B9EC5BF05358AF6B3DEC7A39 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1ECA9A6EFBE289CB77383318 /* Pods-iosApp.debug.xcconfig */;
+			baseConfigurationReference = 00618EFE4984C4F62DE5A936 /* Pods-iosApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = iosApp/EbbingPlanner.entitlements;
@@ -530,6 +539,7 @@
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -541,6 +551,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;

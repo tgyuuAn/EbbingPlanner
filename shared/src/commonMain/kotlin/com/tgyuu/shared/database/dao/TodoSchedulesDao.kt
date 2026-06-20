@@ -252,6 +252,9 @@ interface TodoSchedulesDao {
     )
     suspend fun getTodoInfoById(infoId: Int): TodoInfo
 
+    @Query("SELECT * FROM todo_info WHERE id = :id")
+    suspend fun loadTodoInfoEntity(id: Int): TodoInfoEntity?
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTodoSchedule(todoScheduleEntity: TodoScheduleEntity)
 

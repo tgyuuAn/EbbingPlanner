@@ -1,6 +1,40 @@
 import WidgetKit
 import SwiftUI
+import UIKit
 import SQLite3
+
+// MARK: - Design System (Android EbbingWidget 토큰 미러링)
+
+extension Color {
+    /// 라이트/다크 모드별 hex 색상. Android designsystem Color.kt 값과 동일.
+    init(hexLight: UInt32, hexDark: UInt32) {
+        self = Color(uiColor: UIColor { trait in
+            let hex = trait.userInterfaceStyle == .dark ? hexDark : hexLight
+            return UIColor(
+                red: CGFloat((hex >> 16) & 0xFF) / 255.0,
+                green: CGFloat((hex >> 8) & 0xFF) / 255.0,
+                blue: CGFloat(hex & 0xFF) / 255.0,
+                alpha: 1.0
+            )
+        })
+    }
+}
+
+enum EWColor {
+    static let background = Color(hexLight: 0xF4F6FA, hexDark: 0x070808)
+    static let surface = Color(hexLight: 0x070808, hexDark: 0xFFFFFF)         // 기본 텍스트
+    static let primary = Color(hexLight: 0x0F4C75, hexDark: 0x82C0E2)         // 강조(완료수 등)
+    static let headerBackground = Color(hexLight: 0xA1AABB, hexDark: 0x4B4F5D) // 헤더 칩 배경(onSurfaceVariant)
+    static let tertiary = Color(hexLight: 0x8994A8, hexDark: 0x8994A8)        // 다른 달 날짜
+    static let inverseSurface = Color(hexLight: 0xFFFFFF, hexDark: 0x070808)  // 선택 셀 텍스트
+}
+
+enum EWFont {
+    static let heading14B = Font.system(size: 14, weight: .bold)
+    static let body14M = Font.system(size: 14, weight: .medium)
+    static let caption12R = Font.system(size: 12, weight: .regular)
+    static let caption12B = Font.system(size: 12, weight: .bold)
+}
 
 // MARK: - Timeline Entry
 
@@ -11,8 +45,8 @@ struct TodoEntry: TimelineEntry {
 
 struct CalendarEntry: TimelineEntry {
     let date: Date
-    let datesWithTodos: Set<String>      // "yyyy-MM-dd" strings
-    let todayTodos: [TodoItem]           // todos for today
+    let colorsByDate: [String: [Color]]  // "yyyy-MM-dd" -> 해당 날짜 태그색들
+    let todayTodos: [TodoItem]
 }
 
 struct TodoItem: Identifiable {
@@ -40,7 +74,7 @@ struct WidgetDatabaseReader {
             LEFT JOIN todo_tag t ON i.tagId = t.id
             WHERE s.date = ? AND s.isDeleted = 0
             ORDER BY s.isDone ASC, s.createdAt ASC
-            LIMIT 6
+            LIMIT 50
             """
 
         var stmt: OpaquePointer?
@@ -69,17 +103,18 @@ struct WidgetDatabaseReader {
         return fileManager.fileExists(atPath: dbPath) ? dbPath : nil
     }
 
-    static func loadMonthDatesWithTodos(for date: Date) -> Set<String> {
-        guard let dbPath = getDatabasePath() else { return [] }
+    /// 이번 달 날짜별 태그 색상 목록 ("yyyy-MM-dd" -> [Color])
+    static func loadMonthColorsByDate(for date: Date) -> [String: [Color]] {
+        guard let dbPath = getDatabasePath() else { return [:] }
         var db: OpaquePointer?
-        guard sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else { return [] }
+        guard sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else { return [:] }
         defer { sqlite3_close(db) }
 
         let cal = Calendar.current
         let comps = cal.dateComponents([.year, .month], from: date)
         guard let firstDay = cal.date(from: comps),
               let lastDay = cal.date(byAdding: DateComponents(month: 1, day: -1), to: firstDay) else {
-            return []
+            return [:]
         }
 
         let fmt = DateFormatter()
@@ -87,21 +122,31 @@ struct WidgetDatabaseReader {
         let startStr = fmt.string(from: firstDay)
         let endStr = fmt.string(from: lastDay)
 
-        let query = "SELECT DISTINCT date FROM schedule WHERE date >= ? AND date <= ? AND isDeleted = 0"
+        let query = """
+            SELECT s.date, COALESCE(t.color, 0)
+            FROM schedule s
+            INNER JOIN todo_info i ON s.infoId = i.id
+            LEFT JOIN todo_tag t ON i.tagId = t.id
+            WHERE s.date >= ? AND s.date <= ? AND s.isDeleted = 0
+            ORDER BY s.createdAt ASC
+            """
         var stmt: OpaquePointer?
-        guard sqlite3_prepare_v2(db, query, -1, &stmt, nil) == SQLITE_OK else { return [] }
+        guard sqlite3_prepare_v2(db, query, -1, &stmt, nil) == SQLITE_OK else { return [:] }
         defer { sqlite3_finalize(stmt) }
 
         sqlite3_bind_text(stmt, 1, (startStr as NSString).utf8String, -1, nil)
         sqlite3_bind_text(stmt, 2, (endStr as NSString).utf8String, -1, nil)
 
-        var result = Set<String>()
+        var result: [String: [Int]] = [:]
         while sqlite3_step(stmt) == SQLITE_ROW {
-            if let c = sqlite3_column_text(stmt, 0) {
-                result.insert(String(cString: c))
-            }
+            guard let c = sqlite3_column_text(stmt, 0) else { continue }
+            let dateStr = String(cString: c)
+            let colorInt = Int(sqlite3_column_int64(stmt, 1))
+            var colors = result[dateStr] ?? []
+            if !colors.contains(colorInt) { colors.append(colorInt) }  // 중복 제거(distinct)
+            result[dateStr] = colors
         }
-        return result
+        return result.mapValues { ints in ints.prefix(4).map { color(from: $0) } }  // 최대 4개
     }
 
     private static func formattedToday() -> String {
@@ -110,21 +155,23 @@ struct WidgetDatabaseReader {
         return formatter.string(from: Date())
     }
 
-    private static func color(from argb: Int) -> Color {
+    static func color(from argb: Int) -> Color {
         let a = Double((argb >> 24) & 0xFF) / 255.0
         let r = Double((argb >> 16) & 0xFF) / 255.0
         let g = Double((argb >> 8) & 0xFF) / 255.0
         let b = Double(argb & 0xFF) / 255.0
+        // 태그 없음(0) 등 투명/무색은 강조색으로 대체
+        if a == 0 { return EWColor.primary }
         return Color(.sRGB, red: r, green: g, blue: b, opacity: a)
     }
 }
 
-// MARK: - Timeline Provider
+// MARK: - Today Todo Timeline Provider
 
 struct TodoTimelineProvider: TimelineProvider {
     func placeholder(in context: Context) -> TodoEntry {
         TodoEntry(date: Date(), todos: [
-            TodoItem(id: 1, title: "오늘의 할일", isDone: false, tagColor: .blue),
+            TodoItem(id: 1, title: "오늘의 할일", isDone: false, tagColor: EWColor.primary),
             TodoItem(id: 2, title: "복습하기", isDone: true, tagColor: .green),
         ])
     }
@@ -143,60 +190,104 @@ struct TodoTimelineProvider: TimelineProvider {
     }
 }
 
-// MARK: - Widget View
+// MARK: - Shared Components
+
+/// 진행도 헤더 칩: "{prefix} {done} /{total}" (Android TodayTodo 헤더와 동일)
+struct ProgressHeader: View {
+    let title: String
+    let doneCount: Int
+    let totalCount: Int
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Text(title)
+                .font(EWFont.heading14B)
+                .foregroundColor(EWColor.surface)
+            Text("\(doneCount)")
+                .font(EWFont.heading14B)
+                .foregroundColor(EWColor.primary)
+            Text(" /\(totalCount)")
+                .font(EWFont.heading14B)
+                .foregroundColor(EWColor.surface)
+            Spacer(minLength: 4)
+            Image(systemName: "plus")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(EWColor.surface)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(EWColor.headerBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+/// 할일 행: [색 dot · 제목 · 체크박스] (Android TodoItemRow와 동일)
+struct TodoRow: View {
+    let todo: TodoItem
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(todo.tagColor)
+                .frame(width: 16, height: 16)
+
+            Text(todo.title)
+                .font(.system(size: 14, weight: todo.isDone ? .bold : .regular))
+                .foregroundColor(EWColor.surface)
+                .strikethrough(todo.isDone)
+                .lineLimit(2)
+
+            Spacer(minLength: 4)
+
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(todo.tagColor, lineWidth: 1.5)
+                .frame(width: 20, height: 20)
+                .overlay(
+                    todo.isDone
+                        ? Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(todo.tagColor)
+                        : nil
+                )
+        }
+    }
+}
+
+struct EmptyScheduleText: View {
+    var body: some View {
+        Text("금일 스케줄이 없어요.")
+            .font(EWFont.body14M)
+            .foregroundColor(EWColor.surface)
+            .frame(maxWidth: .infinity, alignment: .center)
+    }
+}
+
+// MARK: - Today Todo Widget View
 
 struct TodayTodoWidgetView: View {
     var entry: TodoEntry
 
+    private var doneCount: Int { entry.todos.filter { $0.isDone }.count }
+    private var totalCount: Int { entry.todos.count }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text(formattedDate)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Spacer()
-                Text("에빙 플래너")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            ProgressHeader(title: "오늘 할 일   ", doneCount: doneCount, totalCount: totalCount)
 
             if entry.todos.isEmpty {
-                Spacer()
-                Text("오늘의 할일이 없습니다")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                Spacer()
+                Spacer(minLength: 0)
+                EmptyScheduleText()
+                Spacer(minLength: 0)
             } else {
-                ForEach(entry.todos.prefix(5)) { todo in
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(todo.tagColor)
-                            .frame(width: 8, height: 8)
-
-                        Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
-                            .font(.caption)
-                            .foregroundColor(todo.isDone ? .green : .gray)
-
-                        Text(todo.title)
-                            .font(.caption)
-                            .lineLimit(1)
-                            .strikethrough(todo.isDone)
-                            .foregroundColor(todo.isDone ? .secondary : .primary)
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(entry.todos.prefix(5)) { todo in
+                        TodoRow(todo: todo)
                     }
                 }
+                Spacer(minLength: 0)
             }
-
-            Spacer(minLength: 0)
         }
-        .padding()
-    }
-
-    private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일 (E)"
-        return formatter.string(from: entry.date)
+        .padding(12)
     }
 }
 
@@ -204,21 +295,21 @@ struct TodayTodoWidgetView: View {
 
 struct CalendarTimelineProvider: TimelineProvider {
     func placeholder(in context: Context) -> CalendarEntry {
-        CalendarEntry(date: Date(), datesWithTodos: ["2024-01-05", "2024-01-10"], todayTodos: [
-            TodoItem(id: 1, title: "오늘의 할일", isDone: false, tagColor: .blue),
+        CalendarEntry(date: Date(), colorsByDate: [:], todayTodos: [
+            TodoItem(id: 1, title: "오늘의 할일", isDone: false, tagColor: EWColor.primary),
         ])
     }
 
     func getSnapshot(in context: Context, completion: @escaping (CalendarEntry) -> Void) {
-        let dates = WidgetDatabaseReader.loadMonthDatesWithTodos(for: Date())
+        let colors = WidgetDatabaseReader.loadMonthColorsByDate(for: Date())
         let todos = WidgetDatabaseReader.loadTodayTodos()
-        completion(CalendarEntry(date: Date(), datesWithTodos: dates, todayTodos: todos))
+        completion(CalendarEntry(date: Date(), colorsByDate: colors, todayTodos: todos))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<CalendarEntry>) -> Void) {
-        let dates = WidgetDatabaseReader.loadMonthDatesWithTodos(for: Date())
+        let colors = WidgetDatabaseReader.loadMonthColorsByDate(for: Date())
         let todos = WidgetDatabaseReader.loadTodayTodos()
-        let entry = CalendarEntry(date: Date(), datesWithTodos: dates, todayTodos: todos)
+        let entry = CalendarEntry(date: Date(), colorsByDate: colors, todayTodos: todos)
         let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
         completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
     }
@@ -238,86 +329,102 @@ struct CalendarWidgetView: View {
     }()
 
     var body: some View {
+        if family == .systemMedium {
+            HStack(alignment: .top, spacing: 12) {
+                calendarSection
+                todoSection
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(8)
+        } else {
+            calendarSection
+                .padding(8)
+        }
+    }
+
+    private var calendarSection: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Header
+            // 헤더: 월/년 + 오늘로 돌아가기 아이콘
             HStack {
+                Spacer().frame(width: 14)
                 Text(monthTitle)
-                    .font(.caption.bold())
-                    .foregroundColor(.primary)
-                Spacer()
-                Text("에빙 플래너")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .font(EWFont.heading14B)
+                    .foregroundColor(EWColor.surface)
+                    .frame(maxWidth: .infinity)
+                Image(systemName: "arrow.uturn.left")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(EWColor.surface)
+                    .frame(width: 14)
             }
 
-            // Day of week headers
+            // 요일 헤더
             HStack(spacing: 0) {
                 ForEach(dayOfWeekLabels, id: \.self) { label in
                     Text(label)
-                        .font(.system(size: 8))
-                        .foregroundColor(.secondary)
+                        .font(EWFont.caption12B)
+                        .foregroundColor(EWColor.surface)
                         .frame(maxWidth: .infinity)
                 }
             }
 
-            // Calendar grid
-            let days = calendarDays
+            // 6주 그리드
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 2) {
-                ForEach(Array(days.enumerated()), id: \.offset) { _, day in
-                    if let day = day {
-                        let dateStr = dateFmt.string(from: day)
-                        let isToday = Calendar.current.isDateInToday(day)
-                        let hasTodos = entry.datesWithTodos.contains(dateStr)
-
-                        ZStack {
-                            if isToday {
-                                Circle()
-                                    .fill(Color.accentColor)
-                                    .frame(width: 18, height: 18)
-                            }
-                            Text("\(Calendar.current.component(.day, from: day))")
-                                .font(.system(size: 8))
-                                .foregroundColor(isToday ? .white : .primary)
-                                .frame(maxWidth: .infinity)
-
-                            if hasTodos && !isToday {
-                                Circle()
-                                    .fill(Color.accentColor)
-                                    .frame(width: 3, height: 3)
-                                    .offset(y: 7)
-                            }
-                        }
-                        .frame(height: 20)
-                    } else {
-                        Color.clear.frame(height: 20)
-                    }
-                }
-            }
-
-            if family == .systemMedium {
-                Divider().padding(.vertical, 2)
-                // Today's todos for medium size
-                if entry.todayTodos.isEmpty {
-                    Text("오늘의 할일이 없습니다")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                } else {
-                    ForEach(entry.todayTodos.prefix(3)) { todo in
-                        HStack(spacing: 4) {
-                            Circle().fill(todo.tagColor).frame(width: 6, height: 6)
-                            Text(todo.title)
-                                .font(.caption2)
-                                .lineLimit(1)
-                                .strikethrough(todo.isDone)
-                                .foregroundColor(todo.isDone ? .secondary : .primary)
-                        }
-                    }
+                ForEach(Array(calendarCells.enumerated()), id: \.offset) { _, day in
+                    dayCell(day)
                 }
             }
 
             Spacer(minLength: 0)
         }
-        .padding(8)
+    }
+
+    private func dayCell(_ day: Date) -> some View {
+        let cal = Calendar.current
+        let dateStr = dateFmt.string(from: day)
+        let isToday = cal.isDateInToday(day)
+        let isCurrentMonth = cal.isDate(day, equalTo: entry.date, toGranularity: .month)
+        let colors = entry.colorsByDate[dateStr] ?? []
+
+        return ZStack {
+            if isToday {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(EWColor.surface)
+            }
+            VStack(spacing: 2) {
+                Text("\(cal.component(.day, from: day))")
+                    .font(.system(size: 12, weight: isToday ? .bold : .regular))
+                    .foregroundColor(
+                        isToday ? EWColor.inverseSurface
+                            : (isCurrentMonth ? EWColor.surface : EWColor.tertiary)
+                    )
+                HStack(spacing: 2) {
+                    ForEach(Array(colors.prefix(4).enumerated()), id: \.offset) { _, c in
+                        Circle().fill(c).frame(width: 6, height: 6)
+                    }
+                }
+                .frame(height: 6)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 34)
+    }
+
+    private var todoSection: some View {
+        let done = entry.todayTodos.filter { $0.isDone }.count
+        let total = entry.todayTodos.count
+        return VStack(alignment: .leading, spacing: 8) {
+            ProgressHeader(title: "오늘 할 일   ", doneCount: done, totalCount: total)
+            if entry.todayTodos.isEmpty {
+                Spacer(minLength: 0)
+                EmptyScheduleText()
+                Spacer(minLength: 0)
+            } else {
+                ForEach(entry.todayTodos.prefix(3)) { todo in
+                    TodoRow(todo: todo)
+                }
+                Spacer(minLength: 0)
+            }
+        }
     }
 
     private var monthTitle: String {
@@ -327,24 +434,18 @@ struct CalendarWidgetView: View {
         return f.string(from: entry.date)
     }
 
-    private var calendarDays: [Date?] {
+    /// 6주(42칸) 전체 그리드. 앞뒤 인접 달 날짜 포함(Android와 동일).
+    private var calendarCells: [Date] {
         let cal = Calendar.current
         let comps = cal.dateComponents([.year, .month], from: entry.date)
         guard let firstDay = cal.date(from: comps) else { return [] }
-        let weekday = cal.component(.weekday, from: firstDay) - 1 // 0=Sun
-        let daysInMonth = cal.range(of: .day, in: .month, for: firstDay)!.count
-
-        var result: [Date?] = Array(repeating: nil, count: weekday)
-        for day in 1...daysInMonth {
-            result.append(cal.date(byAdding: .day, value: day - 1, to: firstDay))
-        }
-        // pad to complete grid
-        while result.count % 7 != 0 { result.append(nil) }
-        return result
+        let leading = cal.component(.weekday, from: firstDay) - 1 // 0=일
+        guard let gridStart = cal.date(byAdding: .day, value: -leading, to: firstDay) else { return [] }
+        return (0..<42).compactMap { cal.date(byAdding: .day, value: $0, to: gridStart) }
     }
 }
 
-// MARK: - Calendar Widget Configuration
+// MARK: - Widget Configurations
 
 struct CalendarWidget: Widget {
     let kind: String = "CalendarWidget"
@@ -353,10 +454,10 @@ struct CalendarWidget: Widget {
         StaticConfiguration(kind: kind, provider: CalendarTimelineProvider()) { entry in
             if #available(iOS 17.0, *) {
                 CalendarWidgetView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
+                    .containerBackground(EWColor.background, for: .widget)
             } else {
                 CalendarWidgetView(entry: entry)
-                    .background(Color(.systemBackground))
+                    .background(EWColor.background)
             }
         }
         .configurationDisplayName("달력")
@@ -365,8 +466,6 @@ struct CalendarWidget: Widget {
     }
 }
 
-// MARK: - Widget Configuration
-
 struct TodayTodoWidget: Widget {
     let kind: String = "TodayTodoWidget"
 
@@ -374,11 +473,10 @@ struct TodayTodoWidget: Widget {
         StaticConfiguration(kind: kind, provider: TodoTimelineProvider()) { entry in
             if #available(iOS 17.0, *) {
                 TodayTodoWidgetView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
+                    .containerBackground(EWColor.background, for: .widget)
             } else {
                 TodayTodoWidgetView(entry: entry)
-                    .padding()
-                    .background(Color(.systemBackground))
+                    .background(EWColor.background)
             }
         }
         .configurationDisplayName("오늘의 할일")

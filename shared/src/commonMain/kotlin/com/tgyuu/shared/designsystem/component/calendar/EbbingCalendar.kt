@@ -3,7 +3,9 @@ package com.tgyuu.shared.designsystem.component.calendar
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import com.tgyuu.shared.designsystem.component.icon.EbbingSyncIcon
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,6 +61,8 @@ fun EbbingCalendar(
     showWeekOnly: Boolean = false,
     onSelectDate: (LocalDate) -> Unit = {},
     onGotoTodayClick: () -> Unit = {},
+    showSyncButton: Boolean = true,
+    onSyncClick: () -> Unit = {},
 ) {
     val monthInitialPage = CALENDAR_PAGE_COUNT / 2
     val monthPagerState = rememberPagerState(
@@ -151,6 +155,8 @@ fun EbbingCalendar(
                     onSelectDate(LocalDate.now())
                 }
             },
+            showSyncButton = showSyncButton,
+            onSyncClick = onSyncClick,
         )
 
         CalendarHeader(startFromMonday = startFromMonday)
@@ -214,6 +220,8 @@ private fun CalendarController(
     selectedDate: LocalDate?,
     onGotoTodayClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showSyncButton: Boolean = true,
+    onSyncClick: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -247,7 +255,23 @@ private fun CalendarController(
             color = EbbingTheme.colors.black,
         )
 
-        Spacer(modifier = Modifier.size(40.dp))
+        if (showSyncButton) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable(onClick = onSyncClick),
+            ) {
+                Icon(
+                    imageVector = EbbingSyncIcon,
+                    contentDescription = "동기화",
+                    tint = EbbingTheme.colors.black,
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.size(40.dp))
+        }
     }
 }
 
