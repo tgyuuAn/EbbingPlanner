@@ -45,6 +45,28 @@ import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.repeat_manage_title
+import ebbingplanner.shared.generated.resources.repeat_add_button
+import ebbingplanner.shared.generated.resources.repeat_empty_message
+import ebbingplanner.shared.generated.resources.repeat_delete
+import ebbingplanner.shared.generated.resources.repeat_edit
+import ebbingplanner.shared.generated.resources.repeat_dialog_back
+import ebbingplanner.shared.generated.resources.repeat_delete_dialog_prefix
+import ebbingplanner.shared.generated.resources.repeat_delete_dialog_highlight
+import ebbingplanner.shared.generated.resources.repeat_delete_dialog_suffix
+import ebbingplanner.shared.generated.resources.repeat_delete_dialog_sub_text
+import ebbingplanner.shared.generated.resources.repeat_add_title
+import ebbingplanner.shared.generated.resources.repeat_edit_title
+import ebbingplanner.shared.generated.resources.repeat_save
+import ebbingplanner.shared.generated.resources.repeat_add_headline
+import ebbingplanner.shared.generated.resources.repeat_edit_headline
+import ebbingplanner.shared.generated.resources.repeat_cycle_label
+import ebbingplanner.shared.generated.resources.repeat_cycle_input_hint
+import ebbingplanner.shared.generated.resources.repeat_cycle_input_guide
+import ebbingplanner.shared.generated.resources.repeat_cycle_preview_label
+import ebbingplanner.shared.generated.resources.common_clear
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun RepeatCycleScreen(
@@ -77,11 +99,11 @@ fun RepeatCycleScreen(
                 .clickable { selectedRepeatCycle = null },
         ) {
             EbbingSubTopBar(
-                title = "반복 주기 관리",
+                title = stringResource(Res.string.repeat_manage_title),
                 onNavigationClick = { viewModel.onIntent(RepeatCycleIntent.OnBackClick) },
                 rightComponent = {
                     Text(
-                        text = "추가",
+                        text = stringResource(Res.string.repeat_add_button),
                         style = EbbingTheme.typography.bodyMM,
                         color = EbbingTheme.colors.primaryDefault,
                         modifier = Modifier
@@ -98,7 +120,7 @@ fun RepeatCycleScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "등록된 반복 주기가 없어요.\n우측 상단 추가 버튼을 눌러 반복 주기를 추가해보세요.",
+                        text = stringResource(Res.string.repeat_empty_message),
                         style = EbbingTheme.typography.bodySM,
                         textAlign = TextAlign.Center,
                         color = EbbingTheme.colors.dark3,
@@ -152,13 +174,13 @@ fun RepeatCycleScreen(
                 modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
             ) {
                 EbbingOutlinedButton(
-                    label = "삭제",
+                    label = stringResource(Res.string.repeat_delete),
                     onClick = { isShowDialog = true },
                     modifier = Modifier.weight(1f),
                 )
 
                 EbbingSolidButton(
-                    label = "수정",
+                    label = stringResource(Res.string.repeat_edit),
                     onClick = { selectedRepeatCycle?.let { viewModel.onIntent(RepeatCycleIntent.OnEditClick(it)) } },
                     modifier = Modifier.weight(1f),
                 )
@@ -177,13 +199,16 @@ private fun DeleteRepeatCycleDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
+            val deletePrefix = stringResource(Res.string.repeat_delete_dialog_prefix)
+            val deleteHighlight = stringResource(Res.string.repeat_delete_dialog_highlight)
+            val deleteSuffix = stringResource(Res.string.repeat_delete_dialog_suffix)
             Text(
                 text = buildAnnotatedString {
-                    append("선택하신 반복 주기를 ")
+                    append(deletePrefix)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
-                        append("삭제")
+                        append(deleteHighlight)
                     }
-                    append(" 하시겠습니까?")
+                    append(deleteSuffix)
                 },
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
@@ -192,7 +217,7 @@ private fun DeleteRepeatCycleDialog(
             )
 
             Text(
-                text = "삭제한 반복 주기는 되돌릴 수 없으니 신중히 선택해 주세요.",
+                text = stringResource(Res.string.repeat_delete_dialog_sub_text),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
                 textAlign = TextAlign.Center,
@@ -200,8 +225,8 @@ private fun DeleteRepeatCycleDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "삭제",
+                leftButtonText = stringResource(Res.string.repeat_dialog_back),
+                rightButtonText = stringResource(Res.string.repeat_delete),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )
