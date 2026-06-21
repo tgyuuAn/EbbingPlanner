@@ -218,6 +218,18 @@
     <string name="home_widget_nudge_label">First task registered!</string>
     <string name="home_widget_nudge_title">Check your tasks easily\nwith the Ebbing Planner widget too.</string>
 
+    <!-- Widget / Theme / Calendar -->
+    <string name="widget_setting_title">Widget settings</string>
+    <string name="widget_theme">Widget theme</string>
+    <string name="widget_text_alpha">Text opacity</string>
+    <string name="widget_preview_sample">Widget preview</string>
+    <string name="setting_background_alpha">Background opacity</string>
+    <string name="setting_light">Light</string>
+    <string name="setting_dark">Dark</string>
+    <string name="theme_select_headline">Choose a theme color.</string>
+    <string name="calendar_go_today">Go to today</string>
+    <string name="calendar_year_month">%1$d-%2$d</string>
+
     <!-- Note -->
     <string name="memo_label">Note</string>
     <string name="memo_input_hint">What note would you like to leave?</string>

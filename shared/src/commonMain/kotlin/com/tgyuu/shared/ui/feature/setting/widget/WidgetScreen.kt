@@ -35,6 +35,15 @@ import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.ui.feature.setting.widget.WidgetState
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_save
+import ebbingplanner.shared.generated.resources.setting_background_alpha
+import ebbingplanner.shared.generated.resources.setting_preview
+import ebbingplanner.shared.generated.resources.widget_preview_sample
+import ebbingplanner.shared.generated.resources.widget_setting_title
+import ebbingplanner.shared.generated.resources.widget_text_alpha
+import ebbingplanner.shared.generated.resources.widget_theme
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WidgetScreen(
@@ -48,12 +57,12 @@ fun WidgetScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "위젯 설정",
+            title = stringResource(Res.string.widget_setting_title),
             onNavigationClick = { viewModel.onIntent(WidgetIntent.OnBackClick) },
             rightComponent = {
                 if (!state.isTreatment) {
                 Text(
-                    text = "저장",
+                    text = stringResource(Res.string.home_save),
                     style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
                     else EbbingTheme.typography.bodyMM,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
@@ -105,7 +114,7 @@ fun WidgetScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = "저장",
+                label = stringResource(Res.string.home_save),
                 onClick = { viewModel.onIntent(WidgetIntent.OnSaveClick) },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
@@ -122,7 +131,7 @@ private fun WidgetControlSection(
     onBgAlphaChange: (Float) -> Unit,
     onTextAlphaChange: (Float) -> Unit,
 ) {
-    Text(text = "위젯 테마", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(text = stringResource(Res.string.widget_theme), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Spacer(modifier = Modifier.height(16.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
         Theme.entries.forEach { theme ->
@@ -141,7 +150,7 @@ private fun WidgetControlSection(
         }
     }
     Spacer(modifier = Modifier.height(32.dp))
-    Text(text = "배경 투명도", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(text = stringResource(Res.string.setting_background_alpha), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Slider(
         value = state.selectedBackgroundAlpha ?: 1f,
         onValueChange = onBgAlphaChange,
@@ -151,7 +160,7 @@ private fun WidgetControlSection(
     )
     Text(text = "${((state.selectedBackgroundAlpha ?: 1f) * 100).roundToInt()}%", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2)
     Spacer(modifier = Modifier.height(24.dp))
-    Text(text = "텍스트 투명도", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(text = stringResource(Res.string.widget_text_alpha), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Slider(
         value = state.selectedTextAlpha ?: 1f,
         onValueChange = onTextAlphaChange,
@@ -164,7 +173,7 @@ private fun WidgetControlSection(
 
 @Composable
 private fun WidgetPreviewSection(state: WidgetState) {
-    Text(text = "미리보기", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.padding(bottom = 12.dp))
+    Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.padding(bottom = 12.dp))
     val previewTheme = state.selectedTheme ?: Theme.NORMAL
     val bgAlpha = state.selectedBackgroundAlpha ?: 1f
     val textAlpha = state.selectedTextAlpha ?: 1f
@@ -172,6 +181,6 @@ private fun WidgetPreviewSection(state: WidgetState) {
         modifier = Modifier.fillMaxWidth().height(120.dp).clip(RoundedCornerShape(12.dp)).background(Color(previewTheme.lightBg).copy(alpha = bgAlpha)).border(1.dp, EbbingTheme.colors.light2, RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text = "위젯 미리보기", style = EbbingTheme.typography.bodyMM, color = Color.Black.copy(alpha = textAlpha))
+        Text(text = stringResource(Res.string.widget_preview_sample), style = EbbingTheme.typography.bodyMM, color = Color.Black.copy(alpha = textAlpha))
     }
 }

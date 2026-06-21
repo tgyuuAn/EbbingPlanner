@@ -32,6 +32,14 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.model.Theme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.setting_apply
+import ebbingplanner.shared.generated.resources.setting_dark
+import ebbingplanner.shared.generated.resources.setting_light
+import ebbingplanner.shared.generated.resources.setting_preview
+import ebbingplanner.shared.generated.resources.setting_theme
+import ebbingplanner.shared.generated.resources.theme_select_headline
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ThemeScreen(
@@ -45,12 +53,12 @@ fun ThemeScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "테마",
+            title = stringResource(Res.string.setting_theme),
             onNavigationClick = { viewModel.onIntent(ThemeIntent.OnBackClick) },
             rightComponent = {
                 if (!state.isTreatment) {
                 Text(
-                    text = "적용",
+                    text = stringResource(Res.string.setting_apply),
                     style = EbbingTheme.typography.bodyMM,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
                     else EbbingTheme.colors.light1,
@@ -68,7 +76,7 @@ fun ThemeScreen(
         if (isWide) {
             Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
-                    Text(text = "테마 색상을 선택해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    Text(text = stringResource(Res.string.theme_select_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
                     Spacer(modifier = Modifier.height(32.dp))
                     ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
                 }
@@ -79,7 +87,7 @@ fun ThemeScreen(
             }
         } else {
             Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
-                Text(text = "테마 색상을 선택해요.", style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                Text(text = stringResource(Res.string.theme_select_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
                 Spacer(modifier = Modifier.height(32.dp))
                 ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
                 Spacer(modifier = Modifier.height(32.dp))
@@ -89,7 +97,7 @@ fun ThemeScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = "적용",
+                label = stringResource(Res.string.setting_apply),
                 onClick = { viewModel.onIntent(ThemeIntent.OnUpdateClick) },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
@@ -146,7 +154,7 @@ private fun ThemePreview(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "미리보기",
+            text = stringResource(Res.string.setting_preview),
             style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 12.dp),
@@ -157,13 +165,13 @@ private fun ThemePreview(
             modifier = Modifier.fillMaxWidth(),
         ) {
             PreviewCard(
-                label = "라이트",
+                label = stringResource(Res.string.setting_light),
                 backgroundColor = Color(theme.lightBg),
                 modifier = Modifier.weight(1f),
             )
 
             PreviewCard(
-                label = "다크",
+                label = stringResource(Res.string.setting_dark),
                 backgroundColor = Color(theme.darkBg),
                 textColor = Color.White,
                 modifier = Modifier.weight(1f),
