@@ -218,6 +218,18 @@
     <string name="home_widget_nudge_label">初めての予定登録が完了！</string>
     <string name="home_widget_nudge_title">エビングプランナーのウィジェットでも\n予定を手軽にチェックしてみましょう。</string>
 
+    <!-- ウィジェット / テーマ / カレンダー -->
+    <string name="widget_setting_title">ウィジェット設定</string>
+    <string name="widget_theme">ウィジェットテーマ</string>
+    <string name="widget_text_alpha">テキストの透明度</string>
+    <string name="widget_preview_sample">ウィジェットプレビュー</string>
+    <string name="setting_background_alpha">背景の透明度</string>
+    <string name="setting_light">ライト</string>
+    <string name="setting_dark">ダーク</string>
+    <string name="theme_select_headline">テーマカラーを選びましょう。</string>
+    <string name="calendar_go_today">今日へ移動</string>
+    <string name="calendar_year_month">%1$d年%2$d月</string>
+
     <!-- メモ -->
     <string name="memo_label">メモ</string>
     <string name="memo_input_hint">どんなメモを残しますか？</string>

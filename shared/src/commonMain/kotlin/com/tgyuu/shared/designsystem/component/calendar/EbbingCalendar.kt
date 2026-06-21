@@ -49,6 +49,11 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.calendar_go_today
+import ebbingplanner.shared.generated.resources.calendar_year_month
+import ebbingplanner.shared.generated.resources.sync_sync
+import org.jetbrains.compose.resources.stringResource
 
 private const val CALENDAR_PAGE_COUNT = 12_001
 
@@ -239,7 +244,7 @@ private fun CalendarController(
             if (!isOnToday) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = "오늘로 이동",
+                    contentDescription = stringResource(Res.string.calendar_go_today),
                     tint = EbbingTheme.colors.black,
                     modifier = Modifier.size(16.dp),
                 )
@@ -249,7 +254,7 @@ private fun CalendarController(
         }
 
         Text(
-            text = "${currentDate.year}년 ${currentDate.monthNumber}월",
+            text = stringResource(Res.string.calendar_year_month, currentDate.year, currentDate.monthNumber),
             textAlign = TextAlign.Center,
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.black,
@@ -264,7 +269,7 @@ private fun CalendarController(
             ) {
                 Icon(
                     imageVector = EbbingSyncIcon,
-                    contentDescription = "동기화",
+                    contentDescription = stringResource(Res.string.sync_sync),
                     tint = EbbingTheme.colors.black,
                     modifier = Modifier.size(28.dp),
                 )
