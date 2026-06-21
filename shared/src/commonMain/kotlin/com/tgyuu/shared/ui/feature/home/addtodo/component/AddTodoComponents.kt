@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.toFormattedString
-import com.tgyuu.shared.common.toRelativeDayDescription
+import com.tgyuu.shared.common.toRelativeDayLabel
 import com.tgyuu.shared.designsystem.component.EbbingChip
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDropDown
@@ -246,7 +246,7 @@ private fun ScheduleCard(
         )
 
         Text(
-            text = schedule.toRelativeDayDescription(),
+            text = schedule.toRelativeDayLabel(),
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.black,

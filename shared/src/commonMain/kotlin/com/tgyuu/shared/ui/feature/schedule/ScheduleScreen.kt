@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.toFormattedString
-import com.tgyuu.shared.common.toRelativeDayDescription
+import com.tgyuu.shared.common.toRelativeDayLabel
 import com.tgyuu.shared.designsystem.component.EbbingCheck
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
@@ -594,7 +594,7 @@ private fun ScheduleCard(
         )
 
         Text(
-            text = schedule.date.toRelativeDayDescription(),
+            text = schedule.date.toRelativeDayLabel(),
             style = EbbingTheme.typography.captionR12,
             color = subColor,
             textDecoration = textDecoration,
