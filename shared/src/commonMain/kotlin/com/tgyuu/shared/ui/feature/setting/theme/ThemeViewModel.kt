@@ -7,6 +7,10 @@ import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_theme_change_failed
+import ebbingplanner.shared.generated.resources.snack_theme_changed
+import org.jetbrains.compose.resources.getString
 
 class ThemeViewModel(
     private val configRepository: ConfigRepository? = null,
@@ -46,10 +50,10 @@ class ThemeViewModel(
         try {
             configRepository?.setAppTheme(selected)
             setState { copy(originTheme = selected) }
-            onShowSnackbar("테마가 변경되었습니다")
+            onShowSnackbar(getString(Res.string.snack_theme_changed))
             onNavigateBack()
         } catch (e: Exception) {
-            onShowSnackbar("테마 변경에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_theme_change_failed))
         }
     }
 

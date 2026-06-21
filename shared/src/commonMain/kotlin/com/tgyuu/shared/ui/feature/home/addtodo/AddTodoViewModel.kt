@@ -1,4 +1,5 @@
 package com.tgyuu.shared.ui.feature.home.addtodo
+import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.model.Experiment
@@ -14,6 +15,13 @@ import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_all_rest_days
+import ebbingplanner.shared.generated.resources.snack_no_schedule_check_cycle
+import ebbingplanner.shared.generated.resources.snack_required_fields
+import ebbingplanner.shared.generated.resources.snack_todo_add_failed
+import ebbingplanner.shared.generated.resources.snack_todo_added
+import org.jetbrains.compose.resources.getString
 
 class AddTodoViewModel(
     private val selectedDate: LocalDate,
@@ -99,7 +107,7 @@ class AddTodoViewModel(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            onShowSnackbar("모든 요일을 휴식할 수는 없습니다")
+            viewModelScope.launch { onShowSnackbar(getString(Res.string.snack_all_rest_days)) }
             return
         }
 
@@ -108,7 +116,7 @@ class AddTodoViewModel(
 
     private suspend fun onSaveClick() {
         if (!currentState.isSaveEnabled) {
-            onShowSnackbar("필수 항목을 작성해주세요")
+            onShowSnackbar(getString(Res.string.snack_required_fields))
             return
         }
 
@@ -117,7 +125,7 @@ class AddTodoViewModel(
         try {
             val schedules = currentState.schedules
             if (schedules.isEmpty()) {
-                onShowSnackbar("스케줄이 없습니다. 반복 주기를 확인해주세요.")
+                onShowSnackbar(getString(Res.string.snack_no_schedule_check_cycle))
                 return
             }
             todoRepository.addTodo(
@@ -130,10 +138,10 @@ class AddTodoViewModel(
 
             configRepository?.markFirstTodoAdded()
 
-            onShowSnackbar("새로운 일정을 추가하였습니다")
+            onShowSnackbar(getString(Res.string.snack_todo_added))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
-            onShowSnackbar("일정 추가에 실패했습니다: ${e.message}")
+            onShowSnackbar(getString(Res.string.snack_todo_add_failed, e.message ?: ""))
         }
     }
 

@@ -19,6 +19,15 @@ import kotlinx.collections.immutable.toPersistentHashSet
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_delayed_single
+import ebbingplanner.shared.generated.resources.snack_memo_removed
+import ebbingplanner.shared.generated.resources.snack_remaining_deleted
+import ebbingplanner.shared.generated.resources.snack_schedule_deleted
+import ebbingplanner.shared.generated.resources.snack_schedules_delayed
+import ebbingplanner.shared.generated.resources.snack_tag_deleted
+import ebbingplanner.shared.generated.resources.snack_tag_updated
+import org.jetbrains.compose.resources.getString
 
 class ScheduleViewModel(
     private val todoRepository: TodoRepository,
@@ -163,7 +172,7 @@ class ScheduleViewModel(
             todoRepository.updateTag(
                 TodoTag(id = tag.id, name = name, color = color, createdAt = tag.createdAt)
             )
-            onShowSnackBar("태그를 수정하였습니다")
+            onShowSnackBar(getString(Res.string.snack_tag_updated))
             loadTodoSchedules()
         }
     }
@@ -175,7 +184,7 @@ class ScheduleViewModel(
             todoRepository.deleteTag(
                 TodoTag(id = tag.id, name = tag.name, color = tag.color, createdAt = tag.createdAt)
             )
-            onShowSnackBar("태그를 삭제하였습니다")
+            onShowSnackBar(getString(Res.string.snack_tag_deleted))
             loadTodoSchedules()
         }
     }
@@ -192,7 +201,7 @@ class ScheduleViewModel(
     private suspend fun onDeleteSingle(schedule: TodoScheduleUiModel) {
         suspendRunCatching {
             todoRepository.deleteTodo(schedule.toDomainModel())
-            onShowSnackBar("해당 일정을 지웠습니다.")
+            onShowSnackBar(getString(Res.string.snack_schedule_deleted))
             loadTodoSchedules()
         }
     }
@@ -202,7 +211,7 @@ class ScheduleViewModel(
             val allSchedules = todoRepository.loadSchedulesByTodoInfo(schedule.infoId)
             val toDelete = allSchedules.filter { it.date >= schedule.date }
             toDelete.forEach { todoRepository.deleteTodo(it) }
-            onShowSnackBar("해당 일정 이후 연계된 일정들을 모두 지웠습니다.")
+            onShowSnackBar(getString(Res.string.snack_remaining_deleted))
             loadTodoSchedules()
         }
     }
@@ -213,7 +222,7 @@ class ScheduleViewModel(
             todoRepository.updateTodo(
                 domainSchedule.copy(date = domainSchedule.date.plus(1, DateTimeUnit.DAY))
             )
-            onShowSnackBar("해당 일정을 다음 날로 미뤘습니다.")
+            onShowSnackBar(getString(Res.string.snack_delayed_single))
             loadTodoSchedules()
         }
     }
@@ -225,7 +234,7 @@ class ScheduleViewModel(
             toDelay.forEach { s ->
                 todoRepository.updateTodo(s.copy(date = s.date.plus(1, DateTimeUnit.DAY)))
             }
-            onShowSnackBar("${toDelay.size}개 일정을 미뤘습니다.")
+            onShowSnackBar(getString(Res.string.snack_schedules_delayed, toDelay.size))
             loadTodoSchedules()
         }
     }
@@ -242,7 +251,7 @@ class ScheduleViewModel(
         suspendRunCatching {
             val domainSchedule = schedule.toDomainModel()
             todoRepository.updateTodo(domainSchedule.copy(memo = ""))
-            onShowSnackBar("메모를 제거하였습니다")
+            onShowSnackBar(getString(Res.string.snack_memo_removed))
             loadTodoSchedules()
         }
     }

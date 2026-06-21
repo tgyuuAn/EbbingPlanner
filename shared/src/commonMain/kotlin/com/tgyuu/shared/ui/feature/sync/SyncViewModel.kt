@@ -4,6 +4,12 @@ import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.repository.SyncRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_disconnect_done
+import ebbingplanner.shared.generated.resources.snack_disconnect_failed
+import ebbingplanner.shared.generated.resources.snack_sync_done
+import ebbingplanner.shared.generated.resources.snack_sync_failed
+import org.jetbrains.compose.resources.getString
 
 class SyncViewModel(
     private val syncRepository: SyncRepository? = null,
@@ -61,9 +67,9 @@ class SyncViewModel(
                     serverLastUpdatedAt = syncedAt,
                 )
             }
-            onShowSnackbar("동기화가 완료되었습니다")
+            onShowSnackbar(getString(Res.string.snack_sync_done))
         } catch (e: Exception) {
-            onShowSnackbar("동기화에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_sync_failed))
         } finally {
             safeScope.launch {
                 delay(10000)
@@ -82,9 +88,9 @@ class SyncViewModel(
                     serverLastUpdatedAt = null,
                 )
             }
-            onShowSnackbar("연결이 해제되었습니다")
+            onShowSnackbar(getString(Res.string.snack_disconnect_done))
         } catch (e: Exception) {
-            onShowSnackbar("연결 해제에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_disconnect_failed))
         }
     }
 }

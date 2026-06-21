@@ -6,6 +6,12 @@ import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_memo_added
+import ebbingplanner.shared.generated.resources.snack_memo_save_failed
+import ebbingplanner.shared.generated.resources.snack_memo_updated
+import ebbingplanner.shared.generated.resources.snack_schedule_load_failed
+import org.jetbrains.compose.resources.getString
 
 class MemoViewModel(
     private val scheduleId: Int,
@@ -35,7 +41,7 @@ class MemoViewModel(
                     )
                 }
             } catch (e: Exception) {
-                onShowSnackbar("일정을 불러오는데 실패했습니다")
+                onShowSnackbar(getString(Res.string.snack_schedule_load_failed))
             }
         }
     }
@@ -62,10 +68,10 @@ class MemoViewModel(
             val updatedSchedule = originSchedule.copy(memo = currentState.memo)
             todoRepository.updateTodo(updatedSchedule)
             val isEdit = originSchedule.memo.isNotEmpty()
-            onShowSnackbar(if (isEdit) "메모를 수정하였습니다" else "메모를 추가하였습니다")
+            onShowSnackbar(if (isEdit) getString(Res.string.snack_memo_updated) else getString(Res.string.snack_memo_added))
             onNavigateToHome(originSchedule.date)
         } catch (e: Exception) {
-            onShowSnackbar("메모 저장에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_memo_save_failed))
         }
     }
 

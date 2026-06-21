@@ -7,6 +7,11 @@ import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_repeat_delete_failed
+import ebbingplanner.shared.generated.resources.snack_repeat_deleted
+import ebbingplanner.shared.generated.resources.snack_repeat_load_failed
+import org.jetbrains.compose.resources.getString
 
 class RepeatCycleViewModel(
     private val todoRepository: TodoRepository,
@@ -41,7 +46,7 @@ class RepeatCycleViewModel(
             }
         } catch (e: Exception) {
             setState { copy(isLoading = false) }
-            onShowSnackbar("반복 주기를 불러오는데 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_repeat_load_failed))
         }
     }
 
@@ -55,9 +60,9 @@ class RepeatCycleViewModel(
             setState {
                 copy(repeatCycleList = repeatCycleList.filterNot { it.id == repeatCycle.id }.toImmutableList())
             }
-            onShowSnackbar("반복 주기를 삭제했습니다")
+            onShowSnackbar(getString(Res.string.snack_repeat_deleted))
         } catch (e: Exception) {
-            onShowSnackbar("반복 주기 삭제에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_repeat_delete_failed))
         }
     }
 

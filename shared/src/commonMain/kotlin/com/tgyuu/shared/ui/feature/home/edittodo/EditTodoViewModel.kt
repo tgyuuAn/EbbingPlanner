@@ -1,4 +1,5 @@
 package com.tgyuu.shared.ui.feature.home.edittodo
+import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.model.Experiment
@@ -12,6 +13,12 @@ import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_date_has_schedule
+import ebbingplanner.shared.generated.resources.snack_required_fields
+import ebbingplanner.shared.generated.resources.snack_todo_update_failed
+import ebbingplanner.shared.generated.resources.snack_todo_updated
+import org.jetbrains.compose.resources.getString
 
 class EditTodoViewModel(
     private val scheduleId: Int,
@@ -93,7 +100,7 @@ class EditTodoViewModel(
             ?: emptySet()
 
         if (date in scheduledDates) {
-            onShowSnackbar("이미 해당 날짜에 일정이 있습니다.")
+            viewModelScope.launch { onShowSnackbar(getString(Res.string.snack_date_has_schedule)) }
             return
         }
 
@@ -112,7 +119,7 @@ class EditTodoViewModel(
 
     private suspend fun onSaveClick() {
         if (!currentState.isSaveEnabled) {
-            onShowSnackbar("필수 항목을 작성해주세요")
+            onShowSnackbar(getString(Res.string.snack_required_fields))
             return
         }
 
@@ -131,10 +138,10 @@ class EditTodoViewModel(
             todoRepository.updateTodo(newSchedule)
             todoRepository.updateTodoInfo(newSchedule, currentState.restDays.toSet())
 
-            onShowSnackbar("일정을 업데이트 하였습니다")
+            onShowSnackbar(getString(Res.string.snack_todo_updated))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
-            onShowSnackbar("일정 수정에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_todo_update_failed))
         }
     }
 

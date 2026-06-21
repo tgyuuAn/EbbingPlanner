@@ -5,6 +5,11 @@ import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import kotlinx.coroutines.launch
 import com.tgyuu.shared.domain.repository.TodoRepository
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_tag_add_failed
+import ebbingplanner.shared.generated.resources.snack_tag_added
+import ebbingplanner.shared.generated.resources.snack_tag_name_exists
+import org.jetbrains.compose.resources.getString
 
 class AddTagViewModel(
     private val todoRepository: TodoRepository,
@@ -44,7 +49,7 @@ class AddTagViewModel(
         try {
             val existingTags = todoRepository.loadTags()
             if (existingTags.any { it.name.equals(currentState.name.trim(), ignoreCase = true) }) {
-                onShowSnackbar("이미 존재하는 태그 이름입니다")
+                onShowSnackbar(getString(Res.string.snack_tag_name_exists))
                 return
             }
 
@@ -53,13 +58,13 @@ class AddTagViewModel(
                 color = currentState.colorValue,
             )
             if (newId <= 0L) {
-                onShowSnackbar("태그 추가에 실패했습니다")
+                onShowSnackbar(getString(Res.string.snack_tag_add_failed))
                 return
             }
-            onShowSnackbar("새로운 태그를 추가하였습니다")
+            onShowSnackbar(getString(Res.string.snack_tag_added))
             onNavigateBack()
         } catch (e: Exception) {
-            onShowSnackbar("태그 추가에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_tag_add_failed))
         }
     }
 

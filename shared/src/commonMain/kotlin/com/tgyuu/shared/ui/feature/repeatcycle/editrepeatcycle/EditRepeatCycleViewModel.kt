@@ -7,6 +7,12 @@ import com.tgyuu.shared.domain.model.RepeatCycle
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.parsingIntervals
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_repeat_invalid
+import ebbingplanner.shared.generated.resources.snack_repeat_load_failed
+import ebbingplanner.shared.generated.resources.snack_repeat_update_failed
+import ebbingplanner.shared.generated.resources.snack_repeat_updated
+import org.jetbrains.compose.resources.getString
 
 class EditRepeatCycleViewModel(
     private val repeatCycleId: Int,
@@ -32,7 +38,7 @@ class EditRepeatCycleViewModel(
                     )
                 }
             } catch (e: Exception) {
-                onShowSnackbar("반복 주기를 불러오는데 실패했습니다")
+                onShowSnackbar(getString(Res.string.snack_repeat_load_failed))
             }
         }
     }
@@ -58,7 +64,7 @@ class EditRepeatCycleViewModel(
 
         parsingIntervals(currentState.intervals).onSuccess { intervals ->
             if (intervals.isEmpty()) {
-                onShowSnackbar("반복 주기가 적절하지 않습니다.")
+                onShowSnackbar(getString(Res.string.snack_repeat_invalid))
                 return
             }
 
@@ -68,13 +74,13 @@ class EditRepeatCycleViewModel(
                     intervals = intervals,
                 )
                 todoRepository.updateRepeatCycle(updatedRepeatCycle)
-                onShowSnackbar("반복 주기를 수정하였습니다")
+                onShowSnackbar(getString(Res.string.snack_repeat_updated))
                 onNavigateBack()
             } catch (e: Exception) {
-                onShowSnackbar("반복 주기 수정에 실패했습니다")
+                onShowSnackbar(getString(Res.string.snack_repeat_update_failed))
             }
         }.onFailure {
-            onShowSnackbar("반복 주기가 적절하지 않습니다.")
+            onShowSnackbar(getString(Res.string.snack_repeat_invalid))
         }
     }
 

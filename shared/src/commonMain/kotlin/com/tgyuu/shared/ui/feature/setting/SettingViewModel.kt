@@ -12,6 +12,12 @@ import com.tgyuu.shared.domain.repository.SyncRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_alarm_message_changed
+import ebbingplanner.shared.generated.resources.snack_alarm_time_changed
+import ebbingplanner.shared.generated.resources.snack_data_clear_failed
+import ebbingplanner.shared.generated.resources.snack_data_cleared
+import org.jetbrains.compose.resources.getString
 
 class SettingViewModel(
     private val todoRepository: TodoRepository,
@@ -143,7 +149,7 @@ class SettingViewModel(
                 alarmTime = formatAlarmTime(hour, minute),
             )
         }
-        onShowSnackbar("알림 시간이 변경되었습니다")
+        onShowSnackbar(getString(Res.string.snack_alarm_time_changed))
     }
 
     private fun openAlarmMessageSheet() {
@@ -172,7 +178,7 @@ class SettingViewModel(
         val message = currentState.alarmMessageBottomSheet.message
         configRepository?.updateAlarmMessage(message)
         setState { copy(alarmMessage = message) }
-        onShowSnackbar("알림 메시지를 변경했어요")
+        onShowSnackbar(getString(Res.string.snack_alarm_message_changed))
     }
 
     private fun clearData() {
@@ -180,9 +186,9 @@ class SettingViewModel(
             setState { copy(isLoading = true) }
             try {
                 todoRepository.clearData()
-                onShowSnackbar("저장된 데이터를 초기화 했어요")
+                onShowSnackbar(getString(Res.string.snack_data_cleared))
             } catch (e: Exception) {
-                onShowSnackbar("데이터 초기화에 실패했어요")
+                onShowSnackbar(getString(Res.string.snack_data_clear_failed))
             } finally {
                 setState { copy(isLoading = false) }
             }
