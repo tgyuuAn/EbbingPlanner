@@ -1,4 +1,5 @@
 package com.tgyuu.shared.ui.feature.home.editdate
+import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.model.Experiment
@@ -12,6 +13,14 @@ import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_required_fields
+import org.jetbrains.compose.resources.getString
+import ebbingplanner.shared.generated.resources.snack_all_rest_days
+import ebbingplanner.shared.generated.resources.snack_date_repeat_changed
+import ebbingplanner.shared.generated.resources.snack_loading_schedule_info
+import ebbingplanner.shared.generated.resources.snack_no_schedule_to_save
+import ebbingplanner.shared.generated.resources.snack_todo_update_failed
 
 class EditDateViewModel(
     private val infoId: Int,
@@ -88,7 +97,7 @@ class EditDateViewModel(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            onShowSnackbar("모든 요일을 휴식할 수는 없습니다")
+            viewModelScope.launch { onShowSnackbar(getString(Res.string.snack_all_rest_days)) }
             return
         }
 
@@ -97,12 +106,12 @@ class EditDateViewModel(
 
     private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
         if (currentState.schedules.isEmpty()) {
-            onShowSnackbar("저장할 일정이 없습니다")
+            onShowSnackbar(getString(Res.string.snack_no_schedule_to_save))
             return
         }
 
         val tagId = currentState.tagId ?: run {
-            onShowSnackbar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요")
+            onShowSnackbar(getString(Res.string.snack_loading_schedule_info))
             return
         }
 
@@ -122,10 +131,10 @@ class EditDateViewModel(
                 restDays = currentState.restDays.toSet(),
             )
 
-            onShowSnackbar("해당 일정의 날짜 및 반복 주기를 변경하였습니다")
+            onShowSnackbar(getString(Res.string.snack_date_repeat_changed))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
-            onShowSnackbar("일정 수정에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_todo_update_failed))
         }
     }
 

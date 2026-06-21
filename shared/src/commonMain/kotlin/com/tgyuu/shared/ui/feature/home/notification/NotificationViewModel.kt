@@ -4,6 +4,10 @@ import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_alarm_message_reset
+import ebbingplanner.shared.generated.resources.snack_alarm_time_changed
+import org.jetbrains.compose.resources.getString
 
 class NotificationViewModel(
     private val configRepository: ConfigRepository? = null,
@@ -52,7 +56,7 @@ class NotificationViewModel(
     private suspend fun updateTime(hour: Int, minute: Int) {
         configRepository?.updateAlarmTime(hour.toString(), minute.toString())
         setState { copy(alarmHour = hour, alarmMinute = minute, isShowTimePicker = false) }
-        onShowSnackbar("알림 시간이 변경되었습니다")
+        onShowSnackbar(getString(Res.string.snack_alarm_time_changed))
     }
 
     private suspend fun updateMessage(message: String) {
@@ -66,6 +70,6 @@ class NotificationViewModel(
         val defaultMsg = NotificationState.DEFAULT_ALARM_MESSAGE
         setState { copy(alarmMessage = defaultMsg) }
         configRepository?.updateAlarmMessage(defaultMsg)
-        onShowSnackbar("기본 메시지로 초기화되었습니다")
+        onShowSnackbar(getString(Res.string.snack_alarm_message_reset))
     }
 }

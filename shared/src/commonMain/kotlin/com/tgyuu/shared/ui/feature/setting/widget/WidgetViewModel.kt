@@ -7,6 +7,10 @@ import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_widget_save_failed
+import ebbingplanner.shared.generated.resources.snack_widget_saved
+import org.jetbrains.compose.resources.getString
 
 class WidgetViewModel(
     private val configRepository: ConfigRepository? = null,
@@ -58,10 +62,10 @@ class WidgetViewModel(
                     originTextAlpha = selectedTextAlpha,
                 )
             }
-            onShowSnackbar("위젯 설정이 저장되었습니다")
+            onShowSnackbar(getString(Res.string.snack_widget_saved))
             onNavigateBack()
         } catch (e: Exception) {
-            onShowSnackbar("위젯 설정 저장에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_widget_save_failed))
         }
     }
 

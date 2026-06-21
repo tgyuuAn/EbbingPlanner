@@ -18,6 +18,14 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_delayed_single
+import ebbingplanner.shared.generated.resources.snack_memo_removed
+import ebbingplanner.shared.generated.resources.snack_no_schedule_to_delay
+import ebbingplanner.shared.generated.resources.snack_remaining_deleted
+import ebbingplanner.shared.generated.resources.snack_schedule_deleted
+import ebbingplanner.shared.generated.resources.snack_schedules_delayed
+import org.jetbrains.compose.resources.getString
 
 class HomeViewModel(
     private val todoRepository: TodoRepository,
@@ -182,7 +190,7 @@ class HomeViewModel(
         currentMonthSchedules = currentMonthSchedules.filterNot { it.id == schedule.id }
         cachedSchedules = cachedSchedules.filterNot { it.id == schedule.id }
         updateCacheAfterChange()
-        rebuildState("해당 일정을 지웠습니다.")
+        rebuildState(getString(Res.string.snack_schedule_deleted))
     }
 
     private suspend fun onDeleteRemainingSchedule(schedule: TodoScheduleUiModel) {
@@ -199,7 +207,7 @@ class HomeViewModel(
         cachedSchedules = cachedSchedules.filterNot { it.id in deletedIds }
 
         updateCacheAfterChange()
-        rebuildState("해당 일정 이후 연계된 일정들을 모두 지웠습니다.")
+        rebuildState(getString(Res.string.snack_remaining_deleted))
     }
 
     private suspend fun onDelaySchedule(schedule: TodoScheduleUiModel, includeRestDays: Boolean = false) {
@@ -223,7 +231,7 @@ class HomeViewModel(
             if (it.id == schedule.id) delayed else it
         }
         updateCacheAfterChange()
-        rebuildState("해당 일정을 다음 날로 미뤘습니다.")
+        rebuildState(getString(Res.string.snack_delayed_single))
     }
 
     private suspend fun onDelayAllSchedules(schedule: TodoScheduleUiModel, includeRestDays: Boolean = false) {
@@ -236,7 +244,7 @@ class HomeViewModel(
             .sortedByDescending { it.date }
 
         if (futureSchedules.isEmpty()) {
-            onShowSnackBar("미룰 일정이 없습니다.")
+            onShowSnackBar(getString(Res.string.snack_no_schedule_to_delay))
             return
         }
 
@@ -264,7 +272,7 @@ class HomeViewModel(
         }
 
         updateCacheAfterChange()
-        rebuildState("${futureSchedules.size}개 일정을 미뤘습니다.")
+        rebuildState(getString(Res.string.snack_schedules_delayed, futureSchedules.size))
     }
 
     private suspend fun deleteMemo(schedule: TodoScheduleUiModel) {
@@ -278,7 +286,7 @@ class HomeViewModel(
             if (it.id == schedule.id) updated else it
         }
         updateCacheAfterChange()
-        rebuildState("메모를 제거하였습니다")
+        rebuildState(getString(Res.string.snack_memo_removed))
     }
 
     private fun onUpdateSortType(sortType: SortType) {

@@ -5,6 +5,12 @@ import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_repeat_add_failed
+import ebbingplanner.shared.generated.resources.snack_repeat_added
+import ebbingplanner.shared.generated.resources.snack_repeat_invalid
+import ebbingplanner.shared.generated.resources.snack_required_fields
+import org.jetbrains.compose.resources.getString
 
 class AddRepeatCycleViewModel(
     private val todoRepository: TodoRepository,
@@ -34,25 +40,25 @@ class AddRepeatCycleViewModel(
 
     private suspend fun onSaveClick() {
         if (currentState.intervals.isEmpty()) {
-            onShowSnackbar("필수 항목을 작성해주세요")
+            onShowSnackbar(getString(Res.string.snack_required_fields))
             return
         }
 
         parsingIntervals(currentState.intervals).onSuccess { intervals ->
             if (intervals.isEmpty()) {
-                onShowSnackbar("반복 주기가 적절하지 않습니다.")
+                onShowSnackbar(getString(Res.string.snack_repeat_invalid))
                 return
             }
 
             try {
                 todoRepository.addRepeatCycle(intervals = intervals)
-                onShowSnackbar("반복 주기를 추가하였습니다")
+                onShowSnackbar(getString(Res.string.snack_repeat_added))
                 onNavigateBack()
             } catch (e: Exception) {
-                onShowSnackbar("반복 주기 추가에 실패했습니다")
+                onShowSnackbar(getString(Res.string.snack_repeat_add_failed))
             }
         }.onFailure {
-            onShowSnackbar("반복 주기가 적절하지 않습니다.")
+            onShowSnackbar(getString(Res.string.snack_repeat_invalid))
         }
     }
 

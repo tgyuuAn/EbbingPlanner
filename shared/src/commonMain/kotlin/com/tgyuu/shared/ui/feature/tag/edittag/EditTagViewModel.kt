@@ -6,6 +6,12 @@ import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.TodoTag
 import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_tag_load_failed
+import ebbingplanner.shared.generated.resources.snack_tag_name_exists
+import ebbingplanner.shared.generated.resources.snack_tag_update_failed
+import ebbingplanner.shared.generated.resources.snack_tag_updated
+import org.jetbrains.compose.resources.getString
 
 class EditTagViewModel(
     private val tagId: Int,
@@ -36,7 +42,7 @@ class EditTagViewModel(
                     )
                 }
             } catch (e: Exception) {
-                onShowSnackbar("태그를 불러오는데 실패했습니다")
+                onShowSnackbar(getString(Res.string.snack_tag_load_failed))
             }
         }
     }
@@ -72,7 +78,7 @@ class EditTagViewModel(
                 it.id != originTag.id && it.name.equals(trimmedName, ignoreCase = true)
             }
             if (isDuplicate) {
-                onShowSnackbar("이미 존재하는 태그 이름입니다")
+                onShowSnackbar(getString(Res.string.snack_tag_name_exists))
                 return
             }
 
@@ -83,10 +89,10 @@ class EditTagViewModel(
                 createdAt = originTag.createdAt,
             )
             todoRepository.updateTag(updatedTag)
-            onShowSnackbar("태그를 수정하였습니다")
+            onShowSnackbar(getString(Res.string.snack_tag_updated))
             onNavigateBack()
         } catch (e: Exception) {
-            onShowSnackbar("태그 수정에 실패했습니다")
+            onShowSnackbar(getString(Res.string.snack_tag_update_failed))
         }
     }
 

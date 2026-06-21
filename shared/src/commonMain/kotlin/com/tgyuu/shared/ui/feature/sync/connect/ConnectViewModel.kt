@@ -9,6 +9,15 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_cannot_link_self
+import ebbingplanner.shared.generated.resources.snack_code_empty
+import ebbingplanner.shared.generated.resources.snack_code_expired
+import ebbingplanner.shared.generated.resources.snack_code_generated
+import ebbingplanner.shared.generated.resources.snack_code_invalid_or_network
+import ebbingplanner.shared.generated.resources.snack_code_invalid_or_network2
+import ebbingplanner.shared.generated.resources.snack_link_success
+import org.jetbrains.compose.resources.getString
 
 class ConnectViewModel(
     private val syncRepository: SyncRepository? = null,
@@ -78,7 +87,7 @@ class ConnectViewModel(
 
     private suspend fun generateCode() {
         if (currentState.myCode.isEmpty()) {
-            onShowSnackbar("연동 코드는 비어있을 수 없습니다.")
+            onShowSnackbar(getString(Res.string.snack_code_empty))
             return
         }
 
@@ -90,33 +99,33 @@ class ConnectViewModel(
                     isGenerateButtonEnabled = false,
                 )
             }
-            onShowSnackbar("연동 코드 생성에 성공하였습니다.")
+            onShowSnackbar(getString(Res.string.snack_code_generated))
             startTimer()
         } catch (e: Exception) {
-            onShowSnackbar("유효하지 않은 코드이거나, 네트워크가 불안정합니다.")
+            onShowSnackbar(getString(Res.string.snack_code_invalid_or_network))
         }
     }
 
     private suspend fun connectAnother() {
         if (currentState.anotherCode.isEmpty()) {
-            onShowSnackbar("연동 코드는 비어있을 수 없습니다.")
+            onShowSnackbar(getString(Res.string.snack_code_empty))
             return
         }
 
         try {
             val connectInfo = syncRepository?.connectAnother(currentState.anotherCode)
             if (connectInfo == null) {
-                onShowSnackbar("생성되지 않은 코드이거나, 유효시간이 만료되었습니다.")
+                onShowSnackbar(getString(Res.string.snack_code_expired))
                 return
             }
             if (connectInfo.uuid == currentState.uuid) {
-                onShowSnackbar("나와는 연동할 수 없습니다.")
+                onShowSnackbar(getString(Res.string.snack_cannot_link_self))
                 return
             }
-            onShowSnackbar("연동에 성공하였습니다.")
+            onShowSnackbar(getString(Res.string.snack_link_success))
             onNavigateBack()
         } catch (e: Exception) {
-            onShowSnackbar("생성되지 않은 코드이거나, 네트워크가 불안정합니다.")
+            onShowSnackbar(getString(Res.string.snack_code_invalid_or_network2))
         }
     }
 
