@@ -167,4 +167,83 @@
     <string name="home_exit_confirm_sub">今戻ると予定は保存されません。\nそのまま続けて作成してみましょう。</string>
     <string name="home_exit_confirm_stop">作成を中断する</string>
     <string name="home_exit_confirm_continue">続けて作成する</string>
+
+    <!-- 予定まとめ -->
+    <string name="schedule_top_bar_title">予定まとめ</string>
+    <string name="schedule_tag_count_completion">%1$d件の予定、完了率%2$d%%</string>
+    <string name="schedule_collapse">閉じる</string>
+    <string name="schedule_card_date">%1$d月%2$d日 (%3$s)</string>
+    <string name="schedule_empty_message">まだ予定がありません。\n新しい予定を登録しましょうか？</string>
+    <string name="schedule_empty_register_button">予定を登録する</string>
+    <string name="schedule_tag_edit_title">「%1$s」タグの編集</string>
+    <string name="schedule_tag_name_label">タグ名</string>
+    <string name="schedule_tag_name_hint">タグ名を入力してください</string>
+    <string name="schedule_tag_color_label">カラー</string>
+    <string name="schedule_tag_delete_label">「%1$s」タグを削除</string>
+    <string name="schedule_tag_save_button">保存する</string>
+    <string name="schedule_options_title">編集</string>
+    <string name="schedule_options_subtitle">%1$s の予定をどうしますか？</string>
+    <string name="schedule_option_edit">修正する</string>
+    <string name="schedule_option_delete">削除する</string>
+    <string name="schedule_option_delay_tomorrow">明日に延期する</string>
+    <string name="schedule_option_add_memo">メモを追加する</string>
+    <string name="schedule_option_edit_memo">メモを編集する</string>
+    <string name="schedule_option_delete_memo">メモを削除する</string>
+    <string name="schedule_update_title">修正方法</string>
+    <string name="schedule_update_info">予定情報を修正する</string>
+    <string name="schedule_update_repeat_cycle">関連する予定の繰り返し周期を再設定する</string>
+    <string name="schedule_delete_title">削除方法</string>
+    <string name="schedule_delete_single">この予定のみ削除する</string>
+    <string name="schedule_delete_remaining">これ以降の関連予定をすべて削除</string>
+    <string name="schedule_delay_title">延期方法</string>
+    <string name="schedule_delay_single">この予定のみ延期する</string>
+    <string name="schedule_delay_all">これ以降の予定をすべて延期する</string>
+
+    <!-- メモ -->
+    <string name="memo_label">メモ</string>
+    <string name="memo_input_hint">どんなメモを残しますか？</string>
+    <string name="memo_preview_label">プレビュー</string>
+    <string name="memo_save">保存</string>
+    <string name="memo_add_title">メモ追加</string>
+    <string name="memo_edit_title">メモ編集</string>
+    <string name="memo_add_headline_suffix">" の予定に\nメモを追加します"</string>
+    <string name="memo_edit_headline_suffix">" の予定に\nメモを編集します"</string>
+
+    <!-- 通知 -->
+    <string name="notification_placeholder_desc">{タスク}を使うと予定名に自動置換されます</string>
+
+    <!-- オンボーディング -->
+    <string name="onboarding_next">次へ</string>
+    <string name="onboarding_start">始める</string>
+    <string name="onboarding_page1_title">エビングハウスの忘却曲線に基づく学習</string>
+    <string name="onboarding_page1_desc">忘却曲線に合わせて最適な復習タイミングを\n自動でお知らせします。</string>
+    <string name="onboarding_page2_title">簡単な予定チェック</string>
+    <string name="onboarding_page2_desc">ホーム画面で簡単に\n今日の予定を確認して完了しましょう。</string>
+    <string name="onboarding_page3_title">通知で見逃さない</string>
+    <string name="onboarding_page3_desc">設定した時間に今日のやることを\n通知でお知らせします。</string>
+    <string name="onboarding_page4_title">複数の端末で同期</string>
+    <string name="onboarding_page4_desc">他の端末と接続して\n予定を一緒に管理しましょう。</string>
+
+    <!-- 端末連携 -->
+    <string name="connect_title">他の端末と連携</string>
+    <string name="connect_dialog_title">このIDで連携しますか？</string>
+    <string name="connect_dialog_desc_1">"現在の端末にあるデータは "</string>
+    <string name="connect_dialog_desc_highlight_1">アップロードされたデータですべて置き換え</string>
+    <string name="connect_dialog_desc_2">"られます。\n重要なデータは "</string>
+    <string name="connect_dialog_desc_highlight_2">連携前に必ず確認</string>
+    <string name="connect_dialog_desc_3">してください。</string>
+    <string name="connect_dialog_confirm">連携</string>
+    <string name="connect_upload_title">この端末のデータで連携する</string>
+    <string name="connect_generate">生成</string>
+    <string name="connect_upload_desc">自分のデータで連携できるコードを生成してください。</string>
+    <string name="connect_download_title">他の端末のデータで連携する</string>
+    <string name="connect_connect">接続</string>
+    <string name="connect_download_desc">使用するデータを持つ端末の連携コードを入力してください。</string>
+    <string name="connect_guide_1">"1. データを保存する端末で "</string>
+    <string name="connect_guide_highlight_1">連携コードを生成</string>
+    <string name="connect_guide_2">"してください。\n2. 生成されたコードは "</string>
+    <string name="connect_guide_highlight_2">10分間有効</string>
+    <string name="connect_guide_3">"です。\n3. 他の端末でそのコードを入力して連携を完了してください。\n4. コードを入力する端末の "</string>
+    <string name="connect_guide_highlight_3">"既存データは上書きされるため、"</string>
+    <string name="connect_guide_4">慎重に選択してください。</string>
 </resources>

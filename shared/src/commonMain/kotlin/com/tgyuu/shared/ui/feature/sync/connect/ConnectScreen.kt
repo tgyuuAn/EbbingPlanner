@@ -41,6 +41,30 @@ import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.connect_connect
+import ebbingplanner.shared.generated.resources.connect_dialog_confirm
+import ebbingplanner.shared.generated.resources.connect_dialog_desc_1
+import ebbingplanner.shared.generated.resources.connect_dialog_desc_2
+import ebbingplanner.shared.generated.resources.connect_dialog_desc_3
+import ebbingplanner.shared.generated.resources.connect_dialog_desc_highlight_1
+import ebbingplanner.shared.generated.resources.connect_dialog_desc_highlight_2
+import ebbingplanner.shared.generated.resources.connect_dialog_title
+import ebbingplanner.shared.generated.resources.connect_download_desc
+import ebbingplanner.shared.generated.resources.connect_download_title
+import ebbingplanner.shared.generated.resources.connect_generate
+import ebbingplanner.shared.generated.resources.connect_guide_1
+import ebbingplanner.shared.generated.resources.connect_guide_2
+import ebbingplanner.shared.generated.resources.connect_guide_3
+import ebbingplanner.shared.generated.resources.connect_guide_4
+import ebbingplanner.shared.generated.resources.connect_guide_highlight_1
+import ebbingplanner.shared.generated.resources.connect_guide_highlight_2
+import ebbingplanner.shared.generated.resources.connect_guide_highlight_3
+import ebbingplanner.shared.generated.resources.connect_title
+import ebbingplanner.shared.generated.resources.connect_upload_desc
+import ebbingplanner.shared.generated.resources.connect_upload_title
+import ebbingplanner.shared.generated.resources.sync_back
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ConnectScreen(
@@ -54,25 +78,30 @@ fun ConnectScreen(
     if (isShowConnectDialog) {
         EbbingDialog(
             dialogTop = {
+                val descPart1 = stringResource(Res.string.connect_dialog_desc_1)
+                val descHighlight1 = stringResource(Res.string.connect_dialog_desc_highlight_1)
+                val descPart2 = stringResource(Res.string.connect_dialog_desc_2)
+                val descHighlight2 = stringResource(Res.string.connect_dialog_desc_highlight_2)
+                val descPart3 = stringResource(Res.string.connect_dialog_desc_3)
                 EbbingDialogDefaultTop(
-                    title = "해당 ID로 연동할까요?",
+                    title = stringResource(Res.string.connect_dialog_title),
                     subText = buildAnnotatedString {
-                        append("현재 기기에 있는 데이터는 ")
+                        append(descPart1)
                         withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                            append("업로드된 데이터로 모두 대체")
+                            append(descHighlight1)
                         }
-                        append("됩니다.\n중요한 데이터는 ")
+                        append(descPart2)
                         withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                            append("연동 전에 반드시 확인")
+                            append(descHighlight2)
                         }
-                        append("해주세요.")
+                        append(descPart3)
                     },
                 )
             },
             dialogBottom = {
                 EbbingDialogBottom(
-                    leftButtonText = "뒤로",
-                    rightButtonText = "연동",
+                    leftButtonText = stringResource(Res.string.sync_back),
+                    rightButtonText = stringResource(Res.string.connect_dialog_confirm),
                     onLeftButtonClick = { isShowConnectDialog = false },
                     onRightButtonClick = {
                         isShowConnectDialog = false
@@ -92,7 +121,7 @@ fun ConnectScreen(
         val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
         Column(modifier = Modifier.fillMaxSize()) {
             EbbingSubTopBar(
-                title = "다른 기기와 연동",
+                title = stringResource(Res.string.connect_title),
                 onNavigationClick = { viewModel.onIntent(ConnectIntent.OnBackClick) },
                 modifier = Modifier.padding(bottom = 20.dp),
             )
@@ -165,7 +194,7 @@ private fun LinkBody(
 
     Column(modifier = modifier) {
         Text(
-            text = "내 기기 데이터로 연동시키기",
+            text = stringResource(Res.string.connect_upload_title),
             style = EbbingTheme.typography.bodySM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -217,7 +246,7 @@ private fun LinkBody(
             )
 
             EbbingSolidButton(
-                label = "생성",
+                label = stringResource(Res.string.connect_generate),
                 onClick = {
                     keyboardController?.hide()
                     onClickGenerateCode()
@@ -228,7 +257,7 @@ private fun LinkBody(
         }
 
         Text(
-            text = "내 데이터로 연동할 수 있는 코드를 생성하세요.",
+            text = stringResource(Res.string.connect_upload_desc),
             style = EbbingTheme.typography.bodySM,
             color = EbbingTheme.colors.dark3,
         )
@@ -240,7 +269,7 @@ private fun LinkBody(
         )
 
         Text(
-            text = "다른 기기 데이터로 연동하기",
+            text = stringResource(Res.string.connect_download_title),
             style = EbbingTheme.typography.bodySM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -280,7 +309,7 @@ private fun LinkBody(
             )
 
             EbbingSolidButton(
-                label = "연결",
+                label = stringResource(Res.string.connect_connect),
                 onClick = {
                     keyboardController?.hide()
                     if (anotherCode.isNotEmpty() && isConnectButtonEnabled) {
@@ -293,7 +322,7 @@ private fun LinkBody(
         }
 
         Text(
-            text = "사용할 데이터를 가진 기기의 연동 코드를 입력하세요.",
+            text = stringResource(Res.string.connect_download_desc),
             style = EbbingTheme.typography.bodySM,
             color = EbbingTheme.colors.dark3,
         )
@@ -310,24 +339,28 @@ private fun LinkBody(
 private fun DescriptionBody(
     modifier: Modifier = Modifier,
 ) {
+    val guide1 = stringResource(Res.string.connect_guide_1)
+    val guideHighlight1 = stringResource(Res.string.connect_guide_highlight_1)
+    val guide2 = stringResource(Res.string.connect_guide_2)
+    val guideHighlight2 = stringResource(Res.string.connect_guide_highlight_2)
+    val guide3 = stringResource(Res.string.connect_guide_3)
+    val guideHighlight3 = stringResource(Res.string.connect_guide_highlight_3)
+    val guide4 = stringResource(Res.string.connect_guide_4)
     Text(
         text = buildAnnotatedString {
-            append("1. 데이터를 보존할 기기에서 ")
+            append(guide1)
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("연동 코드를 생성")
+                append(guideHighlight1)
             }
-            append("하세요.\n")
-            append("2. 생성된 코드는 ")
+            append(guide2)
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("10분간 유효")
+                append(guideHighlight2)
             }
-            append("합니다.\n")
-            append("3. 다른 기기에서 해당 코드를 입력해 연동을 완료하세요.\n")
-            append("4. 코드를 입력하는 기기의 ")
+            append(guide3)
             withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                append("기존 데이터는 덮어씌워지므로, ")
+                append(guideHighlight3)
             }
-            append("신중히 선택해 주세요.")
+            append(guide4)
         },
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.bodyMM,

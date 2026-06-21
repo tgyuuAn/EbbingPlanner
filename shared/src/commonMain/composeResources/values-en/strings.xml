@@ -167,4 +167,83 @@
     <string name="home_exit_confirm_sub">If you go back now, the task won\'t be saved.\nKeep going and finish writing it.</string>
     <string name="home_exit_confirm_stop">Stop writing</string>
     <string name="home_exit_confirm_continue">Keep writing</string>
+
+    <!-- All Schedules -->
+    <string name="schedule_top_bar_title">All Schedules</string>
+    <string name="schedule_tag_count_completion">%1$d schedules, %2$d%% completed</string>
+    <string name="schedule_collapse">Collapse</string>
+    <string name="schedule_card_date">%1$d/%2$d (%3$s)</string>
+    <string name="schedule_empty_message">No schedules yet.\nShall we add a new one?</string>
+    <string name="schedule_empty_register_button">Add a schedule</string>
+    <string name="schedule_tag_edit_title">Edit \'%1$s\' tag</string>
+    <string name="schedule_tag_name_label">Tag name</string>
+    <string name="schedule_tag_name_hint">Enter a tag name</string>
+    <string name="schedule_tag_color_label">Color</string>
+    <string name="schedule_tag_delete_label">Delete \'%1$s\' tag</string>
+    <string name="schedule_tag_save_button">Save</string>
+    <string name="schedule_options_title">Edit</string>
+    <string name="schedule_options_subtitle">What would you like to do with the %1$s schedule?</string>
+    <string name="schedule_option_edit">Edit</string>
+    <string name="schedule_option_delete">Delete</string>
+    <string name="schedule_option_delay_tomorrow">Postpone to tomorrow</string>
+    <string name="schedule_option_add_memo">Add memo</string>
+    <string name="schedule_option_edit_memo">Edit memo</string>
+    <string name="schedule_option_delete_memo">Delete memo</string>
+    <string name="schedule_update_title">Edit method</string>
+    <string name="schedule_update_info">Edit schedule details</string>
+    <string name="schedule_update_repeat_cycle">Reset repeat cycle for linked schedules</string>
+    <string name="schedule_delete_title">Delete method</string>
+    <string name="schedule_delete_single">Delete only this schedule</string>
+    <string name="schedule_delete_remaining">Delete all following linked schedules</string>
+    <string name="schedule_delay_title">Postpone method</string>
+    <string name="schedule_delay_single">Postpone only this schedule</string>
+    <string name="schedule_delay_all">Postpone all following schedules</string>
+
+    <!-- Note -->
+    <string name="memo_label">Note</string>
+    <string name="memo_input_hint">What note would you like to leave?</string>
+    <string name="memo_preview_label">Preview</string>
+    <string name="memo_save">Save</string>
+    <string name="memo_add_title">Add note</string>
+    <string name="memo_edit_title">Edit note</string>
+    <string name="memo_add_headline_suffix">" schedule\nAdd a note"</string>
+    <string name="memo_edit_headline_suffix">" schedule\nEdit the note"</string>
+
+    <!-- Notification -->
+    <string name="notification_placeholder_desc">Using {task} automatically replaces it with the schedule name</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Get started</string>
+    <string name="onboarding_page1_title">Learning based on the Ebbinghaus forgetting curve</string>
+    <string name="onboarding_page1_desc">We automatically tell you the optimal review timing\nbased on the forgetting curve.</string>
+    <string name="onboarding_page2_title">Easy schedule check</string>
+    <string name="onboarding_page2_desc">Easily check and complete today\'s schedule\nfrom the home screen.</string>
+    <string name="onboarding_page3_title">Never miss it with reminders</string>
+    <string name="onboarding_page3_desc">We notify you of today\'s tasks\nat the time you set.</string>
+    <string name="onboarding_page4_title">Sync across devices</string>
+    <string name="onboarding_page4_desc">Connect with other devices\nto manage schedules together.</string>
+
+    <!-- Device linking -->
+    <string name="connect_title">Link with another device</string>
+    <string name="connect_dialog_title">Link with this ID?</string>
+    <string name="connect_dialog_desc_1">"The data on this device "</string>
+    <string name="connect_dialog_desc_highlight_1">will all be replaced with the uploaded data</string>
+    <string name="connect_dialog_desc_2">".\nFor important data, "</string>
+    <string name="connect_dialog_desc_highlight_2">be sure to check before linking</string>
+    <string name="connect_dialog_desc_3">.</string>
+    <string name="connect_dialog_confirm">Link</string>
+    <string name="connect_upload_title">Link using this device\'s data</string>
+    <string name="connect_generate">Generate</string>
+    <string name="connect_upload_desc">Generate a code to link using your data.</string>
+    <string name="connect_download_title">Link using another device\'s data</string>
+    <string name="connect_connect">Connect</string>
+    <string name="connect_download_desc">Enter the link code of the device with the data you want to use.</string>
+    <string name="connect_guide_1">"1. On the device whose data you want to keep, "</string>
+    <string name="connect_guide_highlight_1">generate a link code</string>
+    <string name="connect_guide_2">".\n2. The generated code is "</string>
+    <string name="connect_guide_highlight_2">valid for 10 minutes</string>
+    <string name="connect_guide_3">".\n3. Enter the code on the other device to complete linking.\n4. On the device entering the code, "</string>
+    <string name="connect_guide_highlight_3">"the existing data will be overwritten, "</string>
+    <string name="connect_guide_4">so please choose carefully.</string>
 </resources>

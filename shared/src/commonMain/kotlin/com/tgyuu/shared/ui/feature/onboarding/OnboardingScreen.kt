@@ -33,6 +33,18 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.onboarding_next
+import ebbingplanner.shared.generated.resources.onboarding_page1_desc
+import ebbingplanner.shared.generated.resources.onboarding_page1_title
+import ebbingplanner.shared.generated.resources.onboarding_page2_desc
+import ebbingplanner.shared.generated.resources.onboarding_page2_title
+import ebbingplanner.shared.generated.resources.onboarding_page3_desc
+import ebbingplanner.shared.generated.resources.onboarding_page3_title
+import ebbingplanner.shared.generated.resources.onboarding_page4_desc
+import ebbingplanner.shared.generated.resources.onboarding_page4_title
+import ebbingplanner.shared.generated.resources.onboarding_start
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun OnboardingScreen(
@@ -65,7 +77,7 @@ fun OnboardingScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         EbbingSolidButton(
-            label = if (pagerState.currentPage == 3) "시작하기" else "다음",
+            label = if (pagerState.currentPage == 3) stringResource(Res.string.onboarding_start) else stringResource(Res.string.onboarding_next),
             onClick = {
                 if (pagerState.currentPage == 3) {
                     viewModel.onIntent(OnboardingIntent.OnStartClick)
@@ -90,23 +102,23 @@ private fun OnboardingPageContent(
     val (icon, title, description) = when (page) {
         0 -> Triple(
             Icons.Filled.DateRange,
-            "에빙하우스 망각 곡선 기반 학습",
-            "망각 곡선에 맞춰 최적의 복습 시점을\n자동으로 알려드려요."
+            stringResource(Res.string.onboarding_page1_title),
+            stringResource(Res.string.onboarding_page1_desc)
         )
         1 -> Triple(
             Icons.Filled.CheckCircle,
-            "간편한 일정 체크",
-            "홈 화면에서 간편하게\n오늘의 일정을 확인하고 완료해보세요."
+            stringResource(Res.string.onboarding_page2_title),
+            stringResource(Res.string.onboarding_page2_desc)
         )
         2 -> Triple(
             Icons.Filled.Notifications,
-            "알림으로 놓치지 않게",
-            "설정한 시간에 오늘의 할 일을\n알림으로 알려드려요."
+            stringResource(Res.string.onboarding_page3_title),
+            stringResource(Res.string.onboarding_page3_desc)
         )
         else -> Triple(
             Icons.Filled.Refresh,
-            "여러 기기에서 동기화",
-            "다른 기기와 연결하여\n일정을 함께 관리해보세요."
+            stringResource(Res.string.onboarding_page4_title),
+            stringResource(Res.string.onboarding_page4_desc)
         )
     }
 

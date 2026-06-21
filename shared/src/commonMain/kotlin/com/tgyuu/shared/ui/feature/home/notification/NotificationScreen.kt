@@ -32,6 +32,20 @@ import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.component.EbbingToggle
 import com.tgyuu.shared.designsystem.component.picker.EbbingPicker
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.ds_am
+import ebbingplanner.shared.generated.resources.ds_pm
+import ebbingplanner.shared.generated.resources.home_apply
+import ebbingplanner.shared.generated.resources.notification_placeholder_desc
+import ebbingplanner.shared.generated.resources.setting_alarm_message
+import ebbingplanner.shared.generated.resources.setting_alarm_message_hint
+import ebbingplanner.shared.generated.resources.setting_alarm_time
+import ebbingplanner.shared.generated.resources.setting_alarm_time_subtitle
+import ebbingplanner.shared.generated.resources.setting_clear
+import ebbingplanner.shared.generated.resources.setting_notification
+import ebbingplanner.shared.generated.resources.setting_notification_setting
+import ebbingplanner.shared.generated.resources.setting_preview
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NotificationScreen(
@@ -56,7 +70,7 @@ fun NotificationScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "알림 설정",
+            title = stringResource(Res.string.setting_notification_setting),
             onNavigationClick = { viewModel.onIntent(NotificationIntent.OnBackClick) },
             modifier = Modifier.padding(horizontal = 20.dp),
         )
@@ -122,7 +136,7 @@ private fun NotificationToggleSection(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            text = "알림",
+            text = stringResource(Res.string.setting_notification),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
@@ -143,7 +157,7 @@ private fun NotificationDetailSection(
     onResetMessage: () -> Unit,
 ) {
     // Alarm time
-    Text(text = "알림 시간", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(text = stringResource(Res.string.setting_alarm_time), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Text(
         text = state.formattedAlarmTime,
         style = EbbingTheme.typography.headingMSB,
@@ -154,21 +168,21 @@ private fun NotificationDetailSection(
 
     // Alarm message
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        Text(text = "알림 메시지", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.weight(1f))
-        Text(text = "초기화", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.clickable { onResetMessage() })
+        Text(text = stringResource(Res.string.setting_alarm_message), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.weight(1f))
+        Text(text = stringResource(Res.string.setting_clear), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.clickable { onResetMessage() })
     }
     EbbingTextInputDefault(
         value = state.alarmMessage,
-        hint = "알림 메시지를 입력하세요",
+        hint = stringResource(Res.string.setting_alarm_message_hint),
         onValueChange = onMessageChange,
         limit = 100,
         modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
     )
-    Text(text = "{할일}을 사용하면 일정 이름으로 자동 대체됩니다", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(top = 4.dp, start = 4.dp))
+    Text(text = stringResource(Res.string.notification_placeholder_desc), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(top = 4.dp, start = 4.dp))
     HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
 
     // Preview
-    Text(text = "미리보기", style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Text(text = state.previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
 }
 
@@ -179,11 +193,13 @@ private fun AlarmTimePickerDialog(
     onDismiss: () -> Unit,
     onConfirm: (Int, Int) -> Unit,
 ) {
-    var newAmPm by remember { mutableStateOf(if (initialHour >= 12) "오후" else "오전") }
+    val amText = stringResource(Res.string.ds_am)
+    val pmText = stringResource(Res.string.ds_pm)
+    var newAmPm by remember { mutableStateOf(if (initialHour >= 12) pmText else amText) }
     var newHour by remember { mutableIntStateOf(initialHour) }
     var newMinute by remember { mutableIntStateOf(initialMinute) }
 
-    val pickerAmPm = if (initialHour >= 12) "오후" else "오전"
+    val pickerAmPm = if (initialHour >= 12) pmText else amText
     val pickerHour = when {
         initialHour == 0 -> "12"
         initialHour > 12 -> (initialHour - 12).toString()
@@ -195,8 +211,8 @@ private fun AlarmTimePickerDialog(
         onDismissRequest = onDismiss,
         dialogTop = {
             EbbingDialogDefaultTop(
-                title = "알림 시간",
-                subText = "언제 남은 일정 알림을 보낼까요?",
+                title = stringResource(Res.string.setting_alarm_time),
+                subText = stringResource(Res.string.setting_alarm_time_subtitle),
             )
         },
         dialogBottom = {
@@ -219,12 +235,12 @@ private fun AlarmTimePickerDialog(
                 )
 
                 EbbingSolidButton(
-                    label = "적용하기",
+                    label = stringResource(Res.string.home_apply),
                     onClick = {
                         val adjustedHour = when {
-                            newAmPm == "오후" && newHour == 12 -> 12
-                            newAmPm == "오후" -> newHour + 12
-                            newAmPm == "오전" && newHour == 12 -> 0
+                            newAmPm == pmText && newHour == 12 -> 12
+                            newAmPm == pmText -> newHour + 12
+                            newAmPm == amText && newHour == 12 -> 0
                             else -> newHour
                         }
                         onConfirm(adjustedHour, newMinute)

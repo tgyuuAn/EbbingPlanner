@@ -41,6 +41,31 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHead
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.feature.tag.bottomsheet.TAG_COLORS
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.schedule_delay_all
+import ebbingplanner.shared.generated.resources.schedule_delay_single
+import ebbingplanner.shared.generated.resources.schedule_delay_title
+import ebbingplanner.shared.generated.resources.schedule_delete_remaining
+import ebbingplanner.shared.generated.resources.schedule_delete_single
+import ebbingplanner.shared.generated.resources.schedule_delete_title
+import ebbingplanner.shared.generated.resources.schedule_option_add_memo
+import ebbingplanner.shared.generated.resources.schedule_option_delay_tomorrow
+import ebbingplanner.shared.generated.resources.schedule_option_delete
+import ebbingplanner.shared.generated.resources.schedule_option_delete_memo
+import ebbingplanner.shared.generated.resources.schedule_option_edit
+import ebbingplanner.shared.generated.resources.schedule_option_edit_memo
+import ebbingplanner.shared.generated.resources.schedule_options_subtitle
+import ebbingplanner.shared.generated.resources.schedule_options_title
+import ebbingplanner.shared.generated.resources.schedule_tag_color_label
+import ebbingplanner.shared.generated.resources.schedule_tag_delete_label
+import ebbingplanner.shared.generated.resources.schedule_tag_edit_title
+import ebbingplanner.shared.generated.resources.schedule_tag_name_hint
+import ebbingplanner.shared.generated.resources.schedule_tag_name_label
+import ebbingplanner.shared.generated.resources.schedule_tag_save_button
+import ebbingplanner.shared.generated.resources.schedule_update_info
+import ebbingplanner.shared.generated.resources.schedule_update_repeat_cycle
+import ebbingplanner.shared.generated.resources.schedule_update_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TagEditBottomSheet(
@@ -59,12 +84,12 @@ fun TagEditBottomSheet(
             .padding(horizontal = 20.dp)
             .animateContentSize(),
     ) {
-        EbbingBottomSheetHeader(title = "'$originName' 태그 편집")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_tag_edit_title, originName))
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "태그 이름",
+            text = stringResource(Res.string.schedule_tag_name_label),
             style = EbbingTheme.typography.bodySSB,
             color = EbbingTheme.colors.black,
         )
@@ -74,7 +99,7 @@ fun TagEditBottomSheet(
         com.tgyuu.shared.designsystem.component.EbbingTextInputDefault(
             value = name,
             onValueChange = { name = it },
-            hint = "태그 이름을 입력하세요",
+            hint = stringResource(Res.string.schedule_tag_name_hint),
             limit = 20,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -88,7 +113,7 @@ fun TagEditBottomSheet(
                 .clickable { isColorExpanded = !isColorExpanded },
         ) {
             Text(
-                text = "색상",
+                text = stringResource(Res.string.schedule_tag_color_label),
                 style = EbbingTheme.typography.bodySSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.weight(1f),
@@ -158,7 +183,7 @@ fun TagEditBottomSheet(
             )
 
             Text(
-                text = "'$originName' 태그 삭제",
+                text = stringResource(Res.string.schedule_tag_delete_label, originName),
                 style = EbbingTheme.typography.bodySM,
                 color = EbbingTheme.colors.error,
                 modifier = Modifier.padding(vertical = 4.dp),
@@ -168,7 +193,7 @@ fun TagEditBottomSheet(
         Spacer(modifier = Modifier.height(16.dp))
 
         EbbingSolidButton(
-            label = "저장하기",
+            label = stringResource(Res.string.schedule_tag_save_button),
             onClick = { onSave(name, selectedColor) },
             enabled = name.isNotBlank(),
             modifier = Modifier
@@ -193,8 +218,8 @@ fun ScheduleOptionsBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "편집",
-            subTitle = "${selectedSchedule.title} 일정을 어떻게 할까요?"
+            title = stringResource(Res.string.schedule_options_title),
+            subTitle = stringResource(Res.string.schedule_options_subtitle, selectedSchedule.title)
         )
 
         Column(
@@ -202,15 +227,15 @@ fun ScheduleOptionsBottomSheet(
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 22.dp),
         ) {
-            BottomSheetOptionItem(text = "수정하기", onClick = { onClickUpdate(selectedSchedule) })
-            BottomSheetOptionItem(text = "삭제하기", onClick = { onClickDelete(selectedSchedule) })
-            BottomSheetOptionItem(text = "내일로 미루기", onClick = { onClickDelay(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_option_edit), onClick = { onClickUpdate(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_option_delete), onClick = { onClickDelete(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_option_delay_tomorrow), onClick = { onClickDelay(selectedSchedule) })
             BottomSheetOptionItem(
-                text = if (selectedSchedule.memo.isEmpty()) "메모 추가하기" else "메모 수정하기",
+                text = if (selectedSchedule.memo.isEmpty()) stringResource(Res.string.schedule_option_add_memo) else stringResource(Res.string.schedule_option_edit_memo),
                 onClick = { onClickMemo(selectedSchedule) },
             )
             if (selectedSchedule.memo.isNotEmpty()) {
-                BottomSheetOptionItem(text = "메모 지우기", onClick = { onClickDeleteMemo(selectedSchedule) })
+                BottomSheetOptionItem(text = stringResource(Res.string.schedule_option_delete_memo), onClick = { onClickDeleteMemo(selectedSchedule) })
             }
         }
     }
@@ -227,15 +252,15 @@ fun ScheduleUpdateBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "수정 방법")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_update_title))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
-            BottomSheetOptionItem(text = "일정 정보 수정하기", onClick = { onClickUpdateInfo(selectedSchedule) })
-            BottomSheetOptionItem(text = "연관된 일정 반복 주기 재설정하기", onClick = { onClickUpdateDate(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_update_info), onClick = { onClickUpdateInfo(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_update_repeat_cycle), onClick = { onClickUpdateDate(selectedSchedule) })
         }
     }
 }
@@ -251,15 +276,15 @@ fun ScheduleDeleteBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "삭제 방법")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_delete_title))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
-            BottomSheetOptionItem(text = "해당 일정만 삭제하기", onClick = { onClickDeleteSingle(selectedSchedule) })
-            BottomSheetOptionItem(text = "연계된 이후 일정 전부 삭제", onClick = { onClickDeleteRemaining(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_delete_single), onClick = { onClickDeleteSingle(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_delete_remaining), onClick = { onClickDeleteRemaining(selectedSchedule) })
         }
     }
 }
@@ -275,15 +300,15 @@ fun ScheduleDelayBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "미루기 방법")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_delay_title))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
-            BottomSheetOptionItem(text = "이 일정만 미루기", onClick = { onClickDelaySingle(selectedSchedule) })
-            BottomSheetOptionItem(text = "이후 일정 모두 미루기", onClick = { onClickDelayAll(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_delay_single), onClick = { onClickDelaySingle(selectedSchedule) })
+            BottomSheetOptionItem(text = stringResource(Res.string.schedule_delay_all), onClick = { onClickDelayAll(selectedSchedule) })
         }
     }
 }
