@@ -32,6 +32,17 @@ import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_delete
+import ebbingplanner.shared.generated.resources.home_priority
+import ebbingplanner.shared.generated.resources.home_priority_hint
+import ebbingplanner.shared.generated.resources.home_repeat_cycle
+import ebbingplanner.shared.generated.resources.home_rest_day
+import ebbingplanner.shared.generated.resources.home_study_schedule_count
+import ebbingplanner.shared.generated.resources.home_tag
+import ebbingplanner.shared.generated.resources.home_title
+import ebbingplanner.shared.generated.resources.home_title_hint
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TitleContent(
@@ -40,7 +51,7 @@ fun TitleContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "제목",
+        text = stringResource(Res.string.home_title),
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
@@ -48,7 +59,7 @@ fun TitleContent(
 
     EbbingTextInputDefault(
         value = title,
-        hint = "무엇을 학습하실건가요?",
+        hint = stringResource(Res.string.home_title_hint),
         keyboardType = KeyboardType.Text,
         onValueChange = onTitleChange,
         limit = 100,
@@ -56,7 +67,7 @@ fun TitleContent(
             if (title.isNotEmpty()) {
                 Icon(
                     imageVector = Icons.Default.Clear,
-                    contentDescription = "삭제",
+                    contentDescription = stringResource(Res.string.home_delete),
                     tint = EbbingTheme.colors.dark3,
                     modifier = Modifier
                         .padding(start = 8.dp)
@@ -78,7 +89,7 @@ fun TagContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "태그",
+        text = stringResource(Res.string.home_tag),
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
@@ -101,7 +112,7 @@ fun PriorityContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "우선순위",
+        text = stringResource(Res.string.home_priority),
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
@@ -110,7 +121,7 @@ fun PriorityContent(
     EbbingTextInputDefault(
         value = priority,
         onValueChange = onPriorityChange,
-        hint = "얼마나 중요한 일정인가요?",
+        hint = stringResource(Res.string.home_priority_hint),
         keyboardType = KeyboardType.Number,
         modifier = modifier
             .padding(top = 8.dp)
@@ -125,7 +136,7 @@ fun RepeatCycleContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "반복 주기",
+        text = stringResource(Res.string.home_repeat_cycle),
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
@@ -147,7 +158,7 @@ fun RestDayContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "쉬는 날",
+        text = stringResource(Res.string.home_rest_day),
         style = EbbingTheme.typography.bodyMSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
@@ -179,7 +190,7 @@ fun ScheduleContent(
 
     Column(modifier = modifier) {
         Text(
-            text = "${schedules.size} 개의 학습 일정",
+            text = stringResource(Res.string.home_study_schedule_count, schedules.size),
             style = EbbingTheme.typography.headingMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(top = 32.dp),

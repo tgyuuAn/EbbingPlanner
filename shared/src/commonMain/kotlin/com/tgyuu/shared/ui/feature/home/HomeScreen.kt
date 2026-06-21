@@ -69,6 +69,11 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_review_button
+import ebbingplanner.shared.generated.resources.home_review_sub
+import ebbingplanner.shared.generated.resources.home_review_title
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,13 +93,13 @@ fun HomeScreen(
         EbbingDialog(
             dialogTop = {
                 EbbingDialogDefaultTop(
-                    title = "에빙플래너가 도움이 되었나요?",
-                    subText = "남겨주신 리뷰를 바탕으로 \n더 편리한 서비스를 만들겠습니다.",
+                    title = stringResource(Res.string.home_review_title),
+                    subText = stringResource(Res.string.home_review_sub),
                 )
             },
             dialogBottom = {
                 EbbingSolidButton(
-                    label = "리뷰 작성하기",
+                    label = stringResource(Res.string.home_review_button),
                     onClick = {
                         viewModel.dismissInAppReviewDialog()
                         onRequestInAppReview()

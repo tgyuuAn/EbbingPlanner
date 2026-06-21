@@ -130,4 +130,41 @@
     <string name="repeat_cycle_input_hint">어떤 주기로 일정을 반복할까요?</string>
     <string name="repeat_cycle_input_guide">\' , \'를 기준으로 숫자를 분리해주세요\n당일을 포함하려면 0을 기입해주세요\n1000 미만의 숫자만 입력하실 수 있습니다.\n ex) 0, 1, 3, 7, 15</string>
     <string name="repeat_cycle_preview_label">예상 반복 주기</string>
+
+    <!-- 홈 / 일정 -->
+    <string name="home_save">저장</string>
+    <string name="home_apply">적용하기</string>
+    <string name="home_month_day">%1$d월 %2$d일</string>
+    <string name="home_today">오늘</string>
+    <string name="home_tag">태그</string>
+    <string name="home_title">제목</string>
+    <string name="home_title_hint">무엇을 학습하실건가요?</string>
+    <string name="home_priority">우선순위</string>
+    <string name="home_priority_hint">얼마나 중요한 일정인가요?</string>
+    <string name="home_priority_value">우선도 : %1$d</string>
+    <string name="home_repeat_cycle">반복 주기</string>
+    <string name="home_rest_day">쉬는 날</string>
+    <string name="home_delete">삭제</string>
+    <string name="home_add_todo_title">일정 추가</string>
+    <string name="home_add_todo_header_suffix">" 부터\n시작하는 일정을 만들어요"</string>
+    <string name="home_edit_todo_title">일정 수정</string>
+    <string name="home_edit_todo_header_suffix">" 에\n진행하는 걸로 바꿀래요"</string>
+    <string name="home_edit_date_header_suffix">" 부터\n시작하는 일정으로 바꿔요"</string>
+    <string name="home_edit_date_description">- 일정이 변경되면 기존 일정의 완료 여부는 초기화 됩니다.\n- 위 체크 박스에서 새로운 일정에 완료 여부를 설정할 수 있습니다.\n- 일정을 변경하게 되면 기존 일정에 있던 메모들이 제거됩니다.</string>
+    <string name="home_study_schedule_count">%1$d 개의 학습 일정</string>
+    <string name="home_todo_count_label">"%1$s 할 일 "</string>
+    <string name="home_empty_schedule">%1$d월 %2$d일 스케줄이 없어요.\n우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.</string>
+    <string name="home_review_title">에빙플래너가 도움이 되었나요?</string>
+    <string name="home_review_sub">남겨주신 리뷰를 바탕으로 \n더 편리한 서비스를 만들겠습니다.</string>
+    <string name="home_review_button">리뷰 작성하기</string>
+    <string name="home_select_end_date">종료일 선택</string>
+    <string name="home_daily_repeat_total">총 %1$d일간 매일 반복</string>
+    <string name="home_daily_repeat_prompt">%1$d월 %2$d일부터 언제까지 반복할까요?</string>
+    <string name="home_daily_repeat_max">최대 %1$d일까지 설정할 수 있습니다</string>
+    <string name="home_end_date_with_year">%1$d년 %2$d월 %3$d일</string>
+    <string name="home_daily_repeat_display_name">매일하기 (%1$s 까지)</string>
+    <string name="home_exit_confirm_title">작성 중인 일정이 사라져요!</string>
+    <string name="home_exit_confirm_sub">지금 뒤로 가면 일정이 저장되지 않습니다.\n계속 이어서 작성해 보세요.</string>
+    <string name="home_exit_confirm_stop">작성 중단하기</string>
+    <string name="home_exit_confirm_continue">이어서 작성하기</string>
 </resources>

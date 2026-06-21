@@ -39,6 +39,14 @@ import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.feature.home.addtodo.component.RepeatCycleContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.RestDayContent
 import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_edit_date_description
+import ebbingplanner.shared.generated.resources.home_edit_date_header_suffix
+import ebbingplanner.shared.generated.resources.home_edit_todo_title
+import ebbingplanner.shared.generated.resources.home_month_day
+import ebbingplanner.shared.generated.resources.home_save
+import ebbingplanner.shared.generated.resources.home_study_schedule_count
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EditDateScreen(
@@ -55,12 +63,12 @@ fun EditDateScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "일정 수정",
+            title = stringResource(Res.string.home_edit_todo_title),
             onNavigationClick = { viewModel.onIntent(EditDateIntent.OnBackClick) },
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "저장",
+                        text = stringResource(Res.string.home_save),
                         style = EbbingTheme.typography.bodyMSB,
                         color = EbbingTheme.colors.primaryDefault,
                         modifier = Modifier
@@ -88,8 +96,8 @@ fun EditDateScreen(
                         .padding(20.dp),
                 ) {
                     EbbingPartialUnderlineText(
-                        underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
-                        rest = " 부터\n시작하는 일정으로 바꿔요",
+                        underlinedPart = stringResource(Res.string.home_month_day, state.selectedDate.monthNumber, state.selectedDate.dayOfMonth),
+                        rest = stringResource(Res.string.home_edit_date_header_suffix),
                         style = EbbingTheme.typography.headingLSB,
                         color = EbbingTheme.colors.black,
                         highlightColor = EbbingTheme.colors.primaryDefault,
@@ -137,8 +145,8 @@ fun EditDateScreen(
                     .imePadding(),
             ) {
                 EbbingPartialUnderlineText(
-                    underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
-                    rest = " 부터\n시작하는 일정으로 바꿔요",
+                    underlinedPart = stringResource(Res.string.home_month_day, state.selectedDate.monthNumber, state.selectedDate.dayOfMonth),
+                    rest = stringResource(Res.string.home_edit_date_header_suffix),
                     style = EbbingTheme.typography.headingLSB,
                     color = EbbingTheme.colors.black,
                     highlightColor = EbbingTheme.colors.primaryDefault,
@@ -174,7 +182,7 @@ fun EditDateScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = "저장",
+                label = stringResource(Res.string.home_save),
                 onClick = { viewModel.onIntent(EditDateIntent.OnSaveClick(isDoneSchedules.toList())) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -198,7 +206,7 @@ private fun ScheduleCheckContent(
 
     Column(modifier = modifier) {
         Text(
-            text = "${schedules.size} 개의 학습 일정",
+            text = stringResource(Res.string.home_study_schedule_count, schedules.size),
             style = EbbingTheme.typography.headingMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(top = 32.dp),
@@ -279,9 +287,7 @@ private fun DescriptionBody(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "- 일정이 변경되면 기존 일정의 완료 여부는 초기화 됩니다.\n" +
-                "- 위 체크 박스에서 새로운 일정에 완료 여부를 설정할 수 있습니다.\n" +
-                "- 일정을 변경하게 되면 기존 일정에 있던 메모들이 제거됩니다.",
+        text = stringResource(Res.string.home_edit_date_description),
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.bodyMM,
         color = EbbingTheme.colors.dark3,
