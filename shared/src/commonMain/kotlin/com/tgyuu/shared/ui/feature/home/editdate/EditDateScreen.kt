@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.tgyuu.shared.designsystem.component.EbbingPartialUnderlineText
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.toFormattedString
-import com.tgyuu.shared.common.toRelativeDayDescription
+import com.tgyuu.shared.common.toRelativeDayLabel
 import com.tgyuu.shared.designsystem.component.EbbingCheck
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
@@ -274,7 +274,7 @@ private fun ScheduleCheckCard(
         )
 
         Text(
-            text = schedule.toRelativeDayDescription(),
+            text = schedule.toRelativeDayLabel(),
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.black,

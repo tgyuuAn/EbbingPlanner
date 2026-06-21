@@ -9,6 +9,12 @@ import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.absoluteValue
+import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.stringResource
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.date_today
+import ebbingplanner.shared.generated.resources.date_days_after
+import ebbingplanner.shared.generated.resources.date_days_before
 
 /**
  * 현재 시스템 날짜/시간 가져오기 - expect/actual 패턴
@@ -88,6 +94,17 @@ fun String.toLocalDateTimeOrThrow(): LocalDateTime {
  * 기준일(referenceDate, 기본값: 오늘)로부터 이 날짜(this)가
  * 같으면 "오늘", 미래면 "N일 후", 과거면 "N일 전"을 반환
  */
+@Composable
+fun LocalDate.toRelativeDayLabel(referenceDate: LocalDate? = null): String {
+    val ref = referenceDate ?: LocalDate.now()
+    val diff = this.daysUntil(ref)
+    return when {
+        diff == 0 -> stringResource(Res.string.date_today)
+        diff > 0 -> stringResource(Res.string.date_days_before, diff)
+        else -> stringResource(Res.string.date_days_after, diff.absoluteValue)
+    }
+}
+
 fun LocalDate.toRelativeDayDescription(referenceDate: LocalDate? = null): String {
     return try {
         val ref = referenceDate ?: LocalDate.now()
