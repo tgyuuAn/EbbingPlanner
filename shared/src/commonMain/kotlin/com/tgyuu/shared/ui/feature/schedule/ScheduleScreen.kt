@@ -57,7 +57,6 @@ import com.tgyuu.shared.designsystem.component.EbbingRoundSolidButton
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomSheet
 import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
-import com.tgyuu.shared.designsystem.component.calendar.toKorean
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.model.DefaultTodoTag
 import com.tgyuu.shared.ui.feature.schedule.bottomsheet.ScheduleDelayBottomSheet
@@ -86,6 +85,7 @@ import ebbingplanner.shared.generated.resources.tag_delete_confirm_prefix
 import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
 import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -587,7 +587,7 @@ private fun ScheduleCard(
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = stringResource(Res.string.schedule_card_date, schedule.date.monthNumber, schedule.date.dayOfMonth, schedule.date.dayOfWeek.toKorean()),
+            text = stringResource(Res.string.schedule_card_date, schedule.date.monthNumber, schedule.date.dayOfMonth, schedule.date.dayOfWeek.toLocalizedShort()),
             style = dateStyle,
             color = dateColor,
             textDecoration = textDecoration,

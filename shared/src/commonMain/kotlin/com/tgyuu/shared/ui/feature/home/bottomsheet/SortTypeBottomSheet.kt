@@ -18,6 +18,7 @@ import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.home_apply
 import ebbingplanner.shared.generated.resources.home_sort_order
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.model.displayName
 
 @Composable
 internal fun SortTypeBottomSheet(
@@ -40,7 +41,7 @@ internal fun SortTypeBottomSheet(
         ) {
             SortType.entries.forEach { sortType ->
                 EbbingBottomSheetListItemDefault(
-                    label = sortType.displayName,
+                    label = sortType.displayName(),
                     checked = sortType == newSortType,
                     onChecked = { newSortType = sortType },
                 )

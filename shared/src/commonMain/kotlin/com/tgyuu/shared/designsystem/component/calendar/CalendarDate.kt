@@ -1,10 +1,21 @@
 package com.tgyuu.shared.designsystem.component.calendar
 
+import androidx.compose.runtime.Composable
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.day_fri
+import ebbingplanner.shared.generated.resources.day_mon
+import ebbingplanner.shared.generated.resources.day_sat
+import ebbingplanner.shared.generated.resources.day_sun
+import ebbingplanner.shared.generated.resources.day_thu
+import ebbingplanner.shared.generated.resources.day_tue
+import ebbingplanner.shared.generated.resources.day_wed
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 val EbbingDayOfWeekSunday = listOf(
     DayOfWeek.SUNDAY,
@@ -141,13 +152,27 @@ fun yearMonthDiff(from: LocalDate, to: LocalDate): Int {
     return (to.year - from.year) * 12 + (to.monthNumber - from.monthNumber)
 }
 
-fun DayOfWeek.toKorean(): String = when (this) {
-    DayOfWeek.SUNDAY -> "일"
-    DayOfWeek.MONDAY -> "월"
-    DayOfWeek.TUESDAY -> "화"
-    DayOfWeek.WEDNESDAY -> "수"
-    DayOfWeek.THURSDAY -> "목"
-    DayOfWeek.FRIDAY -> "금"
-    DayOfWeek.SATURDAY -> "토"
-    else -> ""
+private fun DayOfWeek.shortLabelRes(): StringResource = when (this) {
+    DayOfWeek.SUNDAY -> Res.string.day_sun
+    DayOfWeek.MONDAY -> Res.string.day_mon
+    DayOfWeek.TUESDAY -> Res.string.day_tue
+    DayOfWeek.WEDNESDAY -> Res.string.day_wed
+    DayOfWeek.THURSDAY -> Res.string.day_thu
+    DayOfWeek.FRIDAY -> Res.string.day_fri
+    DayOfWeek.SATURDAY -> Res.string.day_sat
+    else -> Res.string.day_sun
 }
+
+@Composable
+fun DayOfWeek.toLocalizedShort(): String = stringResource(shortLabelRes())
+
+@Composable
+fun rememberDayOfWeekShortLabels(): Map<DayOfWeek, String> = mapOf(
+    DayOfWeek.SUNDAY to stringResource(Res.string.day_sun),
+    DayOfWeek.MONDAY to stringResource(Res.string.day_mon),
+    DayOfWeek.TUESDAY to stringResource(Res.string.day_tue),
+    DayOfWeek.WEDNESDAY to stringResource(Res.string.day_wed),
+    DayOfWeek.THURSDAY to stringResource(Res.string.day_thu),
+    DayOfWeek.FRIDAY to stringResource(Res.string.day_fri),
+    DayOfWeek.SATURDAY to stringResource(Res.string.day_sat),
+)

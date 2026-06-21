@@ -72,14 +72,22 @@ import com.tgyuu.shared.common.toFormattedString
 import kotlinx.datetime.LocalDate
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.nav_home
+import ebbingplanner.shared.generated.resources.nav_schedule
+import ebbingplanner.shared.generated.resources.nav_setting
+import ebbingplanner.shared.generated.resources.webview_privacy_title
+import ebbingplanner.shared.generated.resources.webview_terms_title
 
 private enum class BottomNavItem(
     val icon: ImageVector,
-    val label: String,
+    val labelRes: StringResource,
 ) {
-    HOME(Icons.Default.Home, "홈"),
-    SCHEDULE(Icons.Default.DateRange, "모아보기"),
-    SETTING(Icons.Default.Settings, "설정"),
+    HOME(Icons.Default.Home, Res.string.nav_home),
+    SCHEDULE(Icons.Default.DateRange, Res.string.nav_schedule),
+    SETTING(Icons.Default.Settings, Res.string.nav_setting),
 }
 
 @Composable
@@ -127,6 +135,8 @@ fun RootContent(
     }
 
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
+    val webViewPrivacyTitle = stringResource(Res.string.webview_privacy_title)
+    val webViewTermsTitle = stringResource(Res.string.webview_terms_title)
     val scheduleViewModel = remember {
         ScheduleViewModel(
             todoRepository = todoRepository,
@@ -155,8 +165,8 @@ fun RootContent(
             onNavigateToWidget = { component.navigateToWidget() },
             onOpenUrl = { url ->
                 val title = when {
-                    url.contains("privacy") -> "개인정보 처리방침"
-                    url.contains("terms") -> "이용약관"
+                    url.contains("privacy") -> webViewPrivacyTitle
+                    url.contains("terms") -> webViewTermsTitle
                     else -> ""
                 }
                 component.navigateToWebView(title, url)
@@ -276,11 +286,11 @@ private fun EbbingBottomNavigationBar(
                     ) {
                         Icon(
                             imageVector = tab.icon,
-                            contentDescription = tab.label,
+                            contentDescription = stringResource(tab.labelRes),
                             modifier = Modifier.size(28.dp),
                         )
                         Text(
-                            text = tab.label,
+                            text = stringResource(tab.labelRes),
                             style = EbbingTheme.typography.captionM,
                         )
                     }

@@ -291,7 +291,7 @@ private fun CalendarHeader(
     Row(modifier = modifier.fillMaxWidth()) {
         days.forEach { weekday ->
             Text(
-                text = weekday.toKorean(),
+                text = weekday.toLocalizedShort(),
                 textAlign = TextAlign.Center,
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,

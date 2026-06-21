@@ -62,6 +62,7 @@ import ebbingplanner.shared.generated.resources.home_todo_count_label
 import ebbingplanner.shared.generated.resources.home_empty_schedule
 import ebbingplanner.shared.generated.resources.home_priority_value
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.model.displayName
 
 private const val TODO_LIST_PAGE_COUNT = 12_001 // ±16년(일)
 
@@ -155,7 +156,7 @@ private fun TodoHeader(
                 .padding(end = 16.dp)
         ) {
             Text(
-                text = sortType.displayName,
+                text = sortType.displayName(),
                 style = EbbingTheme.typography.headingMB,
                 color = EbbingTheme.colors.black
             )

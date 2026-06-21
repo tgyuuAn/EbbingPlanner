@@ -336,4 +336,30 @@
     <string name="snack_tag_update_failed">タグの修正に失敗しました</string>
     <string name="snack_todo_update_failed2">予定の修正に失敗しました</string>
     <string name="snack_all_rest_days">すべての曜日を休みにすることはできません</string>
+
+    <!-- モデル/曜日/ナビ -->
+    <string name="day_sun">日</string>
+    <string name="day_mon">月</string>
+    <string name="day_tue">火</string>
+    <string name="day_wed">水</string>
+    <string name="day_thu">木</string>
+    <string name="day_fri">金</string>
+    <string name="day_sat">土</string>
+    <string name="sort_created">作成順</string>
+    <string name="sort_name">名前順</string>
+    <string name="sort_priority">優先順</string>
+    <string name="repeat_display_daily">毎日</string>
+    <string name="repeat_display_daily_days">毎日 (%1$d日)</string>
+    <string name="repeat_display_error">正しい形式で入力してください。</string>
+    <string name="repeat_interval_same_day_only">当日のみ</string>
+    <string name="repeat_interval_same_day">当日</string>
+    <string name="repeat_interval_day">%1$d日</string>
+    <string name="nav_home">ホーム</string>
+    <string name="nav_schedule">まとめ</string>
+    <string name="nav_setting">設定</string>
+    <string name="date_today">今日</string>
+    <string name="date_days_after">%1$d日後</string>
+    <string name="date_days_before">%1$d日前</string>
+    <string name="webview_privacy_title">プライバシーポリシー</string>
+    <string name="webview_terms_title">利用規約</string>
 </resources>

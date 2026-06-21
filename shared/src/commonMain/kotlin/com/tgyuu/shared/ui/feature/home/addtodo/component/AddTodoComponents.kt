@@ -25,7 +25,6 @@ import com.tgyuu.shared.common.toRelativeDayDescription
 import com.tgyuu.shared.designsystem.component.EbbingChip
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDropDown
-import com.tgyuu.shared.designsystem.component.calendar.toKorean
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
@@ -43,6 +42,7 @@ import ebbingplanner.shared.generated.resources.home_tag
 import ebbingplanner.shared.generated.resources.home_title
 import ebbingplanner.shared.generated.resources.home_title_hint
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
 
 @Composable
 fun TitleContent(
@@ -172,7 +172,7 @@ fun RestDayContent(
     ) {
         DayOfWeek.entries.forEach {
             EbbingChip(
-                label = it.toKorean(),
+                label = it.toLocalizedShort(),
                 selected = it in restDays,
                 onChipClicked = { onRestDayChange(it) },
                 modifier = Modifier.weight(1f),
@@ -239,7 +239,7 @@ private fun ScheduleCard(
         )
 
         Text(
-            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
+            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toLocalizedShort()})",
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.black,
