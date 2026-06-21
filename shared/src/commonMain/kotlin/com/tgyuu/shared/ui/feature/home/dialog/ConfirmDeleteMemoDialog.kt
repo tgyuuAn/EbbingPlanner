@@ -9,6 +9,13 @@ import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_back
+import ebbingplanner.shared.generated.resources.home_delete
+import ebbingplanner.shared.generated.resources.home_delete_confirm_suffix
+import ebbingplanner.shared.generated.resources.home_delete_memo_confirm_prefix
+import ebbingplanner.shared.generated.resources.home_delete_memo_sub
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ConfirmDeleteMemoDialog(
@@ -18,21 +25,24 @@ internal fun ConfirmDeleteMemoDialog(
 ) {
     EbbingDialog(
         dialogTop = {
+            val deletePrefix = stringResource(Res.string.home_delete_memo_confirm_prefix, schedule.title)
+            val deleteHighlight = stringResource(Res.string.home_delete)
+            val deleteSuffix = stringResource(Res.string.home_delete_confirm_suffix)
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("${schedule.title} 일정의 메모를 ")
+                    append(deletePrefix)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
-                        append("삭제")
+                        append(deleteHighlight)
                     }
-                    append(" 하시겠습니까?")
+                    append(deleteSuffix)
                 },
-                subText = "삭제한 메모는 되돌릴 수 없으니 신중히 선택해 주세요."
+                subText = stringResource(Res.string.home_delete_memo_sub)
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "삭제",
+                leftButtonText = stringResource(Res.string.home_back),
+                rightButtonText = stringResource(Res.string.home_delete),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onDeleteClick,
             )

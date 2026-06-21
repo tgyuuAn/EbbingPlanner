@@ -13,6 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.schedule_delay_all
+import ebbingplanner.shared.generated.resources.schedule_delay_single
+import ebbingplanner.shared.generated.resources.schedule_delay_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DelayBottomSheet(
@@ -25,7 +30,7 @@ internal fun DelayBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "미루기 방법")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_delay_title))
 
         Column(
             modifier = Modifier
@@ -33,7 +38,7 @@ internal fun DelayBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = "이 일정만 미루기",
+                text = stringResource(Res.string.schedule_delay_single),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -45,7 +50,7 @@ internal fun DelayBottomSheet(
             )
 
             Text(
-                text = "이후 일정 모두 미루기",
+                text = stringResource(Res.string.schedule_delay_all),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,

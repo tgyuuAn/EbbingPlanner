@@ -13,6 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.schedule_update_info
+import ebbingplanner.shared.generated.resources.schedule_update_repeat_cycle
+import ebbingplanner.shared.generated.resources.schedule_update_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun UpdateBottomSheet(
@@ -25,7 +30,7 @@ internal fun UpdateBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "수정 방법")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_update_title))
 
         Column(
             modifier = Modifier
@@ -33,7 +38,7 @@ internal fun UpdateBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = "일정 정보 수정하기",
+                text = stringResource(Res.string.schedule_update_info),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -45,7 +50,7 @@ internal fun UpdateBottomSheet(
             )
 
             Text(
-                text = "연관된 일정 반복 주기 재설정하기",
+                text = stringResource(Res.string.schedule_update_repeat_cycle),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,

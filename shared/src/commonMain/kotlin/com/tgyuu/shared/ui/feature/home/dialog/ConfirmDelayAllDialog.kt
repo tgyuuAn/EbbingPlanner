@@ -25,6 +25,13 @@ import com.tgyuu.shared.designsystem.component.calendar.toKorean
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import kotlinx.datetime.DayOfWeek
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_delay_all_confirm_title
+import ebbingplanner.shared.generated.resources.home_delay_button
+import ebbingplanner.shared.generated.resources.home_delay_revert_notice
+import ebbingplanner.shared.generated.resources.home_exclude_rest_days
+import ebbingplanner.shared.generated.resources.home_go_back
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ConfirmDelayAllDialog(
@@ -37,7 +44,7 @@ internal fun ConfirmDelayAllDialog(
     val restDaysText = if (restDays.isNotEmpty()) {
         val dayNames = restDays.sortedBy { it.ordinal }
             .joinToString(", ") { it.toKorean() }
-        "쉬는 요일 제외 ($dayNames)"
+        stringResource(Res.string.home_exclude_rest_days, dayNames)
     } else {
         ""
     }
@@ -50,7 +57,7 @@ internal fun ConfirmDelayAllDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "모든 ${schedule.title} 일정을\n하루씩 미루시겠습니까?",
+                text = stringResource(Res.string.home_delay_all_confirm_title, schedule.title),
                 color = EbbingTheme.colors.black,
                 style = EbbingTheme.typography.headingMSB,
                 textAlign = TextAlign.Center,
@@ -85,7 +92,7 @@ internal fun ConfirmDelayAllDialog(
             }
 
             Text(
-                text = "미룬 일정은 수정하기에서 다시 되돌릴 수 있습니다.",
+                text = stringResource(Res.string.home_delay_revert_notice),
                 style = EbbingTheme.typography.bodySR,
                 color = EbbingTheme.colors.dark2,
                 textAlign = TextAlign.Center,
@@ -95,8 +102,8 @@ internal fun ConfirmDelayAllDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "뒤로가기",
-                rightButtonText = "미루기",
+                leftButtonText = stringResource(Res.string.home_go_back),
+                rightButtonText = stringResource(Res.string.home_delay_button),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = { onDelayClick(!excludeRestDays) },
             )

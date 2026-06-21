@@ -13,6 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.schedule_delete_remaining
+import ebbingplanner.shared.generated.resources.schedule_delete_single
+import ebbingplanner.shared.generated.resources.schedule_delete_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeleteBottomSheet(
@@ -25,7 +30,7 @@ internal fun DeleteBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "삭제 방법")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_delete_title))
 
         Column(
             modifier = Modifier
@@ -33,7 +38,7 @@ internal fun DeleteBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = "해당 일정만 삭제하기",
+                text = stringResource(Res.string.schedule_delete_single),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -45,7 +50,7 @@ internal fun DeleteBottomSheet(
             )
 
             Text(
-                text = "연계된 이후 일정 전부 삭제",
+                text = stringResource(Res.string.schedule_delete_remaining),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,

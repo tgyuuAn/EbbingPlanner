@@ -198,6 +198,25 @@
     <string name="schedule_delay_title">延期方法</string>
     <string name="schedule_delay_single">この予定のみ延期する</string>
     <string name="schedule_delay_all">これ以降の予定をすべて延期する</string>
+    <string name="home_back">戻る</string>
+    <string name="home_go_back">戻る</string>
+    <string name="home_delay_button">先送り</string>
+    <string name="home_sort_order">並び順</string>
+    <string name="home_delete_confirm_suffix">しますか？</string>
+    <string name="home_delete_single_confirm_prefix">"%1$sの予定を"</string>
+    <string name="home_delete_single_sub">削除した予定は元に戻せませんので、慎重に選択してください。</string>
+    <string name="home_delete_remaining_confirm_prefix">"%1$sに連動する%2$d月%3$d日以降の予定をすべて"</string>
+    <string name="home_delete_remaining_sub">削除した予定は元に戻せませんので、慎重に選択してください。</string>
+    <string name="home_delete_memo_confirm_prefix">"%1$sの予定のメモを"</string>
+    <string name="home_delete_memo_sub">削除したメモは元に戻せませんので、慎重に選択してください。</string>
+    <string name="home_delay_single_confirm_title">%1$sの予定を1日先送りしますか？</string>
+    <string name="home_delay_all_confirm_title">%1$sのすべての予定を\n1日ずつ先送りしますか？</string>
+    <string name="home_delay_revert_notice">先送りした予定は「編集」から元に戻せます。</string>
+    <string name="home_exclude_rest_days">休む曜日を除く (%1$s)</string>
+    <string name="home_delay_date_part">%1$d月%2$d日(%3$s)</string>
+    <string name="home_delay_date_transition">%1$s → %2$s</string>
+    <string name="home_widget_nudge_label">初めての予定登録が完了！</string>
+    <string name="home_widget_nudge_title">エビングプランナーのウィジェットでも\n予定を手軽にチェックしてみましょう。</string>
 
     <!-- メモ -->
     <string name="memo_label">メモ</string>
