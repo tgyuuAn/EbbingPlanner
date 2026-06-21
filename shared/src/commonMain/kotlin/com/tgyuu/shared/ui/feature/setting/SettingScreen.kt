@@ -97,6 +97,11 @@ import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.setting_restore_default
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.model.alarmTimeText
+import ebbingplanner.shared.generated.resources.setting_alarm_message_error_placeholder
+import ebbingplanner.shared.generated.resources.setting_alarm_message_error_length
+import ebbingplanner.shared.generated.resources.setting_alarm_message_length
+import ebbingplanner.shared.generated.resources.setting_alarm_message_preview_sample
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -190,7 +195,7 @@ fun SettingScreen(
             Row(modifier = Modifier.fillMaxSize()) {
                 // Left column
                 Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
-                    NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = state.alarmTime, onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
+                    NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
                     CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
                     TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
                     DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
@@ -208,7 +213,7 @@ fun SettingScreen(
             }
         } else {
             Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
-                NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = state.alarmTime, onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
+                NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
                 CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
                 TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
                 DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
@@ -727,6 +732,18 @@ private fun AlarmMessageBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
+        val errorMessageText = when {
+            sheetState.placeholderCount > 1 -> stringResource(Res.string.setting_alarm_message_error_placeholder)
+            !sheetState.isValidLength -> stringResource(Res.string.setting_alarm_message_error_length)
+            else -> ""
+        }
+        val previewSample = stringResource(Res.string.setting_alarm_message_preview_sample)
+        val previewMessageText = when (sheetState.placeholderCount) {
+            1 -> sheetState.message.replace("{할일}", previewSample)
+            0 -> sheetState.message
+            else -> ""
+        }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -734,14 +751,14 @@ private fun AlarmMessageBottomSheetContent(
                 .padding(top = 8.dp),
         ) {
             Text(
-                text = sheetState.errorMessage,
+                text = errorMessageText,
                 style = EbbingTheme.typography.captionR12,
                 color = EbbingTheme.colors.error,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
-                text = sheetState.lengthText,
+                text = stringResource(Res.string.setting_alarm_message_length, sheetState.message.length),
                 style = EbbingTheme.typography.captionR12,
                 color = if (sheetState.isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error,
             )
@@ -749,7 +766,7 @@ private fun AlarmMessageBottomSheetContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (sheetState.isValidPlaceholder && sheetState.previewMessage.isNotEmpty()) {
+        if (sheetState.isValidPlaceholder && previewMessageText.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -766,7 +783,7 @@ private fun AlarmMessageBottomSheetContent(
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
                 Text(
-                    text = sheetState.previewMessage,
+                    text = previewMessageText,
                     style = EbbingTheme.typography.bodyMM,
                     color = EbbingTheme.colors.dark1,
                 )

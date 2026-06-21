@@ -46,6 +46,8 @@ import ebbingplanner.shared.generated.resources.setting_notification
 import ebbingplanner.shared.generated.resources.setting_notification_setting
 import ebbingplanner.shared.generated.resources.setting_preview
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.model.alarmTimeText
+import ebbingplanner.shared.generated.resources.setting_alarm_message_preview_sample
 
 @Composable
 fun NotificationScreen(
@@ -159,7 +161,7 @@ private fun NotificationDetailSection(
     // Alarm time
     Text(text = stringResource(Res.string.setting_alarm_time), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Text(
-        text = state.formattedAlarmTime,
+        text = alarmTimeText(state.alarmHour, state.alarmMinute),
         style = EbbingTheme.typography.headingMSB,
         color = EbbingTheme.colors.primaryDefault,
         modifier = Modifier.padding(top = 8.dp).clickable { onTimeClick() },
@@ -183,7 +185,7 @@ private fun NotificationDetailSection(
 
     // Preview
     Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
-    Text(text = state.previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
+    Text(text = state.alarmMessage.replace("{할일}", stringResource(Res.string.setting_alarm_message_preview_sample)), style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
 }
 
 @Composable
