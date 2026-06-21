@@ -52,6 +52,7 @@ import ebbingplanner.shared.generated.resources.repeat_cycle_input_guide
 import ebbingplanner.shared.generated.resources.repeat_cycle_preview_label
 import ebbingplanner.shared.generated.resources.common_clear
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.model.toRepeatPreviewDisplay
 
 @Composable
 fun AddRepeatCycleScreen(
@@ -100,7 +101,7 @@ fun AddRepeatCycleScreen(
                 }
                 Column(modifier = Modifier.weight(1f).padding(20.dp)) {
                     Spacer(modifier = Modifier.height(80.dp))
-                    PreviewContent(preview = state.previewRepeatCycle)
+                    PreviewContent(intervals = state.parsedIntervals)
                 }
             }
         } else {
@@ -112,7 +113,7 @@ fun AddRepeatCycleScreen(
                     intervals = state.intervals,
                     onIntervalsChange = { viewModel.onIntent(AddRepeatCycleIntent.OnIntervalsChange(it)) },
                 )
-                PreviewContent(preview = state.previewRepeatCycle)
+                PreviewContent(intervals = state.parsedIntervals)
                 Spacer(modifier = Modifier.height(60.dp))
             }
         }
@@ -180,7 +181,7 @@ private fun RepeatCycleInputContent(
 
 @Composable
 private fun PreviewContent(
-    preview: String,
+    intervals: List<Int>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -192,9 +193,9 @@ private fun PreviewContent(
         )
 
         Text(
-            text = preview,
+            text = intervals.toRepeatPreviewDisplay(),
             style = EbbingTheme.typography.bodySSB,
-            color = if (preview == RepeatCycle.DISPLAY_ERROR) EbbingTheme.colors.error
+            color = if (intervals.isEmpty()) EbbingTheme.colors.error
             else EbbingTheme.colors.dark2,
             textAlign = TextAlign.Start,
             modifier = Modifier

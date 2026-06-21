@@ -21,6 +21,7 @@ import ebbingplanner.shared.generated.resources.snack_date_repeat_changed
 import ebbingplanner.shared.generated.resources.snack_loading_schedule_info
 import ebbingplanner.shared.generated.resources.snack_no_schedule_to_save
 import ebbingplanner.shared.generated.resources.snack_todo_update_failed
+import com.tgyuu.shared.designsystem.model.toDisplayName
 
 class EditDateViewModel(
     private val infoId: Int,
@@ -43,8 +44,9 @@ class EditDateViewModel(
     private fun loadInitialData() {
         safeScope.launch {
             // Set default repeat cycle
+            val defaultRepeatCycle = DefaultRepeatCycles.first().toUiModel()
             setState {
-                copy(repeatCycle = DefaultRepeatCycles.first().toUiModel())
+                copy(repeatCycle = defaultRepeatCycle)
             }
 
             val result = todoRepository.loadSchedulesByTodoInfo(infoId)
@@ -70,8 +72,9 @@ class EditDateViewModel(
     private suspend fun loadRepeatCycles() {
         val repeatCycles = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + repeatCycles
+        val models = buildList { for (cycle in allRepeatCycles) add(cycle.toUiModel()) }
         setState {
-            copy(repeatCycleList = allRepeatCycles.map { it.toUiModel() }.toImmutableList())
+            copy(repeatCycleList = models.toImmutableList())
         }
     }
 
@@ -138,7 +141,7 @@ class EditDateViewModel(
         }
     }
 
-    private fun com.tgyuu.shared.domain.model.RepeatCycle.toUiModel(): RepeatCycleUiModel {
+    private suspend fun com.tgyuu.shared.domain.model.RepeatCycle.toUiModel(): RepeatCycleUiModel {
         return RepeatCycleUiModel(
             id = id,
             intervals = intervals.toImmutableList(),

@@ -12,6 +12,7 @@ import ebbingplanner.shared.generated.resources.snack_repeat_delete_failed
 import ebbingplanner.shared.generated.resources.snack_repeat_deleted
 import ebbingplanner.shared.generated.resources.snack_repeat_load_failed
 import org.jetbrains.compose.resources.getString
+import com.tgyuu.shared.designsystem.model.toDisplayName
 
 class RepeatCycleViewModel(
     private val todoRepository: TodoRepository,
@@ -37,10 +38,11 @@ class RepeatCycleViewModel(
     private fun loadRepeatCycles() = viewModelScope.launch {
         setState { copy(isLoading = true) }
         try {
-            val repeatCycleList = todoRepository.loadRepeatCycles()
+            val loaded = todoRepository.loadRepeatCycles()
+            val models = buildList { for (cycle in loaded) add(cycle.toUiModel()) }
             setState {
                 copy(
-                    repeatCycleList = repeatCycleList.map { it.toUiModel() }.toImmutableList(),
+                    repeatCycleList = models.toImmutableList(),
                     isLoading = false,
                 )
             }
@@ -66,20 +68,9 @@ class RepeatCycleViewModel(
         }
     }
 
-    private fun RepeatCycle.toUiModel() = RepeatCycleUiModel(
+    private suspend fun RepeatCycle.toUiModel() = RepeatCycleUiModel(
         id = id,
         intervals = intervals.toImmutableList(),
         displayName = toDisplayName(),
     )
-
-    private fun RepeatCycle.toDisplayName(): String {
-        if (intervals.isEmpty()) return "올바른 형태로 작성해주세요."
-
-        return when {
-            intervals.size == 1 && intervals.first() == 0 -> "당일만"
-            else -> intervals.joinToString(", ") { day ->
-                if (day == 0) "당일" else "${day}일"
-            }
-        }
-    }
 }
