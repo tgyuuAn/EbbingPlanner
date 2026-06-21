@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
-import com.tgyuu.shared.designsystem.component.calendar.toKorean
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import kotlinx.datetime.DayOfWeek
@@ -36,6 +35,8 @@ import ebbingplanner.shared.generated.resources.home_delay_single_confirm_title
 import ebbingplanner.shared.generated.resources.home_exclude_rest_days
 import ebbingplanner.shared.generated.resources.home_go_back
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
+import com.tgyuu.shared.designsystem.component.calendar.rememberDayOfWeekShortLabels
 
 @Composable
 internal fun ConfirmDelayDialog(
@@ -55,16 +56,17 @@ internal fun ConfirmDelayDialog(
     }
 
     val dateText = if (displayedExpectedDate != null) {
-        val fromDate = stringResource(Res.string.home_delay_date_part, schedule.date.monthNumber, schedule.date.dayOfMonth, schedule.date.dayOfWeek.toKorean())
-        val toDate = stringResource(Res.string.home_delay_date_part, displayedExpectedDate.monthNumber, displayedExpectedDate.dayOfMonth, displayedExpectedDate.dayOfWeek.toKorean())
+        val fromDate = stringResource(Res.string.home_delay_date_part, schedule.date.monthNumber, schedule.date.dayOfMonth, schedule.date.dayOfWeek.toLocalizedShort())
+        val toDate = stringResource(Res.string.home_delay_date_part, displayedExpectedDate.monthNumber, displayedExpectedDate.dayOfMonth, displayedExpectedDate.dayOfWeek.toLocalizedShort())
         stringResource(Res.string.home_delay_date_transition, fromDate, toDate)
     } else {
         ""
     }
 
+    val dayLabels = rememberDayOfWeekShortLabels()
     val restDaysText = if (restDays.isNotEmpty()) {
         val dayNames = restDays.sortedBy { it.ordinal }
-            .joinToString(", ") { it.toKorean() }
+            .joinToString(", ") { dayLabels.getValue(it) }
         stringResource(Res.string.home_exclude_rest_days, dayNames)
     } else {
         ""

@@ -34,7 +34,6 @@ import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.common.toRelativeDayDescription
 import com.tgyuu.shared.designsystem.component.EbbingCheck
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
-import com.tgyuu.shared.designsystem.component.calendar.toKorean
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.feature.home.addtodo.component.RepeatCycleContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.RestDayContent
@@ -47,6 +46,7 @@ import ebbingplanner.shared.generated.resources.home_month_day
 import ebbingplanner.shared.generated.resources.home_save
 import ebbingplanner.shared.generated.resources.home_study_schedule_count
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
 
 @Composable
 fun EditDateScreen(
@@ -267,7 +267,7 @@ private fun ScheduleCheckCard(
         )
 
         Text(
-            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toKorean()})",
+            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toLocalizedShort()})",
             style = EbbingTheme.typography.bodyMSB,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.black,

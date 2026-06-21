@@ -336,4 +336,30 @@
     <string name="snack_tag_update_failed">태그 수정에 실패했습니다</string>
     <string name="snack_todo_update_failed2">일정 수정에 실패했습니다</string>
     <string name="snack_all_rest_days">모든 요일을 휴식할 수는 없습니다</string>
+
+    <!-- 모델/요일/내비 -->
+    <string name="day_sun">일</string>
+    <string name="day_mon">월</string>
+    <string name="day_tue">화</string>
+    <string name="day_wed">수</string>
+    <string name="day_thu">목</string>
+    <string name="day_fri">금</string>
+    <string name="day_sat">토</string>
+    <string name="sort_created">생성순</string>
+    <string name="sort_name">이름순</string>
+    <string name="sort_priority">우선순</string>
+    <string name="repeat_display_daily">매일하기</string>
+    <string name="repeat_display_daily_days">매일하기 (%1$d일)</string>
+    <string name="repeat_display_error">올바른 형태로 작성해주세요.</string>
+    <string name="repeat_interval_same_day_only">당일만</string>
+    <string name="repeat_interval_same_day">당일</string>
+    <string name="repeat_interval_day">%1$d일</string>
+    <string name="nav_home">홈</string>
+    <string name="nav_schedule">모아보기</string>
+    <string name="nav_setting">설정</string>
+    <string name="date_today">오늘</string>
+    <string name="date_days_after">%1$d일 후</string>
+    <string name="date_days_before">%1$d일 전</string>
+    <string name="webview_privacy_title">개인정보 처리방침</string>
+    <string name="webview_terms_title">이용약관</string>
 </resources>

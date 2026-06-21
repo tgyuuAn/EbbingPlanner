@@ -336,4 +336,30 @@
     <string name="snack_tag_update_failed">Failed to update the tag</string>
     <string name="snack_todo_update_failed2">Failed to update the schedule</string>
     <string name="snack_all_rest_days">You cannot rest on every day of the week</string>
+
+    <!-- Model/Weekday/Nav -->
+    <string name="day_sun">Sun</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="sort_created">By created</string>
+    <string name="sort_name">By name</string>
+    <string name="sort_priority">By priority</string>
+    <string name="repeat_display_daily">Daily</string>
+    <string name="repeat_display_daily_days">Daily (%1$d days)</string>
+    <string name="repeat_display_error">Please enter a valid format.</string>
+    <string name="repeat_interval_same_day_only">Same day only</string>
+    <string name="repeat_interval_same_day">Same day</string>
+    <string name="repeat_interval_day">Day %1$d</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_schedule">Schedules</string>
+    <string name="nav_setting">Settings</string>
+    <string name="date_today">Today</string>
+    <string name="date_days_after">In %1$d days</string>
+    <string name="date_days_before">%1$d days ago</string>
+    <string name="webview_privacy_title">Privacy Policy</string>
+    <string name="webview_terms_title">Terms of Service</string>
 </resources>
