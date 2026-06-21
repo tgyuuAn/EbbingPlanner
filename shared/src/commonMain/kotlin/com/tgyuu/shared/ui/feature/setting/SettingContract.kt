@@ -10,7 +10,6 @@ data class SettingState(
     val isLoading: Boolean = false,
     val appVersion: String = "1.0.0",
     val isNotificationEnabled: Boolean = true,
-    val alarmTime: String = "오후 6시 30분",
     val alarmHour: Int = 18,
     val alarmMinute: Int = 30,
     val alarmMessage: String = DEFAULT_ALARM_MESSAGE,
@@ -33,20 +32,6 @@ data class AlarmMessageBottomSheetState(
     val isValidLength: Boolean = message.length <= 50
 
     val isValid: Boolean = isValidPlaceholder && isValidLength
-
-    val previewMessage: String = when (placeholderCount) {
-        1 -> message.replace("{할일}", "영어 단어 복습")
-        0 -> message
-        else -> ""
-    }
-
-    val errorMessage: String = when {
-        placeholderCount > 1 -> "{할일}은 최대 1번만 사용할 수 있습니다"
-        !isValidLength -> "최대 50자까지 입력 가능합니다"
-        else -> ""
-    }
-
-    val lengthText: String = "${message.length} / 50자"
 
     val isChanged: Boolean = message != originMessage
 

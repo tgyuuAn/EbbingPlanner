@@ -79,17 +79,10 @@ class SettingViewModel(
                     isNotificationEnabled = enabled,
                     alarmHour = hour,
                     alarmMinute = minute,
-                    alarmTime = formatAlarmTime(hour, minute),
                     alarmMessage = message,
                 )
             }
         }
-    }
-
-    private fun formatAlarmTime(hour: Int, minute: Int): String {
-        val period = if (hour < 12) "오전" else "오후"
-        val displayHour = if (hour % 12 == 0) 12 else hour % 12
-        return "$period ${displayHour}시 ${minute.toString().padStart(2, '0')}분"
     }
 
     private fun loadMondayStart() {
@@ -146,7 +139,6 @@ class SettingViewModel(
             copy(
                 alarmHour = hour,
                 alarmMinute = minute,
-                alarmTime = formatAlarmTime(hour, minute),
             )
         }
         onShowSnackbar(getString(Res.string.snack_alarm_time_changed))
