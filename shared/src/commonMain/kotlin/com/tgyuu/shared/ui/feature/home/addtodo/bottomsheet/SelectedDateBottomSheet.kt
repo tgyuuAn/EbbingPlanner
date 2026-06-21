@@ -15,6 +15,9 @@ import com.tgyuu.shared.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.shared.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_apply
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SelectedDateBottomSheetContent(
@@ -40,7 +43,7 @@ fun SelectedDateBottomSheetContent(
         )
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(Res.string.home_apply),
             onClick = { onDateSelected(newSelectedDate) },
             modifier = Modifier
                 .fillMaxWidth()

@@ -29,6 +29,12 @@ import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.feature.home.addtodo.component.PriorityContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.TagContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.TitleContent
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_edit_todo_header_suffix
+import ebbingplanner.shared.generated.resources.home_edit_todo_title
+import ebbingplanner.shared.generated.resources.home_month_day
+import ebbingplanner.shared.generated.resources.home_save
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EditTodoScreen(
@@ -43,12 +49,12 @@ fun EditTodoScreen(
 
         Column(modifier = Modifier.fillMaxSize()) {
             EbbingSubTopBar(
-                title = "일정 수정",
+                title = stringResource(Res.string.home_edit_todo_title),
                 onNavigationClick = { viewModel.onIntent(EditTodoIntent.OnBackClick) },
                 rightComponent = {
                     if (!state.isTreatment) {
                         Text(
-                            text = "저장",
+                            text = stringResource(Res.string.home_save),
                             style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
                             else EbbingTheme.typography.bodyMM,
                             color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
@@ -79,8 +85,8 @@ fun EditTodoScreen(
                             .padding(20.dp),
                     ) {
                         EbbingPartialUnderlineText(
-                            underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
-                            rest = " 에\n진행하는 걸로 바꿀래요",
+                            underlinedPart = stringResource(Res.string.home_month_day, state.selectedDate.monthNumber, state.selectedDate.dayOfMonth),
+                            rest = stringResource(Res.string.home_edit_todo_header_suffix),
                             style = EbbingTheme.typography.headingLSB,
                             color = EbbingTheme.colors.black,
                             highlightColor = EbbingTheme.colors.primaryDefault,
@@ -118,8 +124,8 @@ fun EditTodoScreen(
                         .imePadding(),
                 ) {
                     EbbingPartialUnderlineText(
-                        underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
-                        rest = " 에\n진행하는 걸로 바꿀래요",
+                        underlinedPart = stringResource(Res.string.home_month_day, state.selectedDate.monthNumber, state.selectedDate.dayOfMonth),
+                        rest = stringResource(Res.string.home_edit_todo_header_suffix),
                         style = EbbingTheme.typography.headingLSB,
                         color = EbbingTheme.colors.black,
                         highlightColor = EbbingTheme.colors.primaryDefault,
@@ -145,7 +151,7 @@ fun EditTodoScreen(
 
             if (state.isTreatment) {
                 EbbingSolidButton(
-                    label = "저장",
+                    label = stringResource(Res.string.home_save),
                     onClick = { viewModel.onIntent(EditTodoIntent.OnSaveClick) },
                     enabled = state.isSaveEnabled,
                     modifier = Modifier

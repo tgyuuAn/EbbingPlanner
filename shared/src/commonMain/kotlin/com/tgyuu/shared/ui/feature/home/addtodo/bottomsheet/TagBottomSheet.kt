@@ -24,6 +24,11 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetList
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.ImmutableList
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_apply
+import ebbingplanner.shared.generated.resources.home_tag
+import ebbingplanner.shared.generated.resources.tag_add_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TagBottomSheetContent(
@@ -41,11 +46,11 @@ fun TagBottomSheetContent(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "태그",
+            title = stringResource(Res.string.home_tag),
             rightComponent = {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "태그 추가",
+                    contentDescription = stringResource(Res.string.tag_add_title),
                     tint = EbbingTheme.colors.black,
                     modifier = Modifier
                         .size(32.dp)
@@ -74,7 +79,7 @@ fun TagBottomSheetContent(
         }
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(Res.string.home_apply),
             onClick = { newTag?.let { onTagSelected(it) } },
             modifier = Modifier
                 .fillMaxWidth()

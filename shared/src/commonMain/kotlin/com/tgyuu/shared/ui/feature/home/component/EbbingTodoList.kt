@@ -55,6 +55,13 @@ import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_today
+import ebbingplanner.shared.generated.resources.home_month_day
+import ebbingplanner.shared.generated.resources.home_todo_count_label
+import ebbingplanner.shared.generated.resources.home_empty_schedule
+import ebbingplanner.shared.generated.resources.home_priority_value
+import org.jetbrains.compose.resources.stringResource
 
 private const val TODO_LIST_PAGE_COUNT = 12_001 // ±16년(일)
 
@@ -126,11 +133,12 @@ private fun TodoHeader(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 8.dp)
     ) {
-        val dateText = if (displayDate == LocalDate.now()) "오늘"
-        else "${displayDate.monthNumber}월 ${displayDate.dayOfMonth}일"
+        val dateText = if (displayDate == LocalDate.now()) stringResource(Res.string.home_today)
+        else stringResource(Res.string.home_month_day, displayDate.monthNumber, displayDate.dayOfMonth)
+        val todoCountLabel = stringResource(Res.string.home_todo_count_label, dateText)
         Text(
             text = buildAnnotatedString {
-                append("$dateText 할 일 ")
+                append(todoCountLabel)
                 withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
                     append(count.toString())
                 }
@@ -205,8 +213,7 @@ private fun TodoPage(
         }
     } else {
         Text(
-            text = "${date.monthNumber}월 ${date.dayOfMonth}일 스케줄이 없어요.\n" +
-                    "우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
+            text = stringResource(Res.string.home_empty_schedule, date.monthNumber, date.dayOfMonth),
             style = EbbingTheme.typography.bodySM,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.light1,
@@ -305,7 +312,7 @@ private fun TodoListCard(
                             }
 
                             Text(
-                                text = "우선도 : ${todo.priority}",
+                                text = stringResource(Res.string.home_priority_value, todo.priority),
                                 style = EbbingTheme.typography.bodySSB,
                                 color = EbbingTheme.colors.dark1,
                                 maxLines = 1,

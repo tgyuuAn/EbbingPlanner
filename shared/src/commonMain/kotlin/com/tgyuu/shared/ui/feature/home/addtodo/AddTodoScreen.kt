@@ -46,6 +46,16 @@ import com.tgyuu.shared.ui.feature.home.addtodo.component.ScheduleContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.TagContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.TitleContent
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_add_todo_header_suffix
+import ebbingplanner.shared.generated.resources.home_add_todo_title
+import ebbingplanner.shared.generated.resources.home_exit_confirm_continue
+import ebbingplanner.shared.generated.resources.home_exit_confirm_stop
+import ebbingplanner.shared.generated.resources.home_exit_confirm_sub
+import ebbingplanner.shared.generated.resources.home_exit_confirm_title
+import ebbingplanner.shared.generated.resources.home_month_day
+import ebbingplanner.shared.generated.resources.home_save
+import org.jetbrains.compose.resources.stringResource
 
 private enum class BottomSheetType {
     DATE, TAG, REPEAT_CYCLE
@@ -150,7 +160,7 @@ fun AddTodoScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "일정 추가",
+            title = stringResource(Res.string.home_add_todo_title),
             onNavigationClick = {
                 if (state.isModified) showExitDialog = true
                 else viewModel.onIntent(AddTodoIntent.OnBackClick)
@@ -158,7 +168,7 @@ fun AddTodoScreen(
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "저장",
+                        text = stringResource(Res.string.home_save),
                         style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
                         else EbbingTheme.typography.bodyMM,
                         color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
@@ -255,7 +265,7 @@ fun AddTodoScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = "저장",
+                label = stringResource(Res.string.home_save),
                 onClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier
@@ -277,8 +287,8 @@ private fun AddTodoFormContent(
 ) {
     // Header with date (clickable to change date)
     EbbingPartialUnderlineText(
-        underlinedPart = "${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일",
-        rest = " 부터\n시작하는 일정을 만들어요",
+        underlinedPart = stringResource(Res.string.home_month_day, state.selectedDate.monthNumber, state.selectedDate.dayOfMonth),
+        rest = stringResource(Res.string.home_add_todo_header_suffix),
         style = EbbingTheme.typography.headingLSB,
         color = EbbingTheme.colors.black,
         highlightColor = EbbingTheme.colors.primaryDefault,
@@ -322,14 +332,14 @@ private fun ConfirmExitDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "작성 중인 일정이 사라져요!",
+                text = stringResource(Res.string.home_exit_confirm_title),
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
-                text = "지금 뒤로 가면 일정이 저장되지 않습니다.\n계속 이어서 작성해 보세요.",
+                text = stringResource(Res.string.home_exit_confirm_sub),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
                 textAlign = TextAlign.Center,
@@ -337,8 +347,8 @@ private fun ConfirmExitDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "작성 중단하기",
-                rightButtonText = "이어서 작성하기",
+                leftButtonText = stringResource(Res.string.home_exit_confirm_stop),
+                rightButtonText = stringResource(Res.string.home_exit_confirm_continue),
                 onLeftButtonClick = onExitClick,
                 onRightButtonClick = onContinueClick,
             )
