@@ -198,6 +198,25 @@
     <string name="schedule_delay_title">Postpone method</string>
     <string name="schedule_delay_single">Postpone only this schedule</string>
     <string name="schedule_delay_all">Postpone all following schedules</string>
+    <string name="home_back">Back</string>
+    <string name="home_go_back">Go back</string>
+    <string name="home_delay_button">Postpone</string>
+    <string name="home_sort_order">Sort order</string>
+    <string name="home_delete_confirm_suffix">?</string>
+    <string name="home_delete_single_confirm_prefix">"Delete the %1$s task"</string>
+    <string name="home_delete_single_sub">Deleted tasks cannot be restored, so please choose carefully.</string>
+    <string name="home_delete_remaining_confirm_prefix">"Delete all tasks linked to %1$s from %2$d/%3$d onward"</string>
+    <string name="home_delete_remaining_sub">Deleted tasks cannot be restored, so please choose carefully.</string>
+    <string name="home_delete_memo_confirm_prefix">"Delete the memo of the %1$s task"</string>
+    <string name="home_delete_memo_sub">Deleted memos cannot be restored, so please choose carefully.</string>
+    <string name="home_delay_single_confirm_title">Postpone the %1$s task by one day?</string>
+    <string name="home_delay_all_confirm_title">Postpone every %1$s task\nby one day?</string>
+    <string name="home_delay_revert_notice">Postponed tasks can be reverted from Edit.</string>
+    <string name="home_exclude_rest_days">Excluding rest days (%1$s)</string>
+    <string name="home_delay_date_part">%1$d/%2$d(%3$s)</string>
+    <string name="home_delay_date_transition">%1$s → %2$s</string>
+    <string name="home_widget_nudge_label">First task registered!</string>
+    <string name="home_widget_nudge_title">Check your tasks easily\nwith the Ebbing Planner widget too.</string>
 
     <!-- Note -->
     <string name="memo_label">Note</string>

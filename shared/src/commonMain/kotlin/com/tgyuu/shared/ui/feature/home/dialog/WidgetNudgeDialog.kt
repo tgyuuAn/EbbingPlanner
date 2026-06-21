@@ -20,6 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_widget_nudge_label
+import ebbingplanner.shared.generated.resources.home_widget_nudge_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun WidgetNudgeDialog(
@@ -39,14 +43,14 @@ internal fun WidgetNudgeDialog(
                     .clickable { onDismiss() },
             )
             Text(
-                text = "첫 일정 등록 완료!",
+                text = stringResource(Res.string.home_widget_nudge_label),
                 style = EbbingTheme.typography.bodySM,
                 color = EbbingTheme.colors.dark2,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             Text(
-                text = "에빙플래너 위젯으로도\n일정을 간편하게 체크해보세요.",
+                text = stringResource(Res.string.home_widget_nudge_title),
                 textAlign = TextAlign.Center,
                 style = EbbingTheme.typography.headingSSB,
                 color = EbbingTheme.colors.black,

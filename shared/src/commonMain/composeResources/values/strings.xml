@@ -198,6 +198,25 @@
     <string name="schedule_delay_title">미루기 방법</string>
     <string name="schedule_delay_single">이 일정만 미루기</string>
     <string name="schedule_delay_all">이후 일정 모두 미루기</string>
+    <string name="home_back">뒤로</string>
+    <string name="home_go_back">뒤로가기</string>
+    <string name="home_delay_button">미루기</string>
+    <string name="home_sort_order">정렬 순서</string>
+    <string name="home_delete_confirm_suffix">" 하시겠습니까?"</string>
+    <string name="home_delete_single_confirm_prefix">"%1$s 일정을 "</string>
+    <string name="home_delete_single_sub">삭제한 일정은 되돌릴 수 없으니 신중히 선택해 주세요.</string>
+    <string name="home_delete_remaining_confirm_prefix">"%1$s 와 연계된 %2$d월 %3$d일 이후 일정을 모두 "</string>
+    <string name="home_delete_remaining_sub">삭제한 일정들은 되돌릴 수 없으니 신중히 선택해 주세요.</string>
+    <string name="home_delete_memo_confirm_prefix">"%1$s 일정의 메모를 "</string>
+    <string name="home_delete_memo_sub">삭제한 메모는 되돌릴 수 없으니 신중히 선택해 주세요.</string>
+    <string name="home_delay_single_confirm_title">%1$s 일정을 하루 미루시겠습니까?</string>
+    <string name="home_delay_all_confirm_title">모든 %1$s 일정을\n하루씩 미루시겠습니까?</string>
+    <string name="home_delay_revert_notice">미룬 일정은 수정하기에서 다시 되돌릴 수 있습니다.</string>
+    <string name="home_exclude_rest_days">쉬는 요일 제외 (%1$s)</string>
+    <string name="home_delay_date_part">%1$d월 %2$d일(%3$s)</string>
+    <string name="home_delay_date_transition">%1$s → %2$s</string>
+    <string name="home_widget_nudge_label">첫 일정 등록 완료!</string>
+    <string name="home_widget_nudge_title">에빙플래너 위젯으로도\n일정을 간편하게 체크해보세요.</string>
 
     <!-- 메모 -->
     <string name="memo_label">메모</string>

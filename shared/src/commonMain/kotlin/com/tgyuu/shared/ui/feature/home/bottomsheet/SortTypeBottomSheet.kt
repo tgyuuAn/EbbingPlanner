@@ -14,6 +14,10 @@ import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.shared.domain.model.SortType
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_apply
+import ebbingplanner.shared.generated.resources.home_sort_order
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SortTypeBottomSheet(
@@ -27,7 +31,7 @@ internal fun SortTypeBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "정렬 순서")
+        EbbingBottomSheetHeader(title = stringResource(Res.string.home_sort_order))
 
         Column(
             modifier = Modifier
@@ -43,7 +47,7 @@ internal fun SortTypeBottomSheet(
             }
 
             EbbingSolidButton(
-                label = "적용하기",
+                label = stringResource(Res.string.home_apply),
                 onClick = { onClickUpdate(newSortType) },
                 modifier = Modifier
                     .fillMaxWidth()
