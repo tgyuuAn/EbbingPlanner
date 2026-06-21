@@ -41,6 +41,17 @@ import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.model.TodoSchedule
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.common_clear
+import ebbingplanner.shared.generated.resources.memo_add_headline_suffix
+import ebbingplanner.shared.generated.resources.memo_add_title
+import ebbingplanner.shared.generated.resources.memo_edit_headline_suffix
+import ebbingplanner.shared.generated.resources.memo_edit_title
+import ebbingplanner.shared.generated.resources.memo_input_hint
+import ebbingplanner.shared.generated.resources.memo_label
+import ebbingplanner.shared.generated.resources.memo_preview_label
+import ebbingplanner.shared.generated.resources.memo_save
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MemoScreen(
@@ -48,17 +59,19 @@ fun MemoScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+    val addHeadlineSuffix = stringResource(Res.string.memo_add_headline_suffix)
+    val editHeadlineSuffix = stringResource(Res.string.memo_edit_headline_suffix)
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = "메모 ${if (state.originSchedule?.memo.isNullOrEmpty()) "추가" else "수정"}",
+            title = if (state.originSchedule?.memo.isNullOrEmpty()) stringResource(Res.string.memo_add_title) else stringResource(Res.string.memo_edit_title),
             onNavigationClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
             rightComponent = {
                 if (!state.isTreatment) {
                     Text(
-                        text = "저장",
+                        text = stringResource(Res.string.memo_save),
                         style = EbbingTheme.typography.headingSSB,
                         color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
                         else EbbingTheme.colors.dark3,
@@ -94,7 +107,7 @@ fun MemoScreen(
                                 withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                                     append(schedule.title)
                                 }
-                                append(" 일정에\n메모를 ${if (schedule.memo.isNullOrEmpty()) "추가" else "수정"}해요")
+                                append(if (schedule.memo.isNullOrEmpty()) addHeadlineSuffix else editHeadlineSuffix)
                             },
                             style = EbbingTheme.typography.headingLSB,
                             color = EbbingTheme.colors.black,
@@ -126,7 +139,7 @@ fun MemoScreen(
                             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                                 append(schedule.title)
                             }
-                            append(" 일정에\n메모를 ${if (schedule.memo.isNullOrEmpty()) "추가" else "수정"}해요")
+                            append(if (schedule.memo.isNullOrEmpty()) addHeadlineSuffix else editHeadlineSuffix)
                         },
                         style = EbbingTheme.typography.headingLSB,
                         color = EbbingTheme.colors.black,
@@ -147,7 +160,7 @@ fun MemoScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = "저장",
+                label = stringResource(Res.string.memo_save),
                 onClick = { viewModel.onIntent(MemoIntent.OnSaveClick) },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier
@@ -169,7 +182,7 @@ private fun MemoContent(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "메모",
+            text = stringResource(Res.string.memo_label),
             style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -182,14 +195,14 @@ private fun MemoContent(
             EbbingTextInputDefault(
                 value = memo,
                 onValueChange = onMemoChange,
-                hint = "어떤 메모를 남겨둘까요?",
+                hint = stringResource(Res.string.memo_input_hint),
                 modifier = Modifier.weight(1f),
             )
 
             if (memo.isNotEmpty()) {
                 Icon(
                     imageVector = Icons.Filled.Clear,
-                    contentDescription = "지우기",
+                    contentDescription = stringResource(Res.string.common_clear),
                     tint = EbbingTheme.colors.dark2,
                     modifier = Modifier
                         .padding(start = 8.dp)
@@ -218,7 +231,7 @@ private fun PreviewContent(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "미리보기",
+            text = stringResource(Res.string.memo_preview_label),
             style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),

@@ -167,4 +167,83 @@
     <string name="home_exit_confirm_sub">지금 뒤로 가면 일정이 저장되지 않습니다.\n계속 이어서 작성해 보세요.</string>
     <string name="home_exit_confirm_stop">작성 중단하기</string>
     <string name="home_exit_confirm_continue">이어서 작성하기</string>
+
+    <!-- 일정 모아보기 -->
+    <string name="schedule_top_bar_title">일정 모아보기</string>
+    <string name="schedule_tag_count_completion">%1$d개의 일정, 완료율 %2$d%%</string>
+    <string name="schedule_collapse">닫기</string>
+    <string name="schedule_card_date">%1$d월 %2$d일 (%3$s)</string>
+    <string name="schedule_empty_message">아직 일정이 없어요.\n새로운 일정을 등록해볼까요?</string>
+    <string name="schedule_empty_register_button">일정 등록하러 가기</string>
+    <string name="schedule_tag_edit_title">\'%1$s\' 태그 편집</string>
+    <string name="schedule_tag_name_label">태그 이름</string>
+    <string name="schedule_tag_name_hint">태그 이름을 입력하세요</string>
+    <string name="schedule_tag_color_label">색상</string>
+    <string name="schedule_tag_delete_label">\'%1$s\' 태그 삭제</string>
+    <string name="schedule_tag_save_button">저장하기</string>
+    <string name="schedule_options_title">편집</string>
+    <string name="schedule_options_subtitle">%1$s 일정을 어떻게 할까요?</string>
+    <string name="schedule_option_edit">수정하기</string>
+    <string name="schedule_option_delete">삭제하기</string>
+    <string name="schedule_option_delay_tomorrow">내일로 미루기</string>
+    <string name="schedule_option_add_memo">메모 추가하기</string>
+    <string name="schedule_option_edit_memo">메모 수정하기</string>
+    <string name="schedule_option_delete_memo">메모 지우기</string>
+    <string name="schedule_update_title">수정 방법</string>
+    <string name="schedule_update_info">일정 정보 수정하기</string>
+    <string name="schedule_update_repeat_cycle">연관된 일정 반복 주기 재설정하기</string>
+    <string name="schedule_delete_title">삭제 방법</string>
+    <string name="schedule_delete_single">해당 일정만 삭제하기</string>
+    <string name="schedule_delete_remaining">연계된 이후 일정 전부 삭제</string>
+    <string name="schedule_delay_title">미루기 방법</string>
+    <string name="schedule_delay_single">이 일정만 미루기</string>
+    <string name="schedule_delay_all">이후 일정 모두 미루기</string>
+
+    <!-- 메모 -->
+    <string name="memo_label">메모</string>
+    <string name="memo_input_hint">어떤 메모를 남겨둘까요?</string>
+    <string name="memo_preview_label">미리보기</string>
+    <string name="memo_save">저장</string>
+    <string name="memo_add_title">메모 추가</string>
+    <string name="memo_edit_title">메모 수정</string>
+    <string name="memo_add_headline_suffix">" 일정에\n메모를 추가해요"</string>
+    <string name="memo_edit_headline_suffix">" 일정에\n메모를 수정해요"</string>
+
+    <!-- 알림 -->
+    <string name="notification_placeholder_desc">{할일}을 사용하면 일정 이름으로 자동 대체됩니다</string>
+
+    <!-- 온보딩 -->
+    <string name="onboarding_next">다음</string>
+    <string name="onboarding_start">시작하기</string>
+    <string name="onboarding_page1_title">에빙하우스 망각 곡선 기반 학습</string>
+    <string name="onboarding_page1_desc">망각 곡선에 맞춰 최적의 복습 시점을\n자동으로 알려드려요.</string>
+    <string name="onboarding_page2_title">간편한 일정 체크</string>
+    <string name="onboarding_page2_desc">홈 화면에서 간편하게\n오늘의 일정을 확인하고 완료해보세요.</string>
+    <string name="onboarding_page3_title">알림으로 놓치지 않게</string>
+    <string name="onboarding_page3_desc">설정한 시간에 오늘의 할 일을\n알림으로 알려드려요.</string>
+    <string name="onboarding_page4_title">여러 기기에서 동기화</string>
+    <string name="onboarding_page4_desc">다른 기기와 연결하여\n일정을 함께 관리해보세요.</string>
+
+    <!-- 기기 연동 -->
+    <string name="connect_title">다른 기기와 연동</string>
+    <string name="connect_dialog_title">해당 ID로 연동할까요?</string>
+    <string name="connect_dialog_desc_1">"현재 기기에 있는 데이터는 "</string>
+    <string name="connect_dialog_desc_highlight_1">업로드된 데이터로 모두 대체</string>
+    <string name="connect_dialog_desc_2">"됩니다.\n중요한 데이터는 "</string>
+    <string name="connect_dialog_desc_highlight_2">연동 전에 반드시 확인</string>
+    <string name="connect_dialog_desc_3">해주세요.</string>
+    <string name="connect_dialog_confirm">연동</string>
+    <string name="connect_upload_title">내 기기 데이터로 연동시키기</string>
+    <string name="connect_generate">생성</string>
+    <string name="connect_upload_desc">내 데이터로 연동할 수 있는 코드를 생성하세요.</string>
+    <string name="connect_download_title">다른 기기 데이터로 연동하기</string>
+    <string name="connect_connect">연결</string>
+    <string name="connect_download_desc">사용할 데이터를 가진 기기의 연동 코드를 입력하세요.</string>
+    <string name="connect_guide_1">"1. 데이터를 보존할 기기에서 "</string>
+    <string name="connect_guide_highlight_1">연동 코드를 생성</string>
+    <string name="connect_guide_2">"하세요.\n2. 생성된 코드는 "</string>
+    <string name="connect_guide_highlight_2">10분간 유효</string>
+    <string name="connect_guide_3">"합니다.\n3. 다른 기기에서 해당 코드를 입력해 연동을 완료하세요.\n4. 코드를 입력하는 기기의 "</string>
+    <string name="connect_guide_highlight_3">"기존 데이터는 덮어씌워지므로, "</string>
+    <string name="connect_guide_4">신중히 선택해 주세요.</string>
 </resources>

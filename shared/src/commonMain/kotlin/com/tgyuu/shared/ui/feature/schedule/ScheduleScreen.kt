@@ -72,6 +72,20 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.schedule_card_date
+import ebbingplanner.shared.generated.resources.schedule_collapse
+import ebbingplanner.shared.generated.resources.schedule_empty_message
+import ebbingplanner.shared.generated.resources.schedule_empty_register_button
+import ebbingplanner.shared.generated.resources.schedule_tag_count_completion
+import ebbingplanner.shared.generated.resources.schedule_top_bar_title
+import ebbingplanner.shared.generated.resources.tag_back
+import ebbingplanner.shared.generated.resources.tag_delete
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_highlight
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_prefix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +121,7 @@ fun ScheduleScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         EbbingMainTopBar(
-            title = "일정 모아보기",
+            title = stringResource(Res.string.schedule_top_bar_title),
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -330,7 +344,7 @@ private fun TagCard(
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "${scheduleCount}개의 일정, 완료율 ${(achievementRate * 100).roundToInt()}%",
+                    text = stringResource(Res.string.schedule_tag_count_completion, scheduleCount, (achievementRate * 100).roundToInt()),
                     style = EbbingTheme.typography.bodyMM,
                     color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark3,
                 )
@@ -402,7 +416,7 @@ private fun TagCard(
                             .padding(top = 10.dp),
                     ) {
                         Text(
-                            text = "닫기",
+                            text = stringResource(Res.string.schedule_collapse),
                             style = EbbingTheme.typography.bodySSB,
                             color = EbbingTheme.colors.dark3,
                         )
@@ -573,7 +587,7 @@ private fun ScheduleCard(
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "${schedule.date.monthNumber}월 ${schedule.date.dayOfMonth}일 (${schedule.date.dayOfWeek.toKorean()})",
+            text = stringResource(Res.string.schedule_card_date, schedule.date.monthNumber, schedule.date.dayOfMonth, schedule.date.dayOfWeek.toKorean()),
             style = dateStyle,
             color = dateColor,
             textDecoration = textDecoration,
@@ -623,13 +637,13 @@ private fun EmptyScheduleContent(
         modifier = modifier.fillMaxWidth(),
     ) {
         Text(
-            text = "아직 일정이 없어요.\n새로운 일정을 등록해볼까요?",
+            text = stringResource(Res.string.schedule_empty_message),
             style = EbbingTheme.typography.headingSSB,
             color = EbbingTheme.colors.dark3,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        EbbingRoundSolidButton(label = "일정 등록하러 가기", onClick = onNavigateToAddTodo)
+        EbbingRoundSolidButton(label = stringResource(Res.string.schedule_empty_register_button), onClick = onNavigateToAddTodo)
     }
 }
 
@@ -643,21 +657,24 @@ private fun DeleteTagDialog(
 ) {
     EbbingDialog(
         dialogTop = {
+            val deletePrefix = stringResource(Res.string.tag_delete_confirm_prefix, tagName)
+            val deleteHighlight = stringResource(Res.string.tag_delete_confirm_highlight)
+            val deleteSuffix = stringResource(Res.string.tag_delete_confirm_suffix)
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("$tagName 태그를 ")
+                    append(deletePrefix)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
-                        append("삭제")
+                        append(deleteHighlight)
                     }
-                    append(" 하시겠습니까?")
+                    append(deleteSuffix)
                 },
-                subText = "삭제한 태그는 되돌릴 수 없으니 신중히 선택해 주세요.",
+                subText = stringResource(Res.string.tag_delete_confirm_subtext),
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "뒤로",
-                rightButtonText = "삭제",
+                leftButtonText = stringResource(Res.string.tag_back),
+                rightButtonText = stringResource(Res.string.tag_delete),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onDeleteClick,
             )
