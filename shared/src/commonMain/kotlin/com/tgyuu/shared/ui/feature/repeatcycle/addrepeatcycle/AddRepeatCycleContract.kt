@@ -10,11 +10,9 @@ data class AddRepeatCycleState(
     val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
     val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
-    val previewRepeatCycle: String = parsingIntervals(intervals)
-        .getOrDefault(emptyList())
-        .toPreviewIntervals()
+    val parsedIntervals: List<Int> = parsingIntervals(intervals).getOrDefault(emptyList())
 
-    val isSaveEnabled: Boolean = intervals.isNotEmpty() && previewRepeatCycle != RepeatCycle.DISPLAY_ERROR
+    val isSaveEnabled: Boolean = intervals.isNotEmpty() && parsedIntervals.isNotEmpty()
 }
 
 sealed interface AddRepeatCycleIntent : UiIntent {
@@ -33,15 +31,4 @@ internal fun parsingIntervals(intervals: String): Result<List<Int>> = runCatchin
         .distinct()
         .sorted()
         .toList()
-}
-
-internal fun List<Int>.toPreviewIntervals(): String {
-    if (isEmpty()) return RepeatCycle.DISPLAY_ERROR
-
-    return when {
-        this.size == 1 && this.first() == 0 -> "당일만"
-        else -> this.joinToString(", ") { day ->
-            if (day == 0) "당일" else "${day}일"
-        }
-    }
 }

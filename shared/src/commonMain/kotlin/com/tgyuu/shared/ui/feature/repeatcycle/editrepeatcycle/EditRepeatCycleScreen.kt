@@ -52,6 +52,7 @@ import ebbingplanner.shared.generated.resources.repeat_cycle_input_guide
 import ebbingplanner.shared.generated.resources.repeat_cycle_preview_label
 import ebbingplanner.shared.generated.resources.common_clear
 import org.jetbrains.compose.resources.stringResource
+import com.tgyuu.shared.designsystem.model.toRepeatPreviewDisplay
 
 @Composable
 fun EditRepeatCycleScreen(
@@ -104,7 +105,7 @@ fun EditRepeatCycleScreen(
         }
         val previewContent: @Composable () -> Unit = {
             Text(text = stringResource(Res.string.repeat_cycle_preview_label), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.padding(top = 32.dp))
-            Text(text = state.previewRepeatCycle, style = EbbingTheme.typography.bodySSB, color = if (state.previewRepeatCycle == RepeatCycle.DISPLAY_ERROR) EbbingTheme.colors.error else EbbingTheme.colors.dark2, textAlign = TextAlign.Start, modifier = Modifier.padding(top = 8.dp).fillMaxWidth())
+            Text(text = state.parsedIntervals.toRepeatPreviewDisplay(), style = EbbingTheme.typography.bodySSB, color = if (state.parsedIntervals.isEmpty()) EbbingTheme.colors.error else EbbingTheme.colors.dark2, textAlign = TextAlign.Start, modifier = Modifier.padding(top = 8.dp).fillMaxWidth())
         }
 
         if (isWide) {

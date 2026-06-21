@@ -22,6 +22,7 @@ import ebbingplanner.shared.generated.resources.snack_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_add_failed
 import ebbingplanner.shared.generated.resources.snack_todo_added
 import org.jetbrains.compose.resources.getString
+import com.tgyuu.shared.designsystem.model.toDisplayName
 
 class AddTodoViewModel(
     private val selectedDate: LocalDate,
@@ -45,10 +46,11 @@ class AddTodoViewModel(
     private fun loadInitialData() {
         safeScope.launch {
             // Set default tag and repeat cycle
+            val defaultRepeatCycle = DefaultRepeatCycles.first().toUiModel()
             setState {
                 copy(
                     tag = DefaultTodoTag.toUiModel(),
-                    repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+                    repeatCycle = defaultRepeatCycle,
                 )
             }
             loadTags()
@@ -66,8 +68,9 @@ class AddTodoViewModel(
     private suspend fun loadRepeatCycles() {
         val repeatCycles = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + repeatCycles
+        val models = buildList { for (cycle in allRepeatCycles) add(cycle.toUiModel()) }
         setState {
-            copy(repeatCycleList = allRepeatCycles.map { it.toUiModel() }.toImmutableList())
+            copy(repeatCycleList = models.toImmutableList())
         }
     }
 
@@ -152,7 +155,7 @@ class AddTodoViewModel(
         createdAt = createdAt,
     )
 
-    private fun com.tgyuu.shared.domain.model.RepeatCycle.toUiModel(): RepeatCycleUiModel {
+    private suspend fun com.tgyuu.shared.domain.model.RepeatCycle.toUiModel(): RepeatCycleUiModel {
         return RepeatCycleUiModel(
             id = id,
             intervals = intervals.toImmutableList(),
