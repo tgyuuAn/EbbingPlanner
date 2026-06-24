@@ -74,6 +74,9 @@ import ebbingplanner.shared.generated.resources.home_review_button
 import ebbingplanner.shared.generated.resources.home_review_sub
 import ebbingplanner.shared.generated.resources.home_review_title
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_arrow_down
+import ebbingplanner.shared.generated.resources.ic_arrow_up
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -444,7 +447,7 @@ private fun PhoneHomeScreen(
                 .background(EbbingTheme.colors.background)
         ) {
             Icon(
-                imageVector = if (isCollapsed) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                painter = if (isCollapsed) painterResource(Res.drawable.ic_arrow_down) else painterResource(Res.drawable.ic_arrow_up),
                 contentDescription = null,
                 tint = EbbingTheme.colors.black,
                 modifier = Modifier

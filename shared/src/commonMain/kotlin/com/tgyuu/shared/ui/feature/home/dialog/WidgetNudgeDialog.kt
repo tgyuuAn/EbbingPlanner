@@ -24,6 +24,8 @@ import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.home_widget_nudge_label
 import ebbingplanner.shared.generated.resources.home_widget_nudge_title
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_close
 
 @Composable
 internal fun WidgetNudgeDialog(
@@ -32,7 +34,7 @@ internal fun WidgetNudgeDialog(
     EbbingDialog(onDismissRequest = onDismiss) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                imageVector = Icons.Default.Close,
+                painter = painterResource(Res.drawable.ic_close),
                 contentDescription = null,
                 tint = EbbingTheme.colors.dark2,
                 modifier = Modifier

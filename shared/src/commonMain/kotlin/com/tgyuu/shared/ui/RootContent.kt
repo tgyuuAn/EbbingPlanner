@@ -80,14 +80,18 @@ import ebbingplanner.shared.generated.resources.nav_schedule
 import ebbingplanner.shared.generated.resources.nav_setting
 import ebbingplanner.shared.generated.resources.webview_privacy_title
 import ebbingplanner.shared.generated.resources.webview_terms_title
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_home
+import ebbingplanner.shared.generated.resources.ic_schedule
+import ebbingplanner.shared.generated.resources.ic_setting
 
 private enum class BottomNavItem(
-    val icon: ImageVector,
+    val iconRes: org.jetbrains.compose.resources.DrawableResource,
     val labelRes: StringResource,
 ) {
-    HOME(Icons.Default.Home, Res.string.nav_home),
-    SCHEDULE(Icons.Default.DateRange, Res.string.nav_schedule),
-    SETTING(Icons.Default.Settings, Res.string.nav_setting),
+    HOME(Res.drawable.ic_home, Res.string.nav_home),
+    SCHEDULE(Res.drawable.ic_schedule, Res.string.nav_schedule),
+    SETTING(Res.drawable.ic_setting, Res.string.nav_setting),
 }
 
 @Composable
@@ -285,9 +289,9 @@ private fun EbbingBottomNavigationBar(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Icon(
-                            imageVector = tab.icon,
+                            painter = painterResource(tab.iconRes),
                             contentDescription = stringResource(tab.labelRes),
-                            modifier = Modifier.size(28.dp),
+                            modifier = Modifier.size(32.dp),
                         )
                         Text(
                             text = stringResource(tab.labelRes),

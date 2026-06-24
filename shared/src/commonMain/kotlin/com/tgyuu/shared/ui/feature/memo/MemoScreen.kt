@@ -52,6 +52,8 @@ import ebbingplanner.shared.generated.resources.memo_label
 import ebbingplanner.shared.generated.resources.memo_preview_label
 import ebbingplanner.shared.generated.resources.memo_save
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_delete_circle
 
 @Composable
 fun MemoScreen(
@@ -201,7 +203,7 @@ private fun MemoContent(
 
             if (memo.isNotEmpty()) {
                 Icon(
-                    imageVector = Icons.Filled.Clear,
+                    painter = painterResource(Res.drawable.ic_delete_circle),
                     contentDescription = stringResource(Res.string.common_clear),
                     tint = EbbingTheme.colors.dark2,
                     modifier = Modifier

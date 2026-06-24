@@ -86,6 +86,10 @@ import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
 import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
 import org.jetbrains.compose.resources.stringResource
 import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_3dots
+import ebbingplanner.shared.generated.resources.ic_arrow_up
+import ebbingplanner.shared.generated.resources.ic_arrow_down
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -353,7 +357,7 @@ private fun TagCard(
 
             if (!isDefaultTag) {
                 Icon(
-                    imageVector = Icons.Default.MoreVert,
+                    painter = painterResource(Res.drawable.ic_3dots),
                     contentDescription = null,
                     tint = EbbingTheme.colors.black,
                     modifier = Modifier
@@ -364,7 +368,7 @@ private fun TagCard(
             }
 
             Icon(
-                imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                painter = if (isExpanded) painterResource(Res.drawable.ic_arrow_up) else painterResource(Res.drawable.ic_arrow_down),
                 contentDescription = null,
                 tint = EbbingTheme.colors.black,
                 modifier = Modifier.size(24.dp),
@@ -422,7 +426,7 @@ private fun TagCard(
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                         Icon(
-                            imageVector = Icons.Default.KeyboardArrowUp,
+                            painter = painterResource(Res.drawable.ic_arrow_up),
                             contentDescription = null,
                             tint = EbbingTheme.colors.dark3,
                             modifier = Modifier.size(16.dp),
@@ -498,7 +502,7 @@ private fun TodoInfoItem(
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Icon(
-                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    painter = if (isExpanded) painterResource(Res.drawable.ic_arrow_up) else painterResource(Res.drawable.ic_arrow_down),
                     contentDescription = null,
                     tint = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.black,
                     modifier = Modifier.size(20.dp),
@@ -604,7 +608,7 @@ private fun ScheduleCard(
         )
 
         Icon(
-            imageVector = Icons.Default.MoreVert,
+            painter = painterResource(Res.drawable.ic_3dots),
             contentDescription = null,
             tint = EbbingTheme.colors.dark3,
             modifier = Modifier

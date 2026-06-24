@@ -63,6 +63,9 @@ import ebbingplanner.shared.generated.resources.home_empty_schedule
 import ebbingplanner.shared.generated.resources.home_priority_value
 import org.jetbrains.compose.resources.stringResource
 import com.tgyuu.shared.designsystem.model.displayName
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_arrow_down
+import ebbingplanner.shared.generated.resources.ic_3dots
 
 private const val TODO_LIST_PAGE_COUNT = 12_001 // ±16년(일)
 
@@ -161,7 +164,7 @@ private fun TodoHeader(
                 color = EbbingTheme.colors.black
             )
             Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
+                painter = painterResource(Res.drawable.ic_arrow_down),
                 contentDescription = null,
                 tint = EbbingTheme.colors.black,
                 modifier = Modifier.size(20.dp)
@@ -325,7 +328,7 @@ private fun TodoListCard(
                     }
 
                     Icon(
-                        imageVector = Icons.Default.MoreVert,
+                        painter = painterResource(Res.drawable.ic_3dots),
                         contentDescription = null,
                         tint = EbbingTheme.colors.dark1,
                         modifier = Modifier

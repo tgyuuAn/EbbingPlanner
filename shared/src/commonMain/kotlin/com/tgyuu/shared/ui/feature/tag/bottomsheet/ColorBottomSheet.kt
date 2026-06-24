@@ -52,6 +52,8 @@ import ebbingplanner.shared.generated.resources.tag_color_select_title
 import ebbingplanner.shared.generated.resources.tag_apply
 import ebbingplanner.shared.generated.resources.common_clear
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_check
 
 // 6 color families with 6 shades each (dark to light)
 val TAG_COLORS = listOf(
@@ -145,7 +147,7 @@ private fun ColorItem(
     ) {
         if (isSelected) {
             Icon(
-                imageVector = Icons.Filled.Check,
+                painter = painterResource(Res.drawable.ic_check),
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.size(20.dp),

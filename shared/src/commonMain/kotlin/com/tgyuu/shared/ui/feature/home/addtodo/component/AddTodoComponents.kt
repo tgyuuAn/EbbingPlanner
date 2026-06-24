@@ -43,6 +43,8 @@ import ebbingplanner.shared.generated.resources.home_title
 import ebbingplanner.shared.generated.resources.home_title_hint
 import org.jetbrains.compose.resources.stringResource
 import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_delete_circle
 
 @Composable
 fun TitleContent(
@@ -66,7 +68,7 @@ fun TitleContent(
         rightComponent = {
             if (title.isNotEmpty()) {
                 Icon(
-                    imageVector = Icons.Default.Clear,
+                    painter = painterResource(Res.drawable.ic_delete_circle),
                     contentDescription = stringResource(Res.string.home_delete),
                     tint = EbbingTheme.colors.dark3,
                     modifier = Modifier

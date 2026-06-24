@@ -59,6 +59,9 @@ import ebbingplanner.shared.generated.resources.tag_color_select_title
 import ebbingplanner.shared.generated.resources.tag_apply
 import ebbingplanner.shared.generated.resources.common_clear
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_delete_circle
+import ebbingplanner.shared.generated.resources.ic_arrow_right
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -181,7 +184,7 @@ private fun NameContent(
 
             if (name.isNotEmpty()) {
                 Icon(
-                    imageVector = Icons.Filled.Clear,
+                    painter = painterResource(Res.drawable.ic_delete_circle),
                     contentDescription = stringResource(Res.string.common_clear),
                     tint = EbbingTheme.colors.dark2,
                     modifier = Modifier
@@ -234,7 +237,7 @@ private fun ColorContent(
             Spacer(modifier = Modifier.weight(1f))
 
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                painter = painterResource(Res.drawable.ic_arrow_right),
                 contentDescription = null,
                 tint = EbbingTheme.colors.dark3,
             )
