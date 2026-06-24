@@ -8,9 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import com.tgyuu.shared.designsystem.component.icon.EbbingBackIcon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -57,12 +56,12 @@ fun EbbingSubTopBar(
             .height(60.dp),
     ) {
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            imageVector = EbbingBackIcon,
             contentDescription = "Back",
             tint = EbbingTheme.colors.black,
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .size(24.dp)
+                .size(32.dp)
                 .clickable { onNavigationClick() },
         )
 
