@@ -15,6 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.ic_check
 
 @Composable
 fun EbbingCheck(
@@ -38,7 +41,7 @@ fun EbbingCheck(
         modifier = modifier.clickable { onCheckedChange(!checked) },
     ) {
         Icon(
-            imageVector = Icons.Default.Check,
+            painter = painterResource(Res.drawable.ic_check),
             tint = EbbingTheme.colors.background,
             contentDescription = null,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 6.dp),

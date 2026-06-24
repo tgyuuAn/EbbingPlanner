@@ -53,6 +53,8 @@ import ebbingplanner.shared.generated.resources.repeat_cycle_preview_label
 import ebbingplanner.shared.generated.resources.common_clear
 import org.jetbrains.compose.resources.stringResource
 import com.tgyuu.shared.designsystem.model.toRepeatPreviewDisplay
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_delete_circle
 
 @Composable
 fun AddRepeatCycleScreen(
@@ -152,7 +154,7 @@ private fun RepeatCycleInputContent(
             rightComponent = {
                 if (intervals.isNotEmpty()) {
                     Icon(
-                        imageVector = Icons.Filled.Clear,
+                        painter = painterResource(Res.drawable.ic_delete_circle),
                         contentDescription = stringResource(Res.string.common_clear),
                         tint = EbbingTheme.colors.dark2,
                         modifier = Modifier

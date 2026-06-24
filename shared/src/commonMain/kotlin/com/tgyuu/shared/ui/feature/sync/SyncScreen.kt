@@ -65,6 +65,8 @@ import ebbingplanner.shared.generated.resources.sync_confirm_sync_desc_3
 import ebbingplanner.shared.generated.resources.sync_confirm_disconnect_title
 import ebbingplanner.shared.generated.resources.sync_confirm_disconnect_desc
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_arrow_right
 
 @Composable
 fun SyncScreen(
@@ -316,7 +318,7 @@ private fun SyncUpBody(
             )
 
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                painter = painterResource(Res.drawable.ic_arrow_right),
                 contentDescription = null,
                 tint = EbbingTheme.colors.dark3,
             )
@@ -344,7 +346,7 @@ private fun SyncUpBody(
                 )
 
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    painter = painterResource(Res.drawable.ic_arrow_right),
                     contentDescription = null,
                     tint = EbbingTheme.colors.dark3,
                 )
@@ -365,7 +367,7 @@ private fun SyncUpBody(
                 )
 
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    painter = painterResource(Res.drawable.ic_arrow_right),
                     contentDescription = null,
                     tint = EbbingTheme.colors.dark3,
                 )

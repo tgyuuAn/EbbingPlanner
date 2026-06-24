@@ -30,6 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.ic_textinput_check
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -153,7 +156,7 @@ fun EbbingBottomSheetListItemDefault(
 
         if (enabled && checked) {
             Icon(
-                imageVector = Icons.Default.Check,
+                painter = painterResource(Res.drawable.ic_textinput_check),
                 contentDescription = null,
                 tint = EbbingTheme.colors.primaryDefault,
                 modifier = Modifier

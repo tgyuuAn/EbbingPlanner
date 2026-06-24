@@ -45,6 +45,12 @@ import ebbingplanner.shared.generated.resources.onboarding_page4_desc
 import ebbingplanner.shared.generated.resources.onboarding_page4_title
 import ebbingplanner.shared.generated.resources.onboarding_start
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.foundation.Image
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_onboarding_1
+import ebbingplanner.shared.generated.resources.ic_onboarding_2
+import ebbingplanner.shared.generated.resources.ic_onboarding_3
+import ebbingplanner.shared.generated.resources.ic_onboarding_4
 
 @Composable
 fun OnboardingScreen(
@@ -99,24 +105,24 @@ private fun OnboardingPageContent(
     page: Int,
     modifier: Modifier = Modifier,
 ) {
-    val (icon, title, description) = when (page) {
+    val (imageRes, title, description) = when (page) {
         0 -> Triple(
-            Icons.Filled.DateRange,
+            Res.drawable.ic_onboarding_1,
             stringResource(Res.string.onboarding_page1_title),
             stringResource(Res.string.onboarding_page1_desc)
         )
         1 -> Triple(
-            Icons.Filled.CheckCircle,
+            Res.drawable.ic_onboarding_2,
             stringResource(Res.string.onboarding_page2_title),
             stringResource(Res.string.onboarding_page2_desc)
         )
         2 -> Triple(
-            Icons.Filled.Notifications,
+            Res.drawable.ic_onboarding_3,
             stringResource(Res.string.onboarding_page3_title),
             stringResource(Res.string.onboarding_page3_desc)
         )
         else -> Triple(
-            Icons.Filled.Refresh,
+            Res.drawable.ic_onboarding_4,
             stringResource(Res.string.onboarding_page4_title),
             stringResource(Res.string.onboarding_page4_desc)
         )
@@ -127,21 +133,13 @@ private fun OnboardingPageContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
+        Image(
+            painter = painterResource(imageRes),
+            contentDescription = null,
             modifier = Modifier
-                .size(300.dp)
-                .clip(CircleShape)
-                .background(EbbingTheme.colors.light3)
-                .padding(vertical = 66.dp),
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = EbbingTheme.colors.primaryDefault,
-                modifier = Modifier.size(120.dp),
-            )
-        }
+                .padding(vertical = 66.dp)
+                .size(300.dp),
+        )
 
         Spacer(modifier = Modifier.height(48.dp))
 

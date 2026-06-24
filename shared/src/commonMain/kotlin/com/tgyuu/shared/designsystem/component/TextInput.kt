@@ -36,6 +36,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import kotlinx.datetime.Clock
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.ic_arrow_down
 
 @Composable
 fun EbbingTextInputDefault(
@@ -149,7 +152,7 @@ fun EbbingTextInputDropDown(
         )
 
         Icon(
-            imageVector = Icons.Default.KeyboardArrowDown,
+            painter = painterResource(Res.drawable.ic_arrow_down),
             contentDescription = null,
             tint = EbbingTheme.colors.black,
             modifier = Modifier.size(24.dp),

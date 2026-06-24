@@ -54,6 +54,8 @@ import ebbingplanner.shared.generated.resources.calendar_go_today
 import ebbingplanner.shared.generated.resources.calendar_year_month
 import ebbingplanner.shared.generated.resources.sync_sync
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_return
 
 private const val CALENDAR_PAGE_COUNT = 12_001
 
@@ -243,7 +245,7 @@ private fun CalendarController(
         IconButton(onClick = onGotoTodayClick) {
             if (!isOnToday) {
                 Icon(
-                    imageVector = Icons.Default.Refresh,
+                    painter = painterResource(Res.drawable.ic_return),
                     contentDescription = stringResource(Res.string.calendar_go_today),
                     tint = EbbingTheme.colors.black,
                     modifier = Modifier.size(16.dp),

@@ -66,6 +66,9 @@ import ebbingplanner.shared.generated.resources.schedule_update_info
 import ebbingplanner.shared.generated.resources.schedule_update_repeat_cycle
 import ebbingplanner.shared.generated.resources.schedule_update_title
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_check
+import ebbingplanner.shared.generated.resources.ic_trashcan
 
 @Composable
 fun TagEditBottomSheet(
@@ -158,7 +161,7 @@ fun TagEditBottomSheet(
 
                         if (selectedColor == colorValue) {
                             Icon(
-                                imageVector = Icons.Default.Check,
+                                painter = painterResource(Res.drawable.ic_check),
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(20.dp),
@@ -176,7 +179,7 @@ fun TagEditBottomSheet(
             modifier = Modifier.clickable { onDelete() },
         ) {
             Icon(
-                imageVector = Icons.Default.Delete,
+                painter = painterResource(Res.drawable.ic_trashcan),
                 contentDescription = null,
                 tint = EbbingTheme.colors.error,
                 modifier = Modifier.size(20.dp),

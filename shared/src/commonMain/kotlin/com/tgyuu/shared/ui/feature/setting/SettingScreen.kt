@@ -102,6 +102,8 @@ import ebbingplanner.shared.generated.resources.setting_alarm_message_error_plac
 import ebbingplanner.shared.generated.resources.setting_alarm_message_error_length
 import ebbingplanner.shared.generated.resources.setting_alarm_message_length
 import ebbingplanner.shared.generated.resources.setting_alarm_message_preview_sample
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_arrow_right
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -406,7 +408,7 @@ private fun SettingRow(
         )
 
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = null,
             tint = EbbingTheme.colors.dark3,
         )
@@ -546,7 +548,7 @@ private fun NotificationBody(
             )
 
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                painter = painterResource(Res.drawable.ic_arrow_right),
                 contentDescription = null,
                 tint = EbbingTheme.colors.dark3,
             )
@@ -590,7 +592,7 @@ private fun InAppReviewRow(
         )
 
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = null,
             tint = EbbingTheme.colors.dark3,
         )
