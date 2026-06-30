@@ -13,6 +13,8 @@ import com.tgyuu.domain.model.sync.ServerSyncInfo
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
+import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.domain.repository.ErrorRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.network.source.SyncRemoteDataSource
 import kotlinx.coroutines.async
@@ -32,6 +34,7 @@ class SyncRepositoryImpl @Inject constructor(
     private val localSyncDataSource: LocalSyncDataSource,
     private val localSyncTransactionDataSource: LocalSyncTransactionDataSource,
     private val deviceInfoProvider: DeviceInfoProvider,
+    private val errorRepository: ErrorRepository,
 ) : SyncRepository {
     override suspend fun ensureUUIDExists() = localSyncDataSource.ensureUUIDExists()
     override suspend fun getUuid(): String = localSyncDataSource.uuid.first()
@@ -63,7 +66,8 @@ class SyncRepositoryImpl @Inject constructor(
 
     override suspend fun generateConnectCode(connectCode: String): ZonedDateTime =
         coroutineScope {
-            uploadData()
+            suspendRunCatching { uploadData() }
+                .onFailure { errorRepository.logError(it) }
 
             val response = syncDataSource.generateConnectCode(
                 uuid = getUuid(),

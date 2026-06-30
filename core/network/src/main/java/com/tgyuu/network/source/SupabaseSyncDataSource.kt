@@ -50,42 +50,44 @@ class SupabaseSyncDataSource @Inject constructor(
         infos: List<TodoInfoForSync>,
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
-    ): ZonedDateTime = coroutineScope {
-        supabase.from(TABLE_SYNC_INFO)
-            .upsert(SyncInfoDto(uuid = uuid, deviceName = deviceName))
-
-        val schedulesJob = async {
-            if (schedules.isNotEmpty()) {
-                supabase.from(TABLE_SCHEDULES)
-                    .upsert(schedules.map { it.toDto(uuid) })
-            }
+    ): ZonedDateTime {
+        suspendRunCatching {
+            supabase.from(TABLE_SYNC_INFO)
+                .upsert(SyncInfoDto(uuid = uuid, deviceName = deviceName))
         }
 
-        val infosJob = async {
-            if (infos.isNotEmpty()) {
-                supabase.from(TABLE_TODO_INFOS)
-                    .upsert(infos.map { it.toDto(uuid) })
+        val scheduleDtos = schedules.map { it.toDto(uuid) }
+        val infoDtos = infos.map { it.toDto(uuid) }
+        val repeatCycleDtos = repeatCycles.map { it.toDto(uuid) }
+        val tagDtos = tags.map { it.toDto(uuid) }
+
+        val failures = mutableListOf<Throwable>()
+
+        uploadTable(TABLE_REPEAT_CYCLES, repeatCycleDtos) {
+            supabase.from(TABLE_REPEAT_CYCLES).upsert(repeatCycleDtos)
+        }?.let { failures += it }
+
+        val tagFailure = uploadTable(TABLE_TAGS, tagDtos) {
+            supabase.from(TABLE_TAGS).upsert(tagDtos)
+        }
+        tagFailure?.let { failures += it }
+
+        val infoFailure = if (tagFailure != null) {
+            null
+        } else {
+            uploadTable(TABLE_TODO_INFOS, infoDtos) {
+                supabase.from(TABLE_TODO_INFOS).upsert(infoDtos)
             }
         }
+        infoFailure?.let { failures += it }
 
-        val repeatCyclesJob = async {
-            if (repeatCycles.isNotEmpty()) {
-                supabase.from(TABLE_REPEAT_CYCLES)
-                    .upsert(repeatCycles.map { it.toDto(uuid) })
-            }
+        if (tagFailure == null && infoFailure == null) {
+            uploadTable(TABLE_SCHEDULES, scheduleDtos) {
+                supabase.from(TABLE_SCHEDULES).upsert(scheduleDtos)
+            }?.let { failures += it }
         }
 
-        val tagsJob = async {
-            if (tags.isNotEmpty()) {
-                supabase.from(TABLE_TAGS)
-                    .upsert(tags.map { it.toDto(uuid) })
-            }
-        }
-
-        schedulesJob.await()
-        infosJob.await()
-        repeatCyclesJob.await()
-        tagsJob.await()
+        if (failures.isNotEmpty()) throw failures.first()
 
         val now = ZonedDateTime.now()
         supabase.from(TABLE_SYNC_INFO)
@@ -96,7 +98,18 @@ class SupabaseSyncDataSource @Inject constructor(
                 filter { eq("uuid", uuid) }
             }
 
-        now
+        return now
+    }
+
+    private suspend fun uploadTable(
+        table: String,
+        rows: List<*>,
+        upsert: suspend () -> Unit,
+    ): Throwable? {
+        if (rows.isEmpty()) return null
+        return suspendRunCatching { upsert() }
+            .exceptionOrNull()
+            ?.let { SyncUploadException(table, rows, it) }
     }
 
     override suspend fun downloadData(
