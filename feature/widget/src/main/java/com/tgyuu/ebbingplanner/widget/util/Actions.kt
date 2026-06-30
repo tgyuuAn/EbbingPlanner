@@ -17,6 +17,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.sync.withLock
 import java.time.LocalDate
 
 const val KEY_DESTINATION = "destination"
@@ -94,13 +95,15 @@ class SelectDateAction : ActionCallback {
         // 이번 달이 아니라면 보여주지 않음
         if (date.monthValue != today.monthValue) return
 
-        updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
-            prefs.toMutablePreferences().apply {
-                this[SELECTED_DATE] = date.toString()
+        widgetStateMutex.withLock {
+            updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
+                prefs.toMutablePreferences().apply {
+                    this[SELECTED_DATE] = date.toString()
+                }
             }
-        }
 
-        CalendarWidget().update(context, glanceId)
+            CalendarWidget().update(context, glanceId)
+        }
     }
 
     companion object {
