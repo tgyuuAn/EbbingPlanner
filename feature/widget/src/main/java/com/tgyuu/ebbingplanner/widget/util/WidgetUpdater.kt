@@ -27,9 +27,18 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-object WidgetUpdater {
+/**
+ * 모든 위젯 상태(DataStore) 접근을 직렬화하기 위한 프로세스 전역 Mutex.
+ *
+ * Glance 의 PreferencesGlanceStateDefinition 은 위젯 1개당 단일 DataStore 파일
+ * (`appWidget-<id>.preferences_pb`)을 사용하는데, 같은 파일에 대해 DataStore 가
+ * 동시에 2개 이상 활성화되면 "There are multiple DataStores active for the same file"
+ * IllegalStateException 으로 크래시가 발생한다. updateAppWidgetState /
+ * GlanceAppWidget.update 호출을 모두 이 락으로 감싸 동시 접근을 막는다.
+ */
+internal val widgetStateMutex = Mutex()
 
-    private val mutex = Mutex()
+object WidgetUpdater {
 
     suspend fun updateTodayTodoWidget(
         context: Context,
@@ -55,16 +64,18 @@ object WidgetUpdater {
         val json = GsonProvider.gson.toJson(todoLists)
         val widget = TodayTodoWidget()
 
-        glanceIds.forEach { glanceId ->
-            updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
-                pref.toMutablePreferences().apply {
-                    this[TodayTodoWidgetReceiver.TODO_LISTS] = json
-                    this[THEME] = theme.name
-                    this[BACKGROUND_ALPHA] = backgroundAlpha
-                    this[TEXT_ALPHA] = textAlpha
+        widgetStateMutex.withLock {
+            glanceIds.forEach { glanceId ->
+                updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
+                    pref.toMutablePreferences().apply {
+                        this[TodayTodoWidgetReceiver.TODO_LISTS] = json
+                        this[THEME] = theme.name
+                        this[BACKGROUND_ALPHA] = backgroundAlpha
+                        this[TEXT_ALPHA] = textAlpha
+                    }
                 }
+                widget.update(context, glanceId)
             }
-            widget.update(context, glanceId)
         }
     }
 
@@ -99,17 +110,19 @@ object WidgetUpdater {
         val json = GsonProvider.gson.toJson(byDate)
         val widget = CalendarWidget()
 
-        glanceIds.forEach { glanceId ->
-            updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
-                pref.toMutablePreferences().apply {
-                    this[CalendarWidgetReceiver.SCHEDULES_BY_DATE_MAP] = json
-                    this[THEME] = theme.name
-                    this[BACKGROUND_ALPHA] = backgroundAlpha
-                    this[TEXT_ALPHA] = textAlpha
-                    this[WIDGET_MONDAY_START] = mondayStart
+        widgetStateMutex.withLock {
+            glanceIds.forEach { glanceId ->
+                updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { pref ->
+                    pref.toMutablePreferences().apply {
+                        this[CalendarWidgetReceiver.SCHEDULES_BY_DATE_MAP] = json
+                        this[THEME] = theme.name
+                        this[BACKGROUND_ALPHA] = backgroundAlpha
+                        this[TEXT_ALPHA] = textAlpha
+                        this[WIDGET_MONDAY_START] = mondayStart
+                    }
                 }
+                widget.update(context, glanceId)
             }
-            widget.update(context, glanceId)
         }
     }
 
@@ -117,7 +130,9 @@ object WidgetUpdater {
         context: Context,
         todoRepository: TodoRepository,
         configRepository: ConfigRepository,
-    ) = mutex.withLock {
+    ) {
+        // 각 함수가 내부에서 widgetStateMutex 로 DataStore 접근을 직렬화하므로
+        // 여기서 별도로 락을 잡지 않는다. (Mutex 는 재진입 불가 → 잡으면 데드락)
         updateTodayTodoWidget(context, todoRepository, configRepository)
         updateCalendarWidget(context, todoRepository, configRepository)
     }
