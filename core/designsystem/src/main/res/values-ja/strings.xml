@@ -415,4 +415,12 @@
     <string name="update_button">アップデート</string>
     <string name="exit_confirm_snackbar">もう一度戻るを押すとアプリが終了します</string>
     <string name="notification_content_title">エビングプランナーの予定通知</string>
+    <string name="home_add_todo_button">予定を登録</string>
+    <string name="home_edit_todo_button">予定を編集</string>
+    <string name="tag_register_button">タグを登録</string>
+    <string name="tag_edit_button">タグを編集</string>
+    <string name="repeat_register_button">繰り返し周期を登録</string>
+    <string name="repeat_edit_button">繰り返し周期を編集</string>
+    <string name="memo_add_button">メモを登録</string>
+    <string name="memo_edit_button">メモを編集</string>
 </resources>

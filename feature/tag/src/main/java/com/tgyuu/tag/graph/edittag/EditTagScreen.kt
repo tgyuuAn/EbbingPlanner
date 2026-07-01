@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.common.util.clickable
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
@@ -109,7 +108,7 @@ private fun EditTagScreen(
         }
 
         EbbingSolidButton(
-            label = stringResource(R.string.tag_save),
+            label = stringResource(R.string.tag_edit_button),
             onClick = {
                 onSaveClick()
                 focusManager.clearFocus()
