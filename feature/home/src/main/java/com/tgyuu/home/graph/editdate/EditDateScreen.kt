@@ -174,21 +174,7 @@ private fun EditDateScreenPhone(
         EbbingSubTopBar(
             title = stringResource(R.string.home_edit_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                if (!state.isTreatment) {
-                    Text(
-                        text = stringResource(R.string.home_save),
-                        style = EbbingTheme.typography.body16M,
-                        color = EbbingTheme.colors.primaryNormal,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(throttleTime = 1500L) {
-                                onSaveClick(isDoneSchedules)
-                                focusManager.clearFocus()
-                            },
-                    )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -223,19 +209,17 @@ private fun EditDateScreenPhone(
             Spacer(modifier = Modifier.height(60.dp))
         }
 
-        if (state.isTreatment) {
-            EbbingSolidButton(
-                label = stringResource(R.string.home_save),
-                onClick = {
-                    onSaveClick(isDoneSchedules)
-                    focusManager.clearFocus()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        EbbingSolidButton(
+            label = stringResource(R.string.home_save),
+            onClick = {
+                onSaveClick(isDoneSchedules)
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
