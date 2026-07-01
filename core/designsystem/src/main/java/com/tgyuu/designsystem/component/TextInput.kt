@@ -85,7 +85,7 @@ fun EbbingTextInputDefault(
                 }
             }
         ),
-        textStyle = EbbingTheme.typography.body14M.copy(color = EbbingTheme.colors.textOnBackground),
+        textStyle = EbbingTheme.typography.body16M.copy(color = EbbingTheme.colors.textOnBackground),
         cursorBrush = SolidColor(EbbingTheme.colors.textOnBackground),
         decorationBox = { innerTextField ->
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -93,7 +93,7 @@ fun EbbingTextInputDefault(
                     if (value.isEmpty() && !isFocused) {
                         Text(
                             text = hint,
-                            style = EbbingTheme.typography.body14M,
+                            style = EbbingTheme.typography.body16M,
                             color = EbbingTheme.colors.textDisabled,
                             modifier = Modifier.align(Alignment.CenterStart)
                         )
@@ -106,7 +106,7 @@ fun EbbingTextInputDefault(
             }
         },
         modifier = modifier
-            .height(44.dp)
+            .height(48.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(
                 if (readOnly) EbbingTheme.colors.fillDisabled
@@ -131,7 +131,7 @@ fun EbbingTextInputDropDown(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .height(44.dp)
+            .height(48.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(EbbingTheme.colors.fillTextfield)
             .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -149,7 +149,7 @@ fun EbbingTextInputDropDown(
 
         Text(
             text = value.ifEmpty { hint },
-            style = EbbingTheme.typography.body14M,
+            style = EbbingTheme.typography.body16M,
             color = if (value.isEmpty()) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

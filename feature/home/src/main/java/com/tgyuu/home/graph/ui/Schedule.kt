@@ -107,14 +107,14 @@ private fun ScheduleCard(
                         schedule.toFormattedString(),
                         schedule.dayOfWeek.toShortLabel(),
                     ),
-                    style = EbbingTheme.typography.body14M,
+                    style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.textOnBackground,
                 )
             }
 
             Text(
                 text = schedule.toRelativeDayLabel(),
-                style = EbbingTheme.typography.body14M,
+                style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textSub,
             )
         }
