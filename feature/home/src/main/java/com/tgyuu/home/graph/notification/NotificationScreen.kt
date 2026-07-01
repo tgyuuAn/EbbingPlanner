@@ -218,7 +218,7 @@ private fun NotificationScreenPhone(
         }
 
         EbbingSolidButton(
-            label = stringResource(R.string.home_save),
+            label = stringResource(R.string.home_add_todo_button),
             onClick = {
                 analyticsHelper.logEvent(
                     AnalyticsEvent.Click(
@@ -292,6 +292,7 @@ private fun NotificationScreenTablet(
         NotificationTopBar(
             analyticsHelper = analyticsHelper,
             state = state,
+            showTopSave = false,
             onBackClick = onBackClick,
             onSaveClick = {
                 onSaveClick()
@@ -301,7 +302,8 @@ private fun NotificationScreenTablet(
 
         Row(
             modifier = modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
                 .imePadding(),
         ) {
             Column(
@@ -368,6 +370,25 @@ private fun NotificationScreenTablet(
                 }
             }
         }
+
+        EbbingSolidButton(
+            label = stringResource(R.string.home_add_todo_button),
+            onClick = {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(
+                        screenName = "NotificationNudge",
+                        buttonName = "save",
+                        properties = mapOf("notification_enabled" to state.notificationEnabled),
+                    )
+                )
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 

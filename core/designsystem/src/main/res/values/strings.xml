@@ -420,4 +420,12 @@
     <string name="update_button">업데이트</string>
     <string name="exit_confirm_snackbar">뒤로 가기를 한 번 더 누르면 앱이 종료돼요</string>
     <string name="notification_content_title">에빙 플래너 일정 알림</string>
+    <string name="home_add_todo_button">일정 등록하기</string>
+    <string name="home_edit_todo_button">일정 수정하기</string>
+    <string name="tag_register_button">태그 등록하기</string>
+    <string name="tag_edit_button">태그 수정하기</string>
+    <string name="repeat_register_button">반복 주기 등록하기</string>
+    <string name="repeat_edit_button">반복 주기 수정하기</string>
+    <string name="memo_add_button">메모 등록하기</string>
+    <string name="memo_edit_button">메모 수정하기</string>
 </resources>
