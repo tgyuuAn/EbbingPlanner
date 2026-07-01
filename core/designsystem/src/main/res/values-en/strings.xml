@@ -14,8 +14,8 @@
     <string name="setting_auto_backup">Auto backup</string>
     <string name="setting_last_sync_time">Last sync: %1$s</string>
 
-    <string name="onboarding_1_title">60% disappears in a single day</string>
-    <string name="onboarding_1_description">According to Hermann Ebbinghaus\'s research, without review\nover 60% of your memory is lost within a day.</string>
+    <string name="onboarding_1_title">60 percent disappears in a single day</string>
+    <string name="onboarding_1_description">According to Hermann Ebbinghaus\'s research, without review\nover 60 percent of your memory is lost within a day.</string>
     <string name="onboarding_2_title">Review is essential to prevent forgetting</string>
     <string name="onboarding_2_description">You need to review at the right time along the forgetting curve\nto retain memory longer.</string>
     <string name="onboarding_3_title">Personalized review cycles &amp; reminders</string>
@@ -109,8 +109,7 @@
     <string name="home_tag">Tag</string>
     <string name="home_title">Title</string>
     <string name="home_title_hint">What would you like to study?</string>
-    <string name="home_priority">Priority</string>
-    <string name="home_priority_hint">How important is this task?</string>
+    <string name="home_pin_to_top">Always pin this schedule to the top</string>
     <string name="home_repeat_cycle">Repeat cycle</string>
     <string name="home_rest_day">Rest days</string>
     <string name="home_add_todo_title">Add task</string>
@@ -266,7 +265,6 @@
     <string name="setting_change_app_theme">Change the app theme.</string>
     <string name="setting_preview">Preview</string>
     <string name="setting_ebbing_planner_preview">Ebbing Planner preview</string>
-    <string name="setting_priority_zero">Priority: 0</string>
     <string name="setting_dark">Dark</string>
     <string name="setting_light">Light</string>
     <string name="setting_app_theme_changed">App theme changed</string>
@@ -327,7 +325,6 @@
     <string name="memo_label">Note</string>
     <string name="memo_input_hint">What note would you like to leave?</string>
     <string name="memo_preview_label">Preview</string>
-    <string name="memo_priority_format">Priority: %1$d</string>
     <string name="memo_save">Save</string>
     <string name="memo_save_scope_title">Choose where to save the note</string>
     <string name="memo_save_scope_subtext">You can save it to just one schedule\nor to all related schedules</string>
@@ -384,7 +381,6 @@
     <string name="widget_total_count">%1$d total</string>
 
     <!-- ===================== Core / DesignSystem ===================== -->
-    <string name="ds_priority_format">Priority: %1$d</string>
     <string name="ds_year_month">%1$d. %2$d</string>
     <string name="ds_cd_back">Back button</string>
     <string name="ds_cd_more">More</string>
@@ -398,7 +394,6 @@
     <string name="ds_am">AM</string>
     <string name="sort_created">By created</string>
     <string name="sort_name">By name</string>
-    <string name="sort_priority">By priority</string>
     <string name="repeat_display_daily">Daily</string>
     <string name="repeat_display_daily_days">Daily (%1$d days)</string>
     <string name="repeat_display_error">Please enter a valid format.</string>

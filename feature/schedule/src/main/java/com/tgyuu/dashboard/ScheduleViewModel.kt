@@ -64,7 +64,7 @@ class ScheduleViewModel @Inject constructor(
                         TodoSchedule(
                             id = s.id, infoId = s.infoId, title = s.title,
                             tagId = s.tagId, name = s.name, color = s.color,
-                            date = s.date, memo = s.memo, priority = s.priority,
+                            date = s.date, memo = s.memo, isPinned = s.isPinned,
                             isDone = s.isDone, createdAt = s.createdAt,
                             infoCreatedAt = s.createdAt,
                         ).toUiModel()

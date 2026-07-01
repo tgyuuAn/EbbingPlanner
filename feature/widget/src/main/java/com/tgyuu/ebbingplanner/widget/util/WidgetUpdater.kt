@@ -139,9 +139,13 @@ object WidgetUpdater {
 
     private fun sortComparator(sortType: SortType): Comparator<TodoSchedule> =
         when (sortType) {
-            SortType.CREATED -> compareBy({ it.isDone }, { it.createdAt })
-            SortType.NAME -> compareBy({ it.isDone }, { it.title })
-            SortType.PRIORITY -> compareBy({ it.isDone }, { it.priority })
+            SortType.CREATED -> compareByDescending<TodoSchedule> { it.isPinned }
+                .thenBy { it.isDone }
+                .thenBy { it.createdAt }
+
+            SortType.NAME -> compareByDescending<TodoSchedule> { it.isPinned }
+                .thenBy { it.isDone }
+                .thenBy { it.title }
         }
 
     private fun generateTodayTodoBitmaps(

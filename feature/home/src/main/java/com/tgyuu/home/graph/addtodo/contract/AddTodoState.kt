@@ -21,7 +21,7 @@ data class AddTodoState(
     val page: Page = Page.ADD_TODO,
     val selectedDate: LocalDate = LocalDate.now(),
     val title: String = "",
-    val priority: String? = null,
+    val isPinned: Boolean = false,
     val tag: TodoTagUiModel? = null,
     val tagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
@@ -33,7 +33,7 @@ data class AddTodoState(
 ) : UiState {
     val isTreatment = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val isSaveEnabled = title.isNotEmpty()
-    val isModified = title.isNotEmpty() || !priority.isNullOrEmpty() || restDays.isNotEmpty()
+    val isModified = title.isNotEmpty() || isPinned || restDays.isNotEmpty()
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             if (it.id == RepeatCycle.DAILY_REPEAT_ID) {

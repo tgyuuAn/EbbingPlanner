@@ -1,6 +1,5 @@
 package com.tgyuu.home.graph.edittodo
 
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
@@ -88,7 +87,7 @@ class EditTodoViewModel @Inject constructor(
                         .toImmutableMap(),
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
-                    priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
+                    isPinned = originSchedule.isPinned,
                     tag = originTag.toUiModel(),
                     restDays = todoInfo.restDays.toImmutableSet(),
                 )
@@ -135,7 +134,7 @@ class EditTodoViewModel @Inject constructor(
 
             is EditTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is EditTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is EditTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
+            is EditTodoIntent.OnPinnedChange -> onPinnedChange(intent.isPinned)
             is EditTodoIntent.OnTagDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
@@ -168,11 +167,8 @@ class EditTodoViewModel @Inject constructor(
         setState { copy(title = title) }
     }
 
-    private fun onPriorityChange(priority: String) {
-        if (!priority.isDigitsOnly()) return
-        if (priority.length >= 4) return
-
-        setState { copy(priority = priority) }
+    private fun onPinnedChange(isPinned: Boolean) {
+        setState { copy(isPinned = isPinned) }
     }
 
     private suspend fun onTagChange(todoTag: TodoTagUiModel) {
@@ -207,7 +203,7 @@ class EditTodoViewModel @Inject constructor(
             tagId = tag.id,
             name = tag.name,
             color = tag.color,
-            priority = currentState.priority?.toIntOrNull() ?: 0,
+            isPinned = currentState.isPinned,
         )
 
         todoRepository.updateTodo(newSchedule)

@@ -155,4 +155,55 @@ class MigrationTest {
             DatabaseMigrations.MIGRATION_3_TO_4
         )
     }
+
+    @Test
+    fun `마이그레이션_4에서5_priority가_0또는1로_정규화된다`() {
+        // given: v4 데이터베이스에 다양한 priority 값의 schedule 삽입
+        helper.createDatabase(testDbName, 4).apply {
+            execSQL(
+                """
+                INSERT INTO schedule (id, infoId, date, memo, priority, isDone, createdAt, isDeleted, updatedAt)
+                VALUES
+                    (1, 100, '2024-06-01', '', 0, 0, '2024-06-01', 0, '2024-06-01T00:00:00'),
+                    (2, 100, '2024-06-02', '', 3, 0, '2024-06-01', 0, '2024-06-01T00:00:00'),
+                    (3, 100, '2024-06-03', '', 5, 0, '2024-06-01', 0, '2024-06-01T00:00:00')
+                """.trimIndent()
+            )
+            close()
+        }
+
+        // when: v5로 마이그레이션
+        val db = helper.runMigrationsAndValidate(
+            name = testDbName,
+            version = 5,
+            validateDroppedTables = true,
+            DatabaseMigrations.MIGRATION_4_TO_5
+        )
+
+        // then: priority > 0 은 1(고정), 0 은 0(미고정)으로 정규화
+        val cursor = db.query("SELECT id, priority FROM schedule ORDER BY id")
+        val results = mutableMapOf<Int, Int>()
+        while (cursor.moveToNext()) {
+            results[cursor.getInt(0)] = cursor.getInt(1)
+        }
+        cursor.close()
+        assert(results[1] == 0) { "priority 0 은 0 이어야 합니다" }
+        assert(results[2] == 1) { "priority 3 은 1 로 정규화되어야 합니다" }
+        assert(results[3] == 1) { "priority 5 은 1 로 정규화되어야 합니다" }
+    }
+
+    @Test
+    fun `마이그레이션_1에서5_전체`() {
+        helper.createDatabase(testDbName, 1).close()
+
+        helper.runMigrationsAndValidate(
+            name = testDbName,
+            version = 5,
+            validateDroppedTables = true,
+            DatabaseMigrations.MIGRATION_1_TO_2,
+            DatabaseMigrations.MIGRATION_2_TO_3,
+            DatabaseMigrations.MIGRATION_3_TO_4,
+            DatabaseMigrations.MIGRATION_4_TO_5
+        )
+    }
 }

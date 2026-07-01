@@ -349,7 +349,7 @@ private fun HomeWidgetPreview2() {
                     color = 0xFF3282B8.toInt(),
                     date = LocalDate.of(2025, 5, 8),
                     memo = "Jetpack Compose 위젯",
-                    priority = 1,
+                    isPinned = true,
                     isDone = false,
                     createdAt = LocalDate.of(2025, 5, 1),
                     infoCreatedAt = LocalDate.of(2025, 5, 1)
@@ -363,7 +363,7 @@ private fun HomeWidgetPreview2() {
                     color = 0xFFFF7490.toInt(),
                     date = LocalDate.of(2025, 5, 8),
                     memo = "헬스장 1시간",
-                    priority = 2,
+                    isPinned = false,
                     isDone = true,
                     createdAt = LocalDate.of(2025, 5, 2),
                     infoCreatedAt = LocalDate.of(2025, 5, 2)

@@ -20,7 +20,7 @@ internal fun TagContent(
 ) {
     Text(
         text = stringResource(R.string.home_tag),
-        style = EbbingTheme.typography.body16M,
+        style = EbbingTheme.typography.heading14SB,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )

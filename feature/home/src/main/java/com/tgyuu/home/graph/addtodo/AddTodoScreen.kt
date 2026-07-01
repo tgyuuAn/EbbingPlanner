@@ -56,7 +56,7 @@ import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.ui.dialog.ConfirmExitDialog
 import com.tgyuu.home.graph.notification.NotificationScreen
-import com.tgyuu.home.graph.ui.PriorityContent
+import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleContent
@@ -103,7 +103,7 @@ internal fun AddTodoRoute(
                     )
                 },
                 onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
-                onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
+                onPinnedChange = { viewModel.onIntent(AddTodoIntent.OnPinnedChange(it)) },
                 onTagDropDownClick = {
                     viewModel.onIntent(
                         AddTodoIntent.OnTagDropDownClick(
@@ -168,7 +168,7 @@ private fun AddTodoScreen(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -201,7 +201,7 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
-            onPriorityChange = onPriorityChange,
+            onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
@@ -217,7 +217,7 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
-            onPriorityChange = onPriorityChange,
+            onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
@@ -233,7 +233,7 @@ private fun AddTodoScreenPhone(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -286,7 +286,7 @@ private fun AddTodoScreenPhone(
                 onSelectedDateChangeClick = onSelectedDateChangeClick,
                 onTitleChange = onTitleChange,
                 onTagDropDownClick = onTagDropDownClick,
-                onPriorityChange = onPriorityChange,
+                onPinnedChange = onPinnedChange,
                 onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                 onRestDayChange = onRestDayChange,
             )
@@ -317,7 +317,7 @@ private fun AddTodoScreenTablet(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -371,7 +371,7 @@ private fun AddTodoScreenTablet(
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onTitleChange = onTitleChange,
                     onTagDropDownClick = onTagDropDownClick,
-                    onPriorityChange = onPriorityChange,
+                    onPinnedChange = onPinnedChange,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     onRestDayChange = onRestDayChange,
                 )
@@ -396,7 +396,7 @@ private fun TodoMainFormContent(
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
     onTagDropDownClick: () -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
 ) {
@@ -434,11 +434,6 @@ private fun TodoMainFormContent(
         onTagDropDownClick = onTagDropDownClick,
     )
 
-    PriorityContent(
-        priority = state.priority,
-        onPriorityChange = onPriorityChange,
-    )
-
     RepeatCycleContent(
         repeatCycle = state.repeatCycle,
         onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -447,6 +442,11 @@ private fun TodoMainFormContent(
     RestDayContent(
         restDays = state.restDays,
         onRestDayChange = onRestDayChange,
+    )
+
+    PinnedContent(
+        isPinned = state.isPinned,
+        onPinnedChange = onPinnedChange,
     )
 }
 
@@ -458,7 +458,7 @@ private fun PreviewAddTodo() {
             state = AddTodoState(
                 selectedDate = LocalDate.now(),
                 title = "토익",
-                priority = "3",
+                isPinned = true,
                 repeatCycle = RepeatCycleUiModel(
                     id = 1,
                     intervals = persistentListOf(1, 3, 7, 14, 30),
@@ -470,7 +470,7 @@ private fun PreviewAddTodo() {
             onSaveClick = {},
             onBackClick = {},
             onTitleChange = {},
-            onPriorityChange = {},
+            onPinnedChange = {},
             onTagDropDownClick = {},
             onRepeatCycleDropDownClick = {},
             onRestDayChange = {},

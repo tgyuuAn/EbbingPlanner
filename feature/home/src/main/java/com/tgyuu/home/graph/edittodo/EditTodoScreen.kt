@@ -2,9 +2,7 @@ package com.tgyuu.home.graph.edittodo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +39,7 @@ import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
-import com.tgyuu.home.graph.ui.PriorityContent
+import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
 import java.time.LocalDate
@@ -77,7 +75,7 @@ internal fun EditTodoRoute(
             )
         },
         onTitleChange = { viewModel.onIntent(EditTodoIntent.OnTitleChange(it)) },
-        onPriorityChange = { viewModel.onIntent(EditTodoIntent.OnPriorityChange(it)) },
+        onPinnedChange = { viewModel.onIntent(EditTodoIntent.OnPinnedChange(it)) },
         onTagDropDownClick = {
             viewModel.onIntent(
                 EditTodoIntent.OnTagDropDownClick(
@@ -102,7 +100,7 @@ private fun EditTodoScreen(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -181,9 +179,9 @@ private fun EditTodoScreen(
                     onTagDropDownClick = onTagDropDownClick,
                 )
 
-                PriorityContent(
-                    priority = state.priority,
-                    onPriorityChange = onPriorityChange,
+                PinnedContent(
+                    isPinned = state.isPinned,
+                    onPinnedChange = onPinnedChange,
                 )
 
                 Spacer(modifier = Modifier.height(60.dp))
@@ -260,24 +258,15 @@ private fun EditTodoScreen(
                     onTitleChange = onTitleChange,
                 )
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(40.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        TagContent(
-                            tag = state.tag,
-                            onTagDropDownClick = onTagDropDownClick,
-                        )
-                    }
+                TagContent(
+                    tag = state.tag,
+                    onTagDropDownClick = onTagDropDownClick,
+                )
 
-                    Column(modifier = Modifier.weight(1f)) {
-                        PriorityContent(
-                            priority = state.priority,
-                            onPriorityChange = onPriorityChange,
-                        )
-                    }
-                }
+                PinnedContent(
+                    isPinned = state.isPinned,
+                    onPinnedChange = onPinnedChange,
+                )
             }
         }
     }
@@ -291,13 +280,13 @@ private fun PreviewAddTodo() {
             state = EditTodoState(
                 selectedDate = LocalDate.now(),
                 title = "토익",
-                priority = "3",
+                isPinned = true,
             ),
             onSelectedDateChangeClick = {},
             onSaveClick = {},
             onBackClick = {},
             onTitleChange = {},
-            onPriorityChange = {},
+            onPinnedChange = {},
             onTagDropDownClick = {},
         )
     }

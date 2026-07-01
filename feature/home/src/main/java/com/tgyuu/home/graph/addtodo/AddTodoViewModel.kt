@@ -1,7 +1,6 @@
 package com.tgyuu.home.graph.addtodo
 
 import android.util.Log
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
@@ -151,7 +150,7 @@ class AddTodoViewModel @Inject constructor(
 
             is AddTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is AddTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
+            is AddTodoIntent.OnPinnedChange -> onPinnedChange(intent.isPinned)
             is AddTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
@@ -187,11 +186,8 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(title = title) }
     }
 
-    private fun onPriorityChange(priority: String) {
-        if (!priority.isDigitsOnly()) return
-        if (priority.length >= 4) return
-
-        setState { copy(priority = priority) }
+    private fun onPinnedChange(isPinned: Boolean) {
+        setState { copy(isPinned = isPinned) }
     }
 
     private suspend fun onTagChange(todoTag: TodoTagUiModel) {
@@ -262,7 +258,7 @@ class AddTodoViewModel @Inject constructor(
             title = currentState.title,
             dates = currentState.schedules,
             tagId = tag.id,
-            priority = currentState.priority?.toIntOrNull(),
+            isPinned = currentState.isPinned,
             restDays = currentState.restDays.toSet(),
         )
 

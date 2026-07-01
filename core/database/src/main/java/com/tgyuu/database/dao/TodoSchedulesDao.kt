@@ -29,7 +29,7 @@ interface TodoSchedulesDao {
             t.color       AS color,
             s.date        AS date,
             s.memo        AS memo,
-            s.priority    AS priority,
+            s.priority    AS isPinned,
             s.isDone      AS isDone,
             s.createdAt   AS createdAt
         FROM schedule s
@@ -53,7 +53,7 @@ interface TodoSchedulesDao {
             t.color       AS color,
             s.date        AS date,
             s.memo        AS memo,
-            s.priority    AS priority,
+            s.priority    AS isPinned,
             s.isDone      AS isDone,
             s.createdAt   AS createdAt
         FROM schedule s
@@ -78,7 +78,7 @@ interface TodoSchedulesDao {
             t.color       AS color,
             s.date        AS date,
             s.memo        AS memo,
-            s.priority    AS priority,
+            s.priority    AS isPinned,
             s.isDone      AS isDone,
             s.createdAt   AS createdAt
         FROM schedule s
@@ -103,7 +103,7 @@ interface TodoSchedulesDao {
             t.color       AS color,
             s.date        AS date,
             s.memo        AS memo,
-            s.priority    AS priority,
+            s.priority    AS isPinned,
             s.isDone      AS isDone,
             s.createdAt   AS createdAt
         FROM schedule s
@@ -128,7 +128,7 @@ interface TodoSchedulesDao {
             t.color       AS color,
             s.date        AS date,
             s.memo        AS memo,
-            s.priority    AS priority,
+            s.priority    AS isPinned,
             s.isDone      AS isDone,
             s.createdAt   AS createdAt
         FROM schedule s
@@ -185,7 +185,7 @@ interface TodoSchedulesDao {
             t.color       AS color,
             s.date        AS date,
             s.memo        AS memo,
-            s.priority    AS priority,
+            s.priority    AS isPinned,
             s.isDone      AS isDone,
             s.createdAt   AS createdAt
         FROM schedule s
@@ -206,7 +206,7 @@ interface TodoSchedulesDao {
             i.createdAt   AS infoCreatedAt,
             s.date        AS date,
             s.memo        AS memo,
-            s.priority    AS priority,
+            s.priority    AS isPinned,
             s.isDone      AS isDone,
             s.createdAt   AS createdAt,
             s.updatedAt   AS updatedAt,
@@ -284,7 +284,7 @@ interface TodoSchedulesDao {
         t.color       AS color,
         s.date        AS date,
         s.memo        AS memo,
-        s.priority    AS priority,
+        s.priority    AS isPinned,
         s.isDone      AS isDone,
         s.createdAt   AS createdAt
     FROM schedule s
