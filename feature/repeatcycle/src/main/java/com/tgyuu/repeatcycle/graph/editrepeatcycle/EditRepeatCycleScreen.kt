@@ -64,24 +64,7 @@ private fun EditRepeatCycleScreen(
             EbbingSubTopBar(
                 title = stringResource(R.string.repeat_edit_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {
-                    if (!state.isTreatment) {
-                        Text(
-                            text = stringResource(R.string.repeat_save),
-                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .throttledClickable(
-                                    throttleTime = 1500L,
-                                    enabled = state.isSaveEnabled
-                                ) {
-                                    onSaveClick()
-                                    focusManager.clearFocus()
-                                },
-                        )
-                    }
-                },
+                rightComponent = {},
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
@@ -108,20 +91,18 @@ private fun EditRepeatCycleScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            if (state.isTreatment) {
-                EbbingSolidButton(
-                    label = stringResource(R.string.repeat_save),
-                    onClick = {
-                        onSaveClick()
-                        focusManager.clearFocus()
-                    },
-                    enabled = state.isSaveEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(EbbingTheme.colors.background)
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                )
-            }
+            EbbingSolidButton(
+                label = stringResource(R.string.repeat_save),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     } else {
         Column(

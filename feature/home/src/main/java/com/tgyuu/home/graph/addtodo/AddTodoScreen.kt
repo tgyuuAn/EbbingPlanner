@@ -148,7 +148,6 @@ internal fun AddTodoRoute(
 
             AddTodoState.Page.NOTIFICATION -> NotificationScreen(
                 state = state.notificationState,
-                isTreatment = state.isTreatment,
                 onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
                 onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
                 onNotificationToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
@@ -251,24 +250,7 @@ private fun AddTodoScreenPhone(
         EbbingSubTopBar(
             title = stringResource(R.string.home_add_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                if (!state.isTreatment) {
-                    Text(
-                        text = stringResource(R.string.home_save),
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -294,20 +276,18 @@ private fun AddTodoScreenPhone(
             ScheduleContent(schedules = state.schedules)
         }
 
-        if (state.isTreatment) {
-            EbbingSolidButton(
-                label = stringResource(R.string.home_save),
-                onClick = {
-                    onSaveClick()
-                    focusManager.clearFocus()
-                },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        EbbingSolidButton(
+            label = stringResource(R.string.home_save),
+            onClick = {
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
