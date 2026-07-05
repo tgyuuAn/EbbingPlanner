@@ -418,7 +418,7 @@ private fun AddTodoFab(
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = null,
-            tint = EbbingTheme.colors.background,
+            tint = EbbingTheme.colors.textOnPrimary,
             modifier = Modifier.size(24.dp),
         )
     }

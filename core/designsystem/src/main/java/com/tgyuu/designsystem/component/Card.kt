@@ -121,7 +121,7 @@ fun TodoListCard(
                                 Image(
                                     painter = painterResource(R.drawable.ic_pin),
                                     contentDescription = null,
-                                    colorFilter = ColorFilter.tint(subColor),
+                                    colorFilter = ColorFilter.tint(EbbingTheme.colors.strokeIcon),
                                     modifier = Modifier.size(16.dp),
                                 )
                             }
@@ -180,7 +180,7 @@ fun TodoListCard(
             Image(
                 painter = painterResource(R.drawable.ic_3dots),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(subColor),
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.strokeIcon),
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .size(20.dp)

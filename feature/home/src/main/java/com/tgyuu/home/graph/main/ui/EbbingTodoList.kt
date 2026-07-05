@@ -149,12 +149,12 @@ private fun TodoPage(
     if (todos.isNotEmpty()) {
         LazyColumn(
             state = listState,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxSize()
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
         ) {
             if (sortType == SortType.BY_TAG) {
-                // ViewModel 에서 태그 그룹(고정 개수 desc)·그룹 내(고정 우선) 순으로 정렬된 flat 리스트를
-                // 태그명으로 다시 묶어 섹션 헤더와 함께 렌더한다.
                 todos.groupBy { it.name }.forEach { (tagName, group) ->
                     item(key = "tag_$tagName") {
                         TagSectionHeader(
@@ -217,7 +217,7 @@ private fun TagSectionHeader(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 4.dp),
+            .padding(top = 12.dp, bottom = 4.dp),
     ) {
         Text(
             text = tagName,
