@@ -39,17 +39,17 @@ fun EbbingTextToggle(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
             .background(EbbingTheme.colors.fillTextfield)
+            // 토글 전체 영역을 클릭하면 반대편 값으로 전환
+            .throttledClickable(300L) { onSelectedChange(!selectedFirst) }
             .padding(2.dp),
     ) {
         ToggleSegment(
             label = firstLabel,
             selected = selectedFirst,
-            onClick = { onSelectedChange(true) },
         )
         ToggleSegment(
             label = secondLabel,
             selected = !selectedFirst,
-            onClick = { onSelectedChange(false) },
         )
     }
 }
@@ -58,7 +58,6 @@ fun EbbingTextToggle(
 private fun ToggleSegment(
     label: String,
     selected: Boolean,
-    onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(4.dp)
     Row(
@@ -73,7 +72,6 @@ private fun ToggleSegment(
             )
             .clip(shape)
             .background(if (selected) EbbingTheme.colors.background else Color.Transparent)
-            .throttledClickable(300L) { if (!selected) onClick() }
             .padding(horizontal = 10.dp, vertical = 4.dp),
     ) {
         Text(
