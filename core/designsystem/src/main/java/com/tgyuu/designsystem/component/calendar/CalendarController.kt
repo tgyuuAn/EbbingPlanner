@@ -64,7 +64,6 @@ internal fun CalendarController(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            // '오늘' 버튼이 뜨는 케이스에는 동기화 버튼을 숨긴다.
             if (!isOnToday) {
                 TodayButton(onClick = onGotoTodayClick)
             } else if (showSyncButton) {
@@ -100,7 +99,11 @@ private fun TodayButton(onClick: () -> Unit) {
             painter = painterResource(R.drawable.ic_return),
             contentDescription = stringResource(R.string.ds_cd_go_today),
             colorFilter = ColorFilter.tint(EbbingTheme.colors.strokeIcon),
-            modifier = Modifier.size(20.dp),
+            // ic_return 은 viewport 를 꽉 채우는 full-bleed 벡터라, 20 박스 안에 패딩을 줘
+            // 디자인의 padded return 아이콘(실제 글리프 ~14) 크기와 맞춘다.
+            modifier = Modifier
+                .size(20.dp)
+                .padding(3.dp),
         )
         Text(
             text = stringResource(R.string.calendar_today),
