@@ -146,6 +146,11 @@ private fun TodoPage(
 ) {
     val listState = rememberLazyListState()
 
+    // 최신순 ↔ 태그별 전환 시 리스트를 최상단으로 부드럽게 스크롤
+    LaunchedEffect(sortType) {
+        listState.animateScrollToItem(0)
+    }
+
     if (todos.isNotEmpty()) {
         LazyColumn(
             state = listState,

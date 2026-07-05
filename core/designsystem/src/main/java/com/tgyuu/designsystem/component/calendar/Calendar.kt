@@ -1,6 +1,8 @@
 package com.tgyuu.designsystem.component.calendar
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -128,7 +130,8 @@ fun EbbingCalendar(
 
         CalendarHeader(startFromMonday = startFromMonday)
 
-        if (showWeekOnly) {
+        Box(modifier = Modifier.fillMaxWidth().animateContentSize()) {
+            if (showWeekOnly) {
             HorizontalPager(
                 state = weekPagerState,
                 modifier = Modifier.fillMaxWidth(),
@@ -175,6 +178,7 @@ fun EbbingCalendar(
                     },
                 )
             }
+        }
         }
     }
 }
