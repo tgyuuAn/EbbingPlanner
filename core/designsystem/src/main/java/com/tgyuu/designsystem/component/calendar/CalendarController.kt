@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,7 +51,7 @@ internal fun CalendarController(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp)
+            .height(40.dp)
             .semantics { contentDescription = controllerDescription },
     ) {
         Text(
@@ -121,7 +122,7 @@ private fun SyncButton(onClick: () -> Unit) {
             painter = painterResource(R.drawable.ic_link),
             contentDescription = stringResource(R.string.ds_cd_sync),
             colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
-            modifier = Modifier.size(28.dp),
+            modifier = Modifier.size(24.dp),
         )
     }
 }

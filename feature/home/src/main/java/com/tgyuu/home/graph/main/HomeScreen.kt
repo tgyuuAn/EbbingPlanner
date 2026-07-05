@@ -349,7 +349,9 @@ private fun PhoneHomeScreen(
                         if (isWeek) CalendarDefaultView.WEEKLY else CalendarDefaultView.MONTHLY
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
             )
 
             HorizontalDivider(
