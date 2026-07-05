@@ -399,6 +399,7 @@
     <string name="calendar_view_month">월</string>
     <string name="calendar_view_week">주</string>
     <string name="card_round_count">%1$d회차</string>
+    <string name="calendar_today">오늘</string>
     <string name="repeat_display_daily">매일하기</string>
     <string name="repeat_display_daily_days">매일하기 (%1$d일)</string>
     <string name="repeat_display_error">올바른 형태로 작성해주세요.</string>

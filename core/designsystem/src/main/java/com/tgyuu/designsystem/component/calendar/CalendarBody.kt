@@ -3,6 +3,7 @@ package com.tgyuu.designsystem.component.calendar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,27 +17,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.ebbingAnimateColorAsState
 import com.tgyuu.designsystem.R
@@ -111,84 +101,69 @@ internal fun CalendarDayItem(
     onDateSelect: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val dayItemColor = ebbingAnimateColorAsState(
-        targetValue = if (calendarDate.date == selectedDate) EbbingTheme.colors.fillFocused
-        else Color.Transparent
+    val isSelected = calendarDate.date == selectedDate
+    val isToday = calendarDate.date == LocalDate.now()
+
+    // 선택 = 검은 원(Fill/Focused), 오늘(미선택) = 회색 원(Fill/Disabled), 그 외 = 없음
+    val circleColor = ebbingAnimateColorAsState(
+        targetValue = when {
+            isSelected -> EbbingTheme.colors.fillFocused
+            isToday -> EbbingTheme.colors.fillDisabled
+            else -> Color.Transparent
+        }
     )
+    val numberColor = when {
+        isSelected || isToday -> EbbingTheme.colors.textOnPrimary
+        !calendarDate.isCurrentMonth -> EbbingTheme.colors.textDisabled
+        else -> EbbingTheme.colors.textOnBackground
+    }
+    val numberStyle =
+        if (isSelected || isToday) EbbingTheme.typography.heading14B
+        else EbbingTheme.typography.body14M
 
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = dayItemColor,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = modifier
-            .padding(horizontal = 8.dp)
-            .clickable { onDateSelect(calendarDate.date) },
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onDateSelect(calendarDate.date) }
+            .padding(vertical = 4.dp),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(vertical = 4.dp),
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(circleColor),
         ) {
-            var isOverflow by remember { mutableStateOf(false) }
-            val textColor = when {
-                calendarDate.date == selectedDate -> EbbingTheme.colors.textOnPrimary
-                !calendarDate.isCurrentMonth -> EbbingTheme.colors.textDisabled
-                else -> EbbingTheme.colors.textOnBackground
-            }
-
-            val todayTextHeight = with(LocalDensity.current) {
-                EbbingTheme.typography.caption12R.lineHeight.toDp()
-            }
-            if (isOverflow) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = "Today",
-                    tint = textColor,
-                    modifier = Modifier.height(todayTextHeight).size(todayTextHeight)
-                )
-            } else {
-                Text(
-                    text = if (calendarDate.date == LocalDate.now()) "Today" else "",
-                    style = EbbingTheme.typography.caption12R.copy(
-                        lineHeight = EbbingTheme.typography.caption12R.lineHeight,
-                        platformStyle = PlatformTextStyle(includeFontPadding = false),
-                    ),
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = textColor,
-                    modifier = Modifier.height(todayTextHeight),
-                    onTextLayout = { result -> isOverflow = result.hasVisualOverflow },
-                )
-            }
-
             Text(
                 text = calendarDate.dayOfMonth.toString(),
-                style = EbbingTheme.typography.body16M,
+                style = numberStyle,
                 textAlign = TextAlign.Center,
-                color = textColor,
+                color = numberColor,
             )
+        }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = 2.dp,
-                    alignment = Alignment.CenterHorizontally,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp),
-            ) {
-                events.map { it.color }
-                    .distinct()
-                    .take(4)
-                    .forEach {
-                        Spacer(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(Color(it))
-                        )
-                    }
-            }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 2.dp,
+                alignment = Alignment.CenterHorizontally,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp),
+        ) {
+            events.map { it.color }
+                .distinct()
+                .take(4)
+                .forEach {
+                    Spacer(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(Color(it))
+                    )
+                }
         }
     }
 }
