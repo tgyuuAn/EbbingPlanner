@@ -396,6 +396,8 @@
     <string name="sort_name">이름순</string>
     <string name="sort_latest">최신순</string>
     <string name="sort_by_tag">태그별</string>
+    <string name="calendar_view_month">월</string>
+    <string name="calendar_view_week">주</string>
     <string name="repeat_display_daily">매일하기</string>
     <string name="repeat_display_daily_days">매일하기 (%1$d일)</string>
     <string name="repeat_display_error">올바른 형태로 작성해주세요.</string>

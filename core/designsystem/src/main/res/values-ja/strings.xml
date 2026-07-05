@@ -396,6 +396,8 @@
     <string name="sort_name">名前順</string>
     <string name="sort_latest">最新順</string>
     <string name="sort_by_tag">タグ別</string>
+    <string name="calendar_view_month">月</string>
+    <string name="calendar_view_week">週</string>
     <string name="repeat_display_daily">毎日</string>
     <string name="repeat_display_daily_days">毎日 (%1$d日)</string>
     <string name="repeat_display_error">正しい形式で入力してください。</string>

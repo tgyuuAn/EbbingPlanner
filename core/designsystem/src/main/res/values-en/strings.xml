@@ -396,6 +396,8 @@
     <string name="sort_name">By name</string>
     <string name="sort_latest">Latest</string>
     <string name="sort_by_tag">By tag</string>
+    <string name="calendar_view_month">Month</string>
+    <string name="calendar_view_week">Week</string>
     <string name="repeat_display_daily">Daily</string>
     <string name="repeat_display_daily_days">Daily (%1$d days)</string>
     <string name="repeat_display_error">Please enter a valid format.</string>

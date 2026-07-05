@@ -25,9 +25,11 @@ fun EbbingCalendar(
     showSyncButton: Boolean = true,
     startFromMonday: Boolean = false,
     showWeekOnly: Boolean = false,
+    showViewToggle: Boolean = false,
     onSelectDate: (LocalDate) -> Unit = {},
     onGotoTodayClick: () -> Unit = {},
     onSyncClick: () -> Unit = {},
+    onViewToggle: (Boolean) -> Unit = {},
 ) {
     val monthInitialPage = CALENDAR_PAGE_COUNT / 2
     val monthPagerState = rememberPagerState(
@@ -119,6 +121,9 @@ fun EbbingCalendar(
             },
             showSyncButton = showSyncButton,
             onSyncClick = onSyncClick,
+            showViewToggle = showViewToggle,
+            isWeekView = showWeekOnly,
+            onViewToggle = onViewToggle,
         )
 
         CalendarHeader(startFromMonday = startFromMonday)

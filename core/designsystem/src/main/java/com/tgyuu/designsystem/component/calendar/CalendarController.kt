@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.EbbingTextToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -34,6 +35,9 @@ internal fun CalendarController(
     modifier: Modifier = Modifier,
     showSyncButton: Boolean = true,
     onSyncClick: () -> Unit = {},
+    showViewToggle: Boolean = false,
+    isWeekView: Boolean = false,
+    onViewToggle: (Boolean) -> Unit = {},
 ) {
     val controllerDescription = stringResource(R.string.ds_cd_calendar_controller)
 
@@ -69,19 +73,35 @@ internal fun CalendarController(
             color = EbbingTheme.colors.textOnBackground,
         )
 
-        if (showSyncButton) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clickable(onClick = onSyncClick),
+        if (showSyncButton || showViewToggle) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_link),
-                    contentDescription = stringResource(R.string.ds_cd_sync),
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
-                    modifier = Modifier.size(28.dp),
-                )
+                if (showSyncButton) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable(onClick = onSyncClick),
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_link),
+                            contentDescription = stringResource(R.string.ds_cd_sync),
+                            colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
+                            modifier = Modifier.size(28.dp),
+                        )
+                    }
+                }
+
+                if (showViewToggle) {
+                    EbbingTextToggle(
+                        firstLabel = stringResource(R.string.calendar_view_month),
+                        secondLabel = stringResource(R.string.calendar_view_week),
+                        selectedFirst = !isWeekView,
+                        onSelectedChange = { toMonth -> onViewToggle(!toMonth) },
+                    )
+                }
             }
         } else {
             Spacer(modifier = Modifier.size(40.dp))
