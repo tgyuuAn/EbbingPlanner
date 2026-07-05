@@ -99,8 +99,6 @@ private fun TodayButton(onClick: () -> Unit) {
             painter = painterResource(R.drawable.ic_return),
             contentDescription = stringResource(R.string.ds_cd_go_today),
             colorFilter = ColorFilter.tint(EbbingTheme.colors.strokeIcon),
-            // ic_return 은 viewport 를 꽉 채우는 full-bleed 벡터라, 20 박스 안에 패딩을 줘
-            // 디자인의 padded return 아이콘(실제 글리프 ~14) 크기와 맞춘다.
             modifier = Modifier
                 .size(20.dp)
                 .padding(3.dp),
