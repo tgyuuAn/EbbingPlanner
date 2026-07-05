@@ -320,7 +320,12 @@ private fun EditDateMainFormContent(
     val editDateHeaderSuffix = stringResource(R.string.home_edit_date_header_suffix)
     Text(
         text = buildAnnotatedString {
-            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    color = EbbingTheme.colors.textPrimary,
+                )
+            ) {
                 append(monthDayText)
             }
             append(editDateHeaderSuffix)
