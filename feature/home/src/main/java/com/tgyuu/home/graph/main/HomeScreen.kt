@@ -16,8 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.clip
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -517,6 +522,34 @@ private fun PhoneHomeScreen(
                 )
             }
         }
+
+        AddTodoFab(
+            onClick = { onAddTodoClick(selectedDate) },
+            modifier = Modifier.align(Alignment.BottomEnd),
+        )
+    }
+}
+
+@Composable
+private fun AddTodoFab(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .padding(end = 20.dp, bottom = 20.dp)
+            .size(52.dp)
+            .clip(CircleShape)
+            .background(EbbingTheme.colors.primaryNormal)
+            .throttledClickable(500L) { onClick() },
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = null,
+            tint = EbbingTheme.colors.background,
+            modifier = Modifier.size(24.dp),
+        )
     }
 }
 
@@ -545,7 +578,8 @@ private fun TabletHomeScreen(
         onCurrentDateChanged(calendarState.currentDisplayDate)
     }
 
-    Row(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
+        Row(modifier = Modifier.fillMaxSize()) {
         EbbingCalendar(
             calendarState = calendarState,
             schedulesByDateMap = state.schedulesByDateMap,
@@ -604,6 +638,12 @@ private fun TabletHomeScreen(
                     .padding(horizontal = 20.dp),
             )
         }
+        }
+
+        AddTodoFab(
+            onClick = { onAddTodoClick(selectedDate) },
+            modifier = Modifier.align(Alignment.BottomEnd),
+        )
     }
 }
 

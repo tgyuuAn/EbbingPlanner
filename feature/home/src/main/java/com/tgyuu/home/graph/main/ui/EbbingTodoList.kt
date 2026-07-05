@@ -138,7 +138,6 @@ private fun TodoHeader(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clickable { onSortTypeClick() }
-                .padding(end = 16.dp)
         ) {
             Text(
                 text = sortType.displayName(),
@@ -152,18 +151,6 @@ private fun TodoHeader(
                 modifier = Modifier.size(20.dp)
             )
         }
-
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = null,
-            tint = EbbingTheme.colors.background,
-            modifier = Modifier
-                .size(28.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(EbbingTheme.colors.primaryNormal)
-                .clickable { onAddTodoClick() }
-                .padding(4.dp)
-        )
     }
 }
 
