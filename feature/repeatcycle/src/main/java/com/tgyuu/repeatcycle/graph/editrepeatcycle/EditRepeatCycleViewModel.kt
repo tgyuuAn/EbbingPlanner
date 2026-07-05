@@ -10,8 +10,6 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleIntent
@@ -19,25 +17,22 @@ import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class EditRepeatCycleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
-    private val experimentRepository: ExperimentRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) }, resourceProvider = resourceProvider)) {
+) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState(resourceProvider = resourceProvider)) {
 
     init {
         analyticsHelper.logEvent(
             AnalyticsEvent.View(
                 screenName = "EditRepeatCycle",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
             )
         )
 
@@ -80,7 +75,6 @@ class EditRepeatCycleViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "EditRepeatCycle",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

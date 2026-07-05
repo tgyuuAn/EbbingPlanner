@@ -65,7 +65,6 @@ import com.tgyuu.home.graph.notification.ui.dialog.AlarmTimeDialog
 internal fun NotificationScreen(
     state: NotificationState,
     modifier: Modifier = Modifier,
-    isTreatment: Boolean = false,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onNotificationToggleClick: () -> Unit,
@@ -78,7 +77,6 @@ internal fun NotificationScreen(
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         NotificationScreenPhone(
             state = state,
-            isTreatment = isTreatment,
             modifier = modifier,
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
@@ -90,7 +88,6 @@ internal fun NotificationScreen(
     } else {
         NotificationScreenTablet(
             state = state,
-            isTreatment = isTreatment,
             modifier = modifier,
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
@@ -106,7 +103,6 @@ internal fun NotificationScreen(
 @Composable
 private fun NotificationScreenPhone(
     state: NotificationState,
-    isTreatment: Boolean,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
@@ -130,7 +126,6 @@ private fun NotificationScreenPhone(
         analyticsHelper.logEvent(
             AnalyticsEvent.View(
                 screenName = "NotificationNudge",
-                properties = mapOf("variant" to if (isTreatment) "TREATMENT_V2" else "CONTROL_V2"),
             )
         )
     }
@@ -158,7 +153,7 @@ private fun NotificationScreenPhone(
         NotificationTopBar(
             analyticsHelper = analyticsHelper,
             state = state,
-            isTreatment = isTreatment,
+            showTopSave = false,
             onBackClick = onBackClick,
             onSaveClick = {
                 onSaveClick()
@@ -222,26 +217,24 @@ private fun NotificationScreenPhone(
             }
         }
 
-        if (isTreatment) {
-            EbbingSolidButton(
-                label = stringResource(R.string.home_save),
-                onClick = {
-                    analyticsHelper.logEvent(
-                        AnalyticsEvent.Click(
-                            screenName = "NotificationNudge",
-                            buttonName = "save",
-                            properties = mapOf("notification_enabled" to state.notificationEnabled),
-                        )
+        EbbingSolidButton(
+            label = stringResource(R.string.home_add_todo_button),
+            onClick = {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(
+                        screenName = "NotificationNudge",
+                        buttonName = "save",
+                        properties = mapOf("notification_enabled" to state.notificationEnabled),
                     )
-                    onSaveClick()
-                    focusManager.clearFocus()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+                )
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
@@ -249,7 +242,6 @@ private fun NotificationScreenPhone(
 @Composable
 private fun NotificationScreenTablet(
     state: NotificationState,
-    isTreatment: Boolean = false,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
@@ -273,7 +265,6 @@ private fun NotificationScreenTablet(
         analyticsHelper.logEvent(
             AnalyticsEvent.View(
                 screenName = "NotificationNudge",
-                properties = mapOf("variant" to if (isTreatment) "TREATMENT_V2" else "CONTROL_V2"),
             )
         )
     }
@@ -301,6 +292,7 @@ private fun NotificationScreenTablet(
         NotificationTopBar(
             analyticsHelper = analyticsHelper,
             state = state,
+            showTopSave = false,
             onBackClick = onBackClick,
             onSaveClick = {
                 onSaveClick()
@@ -310,7 +302,8 @@ private fun NotificationScreenTablet(
 
         Row(
             modifier = modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
                 .imePadding(),
         ) {
             Column(
@@ -377,6 +370,25 @@ private fun NotificationScreenTablet(
                 }
             }
         }
+
+        EbbingSolidButton(
+            label = stringResource(R.string.home_add_todo_button),
+            onClick = {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(
+                        screenName = "NotificationNudge",
+                        buttonName = "save",
+                        properties = mapOf("notification_enabled" to state.notificationEnabled),
+                    )
+                )
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
@@ -384,7 +396,7 @@ private fun NotificationScreenTablet(
 private fun NotificationTopBar(
     analyticsHelper: AnalyticsHelper,
     state: NotificationState,
-    isTreatment: Boolean = false,
+    showTopSave: Boolean = true,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
 ) {
@@ -392,7 +404,7 @@ private fun NotificationTopBar(
         title = stringResource(R.string.home_notification_title),
         onNavigationClick = onBackClick,
         rightComponent = {
-            if (!isTreatment) {
+            if (showTopSave) {
                 Text(
                     text = stringResource(R.string.home_save),
                     style = EbbingTheme.typography.body16M,

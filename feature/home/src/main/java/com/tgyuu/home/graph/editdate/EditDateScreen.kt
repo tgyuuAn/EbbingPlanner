@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -35,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -174,21 +172,7 @@ private fun EditDateScreenPhone(
         EbbingSubTopBar(
             title = stringResource(R.string.home_edit_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                if (!state.isTreatment) {
-                    Text(
-                        text = stringResource(R.string.home_save),
-                        style = EbbingTheme.typography.body16M,
-                        color = EbbingTheme.colors.primaryNormal,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(throttleTime = 1500L) {
-                                onSaveClick(isDoneSchedules)
-                                focusManager.clearFocus()
-                            },
-                    )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -223,19 +207,17 @@ private fun EditDateScreenPhone(
             Spacer(modifier = Modifier.height(60.dp))
         }
 
-        if (state.isTreatment) {
-            EbbingSolidButton(
-                label = stringResource(R.string.home_save),
-                onClick = {
-                    onSaveClick(isDoneSchedules)
-                    focusManager.clearFocus()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        EbbingSolidButton(
+            label = stringResource(R.string.home_edit_todo_button),
+            onClick = {
+                onSaveClick(isDoneSchedules)
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
@@ -259,25 +241,14 @@ private fun EditDateScreenTablet(
         EbbingSubTopBar(
             title = stringResource(R.string.home_edit_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                Text(
-                    text = stringResource(R.string.home_save),
-                    style = EbbingTheme.typography.body16M,
-                    color = EbbingTheme.colors.primaryNormal,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(throttleTime = 1500L) {
-                            onSaveClick(isDoneSchedules)
-                            focusManager.clearFocus()
-                        },
-                )
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Row(
             modifier = modifier
-                .fillMaxSize()
+                .weight(1f)
+                .fillMaxWidth()
                 .imePadding(),
         ) {
             Column(
@@ -319,6 +290,18 @@ private fun EditDateScreenTablet(
                 DescriptionBody()
             }
         }
+
+        EbbingSolidButton(
+            label = stringResource(R.string.home_edit_todo_button),
+            onClick = {
+                onSaveClick(isDoneSchedules)
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 

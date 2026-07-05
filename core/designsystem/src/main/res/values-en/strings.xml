@@ -420,4 +420,12 @@
     <string name="update_button">Update</string>
     <string name="exit_confirm_snackbar">Press back again to exit the app</string>
     <string name="notification_content_title">Ebbing Planner reminder</string>
+    <string name="home_add_todo_button">Add task</string>
+    <string name="home_edit_todo_button">Edit task</string>
+    <string name="tag_register_button">Add tag</string>
+    <string name="tag_edit_button">Edit tag</string>
+    <string name="repeat_register_button">Add repeat cycle</string>
+    <string name="repeat_edit_button">Edit repeat cycle</string>
+    <string name="memo_add_button">Add note</string>
+    <string name="memo_edit_button">Edit note</string>
 </resources>

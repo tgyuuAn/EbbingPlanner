@@ -8,31 +8,26 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
 import com.tgyuu.tag.graph.addtag.contract.AddTagState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class AddTagViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val analyticsHelper: AnalyticsHelper,
     private val resourceProvider: ResourceProvider,
-) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
+) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState()) {
 
     init {
         analyticsHelper.logEvent(
             AnalyticsEvent.View(
                 screenName = "AddTag",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
             )
         )
     }
@@ -71,7 +66,6 @@ class AddTagViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "AddTag",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

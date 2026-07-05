@@ -7,7 +7,6 @@ import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
-import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
@@ -27,11 +26,9 @@ import com.tgyuu.navigation.HomeGraph.HomeRoute
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -42,21 +39,19 @@ import javax.inject.Inject
 class EditDateViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
     private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })) {
+) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
     private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
         analyticsHelper.logEvent(
             AnalyticsEvent.View(
                 screenName = "EditDate",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
             )
         )
 
@@ -172,7 +167,6 @@ class EditDateViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "EditDate",
                 buttonName = "Save",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

@@ -8,33 +8,28 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.runBlocking
 import java.time.DayOfWeek
 import javax.inject.Inject
 
 @HiltViewModel
 class AddRepeatCycleViewModel @Inject constructor(
     private val todoRepository: TodoRepository,
-    private val experimentRepository: ExperimentRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
     private val resourceProvider: ResourceProvider,
-) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) }, resourceProvider = resourceProvider)) {
+) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(resourceProvider = resourceProvider)) {
 
     init {
         analyticsHelper.logEvent(
             AnalyticsEvent.View(
                 screenName = "AddRepeatCycle",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
             )
         )
     }
@@ -74,7 +69,6 @@ class AddRepeatCycleViewModel @Inject constructor(
                 AnalyticsEvent.Click(
                     screenName = "AddRepeatCycle",
                     buttonName = "SaveRepeatCycle",
-                    properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
                 )
             )
             todoRepository.addRepeatCycle(intervals = intervals)

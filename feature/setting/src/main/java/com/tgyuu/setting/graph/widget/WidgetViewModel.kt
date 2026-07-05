@@ -13,33 +13,28 @@ import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.setting.graph.widget.contract.WidgetIntent
 import com.tgyuu.setting.graph.widget.contract.WidgetState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class WidgetViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val analyticsHelper: AnalyticsHelper,
     private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<WidgetState, WidgetIntent>(
-    WidgetState(saveButtonPositionVariant = runBlocking { experimentRepository.getVariant(Experiment.SaveButtonPosition) })
+    WidgetState()
 ) {
 
     init {
         analyticsHelper.logEvent(
             AnalyticsEvent.View(
                 screenName = "Widget",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2"),
             )
         )
     }
@@ -106,7 +101,6 @@ class WidgetViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "Widget",
                 buttonName = "Apply",
-                properties = mapOf("variant" to currentState.saveButtonPositionVariant.key + "_V2")
             )
         )
 

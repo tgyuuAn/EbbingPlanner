@@ -25,7 +25,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -38,7 +37,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingPageTransitionAnimation
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
@@ -148,7 +146,6 @@ internal fun AddTodoRoute(
 
             AddTodoState.Page.NOTIFICATION -> NotificationScreen(
                 state = state.notificationState,
-                isTreatment = state.isTreatment,
                 onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
                 onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
                 onNotificationToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
@@ -251,24 +248,7 @@ private fun AddTodoScreenPhone(
         EbbingSubTopBar(
             title = stringResource(R.string.home_add_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                if (!state.isTreatment) {
-                    Text(
-                        text = stringResource(R.string.home_save),
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -294,20 +274,18 @@ private fun AddTodoScreenPhone(
             ScheduleContent(schedules = state.schedules)
         }
 
-        if (state.isTreatment) {
-            EbbingSolidButton(
-                label = stringResource(R.string.home_save),
-                onClick = {
-                    onSaveClick()
-                    focusManager.clearFocus()
-                },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        EbbingSolidButton(
+            label = stringResource(R.string.home_add_todo_button),
+            onClick = {
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
@@ -335,27 +313,14 @@ private fun AddTodoScreenTablet(
         EbbingSubTopBar(
             title = stringResource(R.string.home_add_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                Text(
-                    text = stringResource(R.string.home_save),
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
-                )
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier
@@ -386,6 +351,19 @@ private fun AddTodoScreenTablet(
                 ScheduleContent(schedules = state.schedules)
             }
         }
+
+        EbbingSolidButton(
+            label = stringResource(R.string.home_add_todo_button),
+            onClick = {
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 

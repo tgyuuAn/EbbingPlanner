@@ -18,7 +18,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -30,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -120,24 +118,7 @@ private fun EditTodoScreen(
             EbbingSubTopBar(
                 title = stringResource(R.string.home_edit_todo_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {
-                    if (!state.isTreatment) {
-                        Text(
-                            text = stringResource(R.string.home_save),
-                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .throttledClickable(
-                                    throttleTime = 1500L,
-                                    enabled = state.isSaveEnabled
-                                ) {
-                                    onSaveClick()
-                                    focusManager.clearFocus()
-                                },
-                        )
-                    }
-                },
+                rightComponent = {},
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
@@ -189,20 +170,18 @@ private fun EditTodoScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            if (state.isTreatment) {
-                EbbingSolidButton(
-                    label = stringResource(R.string.home_save),
-                    onClick = {
-                        onSaveClick()
-                        focusManager.clearFocus()
-                    },
-                    enabled = state.isSaveEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(EbbingTheme.colors.background)
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                )
-            }
+            EbbingSolidButton(
+                label = stringResource(R.string.home_edit_todo_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     } else {
         Column(
@@ -211,27 +190,13 @@ private fun EditTodoScreen(
             EbbingSubTopBar(
                 title = stringResource(R.string.home_edit_todo_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {
-                    Text(
-                        text = stringResource(R.string.home_save),
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                },
+                rightComponent = {},
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
             Column(
                 modifier = Modifier
+                    .weight(1f)
                     .verticalScroll(scrollState)
                     .padding(20.dp)
                     .imePadding(),
@@ -279,6 +244,19 @@ private fun EditTodoScreen(
                     }
                 }
             }
+
+            EbbingSolidButton(
+                label = stringResource(R.string.home_edit_todo_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }
