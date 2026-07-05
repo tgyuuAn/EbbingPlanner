@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.main.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -102,7 +103,7 @@ private fun TodoHeader(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp)
     ) {
         val dateText = if (displayDate == LocalDate.now()) stringResource(R.string.home_today)
         else stringResource(
@@ -148,6 +149,7 @@ private fun TodoPage(
     if (todos.isNotEmpty()) {
         LazyColumn(
             state = listState,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.fillMaxSize()
         ) {
             if (sortType == SortType.BY_TAG) {
