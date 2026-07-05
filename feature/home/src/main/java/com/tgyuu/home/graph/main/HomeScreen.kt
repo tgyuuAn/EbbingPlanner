@@ -54,6 +54,7 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.domain.model.CalendarDefaultView
+import com.tgyuu.domain.model.SortType
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.home.graph.main.contract.HomeIntent
@@ -135,14 +136,7 @@ internal fun HomeRoute(
         onCheckedChange = { viewModel.onIntent(OnCheckChanged(it)) },
         onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
         onCalendarViewChanged = { viewModel.onIntent(HomeIntent.OnCalendarViewChanged(it)) },
-        onSortTypeClick = {
-            viewModel.onIntent(OnSortTypeClick({
-                SortTypeBottomSheet(
-                    originSortType = state.sortType,
-                    onClickUpdate = { viewModel.onIntent(HomeIntent.OnUpdateSortType(it)) },
-                )
-            }))
-        },
+        onSortTypeChange = { viewModel.onIntent(HomeIntent.OnUpdateSortType(it)) },
         onEditScheduleClick = { schedule ->
             viewModel.onIntent(
                 HomeIntent.OnEditScheduleClick {
@@ -270,7 +264,7 @@ private fun HomeScreen(
     state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
-    onSortTypeClick: () -> Unit,
+    onSortTypeChange: (SortType) -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onSyncClick: () -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
@@ -285,7 +279,7 @@ private fun HomeScreen(
             state = state,
             onAddTodoClick = onAddTodoClick,
             onCheckedChange = onCheckedChange,
-            onSortTypeClick = onSortTypeClick,
+            onSortTypeChange = onSortTypeChange,
             onEditScheduleClick = onEditScheduleClick,
             onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
@@ -298,7 +292,7 @@ private fun HomeScreen(
             state = state,
             onAddTodoClick = onAddTodoClick,
             onCheckedChange = onCheckedChange,
-            onSortTypeClick = onSortTypeClick,
+            onSortTypeChange = onSortTypeChange,
             onEditScheduleClick = onEditScheduleClick,
             onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
@@ -313,7 +307,7 @@ private fun PhoneHomeScreen(
     state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
-    onSortTypeClick: () -> Unit,
+    onSortTypeChange: (SortType) -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
@@ -514,9 +508,8 @@ private fun PhoneHomeScreen(
                             }
                         }
                     },
-                    onAddTodoClick = { onAddTodoClick(selectedDate) },
                     onCheckedChange = onCheckedChange,
-                    onSortTypeClick = onSortTypeClick,
+                    onSortTypeChange = onSortTypeChange,
                     onEditScheduleClick = onEditScheduleClick,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -559,7 +552,7 @@ private fun TabletHomeScreen(
     state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
-    onSortTypeClick: () -> Unit,
+    onSortTypeChange: (SortType) -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
@@ -629,9 +622,8 @@ private fun TabletHomeScreen(
                         }
                     }
                 },
-                onAddTodoClick = { onAddTodoClick(selectedDate) },
                 onCheckedChange = onCheckedChange,
-                onSortTypeClick = onSortTypeClick,
+                onSortTypeChange = onSortTypeChange,
                 onEditScheduleClick = onEditScheduleClick,
                 modifier = Modifier
                     .weight(1f)
@@ -745,7 +737,7 @@ private fun Preview1() {
             onCheckedChange = {},
             onEditScheduleClick = {},
             onCurrentDateChanged = {},
-            onSortTypeClick = {},
+            onSortTypeChange = {},
             onSyncClick = {},
             onCalendarViewChanged = {},
         )

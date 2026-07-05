@@ -394,6 +394,8 @@
     <string name="ds_am">午前</string>
     <string name="sort_created">作成順</string>
     <string name="sort_name">名前順</string>
+    <string name="sort_latest">最新順</string>
+    <string name="sort_by_tag">タグ別</string>
     <string name="repeat_display_daily">毎日</string>
     <string name="repeat_display_daily_days">毎日 (%1$d日)</string>
     <string name="repeat_display_error">正しい形式で入力してください。</string>

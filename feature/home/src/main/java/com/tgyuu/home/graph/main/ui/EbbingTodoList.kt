@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.EbbingTextToggle
 import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
@@ -57,8 +58,7 @@ internal fun EbbingTodoList(
     onSelectDate: (LocalDate) -> Unit,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
-    onAddTodoClick: () -> Unit,
-    onSortTypeClick: () -> Unit,
+    onSortTypeChange: (SortType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val initialPage = TODO_LIST_PAGE_COUNT / 2
@@ -85,14 +85,14 @@ internal fun EbbingTodoList(
             displayDate = selectedDate,
             count = todoLists.size,
             sortType = sortType,
-            onAddTodoClick = onAddTodoClick,
-            onSortTypeClick = onSortTypeClick,
+            onSortTypeChange = onSortTypeChange,
         )
 
         HorizontalPager(state = pagerState) { page ->
             TodoPage(
                 date = selectedDate,
                 todos = todoLists,
+                sortType = sortType,
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onCheckedChange = onCheckedChange,
                 onEdit = onEditScheduleClick
@@ -106,8 +106,7 @@ private fun TodoHeader(
     displayDate: LocalDate,
     count: Int,
     sortType: SortType,
-    onAddTodoClick: () -> Unit,
-    onSortTypeClick: () -> Unit
+    onSortTypeChange: (SortType) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -134,23 +133,14 @@ private fun TodoHeader(
             modifier = Modifier.weight(1f)
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable { onSortTypeClick() }
-        ) {
-            Text(
-                text = sortType.displayName(),
-                style = EbbingTheme.typography.heading16B,
-                color = EbbingTheme.colors.textOnBackground
-            )
-            Image(
-                painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_down),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
-                modifier = Modifier.size(20.dp)
-            )
-        }
+        EbbingTextToggle(
+            firstLabel = SortType.CREATED.displayName(),
+            secondLabel = SortType.BY_TAG.displayName(),
+            selectedFirst = sortType == SortType.CREATED,
+            onSelectedChange = { toLatest ->
+                onSortTypeChange(if (toLatest) SortType.CREATED else SortType.BY_TAG)
+            },
+        )
     }
 }
 
@@ -158,6 +148,7 @@ private fun TodoHeader(
 private fun TodoPage(
     date: LocalDate,
     todos: List<TodoScheduleUiModel>,
+    sortType: SortType,
     schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onEdit: (TodoScheduleUiModel) -> Unit
@@ -169,17 +160,25 @@ private fun TodoPage(
             state = listState,
             modifier = Modifier.fillMaxSize()
         ) {
-            items(
-                items = todos,
-                key = { it.id },
-            ) { item ->
-                TodoListCard(
-                    todo = item,
-                    todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
-                    onCheckedChange = onCheckedChange,
-                    onEditScheduleClick = onEdit,
-                    modifier = Modifier.animateItem()
-                )
+            if (sortType == SortType.BY_TAG) {
+                // ViewModel 에서 태그 그룹(고정 개수 desc)·그룹 내(고정 우선) 순으로 정렬된 flat 리스트를
+                // 태그명으로 다시 묶어 섹션 헤더와 함께 렌더한다.
+                todos.groupBy { it.name }.forEach { (tagName, group) ->
+                    item(key = "tag_$tagName") {
+                        TagSectionHeader(
+                            tagName = tagName,
+                            count = group.size,
+                            modifier = Modifier.animateItem(),
+                        )
+                    }
+                    items(items = group, key = { it.id }) { item ->
+                        ScheduleCard(item, schedulesByTodoInfo, onCheckedChange, onEdit)
+                    }
+                }
+            } else {
+                items(items = todos, key = { it.id }) { item ->
+                    ScheduleCard(item, schedulesByTodoInfo, onCheckedChange, onEdit)
+                }
             }
 
             item { Spacer(modifier = Modifier.height(20.dp)) }
@@ -197,6 +196,47 @@ private fun TodoPage(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 30.dp),
+        )
+    }
+}
+
+@Composable
+private fun ScheduleCard(
+    item: TodoScheduleUiModel,
+    schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
+    onEdit: (TodoScheduleUiModel) -> Unit,
+) {
+    TodoListCard(
+        todo = item,
+        todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
+        onCheckedChange = onCheckedChange,
+        onEditScheduleClick = onEdit,
+    )
+}
+
+@Composable
+private fun TagSectionHeader(
+    tagName: String,
+    count: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 4.dp),
+    ) {
+        Text(
+            text = tagName,
+            style = EbbingTheme.typography.heading16B,
+            color = EbbingTheme.colors.textOnBackground,
+        )
+        Text(
+            text = count.toString(),
+            style = EbbingTheme.typography.heading16B,
+            color = EbbingTheme.colors.primaryNormal,
+            modifier = Modifier.padding(start = 4.dp),
         )
     }
 }

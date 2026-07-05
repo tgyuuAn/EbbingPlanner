@@ -143,9 +143,11 @@ object WidgetUpdater {
                 .thenBy { it.isDone }
                 .thenBy { it.createdAt }
 
-            SortType.NAME -> compareByDescending<TodoSchedule> { it.isPinned }
+            // 위젯은 섹션 헤더 없는 단순 리스트이므로 태그명으로 묶고 그룹 내 고정 우선으로 근사한다.
+            SortType.BY_TAG -> compareBy<TodoSchedule> { it.name }
+                .thenByDescending { it.isPinned }
                 .thenBy { it.isDone }
-                .thenBy { it.title }
+                .thenBy { it.createdAt }
         }
 
     private fun generateTodayTodoBitmaps(
