@@ -215,20 +215,20 @@ private fun TagSectionHeader(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 12.dp, bottom = 4.dp),
+            .padding(top = 18.dp),
     ) {
         Text(
             text = tagName,
-            style = EbbingTheme.typography.heading16B,
-            color = EbbingTheme.colors.textOnBackground,
+            style = EbbingTheme.typography.heading14SB,
+            color = EbbingTheme.colors.textSub,
         )
         Text(
             text = count.toString(),
-            style = EbbingTheme.typography.heading16B,
-            color = EbbingTheme.colors.primaryNormal,
-            modifier = Modifier.padding(start = 4.dp),
+            style = EbbingTheme.typography.heading14SB,
+            color = EbbingTheme.colors.textSub,
         )
     }
 }
