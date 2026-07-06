@@ -149,7 +149,9 @@ internal fun HomeRoute(
                                                         schedule = delayedSchedule,
                                                         restDays = restDays,
                                                         expectedDateExcludingRestDays = expectedDateExcludingRestDays,
-                                                        expectedDateIncludingRestDays = delayedSchedule.date.plusDays(1)
+                                                        expectedDateIncludingRestDays = delayedSchedule.date.plusDays(
+                                                            1
+                                                        )
                                                     )
                                                     isShowDialog = true
                                                 }
@@ -351,6 +353,7 @@ private fun PhoneHomeScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 28.dp, bottom = 20.dp)
                     .padding(horizontal = 20.dp),
             )
 
@@ -453,63 +456,63 @@ private fun TabletHomeScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxSize()) {
-        EbbingCalendar(
-            calendarState = calendarState,
-            schedulesByDateMap = state.schedulesByDateMap,
-            startFromMonday = state.mondayStart,
-            onSelectDate = {
-                if (selectedDate != it) {
-                    scope.launch {
-                        selectedDate = it
-                    }
-                }
-            },
-            onGotoTodayClick = {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Home", buttonName = "ReturnToToday")
-                )
-            },
-            onSyncClick = onSyncClick,
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(0.8f)
-                .padding(horizontal = 20.dp)
-        )
-
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator(
-                    color = EbbingTheme.colors.primaryNormal,
-                    modifier = Modifier.size(40.dp)
-                )
-            }
-        } else {
-            EbbingTodoList(
-                sortType = state.sortType,
-                selectedDate = selectedDate,
-                todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
-                schedulesByTodoInfo = state.schedulesByTodoInfo,
+            EbbingCalendar(
+                calendarState = calendarState,
+                schedulesByDateMap = state.schedulesByDateMap,
+                startFromMonday = state.mondayStart,
                 onSelectDate = {
                     if (selectedDate != it) {
                         scope.launch {
                             selectedDate = it
-                            calendarState.onDateSelect(it)
                         }
                     }
                 },
-                onCheckedChange = onCheckedChange,
-                onSortTypeChange = onSortTypeChange,
-                onEditScheduleClick = onEditScheduleClick,
+                onGotoTodayClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(screenName = "Home", buttonName = "ReturnToToday")
+                    )
+                },
+                onSyncClick = onSyncClick,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 20.dp),
+                    .fillMaxHeight()
+                    .weight(0.8f)
+                    .padding(horizontal = 20.dp)
             )
-        }
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(
+                        color = EbbingTheme.colors.primaryNormal,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            } else {
+                EbbingTodoList(
+                    sortType = state.sortType,
+                    selectedDate = selectedDate,
+                    todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
+                    schedulesByTodoInfo = state.schedulesByTodoInfo,
+                    onSelectDate = {
+                        if (selectedDate != it) {
+                            scope.launch {
+                                selectedDate = it
+                                calendarState.onDateSelect(it)
+                            }
+                        }
+                    },
+                    onCheckedChange = onCheckedChange,
+                    onSortTypeChange = onSortTypeChange,
+                    onEditScheduleClick = onEditScheduleClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 20.dp),
+                )
+            }
         }
 
         AddTodoFab(

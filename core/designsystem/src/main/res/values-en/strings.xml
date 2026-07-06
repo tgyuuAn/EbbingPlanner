@@ -105,6 +105,7 @@
     <string name="home_go_back">Go back</string>
     <string name="home_delay_button">Postpone</string>
     <string name="home_month_day">%1$d/%2$d</string>
+    <string name="home_list_date">%1$d/%2$d %3$s</string>
     <string name="home_today">Today</string>
     <string name="home_tag">Tag</string>
     <string name="home_title">Title</string>

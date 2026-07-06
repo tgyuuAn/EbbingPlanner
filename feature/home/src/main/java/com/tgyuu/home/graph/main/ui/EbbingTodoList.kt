@@ -37,6 +37,8 @@ import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.designsystem.model.displayName
 import com.tgyuu.domain.model.SortType
 import java.time.LocalDate
+import java.time.format.TextStyle as JavaTextStyle
+import java.util.Locale
 
 private const val TODO_LIST_PAGE_COUNT = 12_001 // ±16년(일)
 
@@ -105,21 +107,22 @@ private fun TodoHeader(
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp)
     ) {
-        val dateText = if (displayDate == LocalDate.now()) stringResource(R.string.home_today)
-        else stringResource(
-            R.string.home_month_day,
+        val weekday = displayDate.dayOfWeek.getDisplayName(JavaTextStyle.SHORT, Locale.getDefault())
+        val dateText = stringResource(
+            R.string.home_list_date,
             displayDate.monthValue,
             displayDate.dayOfMonth,
+            weekday,
         )
-        val todoCountLabel = stringResource(R.string.home_todo_count_label, dateText)
         Text(
             text = buildAnnotatedString {
-                append(todoCountLabel)
+                append(dateText)
+                append(" ")
                 withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                     append(count.toString())
                 }
             },
-            style = EbbingTheme.typography.heading16B,
+            style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f)
         )
