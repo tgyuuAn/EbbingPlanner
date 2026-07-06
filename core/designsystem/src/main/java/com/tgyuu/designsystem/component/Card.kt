@@ -1,5 +1,6 @@
 package com.tgyuu.designsystem.component
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -64,23 +65,13 @@ fun TodoListCard(
         orderedSchedules.indexOfFirst { it.id == todo.id }.coerceAtLeast(0) + 1
     }
 
-    Row(modifier = modifier.height(IntrinsicSize.Min)) {
-        // 좌측 색상 인덱스 바
+    Box(modifier = modifier) {
         Box(
             modifier = Modifier
-                .width(8.dp)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp))
-                .background(Color(todo.color)),
-        )
-
-        // 흰 배경 프레임 (우측 라운드 + 테두리)
-        Box(
-            modifier = Modifier
-                .weight(1f)
+                .fillMaxWidth()
+                .padding(start = 8.dp)
                 .clip(RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp))
                 .background(EbbingTheme.colors.background)
-                // 좌측(색상 인덱스 바와 맞닿는 면)에는 테두리를 그리지 않고 상/우/하만 그린다.
                 .drawBehind {
                     val strokePx = 1.dp.toPx()
                     val radiusPx = 6.dp.toPx()
@@ -130,7 +121,6 @@ fun TodoListCard(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
-                            // 제목이 길어도 3dots 영역과 겹치지 않도록 우측 여백 확보
                             modifier = Modifier.padding(end = 24.dp),
                         ) {
                             EbbingClickableText(
@@ -190,13 +180,14 @@ fun TodoListCard(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .heightIn(min = 28.dp)
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(EbbingTheme.colors.fillTextfield)
                                 .then(
                                     if (memoOverflow) Modifier.clickable { memoExpanded = !memoExpanded }
                                     else Modifier
                                 )
+                                .animateContentSize()
+                                .heightIn(min = 28.dp)
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                         ) {
                             EbbingClickableText(
@@ -205,7 +196,6 @@ fun TodoListCard(
                                 color = subColor,
                                 maxLines = if (memoExpanded) Int.MAX_VALUE else 1,
                                 overflow = TextOverflow.Ellipsis,
-                                // 한 줄 접힘 상태에서 넘치면 드롭다운(펼치기) 아이콘을 노출
                                 onTextLayout = { if (!memoExpanded) memoOverflow = it.hasVisualOverflow },
                                 modifier = Modifier.weight(1f),
                             )
@@ -233,6 +223,16 @@ fun TodoListCard(
                     .align(Alignment.TopEnd)
                     .size(20.dp)
                     .clickable { onEditScheduleClick(todo) },
+            )
+        }
+
+        Box(modifier = Modifier.matchParentSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(8.dp)
+                    .clip(RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp))
+                    .background(Color(todo.color)),
             )
         }
     }
