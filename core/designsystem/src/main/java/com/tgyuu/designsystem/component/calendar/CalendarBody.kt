@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -45,21 +43,27 @@ internal fun CalendarBody(
 ) {
     val bodyDescription = stringResource(R.string.ds_cd_calendar_body)
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(7),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.semantics { contentDescription = bodyDescription },
+    // 고정 34dp 셀 + SpaceBetween 으로 첫 셀을 좌측(월 제목)과 정렬한다.
+    Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { contentDescription = bodyDescription },
     ) {
-        items(
-            items = getCalendarDates(currentDate, startFromMonday),
-            key = { it.date },
-        ) {
-            CalendarDayItem(
-                calendarDate = it,
-                selectedDate = selectedDate,
-                events = schedulesByDateMap[it.date] ?: emptyList(),
-                onDateSelect = onDateSelect,
-            )
+        getCalendarDates(currentDate, startFromMonday).chunked(7).forEach { week ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                week.forEach { calendarDate ->
+                    CalendarDayItem(
+                        calendarDate = calendarDate,
+                        selectedDate = selectedDate,
+                        events = schedulesByDateMap[calendarDate.date] ?: emptyList(),
+                        onDateSelect = onDateSelect,
+                    )
+                }
+            }
         }
     }
 }
@@ -80,6 +84,7 @@ internal fun WeekCalendarBody(
             .fillMaxWidth()
             .wrapContentHeight()
             .semantics { contentDescription = weekBodyDescription },
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         getWeekDates(weekReferenceDate, startFromMonday).forEach { calendarDate ->
             CalendarDayItem(
@@ -87,7 +92,6 @@ internal fun WeekCalendarBody(
                 selectedDate = selectedDate,
                 events = schedulesByDateMap[calendarDate.date] ?: emptyList(),
                 onDateSelect = onDateSelect,
-                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -125,6 +129,7 @@ internal fun CalendarDayItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = modifier
+            .width(34.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onDateSelect(calendarDate.date) }
             .padding(vertical = 4.dp),
