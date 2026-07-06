@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -196,12 +195,6 @@ private fun EditDateScreenPhone(
                 onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
             )
 
-            HorizontalDivider(
-                color = EbbingTheme.colors.fillTextfield,
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
             DescriptionBody()
 
             Spacer(modifier = Modifier.height(60.dp))
@@ -281,12 +274,6 @@ private fun EditDateScreenTablet(
                     onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
                 )
 
-                HorizontalDivider(
-                    color = EbbingTheme.colors.fillTextfield,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-
                 DescriptionBody()
             }
         }
@@ -353,6 +340,7 @@ private fun DescriptionBody() {
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textDisabled,
+        modifier = Modifier.padding(top = 24.dp),
     )
 }
 
