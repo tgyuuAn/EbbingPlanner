@@ -40,6 +40,21 @@
     <string name="sync_network_connect_action">Connect</string>
     <string name="sync_network_required">No network connection.</string>
     <string name="sync_network_check">Please check your network connection.</string>
+    <string name="sync_restore_title">Restore data</string>
+    <string name="sync_restore_headline">Restore your backed-up data</string>
+    <string name="sync_restore_description">Enter the deviceId shown on the other device\'s sync screen to bring its backed-up data to this device.</string>
+    <string name="sync_restore_input_label">deviceId</string>
+    <string name="sync_restore_input_hint">e.g. 3f2a8b1c</string>
+    <string name="sync_restore_button">Restore</string>
+    <string name="sync_restore_done">Restored data from %1$s.</string>
+    <string name="sync_restore_not_found">No backup found for that deviceId.</string>
+    <string name="sync_restore_empty_data">That device\'s backup is empty. If it was linked to another device, try that device\'s deviceId instead.</string>
+    <string name="sync_restore_ambiguous">Multiple devices match. Please check the deviceId again.</string>
+    <string name="sync_restore_self">That\'s this device\'s deviceId. Please enter another device\'s deviceId.</string>
+    <string name="sync_restore_failed">Restore failed. Please try again later.</string>
+    <string name="sync_restore_confirm_title">Restore data?</string>
+    <string name="sync_restore_confirm_desc">All data on this device will be replaced and cannot be undone.</string>
+    <string name="sync_restore_confirm_cancel">Go back</string>
 
     <!-- Main screen -->
     <string name="sync_title">Use on Other Devices</string>

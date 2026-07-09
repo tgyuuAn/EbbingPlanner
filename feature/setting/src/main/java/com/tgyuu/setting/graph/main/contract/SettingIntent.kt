@@ -25,4 +25,5 @@ sealed interface SettingIntent : UiIntent {
     data class OnStartDayClick(val content: BottomSheetContent) : SettingIntent
     data class OnUpdateStartDay(val mondayStart: Boolean) : SettingIntent
     data object OnAutoBackupToggleClick : SettingIntent
+    data object OnRestoreByDeviceIdClick : SettingIntent
 }

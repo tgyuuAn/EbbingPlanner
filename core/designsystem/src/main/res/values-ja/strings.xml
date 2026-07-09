@@ -40,6 +40,21 @@
     <string name="sync_network_connect_action">接続する</string>
     <string name="sync_network_required">ネットワークに接続されていません。</string>
     <string name="sync_network_check">ネットワーク接続を確認してください。</string>
+    <string name="sync_restore_title">データ復元</string>
+    <string name="sync_restore_headline">バックアップデータを復元します</string>
+    <string name="sync_restore_description">他の端末の同期画面に表示されたdeviceIdを入力すると、その端末のバックアップデータをこの端末に取り込みます。</string>
+    <string name="sync_restore_input_label">deviceId</string>
+    <string name="sync_restore_input_hint">例) 3f2a8b1c</string>
+    <string name="sync_restore_button">復元する</string>
+    <string name="sync_restore_done">%1$sのデータを復元しました。</string>
+    <string name="sync_restore_not_found">そのdeviceIdのバックアップが見つかりませんでした。</string>
+    <string name="sync_restore_empty_data">その端末のバックアップは空です。他の端末と連携していた場合は、連携先端末のdeviceIdでお試しください。</string>
+    <string name="sync_restore_ambiguous">一致する端末が複数あります。deviceIdをもう一度確認してください。</string>
+    <string name="sync_restore_self">この端末のdeviceIdです。他の端末のdeviceIdを入力してください。</string>
+    <string name="sync_restore_failed">復元に失敗しました。しばらくしてから再度お試しください。</string>
+    <string name="sync_restore_confirm_title">データを復元しますか？</string>
+    <string name="sync_restore_confirm_desc">この端末のデータはすべて置き換えられ、元に戻せません。</string>
+    <string name="sync_restore_confirm_cancel">戻る</string>
 
     <!-- メイン画面 -->
     <string name="sync_title">他の端末でも使う</string>

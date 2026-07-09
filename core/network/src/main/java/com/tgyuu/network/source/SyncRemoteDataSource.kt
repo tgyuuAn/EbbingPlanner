@@ -14,6 +14,11 @@ data class SyncInfoResult(
     val deviceName: String,
 )
 
+data class SyncDeviceMatch(
+    val uuid: String,
+    val deviceName: String,
+)
+
 data class SyncDownloadResult(
     val schedules: List<TodoScheduleForSync>,
     val todoInfos: List<TodoInfoForSync>,
@@ -24,6 +29,7 @@ data class SyncDownloadResult(
 
 interface SyncRemoteDataSource {
     suspend fun getSyncInfo(uuid: String): SyncInfoResult?
+    suspend fun findSyncInfosByUuidPrefix(prefix: String): Result<List<SyncDeviceMatch>>
     suspend fun uploadData(
         uuid: String,
         deviceName: String,

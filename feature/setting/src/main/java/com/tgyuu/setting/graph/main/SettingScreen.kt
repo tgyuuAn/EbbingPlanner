@@ -133,6 +133,7 @@ internal fun SettingRoute(
         onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) },
         onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) },
         onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) },
+        onRestoreByDeviceIdClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) },
         onClearClick = { viewModel.onIntent(SettingIntent.OnClearClick) },
         onAppThemeManageClick = { viewModel.onIntent(SettingIntent.OnAppThemeManageClick) },
         onWidgetManageClick = { viewModel.onIntent(SettingIntent.OnWidgetManageClick) },
@@ -166,6 +167,7 @@ private fun SettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onRestoreByDeviceIdClick: () -> Unit,
     onClearClick: () -> Unit,
     onAppThemeManageClick: () -> Unit,
     onWidgetManageClick: () -> Unit,
@@ -198,6 +200,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onRestoreByDeviceIdClick = onRestoreByDeviceIdClick,
             onClearClick = { isShowClearConfirm = true },
             onAppThemeManageClick = onAppThemeManageClick,
             onWidgetManageClick = onWidgetManageClick,
@@ -218,6 +221,7 @@ private fun SettingScreen(
             onTagManageClick = onTagManageClick,
             onRepeatCycleManageClick = onRepeatCycleManageClick,
             onSyncClick = onSyncClick,
+            onRestoreByDeviceIdClick = onRestoreByDeviceIdClick,
             onClearClick = { isShowClearConfirm = true },
             onAppThemeManageClick = onAppThemeManageClick,
             onWidgetManageClick = onWidgetManageClick,
@@ -241,6 +245,7 @@ private fun PhoneSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onRestoreByDeviceIdClick: () -> Unit,
     onClearClick: () -> Unit,
     onAppThemeManageClick: () -> Unit,
     onWidgetManageClick: () -> Unit,
@@ -306,6 +311,7 @@ private fun PhoneSettingScreen(
                 autoBackupEnabled = state.autoBackupEnabled,
                 lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
                 onSyncClick = onSyncClick,
+                onRestoreByDeviceIdClick = onRestoreByDeviceIdClick,
                 onClearClick = onClearClick,
                 onAutoBackupToggleClick = onAutoBackupToggleClick,
             )
@@ -333,6 +339,7 @@ private fun TabletSettingScreen(
     onTagManageClick: () -> Unit,
     onRepeatCycleManageClick: () -> Unit,
     onSyncClick: () -> Unit,
+    onRestoreByDeviceIdClick: () -> Unit,
     onClearClick: () -> Unit,
     onAppThemeManageClick: () -> Unit,
     onWidgetManageClick: () -> Unit,
@@ -405,6 +412,7 @@ private fun TabletSettingScreen(
                     autoBackupEnabled = state.autoBackupEnabled,
                     lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
                     onSyncClick = onSyncClick,
+                    onRestoreByDeviceIdClick = onRestoreByDeviceIdClick,
                     onClearClick = onClearClick,
                     onAutoBackupToggleClick = onAutoBackupToggleClick,
                 )
@@ -667,6 +675,7 @@ private fun DataBody(
     autoBackupEnabled: Boolean,
     lastSyncTime: String?,
     onSyncClick: () -> Unit,
+    onRestoreByDeviceIdClick: () -> Unit,
     onClearClick: () -> Unit,
     onAutoBackupToggleClick: () -> Unit,
 ) {
@@ -730,6 +739,27 @@ private fun DataBody(
                 )
             }
         }
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = SettingItemVerticalPadding)
+            .clickable { onRestoreByDeviceIdClick() },
+    ) {
+        Text(
+            text = stringResource(R.string.sync_restore_title),
+            style = EbbingTheme.typography.heading16SB,
+            color = EbbingTheme.colors.textOnBackground,
+            modifier = Modifier.weight(1f),
+        )
+
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = stringResource(R.string.setting_detail_content),
+            modifier = Modifier.padding(start = 4.dp),
+        )
     }
 
     Row(
@@ -1106,6 +1136,7 @@ private fun PreviewSettingScreen() {
             onTagManageClick = {},
             onRepeatCycleManageClick = {},
             onSyncClick = {},
+            onRestoreByDeviceIdClick = {},
             onClearClick = {},
             onAppThemeManageClick = {},
             onWidgetManageClick = {},

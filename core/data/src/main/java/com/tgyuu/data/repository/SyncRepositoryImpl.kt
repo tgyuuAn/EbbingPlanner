@@ -9,6 +9,7 @@ import com.tgyuu.deviceinfo.DeviceInfoProvider
 import com.tgyuu.domain.model.sync.ConnectResult
 import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
+import com.tgyuu.domain.model.sync.RestoreResult
 import com.tgyuu.domain.model.sync.ServerSyncInfo
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
@@ -126,6 +127,40 @@ class SyncRepositoryImpl @Inject constructor(
         )
         localSyncDataSource.setLinkCode(connectCode)
         return ConnectResult.Success(info)
+    }
+
+    override suspend fun restoreByDeviceId(deviceIdPrefix: String): RestoreResult {
+        val prefix = deviceIdPrefix.trim()
+            .substringAfterLast('·')
+            .substringAfterLast(' ')
+            .trim()
+            .lowercase()
+
+        if (prefix.length < UUID_PREFIX_MIN_LENGTH) return RestoreResult.NotFound
+        if (prefix.any { it !in UUID_ALLOWED_CHARS }) return RestoreResult.NotFound
+        if (getUuid().lowercase().startsWith(prefix)) return RestoreResult.SelfDevice
+
+        val matches = syncDataSource.findSyncInfosByUuidPrefix(prefix).getOrThrow()
+        val target = when {
+            matches.isEmpty() -> return RestoreResult.NotFound
+            matches.size > 1 -> return RestoreResult.Ambiguous
+            else -> matches.first()
+        }
+
+        val response = syncDataSource.downloadData(target.uuid, Date(0L)).getOrThrow()
+
+        val hasAliveData = response.todoInfos.isNotEmpty() &&
+            response.schedules.any { !it.isDeleted }
+        if (!hasAliveData) return RestoreResult.EmptyData
+
+        localSyncTransactionDataSource.replaceAllData(
+            infos = response.todoInfos,
+            repeatCycles = response.repeatCycles,
+            tags = response.tags,
+            schedules = response.schedules,
+        )
+
+        return RestoreResult.Success(target.deviceName)
     }
 
     override suspend fun disconnectAnother() {
@@ -354,5 +389,7 @@ class SyncRepositoryImpl @Inject constructor(
 
     private companion object {
         val EPOCH: LocalDateTime = LocalDateTime.of(1970, 1, 1, 0, 0)
+        const val UUID_PREFIX_MIN_LENGTH = 8
+        const val UUID_ALLOWED_CHARS = "0123456789abcdef-"
     }
 }

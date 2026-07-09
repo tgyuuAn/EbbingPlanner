@@ -210,7 +210,7 @@ class MainActivity : ComponentActivity() {
 
             launch {
                 navigationBus.navigationFlow.collect { event ->
-                    eventBus.sendEvent(EbbingEvent.HideSnackBar)
+                    snackBarHostState.currentSnackbarData?.dismiss()
 
                     when (event) {
                         is NavigationEvent.To -> {

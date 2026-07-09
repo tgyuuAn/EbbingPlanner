@@ -16,10 +16,26 @@ class LocalSyncTransactionDataSourceImpl @Inject constructor(
         tags: List<TodoTagForSync>,
         schedules: List<TodoScheduleForSync>,
         repeatCycles: List<RepeatCycleForSync>,
-    ) = syncDao.replaceAllData(
-        infos = infos.map(TodoInfoForSync::toEntity),
-        tags = tags.map(TodoTagForSync::toEntity),
-        schedules = schedules.map(TodoScheduleForSync::toEntity),
-        repeatCycles = repeatCycles.map(RepeatCycleForSync::toEntity),
-    )
+    ) {
+        val tagEntities = tags.map(TodoTagForSync::toEntity)
+        val tagIds = tagEntities.map { it.id }.toSet() + DEFAULT_TAG_ID
+
+        val infoEntities = infos.map(TodoInfoForSync::toEntity)
+            .filter { it.tagId in tagIds }
+        val infoIds = infoEntities.map { it.id }.toSet()
+
+        val scheduleEntities = schedules.map(TodoScheduleForSync::toEntity)
+            .filter { it.infoId in infoIds }
+
+        syncDao.replaceAllData(
+            infos = infoEntities,
+            tags = tagEntities,
+            schedules = scheduleEntities,
+            repeatCycles = repeatCycles.map(RepeatCycleForSync::toEntity),
+        )
+    }
+
+    private companion object {
+        private const val DEFAULT_TAG_ID = 1
+    }
 }

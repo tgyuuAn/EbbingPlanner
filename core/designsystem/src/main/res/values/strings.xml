@@ -40,6 +40,21 @@
     <string name="sync_network_connect_action">연결하기</string>
     <string name="sync_network_required">네트워크가 연결되어 있지 않습니다.</string>
     <string name="sync_network_check">네트워크 연결을 확인해 주세요.</string>
+    <string name="sync_restore_title">데이터 복원</string>
+    <string name="sync_restore_headline">백업 데이터를 복원해요</string>
+    <string name="sync_restore_description">다른 기기의 동기화 화면에 표시된 deviceId를 입력하면, 해당 기기가 백업한 데이터를 이 기기로 가져와요.</string>
+    <string name="sync_restore_input_label">deviceId</string>
+    <string name="sync_restore_input_hint">예) 3f2a8b1c</string>
+    <string name="sync_restore_button">복원하기</string>
+    <string name="sync_restore_done">%1$s 기기의 데이터를 복원했어요.</string>
+    <string name="sync_restore_not_found">해당 deviceId의 백업 데이터를 찾지 못했어요.</string>
+    <string name="sync_restore_empty_data">해당 기기의 백업 데이터가 비어 있어요. 다른 기기와 연동해 사용했다면, 연동했던 기기의 deviceId로 시도해 주세요.</string>
+    <string name="sync_restore_ambiguous">일치하는 기기가 여러 개예요. deviceId를 다시 확인해 주세요.</string>
+    <string name="sync_restore_self">현재 기기의 deviceId예요. 다른 기기의 deviceId를 입력해 주세요.</string>
+    <string name="sync_restore_failed">복원에 실패했어요. 잠시 후 다시 시도해 주세요.</string>
+    <string name="sync_restore_confirm_title">데이터를 복원할까요?</string>
+    <string name="sync_restore_confirm_desc">현재 기기의 데이터가 모두 교체되며, 되돌릴 수 없어요.</string>
+    <string name="sync_restore_confirm_cancel">돌아가기</string>
 
     <!-- 메인 화면 -->
     <string name="sync_title">다른 기기에서도 사용하기</string>
