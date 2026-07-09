@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -76,7 +77,8 @@ internal fun EbbingTodoList(
     ) {
         TodoHeader(
             displayDate = selectedDate,
-            count = todoLists.size,
+            completedCount = todoLists.count { it.isDone },
+            totalCount = todoLists.size,
             sortType = sortType,
             onSortTypeChange = onSortTypeChange,
         )
@@ -97,7 +99,8 @@ internal fun EbbingTodoList(
 @Composable
 private fun TodoHeader(
     displayDate: LocalDate,
-    count: Int,
+    completedCount: Int,
+    totalCount: Int,
     sortType: SortType,
     onSortTypeChange: (SortType) -> Unit,
 ) {
@@ -118,8 +121,16 @@ private fun TodoHeader(
             text = buildAnnotatedString {
                 append(dateText)
                 append(" ")
-                withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
-                    append(count.toString())
+                withStyle(SpanStyle(color = EbbingTheme.colors.textPrimary)) {
+                    append(completedCount.toString())
+                }
+                withStyle(
+                    SpanStyle(
+                        color = EbbingTheme.colors.textDisabled,
+                        fontWeight = FontWeight.Medium,
+                    )
+                ) {
+                    append("/$totalCount")
                 }
             },
             style = EbbingTheme.typography.heading18B,
