@@ -2,6 +2,7 @@ package com.tgyuu.domain.repository
 
 import com.tgyuu.domain.model.sync.ConnectResult
 import com.tgyuu.domain.model.sync.ConnectedPeer
+import com.tgyuu.domain.model.sync.RestoreResult
 import com.tgyuu.domain.model.sync.ServerSyncInfo
 import java.time.ZonedDateTime
 
@@ -17,6 +18,7 @@ interface SyncRepository {
     suspend fun getMyConnectCode(): String?
     suspend fun getConnectCodeExpiration(): ZonedDateTime?
     suspend fun connectAnother(connectCode: String): ConnectResult
+    suspend fun restoreByDeviceId(deviceIdPrefix: String): RestoreResult
     suspend fun disconnectAnother()
     suspend fun pollConnectedPeer(): ConnectedPeer?
     suspend fun getStoredPeer(): ConnectedPeer?

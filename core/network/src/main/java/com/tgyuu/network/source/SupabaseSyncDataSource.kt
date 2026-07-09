@@ -43,6 +43,14 @@ class SupabaseSyncDataSource @Inject constructor(
         )
     }
 
+    override suspend fun findSyncInfosByUuidPrefix(prefix: String): Result<List<SyncDeviceMatch>> =
+        suspendRunCatching {
+            supabase.from(TABLE_SYNC_INFO)
+                .select { filter { ilike("uuid", "$prefix%") } }
+                .decodeList<SyncInfoDto>()
+                .map { SyncDeviceMatch(uuid = it.uuid, deviceName = it.deviceName) }
+        }
+
     override suspend fun uploadData(
         uuid: String,
         deviceName: String,

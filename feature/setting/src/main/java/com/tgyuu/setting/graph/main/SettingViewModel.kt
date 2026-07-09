@@ -140,6 +140,7 @@ class SettingViewModel @Inject constructor(
             is SettingIntent.OnStartDayClick -> onStartDayClick(intent.content)
             is SettingIntent.OnUpdateStartDay -> onUpdateStartDay(intent.mondayStart)
             SettingIntent.OnAutoBackupToggleClick -> onAutoBackupToggleClick()
+            SettingIntent.OnRestoreByDeviceIdClick -> onRestoreByDeviceIdClick()
         }
     }
 
@@ -244,6 +245,13 @@ class SettingViewModel @Inject constructor(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "SyncData")
         )
         navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+    }
+
+    private suspend fun onRestoreByDeviceIdClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "RestoreByDeviceId")
+        )
+        navigationBus.navigate(To(SyncGraph.RestoreByDeviceIdRoute))
     }
 
     private suspend fun onAppThemeManageClick() {
