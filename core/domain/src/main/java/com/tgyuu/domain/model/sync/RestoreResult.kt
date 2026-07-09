@@ -6,4 +6,5 @@ sealed interface RestoreResult {
     data object EmptyData : RestoreResult
     data object Ambiguous : RestoreResult
     data object SelfDevice : RestoreResult
+    data object LinkedDevice : RestoreResult
 }

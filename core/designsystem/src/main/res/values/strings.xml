@@ -51,6 +51,7 @@
     <string name="sync_restore_empty_data">해당 기기의 백업 데이터가 비어 있어요. 다른 기기와 연동해 사용했다면, 연동했던 기기의 deviceId로 시도해 주세요.</string>
     <string name="sync_restore_ambiguous">일치하는 기기가 여러 개예요. deviceId를 다시 확인해 주세요.</string>
     <string name="sync_restore_self">현재 기기의 deviceId예요. 다른 기기의 deviceId를 입력해 주세요.</string>
+    <string name="sync_restore_linked">기기 연동 중에는 복원할 수 없어요. 연동 해제 후 다시 시도해 주세요.</string>
     <string name="sync_restore_failed">복원에 실패했어요. 잠시 후 다시 시도해 주세요.</string>
     <string name="sync_restore_confirm_title">데이터를 복원할까요?</string>
     <string name="sync_restore_confirm_desc">현재 기기의 데이터가 모두 교체되며, 되돌릴 수 없어요.</string>

@@ -98,6 +98,10 @@ class RestoreViewModel @Inject constructor(
                 RestoreResult.SelfDevice -> eventBus.sendEvent(
                     EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_restore_self))
                 )
+
+                RestoreResult.LinkedDevice -> eventBus.sendEvent(
+                    EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.sync_restore_linked))
+                )
             }
         }.onFailure { exception ->
             errorBus.sendError(exception)
