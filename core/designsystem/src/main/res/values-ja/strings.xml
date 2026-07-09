@@ -51,6 +51,7 @@
     <string name="sync_restore_empty_data">その端末のバックアップは空です。他の端末と連携していた場合は、連携先端末のdeviceIdでお試しください。</string>
     <string name="sync_restore_ambiguous">一致する端末が複数あります。deviceIdをもう一度確認してください。</string>
     <string name="sync_restore_self">この端末のdeviceIdです。他の端末のdeviceIdを入力してください。</string>
+    <string name="sync_restore_linked">端末連携中は復元できません。連携を解除してから再度お試しください。</string>
     <string name="sync_restore_failed">復元に失敗しました。しばらくしてから再度お試しください。</string>
     <string name="sync_restore_confirm_title">データを復元しますか？</string>
     <string name="sync_restore_confirm_desc">この端末のデータはすべて置き換えられ、元に戻せません。</string>

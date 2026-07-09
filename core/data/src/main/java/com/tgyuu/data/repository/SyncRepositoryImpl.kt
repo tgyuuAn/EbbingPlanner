@@ -130,6 +130,8 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     override suspend fun restoreByDeviceId(deviceIdPrefix: String): RestoreResult {
+        if (getConnectedUuid() != null) return RestoreResult.LinkedDevice
+
         val prefix = deviceIdPrefix.trim()
             .substringAfterLast('·')
             .substringAfterLast(' ')

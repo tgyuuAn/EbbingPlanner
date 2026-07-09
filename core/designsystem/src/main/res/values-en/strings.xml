@@ -51,6 +51,7 @@
     <string name="sync_restore_empty_data">That device\'s backup is empty. If it was linked to another device, try that device\'s deviceId instead.</string>
     <string name="sync_restore_ambiguous">Multiple devices match. Please check the deviceId again.</string>
     <string name="sync_restore_self">That\'s this device\'s deviceId. Please enter another device\'s deviceId.</string>
+    <string name="sync_restore_linked">You can\'t restore while linked to another device. Unlink and try again.</string>
     <string name="sync_restore_failed">Restore failed. Please try again later.</string>
     <string name="sync_restore_confirm_title">Restore data?</string>
     <string name="sync_restore_confirm_desc">All data on this device will be replaced and cannot be undone.</string>
