@@ -39,6 +39,7 @@ internal fun SelectedDateBottomSheet(
             onSelectDate = { newSelectedDate = it },
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 20.dp)
                 .padding(top = 20.dp, bottom = 8.dp),
         )
 
