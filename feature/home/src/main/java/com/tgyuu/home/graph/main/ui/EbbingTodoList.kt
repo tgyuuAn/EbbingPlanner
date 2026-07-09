@@ -23,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +56,7 @@ internal fun EbbingTodoList(
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onSortTypeChange: (SortType) -> Unit,
     modifier: Modifier = Modifier,
+    calendarNestedScroll: NestedScrollConnection? = null,
 ) {
     val initialPage = TODO_LIST_PAGE_COUNT / 2
     val pagerState = rememberPagerState(
@@ -90,7 +93,8 @@ internal fun EbbingTodoList(
                 sortType = sortType,
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onCheckedChange = onCheckedChange,
-                onEdit = onEditScheduleClick
+                onEdit = onEditScheduleClick,
+                calendarNestedScroll = calendarNestedScroll,
             )
         }
     }
@@ -156,7 +160,8 @@ private fun TodoPage(
     sortType: SortType,
     schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
-    onEdit: (TodoScheduleUiModel) -> Unit
+    onEdit: (TodoScheduleUiModel) -> Unit,
+    calendarNestedScroll: NestedScrollConnection? = null,
 ) {
     val listState = rememberLazyListState()
 
@@ -171,6 +176,13 @@ private fun TodoPage(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxSize()
+                .then(
+                    if (calendarNestedScroll != null) {
+                        Modifier.nestedScroll(calendarNestedScroll)
+                    } else {
+                        Modifier
+                    }
+                )
                 .padding(horizontal = 20.dp),
         ) {
             if (sortType == SortType.BY_TAG) {

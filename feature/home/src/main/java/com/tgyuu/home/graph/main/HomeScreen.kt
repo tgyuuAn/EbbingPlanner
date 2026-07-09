@@ -26,9 +26,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import android.app.Activity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -318,6 +322,31 @@ private fun PhoneHomeScreen(
         onCurrentDateChanged(calendarState.currentDisplayDate)
     }
 
+    // 아래 리스트 스크롤로 월/주 전환 (위로 스크롤 → 주간, 최상단에서 당기면 → 월간)
+    val currentShowWeekOnly by rememberUpdatedState(state.showWeekOnly)
+    val currentOnCalendarViewChanged by rememberUpdatedState(onCalendarViewChanged)
+    val calendarNestedScroll = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y < -4f && !currentShowWeekOnly) {
+                    currentOnCalendarViewChanged(CalendarDefaultView.WEEKLY)
+                }
+                return Offset.Zero
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (available.y > 4f && currentShowWeekOnly) {
+                    currentOnCalendarViewChanged(CalendarDefaultView.MONTHLY)
+                }
+                return Offset.Zero
+            }
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             EbbingCalendar(
@@ -392,6 +421,7 @@ private fun PhoneHomeScreen(
                     onCheckedChange = onCheckedChange,
                     onSortTypeChange = onSortTypeChange,
                     onEditScheduleClick = onEditScheduleClick,
+                    calendarNestedScroll = calendarNestedScroll,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
