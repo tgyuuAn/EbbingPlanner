@@ -109,8 +109,7 @@
     <string name="home_tag">태그</string>
     <string name="home_title">제목</string>
     <string name="home_title_hint">무엇을 학습하실건가요?</string>
-    <string name="home_priority">우선순위</string>
-    <string name="home_priority_hint">얼마나 중요한 일정인가요?</string>
+    <string name="home_pin_to_top">이 일정을 항상 상단에 고정해요</string>
     <string name="home_repeat_cycle">반복 주기</string>
     <string name="home_rest_day">쉬는 날</string>
     <string name="home_add_todo_title">일정 추가</string>
@@ -266,7 +265,6 @@
     <string name="setting_change_app_theme">앱 테마를 변경해요.</string>
     <string name="setting_preview">미리보기</string>
     <string name="setting_ebbing_planner_preview">에빙 플래너 미리보기</string>
-    <string name="setting_priority_zero">우선도 : 0</string>
     <string name="setting_dark">다크</string>
     <string name="setting_light">라이트</string>
     <string name="setting_app_theme_changed">앱 테마를 변경하였습니다</string>
@@ -327,7 +325,6 @@
     <string name="memo_label">메모</string>
     <string name="memo_input_hint">어떤 메모를 남겨둘까요?</string>
     <string name="memo_preview_label">미리보기</string>
-    <string name="memo_priority_format">우선도 : %1$d</string>
     <string name="memo_save">저장</string>
     <string name="memo_save_scope_title">메모 저장 범위를 선택하세요</string>
     <string name="memo_save_scope_subtext">한 일정만 또는 관련 일정 전체에\n저장할 수 있어요</string>
@@ -384,7 +381,6 @@
     <string name="widget_total_count">전체 %1$d개</string>
 
     <!-- ===================== Core / DesignSystem ===================== -->
-    <string name="ds_priority_format">우선도 : %1$d</string>
     <string name="ds_year_month">%1$d년 %2$d월</string>
     <string name="ds_cd_back">뒤로 가기 버튼</string>
     <string name="ds_cd_more">오른쪽 버튼</string>
@@ -398,7 +394,6 @@
     <string name="ds_am">오전</string>
     <string name="sort_created">생성순</string>
     <string name="sort_name">이름순</string>
-    <string name="sort_priority">우선순</string>
     <string name="repeat_display_daily">매일하기</string>
     <string name="repeat_display_daily_days">매일하기 (%1$d일)</string>
     <string name="repeat_display_error">올바른 형태로 작성해주세요.</string>

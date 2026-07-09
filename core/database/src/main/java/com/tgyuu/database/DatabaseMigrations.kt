@@ -65,5 +65,15 @@ class DatabaseMigrations {
                 )
             }
         }
+
+        val MIGRATION_4_TO_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // priority(Int 순위) → isPinned(Boolean 상단 고정)으로 의미 전환.
+                // 컬럼명/타입(INTEGER)은 유지하고 값만 0/1로 정규화한다 (0 초과 = 고정).
+                database.execSQL(
+                    "UPDATE schedule SET priority = CASE WHEN priority > 0 THEN 1 ELSE 0 END"
+                )
+            }
+        }
     }
 }

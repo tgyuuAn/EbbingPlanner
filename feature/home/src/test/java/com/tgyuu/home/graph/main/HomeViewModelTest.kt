@@ -277,7 +277,7 @@ class HomeViewModelTest {
         color = 0xFF0000,
         date = date,
         memo = "",
-        priority = 3,
+        isPinned = true,
         isDone = isDone,
         createdAt = LocalDate.now(),
         infoCreatedAt = LocalDate.now()

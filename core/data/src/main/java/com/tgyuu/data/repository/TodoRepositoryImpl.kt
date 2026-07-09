@@ -83,13 +83,13 @@ class TodoRepositoryImpl @Inject constructor(
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<java.time.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
         dates = dates,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 
@@ -98,14 +98,14 @@ class TodoRepositoryImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<java.time.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 
@@ -138,7 +138,7 @@ class TodoRepositoryImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<java.time.DayOfWeek>,
     ) = localTodoDataSource.replaceSchedules(
         infoId = infoId,
@@ -146,7 +146,7 @@ class TodoRepositoryImpl @Inject constructor(
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 

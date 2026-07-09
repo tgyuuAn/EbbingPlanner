@@ -13,7 +13,7 @@ data class TodoScheduleUiModel(
     val color: Int,
     val date: LocalDate,
     val memo: ClickableText,
-    val priority: Int,
+    val isPinned: Boolean,
     val isDone: Boolean,
     val createdAt: LocalDate,
     val infoCreatedAt: LocalDate,

@@ -122,15 +122,16 @@ fun TodoListCard(
                                 }
                             }
 
-                            Text(
-                                text = stringResource(R.string.ds_priority_format, todo.priority),
-                                style = EbbingTheme.typography.heading14SB,
-                                color = EbbingTheme.colors.textSub,
-                                maxLines = 1,
-                                textAlign = TextAlign.End,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(start = 12.dp, bottom = 2.dp),
-                            )
+                            if (todo.isPinned) {
+                                Image(
+                                    painter = painterResource(R.drawable.ic_pin),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
+                                    modifier = Modifier
+                                        .padding(start = 12.dp, bottom = 2.dp)
+                                        .size(16.dp),
+                                )
+                            }
                         }
                     }
 

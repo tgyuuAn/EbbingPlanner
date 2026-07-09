@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -180,15 +181,16 @@ private fun TodoListCard(
                                 modifier = Modifier.size(20.dp),
                             )
 
-                            Text(
-                                text = stringResource(R.string.memo_priority_format, todo.priority),
-                                style = EbbingTheme.typography.heading14SB,
-                                color = EbbingTheme.colors.textSub,
-                                maxLines = 1,
-                                textAlign = TextAlign.End,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f),
-                            )
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            if (todo.isPinned) {
+                                Image(
+                                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_pin),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
+                                    modifier = Modifier.size(16.dp),
+                                )
+                            }
                         }
                     }
 

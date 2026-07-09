@@ -88,7 +88,7 @@ fun EbbingTextInputDefault(
         textStyle = EbbingTheme.typography.body16M.copy(color = EbbingTheme.colors.textOnBackground),
         cursorBrush = SolidColor(EbbingTheme.colors.textOnBackground),
         decorationBox = { innerTextField ->
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(modifier = Modifier.weight(1f)) {
                     if (value.isEmpty() && !isFocused) {
                         Text(
@@ -106,13 +106,13 @@ fun EbbingTextInputDefault(
             }
         },
         modifier = modifier
-            .height(52.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .height(48.dp)
+            .clip(RoundedCornerShape(6.dp))
             .background(
                 if (readOnly) EbbingTheme.colors.fillDisabled
                 else EbbingTheme.colors.fillTextfield
             )
-            .padding(horizontal = 16.dp, vertical = 14.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .onFocusChanged { focusState ->
                 isFocused = focusState.isFocused
                 onFocusChanged(focusState.isFocused)
@@ -131,17 +131,17 @@ fun EbbingTextInputDropDown(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .height(52.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .height(48.dp)
+            .clip(RoundedCornerShape(6.dp))
             .background(EbbingTheme.colors.fillTextfield)
-            .padding(horizontal = 16.dp, vertical = 14.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .clickable { onDropDownClick() },
     ) {
         if (color != null) {
             Spacer(
                 modifier = Modifier
-                    .padding(end = 10.dp)
-                    .size(20.dp)
+                    .padding(end = 8.dp)
+                    .size(10.dp)
                     .clip(CircleShape)
                     .background(Color(color))
             )

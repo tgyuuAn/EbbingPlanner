@@ -540,9 +540,17 @@ class HomeViewModel @Inject constructor(
 
         return grouped.mapValues { (_, list) ->
             val sorted = when (sortType) {
-                SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
-                SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
-                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { it.priority }))
+                SortType.CREATED -> list.sortedWith(
+                    compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.createdAt }
+                )
+
+                SortType.NAME -> list.sortedWith(
+                    compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.title }
+                )
             }
             sorted.toUiModels()
         }.toImmutableMap()

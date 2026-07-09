@@ -193,7 +193,7 @@ class EditDateViewModel @Inject constructor(
             dates = currentState.schedules,
             isDoneSchedules = isDoneSchedules,
             tagId = tagId,
-            priority = originSchedules.firstOrNull()?.priority,
+            isPinned = originSchedules.firstOrNull()?.isPinned ?: false,
             restDays = currentState.restDays.toSet(),
         )
 

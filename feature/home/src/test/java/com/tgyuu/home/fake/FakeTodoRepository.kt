@@ -80,7 +80,7 @@ class FakeTodoRepository : TodoRepository {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek>
     ) {
         // No-op for testing
@@ -91,7 +91,7 @@ class FakeTodoRepository : TodoRepository {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek>
     ) {
         // No-op for testing
@@ -151,7 +151,7 @@ class FakeTodoRepository : TodoRepository {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek>,
     ) {
         schedules.removeIf { it.infoId == infoId }
@@ -166,7 +166,7 @@ class FakeTodoRepository : TodoRepository {
                     color = 0,
                     date = date,
                     memo = "",
-                    priority = priority ?: 0,
+                    isPinned = isPinned,
                     isDone = isDone,
                     createdAt = LocalDate.now(),
                     infoCreatedAt = LocalDate.now(),

@@ -58,13 +58,13 @@ class LocalTodoDataSourceImpl @Inject constructor(
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<java.time.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
         tagId = tagId,
         dates = dates,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 
@@ -73,14 +73,14 @@ class LocalTodoDataSourceImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<java.time.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 
@@ -89,7 +89,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
             id = todoSchedule.id,
             date = todoSchedule.date,
             memo = todoSchedule.memo,
-            priority = todoSchedule.priority,
+            isPinned = todoSchedule.isPinned,
             isDone = todoSchedule.isDone,
         )
 
@@ -105,7 +105,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
                     id = schedule.id,
                     date = schedule.date,
                     memo = schedule.memo,
-                    priority = schedule.priority,
+                    isPinned = schedule.isPinned,
                     isDone = schedule.isDone,
                 )
             }
@@ -128,7 +128,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<java.time.DayOfWeek>,
     ) = todoWithSchedulesDao.replaceSchedules(
         infoId = infoId,
@@ -136,7 +136,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 

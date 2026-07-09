@@ -22,7 +22,7 @@ data class EditTodoState(
     val originSchedule: TodoSchedule? = null,
     val selectedDate: LocalDate = LocalDate.now(),
     val title: String = "",
-    val priority: String? = null,
+    val isPinned: Boolean = false,
     val tag: TodoTagUiModel? = null,
     val tagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),

@@ -10,7 +10,7 @@ sealed class EditTodoIntent : UiIntent {
     data class OnSelectedDataChangeClick(val content: BottomSheetContent) : EditTodoIntent()
     data class OnSelectedDateChange(val selectedDate: LocalDate) : EditTodoIntent()
     data class OnTitleChange(val title: String) : EditTodoIntent()
-    data class OnPriorityChange(val priority: String) : EditTodoIntent()
+    data class OnPinnedChange(val isPinned: Boolean) : EditTodoIntent()
     data class OnTagDropDownClick(val content: BottomSheetContent) : EditTodoIntent()
     data class OnTagChange(val tag: TodoTagUiModel) : EditTodoIntent()
     data object OnAddTagClick : EditTodoIntent()

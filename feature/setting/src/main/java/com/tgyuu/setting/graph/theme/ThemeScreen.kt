@@ -419,14 +419,13 @@ private fun TodoListCard(
                                     modifier = Modifier.size(20.dp),
                                 )
 
-                                Text(
-                                    text = stringResource(R.string.setting_priority_zero),
-                                    style = EbbingTheme.typography.heading14SB,
-                                    color = EbbingTheme.colors.textSub,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.End,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f),
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                Image(
+                                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_pin),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
+                                    modifier = Modifier.size(16.dp),
                                 )
                             }
                         }
