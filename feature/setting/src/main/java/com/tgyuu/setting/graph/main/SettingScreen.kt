@@ -288,15 +288,6 @@ private fun PhoneSettingScreen(
                 onRepeatCycleManageClick = onRepeatCycleManageClick,
             )
 
-            DataBody(
-                autoBackupFeatureEnabled = state.autoBackupFeatureEnabled,
-                autoBackupEnabled = state.autoBackupEnabled,
-                lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
-                onSyncClick = onSyncClick,
-                onClearClick = onClearClick,
-                onAutoBackupToggleClick = onAutoBackupToggleClick,
-            )
-
             ThemeBody(
                 onThemeManageClick = onAppThemeManageClick,
                 onWidgetAlphaManageClick = onWidgetManageClick,
@@ -308,6 +299,15 @@ private fun PhoneSettingScreen(
                 onNoticeClick = onNoticeClick,
                 onPrivacyPolicy = onPrivacyAndPolicyClick,
                 onTermsClick = onTermsOfUseClick,
+            )
+
+            DataBody(
+                autoBackupFeatureEnabled = state.autoBackupFeatureEnabled,
+                autoBackupEnabled = state.autoBackupEnabled,
+                lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
+                onSyncClick = onSyncClick,
+                onClearClick = onClearClick,
+                onAutoBackupToggleClick = onAutoBackupToggleClick,
             )
 
             InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
@@ -378,15 +378,6 @@ private fun TabletSettingScreen(
                     onTagManageClick = onTagManageClick,
                     onRepeatCycleManageClick = onRepeatCycleManageClick,
                 )
-
-                DataBody(
-                    autoBackupFeatureEnabled = state.autoBackupFeatureEnabled,
-                    autoBackupEnabled = state.autoBackupEnabled,
-                    lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
-                    onSyncClick = onSyncClick,
-                    onClearClick = onClearClick,
-                    onAutoBackupToggleClick = onAutoBackupToggleClick,
-                )
             }
 
             Column(
@@ -407,6 +398,15 @@ private fun TabletSettingScreen(
                     onNoticeClick = onNoticeClick,
                     onPrivacyPolicy = onPrivacyAndPolicyClick,
                     onTermsClick = onTermsOfUseClick,
+                )
+
+                DataBody(
+                    autoBackupFeatureEnabled = state.autoBackupFeatureEnabled,
+                    autoBackupEnabled = state.autoBackupEnabled,
+                    lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
+                    onSyncClick = onSyncClick,
+                    onClearClick = onClearClick,
+                    onAutoBackupToggleClick = onAutoBackupToggleClick,
                 )
 
                 InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
