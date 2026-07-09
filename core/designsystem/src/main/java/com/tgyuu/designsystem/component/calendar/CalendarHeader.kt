@@ -1,10 +1,15 @@
 package com.tgyuu.designsystem.component.calendar
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -23,19 +28,24 @@ internal fun CalendarHeader(
         modifier = modifier
             .fillMaxWidth()
             .semantics { contentDescription = headerDescription },
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         getEbbingDayOfWeek(startFromMonday).forEachIndexed { idx, weekday ->
             val weekDayText = weekday.toShortLabel()
 
-            Text(
-                text = weekDayText,
-                textAlign = TextAlign.Center,
-                style = EbbingTheme.typography.body16M,
-                color = EbbingTheme.colors.textOnBackground,
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .weight(1f)
+                    .width(34.dp)
                     .semantics { contentDescription = "${weekDayText}_${idx}" },
-            )
+            ) {
+                Text(
+                    text = weekDayText,
+                    textAlign = TextAlign.Center,
+                    style = EbbingTheme.typography.caption12R,
+                    color = EbbingTheme.colors.textDisabled,
+                )
+            }
         }
     }
 }

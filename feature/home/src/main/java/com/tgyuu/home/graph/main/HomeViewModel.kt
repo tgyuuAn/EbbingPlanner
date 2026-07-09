@@ -546,11 +546,23 @@ class HomeViewModel @Inject constructor(
                         .thenBy { it.createdAt }
                 )
 
-                SortType.NAME -> list.sortedWith(
-                    compareByDescending<TodoSchedule> { it.isPinned }
+                // 태그별 정책:
+                //  1) 그룹(태그) 순서 = 그 날 고정(isPinned) 일정이 많은 태그일수록 위로 (동수는 태그명)
+                //  2) 그룹 내부 = 고정 일정을 최상단, 이후 미완료 > 생성순
+                SortType.BY_TAG -> {
+                    val withinGroup = compareByDescending<TodoSchedule> { it.isPinned }
                         .thenBy { it.isDone }
-                        .thenBy { it.title }
-                )
+                        .thenBy { it.createdAt }
+
+                    list.groupBy { it.tagId }
+                        .entries
+                        .sortedWith(
+                            compareByDescending<Map.Entry<Int, List<TodoSchedule>>> { entry ->
+                                entry.value.count { it.isPinned }
+                            }.thenBy { entry -> entry.value.first().name }
+                        )
+                        .flatMap { entry -> entry.value.sortedWith(withinGroup) }
+                }
             }
             sorted.toUiModels()
         }.toImmutableMap()

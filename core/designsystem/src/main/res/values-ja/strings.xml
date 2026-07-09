@@ -105,6 +105,7 @@
     <string name="home_go_back">戻る</string>
     <string name="home_delay_button">先送り</string>
     <string name="home_month_day">%1$d月%2$d日</string>
+    <string name="home_list_date">%1$d月%2$d日 %3$s</string>
     <string name="home_today">今日</string>
     <string name="home_tag">タグ</string>
     <string name="home_title">タイトル</string>
@@ -394,6 +395,12 @@
     <string name="ds_am">午前</string>
     <string name="sort_created">作成順</string>
     <string name="sort_name">名前順</string>
+    <string name="sort_latest">最新順</string>
+    <string name="sort_by_tag">タグ別</string>
+    <string name="calendar_view_month">月</string>
+    <string name="calendar_view_week">週</string>
+    <string name="card_round_count">%1$d回目</string>
+    <string name="calendar_today">今日</string>
     <string name="repeat_display_daily">毎日</string>
     <string name="repeat_display_daily_days">毎日 (%1$d日)</string>
     <string name="repeat_display_error">正しい形式で入力してください。</string>

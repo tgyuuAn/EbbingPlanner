@@ -105,6 +105,7 @@
     <string name="home_go_back">Go back</string>
     <string name="home_delay_button">Postpone</string>
     <string name="home_month_day">%1$d/%2$d</string>
+    <string name="home_list_date">%1$d/%2$d %3$s</string>
     <string name="home_today">Today</string>
     <string name="home_tag">Tag</string>
     <string name="home_title">Title</string>
@@ -394,6 +395,12 @@
     <string name="ds_am">AM</string>
     <string name="sort_created">By created</string>
     <string name="sort_name">By name</string>
+    <string name="sort_latest">Latest</string>
+    <string name="sort_by_tag">By tag</string>
+    <string name="calendar_view_month">Month</string>
+    <string name="calendar_view_week">Week</string>
+    <string name="card_round_count">Round %1$d</string>
+    <string name="calendar_today">Today</string>
     <string name="repeat_display_daily">Daily</string>
     <string name="repeat_display_daily_days">Daily (%1$d days)</string>
     <string name="repeat_display_error">Please enter a valid format.</string>

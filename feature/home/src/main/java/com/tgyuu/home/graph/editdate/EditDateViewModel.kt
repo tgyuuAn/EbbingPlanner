@@ -72,6 +72,7 @@ class EditDateViewModel @Inject constructor(
                         tagId = it.tagId,
                         selectedDate = it.date,
                         restDays = todoInfo.restDays.toImmutableSet(),
+                        isPinned = it.isPinned,
                     )
                 }
             }
@@ -123,6 +124,7 @@ class EditDateViewModel @Inject constructor(
 
             is EditDateIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
             is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
+            is EditDateIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
             is EditDateIntent.OnSaveClick -> onSaveClick(intent.isDoneSchedule)
             EditDateIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
         }
@@ -193,7 +195,7 @@ class EditDateViewModel @Inject constructor(
             dates = currentState.schedules,
             isDoneSchedules = isDoneSchedules,
             tagId = tagId,
-            isPinned = originSchedules.firstOrNull()?.isPinned ?: false,
+            isPinned = currentState.isPinned,
             restDays = currentState.restDays.toSet(),
         )
 

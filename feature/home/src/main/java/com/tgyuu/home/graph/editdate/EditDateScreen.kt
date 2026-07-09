@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -47,6 +46,7 @@ import kotlinx.collections.immutable.persistentSetOf
 import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.editdate.contract.EditDateIntent
 import com.tgyuu.home.graph.editdate.contract.EditDateState
+import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleCheckContent
@@ -109,6 +109,7 @@ internal fun EditDateRoute(
             )
         },
         onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
+        onPinnedChange = { viewModel.onIntent(EditDateIntent.OnPinnedChange(it)) },
         onSaveClick = { viewModel.onIntent(EditDateIntent.OnSaveClick(it)) },
     )
 }
@@ -120,6 +121,7 @@ private fun EditDateScreen(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -132,6 +134,7 @@ private fun EditDateScreen(
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
+            onPinnedChange = onPinnedChange,
             onSaveClick = onSaveClick,
             modifier = modifier,
         )
@@ -142,6 +145,7 @@ private fun EditDateScreen(
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
+            onPinnedChange = onPinnedChange,
             onSaveClick = onSaveClick,
             modifier = modifier,
         )
@@ -155,6 +159,7 @@ private fun EditDateScreenPhone(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -187,6 +192,7 @@ private fun EditDateScreenPhone(
                 onSelectedDateChangeClick = onSelectedDateChangeClick,
                 onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                 onRestDayChange = onRestDayChange,
+                onPinnedChange = onPinnedChange,
             )
 
             ScheduleCheckContent(
@@ -194,12 +200,6 @@ private fun EditDateScreenPhone(
                 isDoneSchedules = isDoneSchedules,
                 colorValue = state.originTagColor,
                 onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
-            )
-
-            HorizontalDivider(
-                color = EbbingTheme.colors.fillTextfield,
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
             )
 
             DescriptionBody()
@@ -228,6 +228,7 @@ private fun EditDateScreenTablet(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -263,6 +264,7 @@ private fun EditDateScreenTablet(
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     onRestDayChange = onRestDayChange,
+                    onPinnedChange = onPinnedChange,
                 )
 
                 Spacer(modifier = Modifier.height(60.dp))
@@ -279,12 +281,6 @@ private fun EditDateScreenTablet(
                     isDoneSchedules = isDoneSchedules,
                     colorValue = state.originTagColor,
                     onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
-                )
-
-                HorizontalDivider(
-                    color = EbbingTheme.colors.fillTextfield,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 16.dp)
                 )
 
                 DescriptionBody()
@@ -311,6 +307,7 @@ private fun EditDateMainFormContent(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
 ) {
     val monthDayText = stringResource(
         R.string.home_month_day,
@@ -320,7 +317,12 @@ private fun EditDateMainFormContent(
     val editDateHeaderSuffix = stringResource(R.string.home_edit_date_header_suffix)
     Text(
         text = buildAnnotatedString {
-            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    color = EbbingTheme.colors.textPrimary,
+                )
+            ) {
                 append(monthDayText)
             }
             append(editDateHeaderSuffix)
@@ -339,6 +341,11 @@ private fun EditDateMainFormContent(
         restDays = state.restDays,
         onRestDayChange = onRestDayChange,
     )
+
+    PinnedContent(
+        isPinned = state.isPinned,
+        onPinnedChange = onPinnedChange,
+    )
 }
 
 @Composable
@@ -348,6 +355,7 @@ private fun DescriptionBody() {
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textDisabled,
+        modifier = Modifier.padding(top = 24.dp),
     )
 }
 
@@ -371,6 +379,7 @@ private fun PreviewEditDate() {
             onBackClick = {},
             onRepeatCycleDropDownClick = {},
             onRestDayChange = {},
+            onPinnedChange = {},
         )
     }
 }

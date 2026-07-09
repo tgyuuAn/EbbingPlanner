@@ -105,6 +105,7 @@
     <string name="home_go_back">뒤로가기</string>
     <string name="home_delay_button">미루기</string>
     <string name="home_month_day">%1$d월 %2$d일</string>
+    <string name="home_list_date">%1$d월 %2$d일 %3$s</string>
     <string name="home_today">오늘</string>
     <string name="home_tag">태그</string>
     <string name="home_title">제목</string>
@@ -394,6 +395,12 @@
     <string name="ds_am">오전</string>
     <string name="sort_created">생성순</string>
     <string name="sort_name">이름순</string>
+    <string name="sort_latest">최신순</string>
+    <string name="sort_by_tag">태그별</string>
+    <string name="calendar_view_month">월</string>
+    <string name="calendar_view_week">주</string>
+    <string name="card_round_count">%1$d회차</string>
+    <string name="calendar_today">오늘</string>
     <string name="repeat_display_daily">매일하기</string>
     <string name="repeat_display_daily_days">매일하기 (%1$d일)</string>
     <string name="repeat_display_error">올바른 형태로 작성해주세요.</string>
