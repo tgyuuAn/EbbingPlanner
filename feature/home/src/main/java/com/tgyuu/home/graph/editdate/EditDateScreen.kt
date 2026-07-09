@@ -46,6 +46,7 @@ import kotlinx.collections.immutable.persistentSetOf
 import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.editdate.contract.EditDateIntent
 import com.tgyuu.home.graph.editdate.contract.EditDateState
+import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleCheckContent
@@ -108,6 +109,7 @@ internal fun EditDateRoute(
             )
         },
         onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
+        onPinnedChange = { viewModel.onIntent(EditDateIntent.OnPinnedChange(it)) },
         onSaveClick = { viewModel.onIntent(EditDateIntent.OnSaveClick(it)) },
     )
 }
@@ -119,6 +121,7 @@ private fun EditDateScreen(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -131,6 +134,7 @@ private fun EditDateScreen(
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
+            onPinnedChange = onPinnedChange,
             onSaveClick = onSaveClick,
             modifier = modifier,
         )
@@ -141,6 +145,7 @@ private fun EditDateScreen(
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
+            onPinnedChange = onPinnedChange,
             onSaveClick = onSaveClick,
             modifier = modifier,
         )
@@ -154,6 +159,7 @@ private fun EditDateScreenPhone(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -186,6 +192,7 @@ private fun EditDateScreenPhone(
                 onSelectedDateChangeClick = onSelectedDateChangeClick,
                 onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                 onRestDayChange = onRestDayChange,
+                onPinnedChange = onPinnedChange,
             )
 
             ScheduleCheckContent(
@@ -221,6 +228,7 @@ private fun EditDateScreenTablet(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onSaveClick: (List<Boolean>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -256,6 +264,7 @@ private fun EditDateScreenTablet(
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     onRestDayChange = onRestDayChange,
+                    onPinnedChange = onPinnedChange,
                 )
 
                 Spacer(modifier = Modifier.height(60.dp))
@@ -298,6 +307,7 @@ private fun EditDateMainFormContent(
     onSelectedDateChangeClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
 ) {
     val monthDayText = stringResource(
         R.string.home_month_day,
@@ -330,6 +340,11 @@ private fun EditDateMainFormContent(
     RestDayContent(
         restDays = state.restDays,
         onRestDayChange = onRestDayChange,
+    )
+
+    PinnedContent(
+        isPinned = state.isPinned,
+        onPinnedChange = onPinnedChange,
     )
 }
 
@@ -364,6 +379,7 @@ private fun PreviewEditDate() {
             onBackClick = {},
             onRepeatCycleDropDownClick = {},
             onRestDayChange = {},
+            onPinnedChange = {},
         )
     }
 }

@@ -22,6 +22,7 @@ data class EditDateState(
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
+    val isPinned: Boolean = false,
     val mondayStart: Boolean = false,
 ) : UiState {
     val schedules: List<LocalDate>
