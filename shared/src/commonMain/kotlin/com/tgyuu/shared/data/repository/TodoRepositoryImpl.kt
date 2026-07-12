@@ -85,14 +85,14 @@ class TodoRepositoryImpl(
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek>,
     ) {
         todoWithSchedulesDao.insertTodoWithSchedules(
             title = title,
             tagId = tagId,
             dates = dates,
-            priority = priority,
+            isPinned = isPinned,
             restDays = restDays,
         )
     }
@@ -102,7 +102,7 @@ class TodoRepositoryImpl(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek>,
     ) {
         todoWithSchedulesDao.insertTodoWithSchedules(
@@ -110,7 +110,7 @@ class TodoRepositoryImpl(
             tagId = tagId,
             dates = dates,
             isDoneSchedules = isDoneSchedules,
-            priority = priority,
+            isPinned = isPinned,
             restDays = restDays,
         )
     }
@@ -156,10 +156,14 @@ class TodoRepositoryImpl(
             id = todoSchedule.id,
             date = todoSchedule.date,
             memo = todoSchedule.memo,
-            priority = todoSchedule.priority,
+            isPinned = todoSchedule.isPinned,
             isDone = todoSchedule.isDone,
             updatedAt = LocalDateTime.now(),
         )
+    }
+
+    override suspend fun updateTodos(schedules: List<TodoSchedule>) {
+        schedules.forEach { updateTodo(it) }
     }
 
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) {

@@ -13,6 +13,7 @@ fun createEbbingDatabase(): EbbingDatabase {
         name = dbFilePath,
     )
         .setDriver(BundledSQLiteDriver())
+        .addMigrations(DatabaseMigrations.MIGRATION_4_TO_5)
         .build()
 }
 

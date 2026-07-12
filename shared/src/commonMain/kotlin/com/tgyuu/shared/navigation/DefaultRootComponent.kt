@@ -67,7 +67,7 @@ class DefaultRootComponent(
             is Configuration.AddRepeatCycle -> RootComponent.Child.AddRepeatCycle
             is Configuration.EditTag -> RootComponent.Child.EditTag(config.tagId)
             is Configuration.EditRepeatCycle -> RootComponent.Child.EditRepeatCycle(config.repeatCycleId)
-            is Configuration.Connect -> RootComponent.Child.Connect
+            is Configuration.SyncRestore -> RootComponent.Child.SyncRestore
             is Configuration.EditMemo -> RootComponent.Child.EditMemo(config.scheduleId)
             is Configuration.Theme -> RootComponent.Child.ThemeChild
             is Configuration.WebView -> RootComponent.Child.WebView(config.title, config.url)
@@ -139,8 +139,8 @@ class DefaultRootComponent(
         navigation.pushNew(Configuration.EditRepeatCycle(repeatCycleId))
     }
 
-    override fun navigateToConnect() {
-        navigation.pushNew(Configuration.Connect)
+    override fun navigateToSyncRestore() {
+        navigation.pushNew(Configuration.SyncRestore)
     }
 
     override fun navigateToEditMemo(scheduleId: Int) {

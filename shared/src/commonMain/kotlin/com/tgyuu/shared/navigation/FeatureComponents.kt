@@ -129,17 +129,14 @@ interface EditRepeatCycleComponent {
 interface SyncComponent {
     val childStack: Value<ChildStack<*, Child>>
 
-    fun navigateToConnect()
     fun onBack()
 
     sealed class Child {
         class Main(val component: SyncMainComponent) : Child()
-        class Connect(val component: ConnectComponent) : Child()
     }
 }
 
 interface SyncMainComponent
-interface ConnectComponent
 
 // Onboarding Feature
 interface OnboardingComponent {

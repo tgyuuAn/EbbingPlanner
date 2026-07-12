@@ -67,6 +67,9 @@ kotlin {
 
             // Supabase (KMP) - sync backend
             implementation(libs.supabase.postgrest)
+
+            // QR code rendering (Compose Multiplatform)
+            implementation(libs.qrose)
         }
 
         commonTest.dependencies {

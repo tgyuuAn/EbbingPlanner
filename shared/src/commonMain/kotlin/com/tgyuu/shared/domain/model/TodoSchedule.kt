@@ -11,7 +11,7 @@ data class TodoSchedule(
     val color: Int,
     val date: LocalDate,
     val memo: String,
-    val priority: Int,
+    val isPinned: Boolean,
     val isDone: Boolean,
     val createdAt: LocalDate,
     val infoCreatedAt: LocalDate,

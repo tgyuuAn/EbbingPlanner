@@ -141,7 +141,7 @@
     <string name="home_title_hint">何を学習しますか？</string>
     <string name="home_priority">優先順位</string>
     <string name="home_priority_hint">どのくらい重要な予定ですか？</string>
-    <string name="home_priority_value">優先度: %1$d</string>
+    <string name="home_list_date">%1$d月%2$d日 %3$s</string>
     <string name="home_repeat_cycle">繰り返し周期</string>
     <string name="home_rest_day">休む日</string>
     <string name="home_delete">削除</string>
@@ -152,6 +152,10 @@
     <string name="home_edit_date_header_suffix">"\nから始まる予定に変更します"</string>
     <string name="home_edit_date_description">- 予定を変更すると、既存の予定の完了状態はリセットされます。\n- 上のチェックボックスで新しい予定の完了状態を設定できます。\n- 予定を変更すると、既存の予定にあったメモは削除されます。</string>
     <string name="home_study_schedule_count">%1$d件の学習予定</string>
+    <string name="home_schedule_date_day">%1$s (%2$s)</string>
+    <string name="home_pin_to_top">この予定を常に上部に固定する</string>
+    <string name="home_add_todo_button">予定を登録</string>
+    <string name="home_edit_todo_button">予定を編集</string>
     <string name="home_todo_count_label">"%1$sのやること "</string>
     <string name="home_empty_schedule">%1$d月%2$d日の予定はありません。\n右上の＋ボタンを押して新しい予定を作成してみましょう。</string>
     <string name="home_review_title">エビングプランナーは役に立ちましたか？</string>
@@ -229,6 +233,14 @@
     <string name="theme_select_headline">テーマカラーを選びましょう。</string>
     <string name="calendar_go_today">今日へ移動</string>
     <string name="calendar_year_month">%1$d年%2$d月</string>
+    <string name="calendar_today">今日</string>
+    <string name="calendar_view_month">月</string>
+    <string name="calendar_view_week">週</string>
+    <string name="calendar_cd_controller">カレンダーコントローラー</string>
+    <string name="calendar_cd_header">カレンダーヘッダー</string>
+    <string name="calendar_cd_body">カレンダー本体</string>
+    <string name="calendar_cd_week_body">週間カレンダー本体</string>
+    <string name="card_round_count">%1$d回目</string>
 
     <!-- メモ -->
     <string name="memo_label">メモ</string>
@@ -239,6 +251,12 @@
     <string name="memo_edit_title">メモ編集</string>
     <string name="memo_add_headline_suffix">" の予定に\nメモを追加します"</string>
     <string name="memo_edit_headline_suffix">" の予定に\nメモを編集します"</string>
+    <string name="memo_save_scope_title">メモの保存範囲を選択してください</string>
+    <string name="memo_save_scope_subtext">一つの予定だけ、または関連する予定すべてに\n保存できます</string>
+    <string name="memo_save_scope_single">選択した予定のみ</string>
+    <string name="memo_save_scope_all">関連する予定すべて (%1$d件)</string>
+    <string name="memo_add_button">メモを登録</string>
+    <string name="memo_edit_button">メモを編集</string>
 
     <!-- 通知 -->
     <string name="notification_placeholder_desc">{タスク}を使うと予定名に自動置換されます</string>
@@ -310,6 +328,8 @@
     <string name="snack_schedule_load_failed">予定の読み込みに失敗しました</string>
     <string name="snack_memo_updated">メモを修正しました</string>
     <string name="snack_memo_added">メモを追加しました</string>
+    <string name="snack_memo_updated_all">現在の予定を含む%1$d件のメモを編集しました</string>
+    <string name="snack_memo_added_all">現在の予定を含む%1$d件にメモを追加しました</string>
     <string name="snack_memo_save_failed">メモの保存に失敗しました</string>
     <string name="snack_sync_done">同期が完了しました</string>
     <string name="snack_sync_failed">同期に失敗しました</string>
@@ -346,8 +366,7 @@
     <string name="day_fri">金</string>
     <string name="day_sat">土</string>
     <string name="sort_created">作成順</string>
-    <string name="sort_name">名前順</string>
-    <string name="sort_priority">優先順</string>
+    <string name="sort_by_tag">タグ別</string>
     <string name="repeat_display_daily">毎日</string>
     <string name="repeat_display_daily_days">毎日 (%1$d日)</string>
     <string name="repeat_display_error">正しい形式で入力してください。</string>
@@ -369,4 +388,60 @@
     <string name="setting_alarm_message_error_length">最大50文字まで入力できます</string>
     <string name="setting_alarm_message_length">%1$d / 50文字</string>
     <string name="setting_alarm_message_preview_sample">英単語の復習</string>
+
+    <!-- 同期メイン (QR連携リデザイン) -->
+    <string name="sync_title">他の端末でも使う</string>
+    <string name="sync_cancel">キャンセル</string>
+    <string name="sync_allow">許可</string>
+    <string name="sync_connected_device">連携中の端末</string>
+    <string name="sync_unknown_device">不明な端末</string>
+    <string name="sync_last_sync">最終同期</string>
+    <string name="sync_advanced_info">詳細情報</string>
+    <string name="sync_copy_device_info">詳細情報をコピー</string>
+    <string name="sync_device_info_copied">詳細情報をコピーしました。</string>
+    <string name="sync_new_device_section">新しい端末と連携</string>
+    <string name="sync_generate_qr">QRを生成</string>
+    <string name="sync_generate_qr_desc">この端末の予定を他の端末へ送ります</string>
+    <string name="sync_scan_qr">QRをスキャン</string>
+    <string name="sync_scan_qr_desc">他の端末の予定をこの端末へ取り込みます</string>
+    <string name="sync_scan_qr_warning">この端末の予定は他の端末の予定に置き換えられます。</string>
+    <string name="sync_qr_code_title">連携QRコード</string>
+    <string name="sync_remaining_time">残り時間: %1$s</string>
+    <string name="sync_scan_this_qr">他の端末でこのQRコードをスキャンしてください。</string>
+    <string name="sync_camera_permission_title">カメラ権限が必要です</string>
+    <string name="sync_camera_permission_rationale">QRコードをスキャンするにはカメラ権限が必要です。</string>
+    <string name="sync_camera_permission_rationale_settings">QRコードをスキャンするには設定でカメラ権限を許可してください。</string>
+    <string name="sync_go_settings">設定へ移動</string>
+    <string name="sync_network_check">ネットワーク接続を確認してください。</string>
+    <string name="sync_synced">データを同期しました。</string>
+    <string name="sync_sync_failed">同期に失敗しました。</string>
+    <string name="sync_disconnect_success">連携の解除に成功しました。</string>
+    <string name="sync_disconnect_failed">連携の解除に失敗しました。</string>
+    <string name="sync_generate_failed">QRコードの生成に失敗しました。もう一度お試しください。</string>
+    <string name="sync_connect_success">連携に成功しました。</string>
+    <string name="sync_connect_failed">連携に失敗しました。もう一度お試しください。</string>
+    <string name="sync_code_invalid_or_expired">生成されていないコードか、有効期限が切れています。</string>
+    <string name="sync_already_linked_self">すでに他の端末と連携しています。連携を解除してからもう一度お試しください。</string>
+    <string name="sync_code_already_taken">すでに他の端末と連携されたコードです。</string>
+    <string name="sync_already_latest">すでにデータは最新の状態です。</string>
+    <string name="sync_peer_connected">%1$sと連携しました。</string>
+    <string name="sync_peer_disconnected">相手の端末で連携が解除されました。</string>
+
+    <!-- データ復元 (deviceId) -->
+    <string name="sync_restore_title">データ復元</string>
+    <string name="sync_restore_headline">バックアップデータを復元します</string>
+    <string name="sync_restore_description">他の端末の同期画面に表示されたdeviceIdを入力すると、その端末のバックアップデータをこの端末に取り込みます。</string>
+    <string name="sync_restore_input_label">deviceId</string>
+    <string name="sync_restore_input_hint">例) 3f2a8b1c</string>
+    <string name="sync_restore_button">復元する</string>
+    <string name="sync_restore_done">%1$sのデータを復元しました。</string>
+    <string name="sync_restore_not_found">そのdeviceIdのバックアップが見つかりませんでした。</string>
+    <string name="sync_restore_empty_data">その端末のバックアップは空です。他の端末と連携していた場合は、連携先端末のdeviceIdでお試しください。</string>
+    <string name="sync_restore_ambiguous">一致する端末が複数あります。deviceIdをもう一度確認してください。</string>
+    <string name="sync_restore_self">この端末のdeviceIdです。他の端末のdeviceIdを入力してください。</string>
+    <string name="sync_restore_linked">端末連携中は復元できません。連携を解除してから再度お試しください。</string>
+    <string name="sync_restore_failed">復元に失敗しました。しばらくしてから再度お試しください。</string>
+    <string name="sync_restore_confirm_title">データを復元しますか？</string>
+    <string name="sync_restore_confirm_desc">この端末のデータはすべて置き換えられ、元に戻せません。</string>
+    <string name="sync_restore_confirm_cancel">戻る</string>
 </resources>

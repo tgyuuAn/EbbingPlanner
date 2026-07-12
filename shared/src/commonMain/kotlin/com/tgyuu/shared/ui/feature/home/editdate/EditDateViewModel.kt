@@ -2,7 +2,6 @@ package com.tgyuu.shared.ui.feature.home.editdate
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
-import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
 import com.tgyuu.shared.domain.model.TodoSchedule
@@ -37,7 +36,6 @@ class EditDateViewModel(
     private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
-        loadExperimentVariant()
         loadInitialData()
     }
 
@@ -60,6 +58,7 @@ class EditDateViewModel(
                         tagId = it.tagId,
                         selectedDate = it.date,
                         restDays = todoInfo.restDays.toImmutableSet(),
+                        isPinned = it.isPinned,
                     )
                 }
             }
@@ -87,6 +86,7 @@ class EditDateViewModel(
             is EditDateIntent.OnRepeatCycleChange -> setState { copy(repeatCycle = intent.repeatCycle) }
             EditDateIntent.OnAddRepeatCycleClick -> { /* Navigate to add repeat cycle */ }
             is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
+            is EditDateIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
             is EditDateIntent.OnSaveClick -> onSaveClick(intent.isDoneSchedules)
         }
     }
@@ -130,7 +130,7 @@ class EditDateViewModel(
                 dates = currentState.schedules,
                 isDoneSchedules = isDoneSchedules,
                 tagId = tagId,
-                priority = originSchedules.firstOrNull()?.priority,
+                isPinned = currentState.isPinned,
                 restDays = currentState.restDays.toSet(),
             )
 
@@ -147,13 +147,5 @@ class EditDateViewModel(
             intervals = intervals.toImmutableList(),
             displayName = toDisplayName(),
         )
-    }
-
-    private fun loadExperimentVariant() {
-        safeScope.launch {
-            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
-                ?: Experiment.SaveButtonPosition.Variant.CONTROL
-            setState { copy(saveButtonPositionVariant = variant) }
-        }
     }
 }

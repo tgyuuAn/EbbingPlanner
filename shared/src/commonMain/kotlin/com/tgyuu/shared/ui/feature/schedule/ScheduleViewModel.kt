@@ -271,14 +271,14 @@ class ScheduleViewModel(
     private fun TodoSchedule.toUiModel() = TodoScheduleUiModel(
         id = id, infoId = infoId, title = title, tagId = tagId,
         name = name, color = color, date = date, memo = memo,
-        priority = priority, isDone = isDone, createdAt = createdAt,
+        isPinned = isPinned, isDone = isDone, createdAt = createdAt,
         infoCreatedAt = infoCreatedAt,
     )
 
     private fun TodoScheduleUiModel.toDomainModel() = TodoSchedule(
         id = id, infoId = infoId, title = title, tagId = tagId,
         name = name, color = color, date = date, memo = memo,
-        priority = priority, isDone = isDone, createdAt = createdAt,
+        isPinned = isPinned, isDone = isDone, createdAt = createdAt,
         infoCreatedAt = infoCreatedAt,
     )
 

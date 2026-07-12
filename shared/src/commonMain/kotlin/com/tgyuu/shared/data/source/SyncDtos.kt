@@ -42,7 +42,7 @@ data class TodoScheduleDto(
         infoId = infoId,
         date = LocalDate.parse(date),
         memo = memo,
-        priority = priority,
+        isPinned = priority != 0,
         isDone = isDone,
         createdAt = LocalDate.parse(createdAt),
         isDeleted = isDeleted,
@@ -56,7 +56,7 @@ fun TodoScheduleForSync.toDto(uuid: String) = TodoScheduleDto(
     infoId = infoId,
     date = date.toString(),
     memo = memo,
-    priority = priority,
+    priority = if (isPinned) 1 else 0,
     isDone = isDone,
     isDeleted = isDeleted,
     createdAt = createdAt.toString(),
@@ -163,5 +163,7 @@ data class ConnectDto(
         uuid = uuid,
         connectCode = connectCode,
         connectCodeExpirationTime = expirationTime.toLocalDateTimeFromUtc(),
+        deviceName = deviceName,
+        connectedUuid = connectedUuid,
     )
 }

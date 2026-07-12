@@ -37,20 +37,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingCheck
+import com.tgyuu.shared.designsystem.component.EbbingDialog
+import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
+import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.model.TodoSchedule
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.common_clear
+import ebbingplanner.shared.generated.resources.memo_add_button
 import ebbingplanner.shared.generated.resources.memo_add_headline_suffix
 import ebbingplanner.shared.generated.resources.memo_add_title
+import ebbingplanner.shared.generated.resources.memo_edit_button
 import ebbingplanner.shared.generated.resources.memo_edit_headline_suffix
 import ebbingplanner.shared.generated.resources.memo_edit_title
 import ebbingplanner.shared.generated.resources.memo_input_hint
 import ebbingplanner.shared.generated.resources.memo_label
 import ebbingplanner.shared.generated.resources.memo_preview_label
-import ebbingplanner.shared.generated.resources.memo_save
+import ebbingplanner.shared.generated.resources.memo_save_scope_all
+import ebbingplanner.shared.generated.resources.memo_save_scope_single
+import ebbingplanner.shared.generated.resources.memo_save_scope_subtext
+import ebbingplanner.shared.generated.resources.memo_save_scope_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.painterResource
 import ebbingplanner.shared.generated.resources.ic_delete_circle
@@ -63,28 +71,24 @@ fun MemoScreen(
     val state by viewModel.state.collectAsState()
     val addHeadlineSuffix = stringResource(Res.string.memo_add_headline_suffix)
     val editHeadlineSuffix = stringResource(Res.string.memo_edit_headline_suffix)
+    val isEditMode = !state.originSchedule?.memo.isNullOrEmpty()
+
+    if (state.showSaveDialog) {
+        SaveMemoDialog(
+            relatedCount = state.relatedScheduleCount,
+            onDismissRequest = { viewModel.onIntent(MemoIntent.OnDismissSaveDialog) },
+            onSaveToAllClick = { viewModel.onIntent(MemoIntent.OnSaveToAllRelatedClick) },
+            onSaveToSingleClick = { viewModel.onIntent(MemoIntent.OnSaveToSingleClick) },
+        )
+    }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = if (state.originSchedule?.memo.isNullOrEmpty()) stringResource(Res.string.memo_add_title) else stringResource(Res.string.memo_edit_title),
+            title = if (isEditMode) stringResource(Res.string.memo_edit_title) else stringResource(Res.string.memo_add_title),
             onNavigationClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
-            rightComponent = {
-                if (!state.isTreatment) {
-                    Text(
-                        text = stringResource(Res.string.memo_save),
-                        style = EbbingTheme.typography.headingSSB,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                        else EbbingTheme.colors.dark3,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .clickable(enabled = state.isSaveEnabled) {
-                                viewModel.onIntent(MemoIntent.OnSaveClick)
-                            },
-                    )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -160,19 +164,43 @@ fun MemoScreen(
             }
         }
 
-        if (state.isTreatment) {
-            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = stringResource(Res.string.memo_save),
-                onClick = { viewModel.onIntent(MemoIntent.OnSaveClick) },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+            label = if (isEditMode) stringResource(Res.string.memo_edit_button) else stringResource(Res.string.memo_add_button),
+            onClick = { viewModel.onIntent(MemoIntent.OnSaveClick) },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
     } // BoxWithConstraints
+}
+
+@Composable
+private fun SaveMemoDialog(
+    relatedCount: Int,
+    onDismissRequest: () -> Unit,
+    onSaveToAllClick: () -> Unit,
+    onSaveToSingleClick: () -> Unit,
+) {
+    EbbingDialog(
+        dialogTop = {
+            EbbingDialogDefaultTop(
+                title = stringResource(Res.string.memo_save_scope_title),
+                subText = stringResource(Res.string.memo_save_scope_subtext),
+            )
+        },
+        dialogBottom = {
+            EbbingDialogBottom(
+                leftButtonText = stringResource(Res.string.memo_save_scope_single),
+                rightButtonText = stringResource(Res.string.memo_save_scope_all, relatedCount),
+                onLeftButtonClick = onSaveToSingleClick,
+                onRightButtonClick = onSaveToAllClick,
+            )
+        },
+        onDismissRequest = onDismissRequest,
+    )
 }
 
 @Composable
@@ -190,37 +218,25 @@ private fun MemoContent(
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        EbbingTextInputDefault(
+            value = memo,
+            onValueChange = onMemoChange,
+            hint = stringResource(Res.string.memo_input_hint),
+            limit = 100,
+            rightComponent = {
+                if (memo.isNotEmpty()) {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_delete_circle),
+                        contentDescription = stringResource(Res.string.common_clear),
+                        tint = EbbingTheme.colors.dark3,
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(20.dp)
+                            .clickable { onClearClick() },
+                    )
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-        ) {
-            EbbingTextInputDefault(
-                value = memo,
-                onValueChange = onMemoChange,
-                hint = stringResource(Res.string.memo_input_hint),
-                modifier = Modifier.weight(1f),
-            )
-
-            if (memo.isNotEmpty()) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_delete_circle),
-                    contentDescription = stringResource(Res.string.common_clear),
-                    tint = EbbingTheme.colors.dark2,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(20.dp)
-                        .clickable { onClearClick() },
-                )
-            }
-        }
-
-        Text(
-            text = "${memo.length}/100",
-            style = EbbingTheme.typography.bodySR,
-            color = EbbingTheme.colors.dark3,
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(top = 4.dp),
         )
     }
 }
