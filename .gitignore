@@ -17,3 +17,8 @@ obfuscated-stacktrace.txt
 app/google-services.json
 **/.idea/**
 migration/
+
+# 빌드 산출물
+*.apk
+*.aab
+app/release/
