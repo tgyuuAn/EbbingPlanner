@@ -20,3 +20,9 @@ iosApp/iosApp/GoogleService-Info.plist
 iosApp/iosApp/Secrets.plist
 iosApp/Pods/
 iosApp/EbbingPlanner.xcworkspace/
+migration/
+
+# 빌드 산출물
+*.apk
+*.aab
+app/release/

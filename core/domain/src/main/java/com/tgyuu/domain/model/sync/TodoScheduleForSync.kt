@@ -8,7 +8,7 @@ data class TodoScheduleForSync(
     val infoId: Int,
     val date: LocalDate,
     val memo: String,
-    val priority: Int,
+    val isPinned: Boolean,
     val isDone: Boolean,
     val createdAt: LocalDate,
     val isDeleted: Boolean,

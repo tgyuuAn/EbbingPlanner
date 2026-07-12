@@ -14,5 +14,6 @@ sealed class EditDateIntent : UiIntent {
     data class OnRepeatCycleDropDownClick(val content: BottomSheetContent) : EditDateIntent()
     data class OnRepeatCycleChange(val repeatCycle: RepeatCycleUiModel) : EditDateIntent()
     data class OnRestDayChange(val restDay: DayOfWeek) : EditDateIntent()
+    data class OnPinnedChange(val isPinned: Boolean) : EditDateIntent()
     data class OnSaveClick(val isDoneSchedule: List<Boolean>) : EditDateIntent()
 }

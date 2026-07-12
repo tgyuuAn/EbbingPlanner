@@ -38,6 +38,7 @@ include(":core:alarm")
 include(":core:analytics")
 include(":core:in-app-review")
 include(":core:in-app-update")
+include(":core:device-info")
 include(":core:experiment:domain")
 include(":core:experiment:data")
 

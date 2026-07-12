@@ -17,14 +17,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import com.tgyuu.designsystem.component.calendar.toKorean
 import kotlinx.datetime.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 internal fun ConfirmDelayAllDialog(
@@ -35,9 +38,9 @@ internal fun ConfirmDelayAllDialog(
 ) {
     var excludeRestDays by remember { mutableStateOf(true) }
     val restDaysText = if (restDays.isNotEmpty()) {
-        val dayNames = restDays.sortedBy { it.ordinal }
-            .joinToString(", ") { it.toKorean() }
-        "쉬는 요일 제외 ($dayNames)"
+        val dayNames = restDays.sortedBy { it.value }
+            .joinToString(", ") { it.getDisplayName(TextStyle.SHORT, Locale.KOREAN) }
+        stringResource(R.string.home_exclude_rest_days, dayNames)
     } else {
         ""
     }
@@ -50,7 +53,10 @@ internal fun ConfirmDelayAllDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "모든 ${schedule.title.originalText} 일정을\n하루씩 미루시겠습니까?",
+                text = stringResource(
+                    R.string.home_delay_all_confirm_title,
+                    schedule.title.originalText,
+                ),
                 color = EbbingTheme.colors.textOnBackground,
                 style = EbbingTheme.typography.heading20B,
                 textAlign = TextAlign.Center,
@@ -85,7 +91,7 @@ internal fun ConfirmDelayAllDialog(
             }
 
             Text(
-                text = "미룬 일정은 수정하기에서 다시 되돌릴 수 있습니다.",
+                text = stringResource(R.string.home_delay_revert_notice),
                 style = EbbingTheme.typography.caption14R,
                 color = EbbingTheme.colors.textDisabled,
                 textAlign = TextAlign.Center,
@@ -95,8 +101,8 @@ internal fun ConfirmDelayAllDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "뒤로가기",
-                rightButtonText = "미루기",
+                leftButtonText = stringResource(R.string.home_go_back),
+                rightButtonText = stringResource(R.string.home_delay_button),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = { onDelayClick(false) },
             )

@@ -14,9 +14,11 @@ abstract class NotificationHelper() {
 
         val channel = NotificationChannel(
             CHANNEL_ID,
-            CHANNEL_NAME,
+            context.getString(com.tgyuu.designsystem.R.string.alarm_channel_name),
             NotificationManager.IMPORTANCE_HIGH,
-        ).apply { description = CHANNEL_DESC }
+        ).apply {
+            description = context.getString(com.tgyuu.designsystem.R.string.alarm_channel_desc)
+        }
 
         mgr.createNotificationChannel(channel)
     }
@@ -29,7 +31,5 @@ abstract class NotificationHelper() {
 
     companion object {
         const val CHANNEL_ID = "todo_reminder"
-        const val CHANNEL_NAME = "할 일 알림"
-        const val CHANNEL_DESC = "에빙 플래너 일정 알림 채널"
     }
 }

@@ -17,16 +17,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import com.tgyuu.designsystem.component.calendar.toKorean
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 internal fun ConfirmDelayDialog(
@@ -46,19 +49,27 @@ internal fun ConfirmDelayDialog(
     }
 
     val dateText = if (displayedExpectedDate != null) {
-        "${schedule.date.monthNumber}월 ${schedule.date.dayOfMonth}일(${
-            schedule.date.dayOfWeek.toKorean()
-        }) → " + "${displayedExpectedDate.monthNumber}월 ${displayedExpectedDate.dayOfMonth}일(${
-            displayedExpectedDate.dayOfWeek.toKorean()
-        })"
+        val fromText = stringResource(
+            R.string.home_delay_date_part,
+            schedule.date.monthNumber,
+            schedule.date.dayOfMonth,
+            schedule.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN),
+        )
+        val toText = stringResource(
+            R.string.home_delay_date_part,
+            displayedExpectedDate.monthNumber,
+            displayedExpectedDate.dayOfMonth,
+            displayedExpectedDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN),
+        )
+        stringResource(R.string.home_delay_date_transition, fromText, toText)
     } else {
         ""
     }
 
     val restDaysText = if (restDays.isNotEmpty()) {
-        val dayNames = restDays.sortedBy { it.ordinal }
-            .joinToString(", ") { it.toKorean() }
-        "쉬는 요일 제외 ($dayNames)"
+        val dayNames = restDays.sortedBy { it.value }
+            .joinToString(", ") { it.getDisplayName(TextStyle.SHORT, Locale.KOREAN) }
+        stringResource(R.string.home_exclude_rest_days, dayNames)
     } else {
         ""
     }
@@ -71,7 +82,10 @@ internal fun ConfirmDelayDialog(
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
             Text(
-                text = "${schedule.title.originalText} 일정을 하루 미루시겠습니까?",
+                text = stringResource(
+                    R.string.home_delay_single_confirm_title,
+                    schedule.title.originalText,
+                ),
                 color = EbbingTheme.colors.textOnBackground,
                 style = EbbingTheme.typography.heading20B.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
@@ -114,7 +128,7 @@ internal fun ConfirmDelayDialog(
             }
 
             Text(
-                text = "미룬 일정은 수정하기에서 다시 되돌릴 수 있습니다.",
+                text = stringResource(R.string.home_delay_revert_notice),
                 style = EbbingTheme.typography.caption14R,
                 textAlign = TextAlign.Center,
                 color = EbbingTheme.colors.textDisabled,
@@ -124,8 +138,8 @@ internal fun ConfirmDelayDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = "뒤로가기",
-                rightButtonText = "미루기",
+                leftButtonText = stringResource(R.string.home_go_back),
+                rightButtonText = stringResource(R.string.home_delay_button),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = { onDelayClick(!excludeRestDays) },
             )

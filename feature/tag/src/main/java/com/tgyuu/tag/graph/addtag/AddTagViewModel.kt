@@ -1,18 +1,33 @@
 package com.tgyuu.tag.graph.addtag
 
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
 import com.tgyuu.tag.graph.addtag.contract.AddTagState
+
 class AddTagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState()) {
+
+    init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddTag",
+            )
+        )
+    }
 
     override suspend fun processIntent(intent: AddTagIntent) {
         when (intent) {
@@ -39,8 +54,15 @@ class AddTagViewModel(
     }
 
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "AddTag",
+                buttonName = "Save",
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_required_fields)))
             return
         }
 
@@ -58,7 +80,7 @@ class AddTagViewModel(
             eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그 추가에 실패했습니다"))
             return
         }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 태그를 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_added)))
         navigationBus.navigate(NavigationEvent.Up)
     }
 }

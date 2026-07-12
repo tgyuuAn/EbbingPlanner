@@ -4,11 +4,15 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.TodoSchedule
@@ -38,12 +42,20 @@ class EditDateViewModel(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
     private var originSchedules: List<TodoSchedule> = emptyList()
 
     init {
-        setState { copy(repeatCycle = DefaultRepeatCycles.first().toUiModel()) }
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "EditDate",
+            )
+        )
+
+        setState { copy(repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider)) }
 
         viewModelScope.launch {
             val infoId = savedStateHandle.get<Int>("infoId")
@@ -60,6 +72,7 @@ class EditDateViewModel(
                         tagId = it.tagId,
                         selectedDate = it.date,
                         restDays = todoInfo.restDays.toImmutableSet(),
+                        isPinned = it.isPinned,
                     )
                 }
             }
@@ -72,7 +85,7 @@ class EditDateViewModel(
         todoRepository.recentAddedRepeatCycleId?.let {
             viewModelScope.launch {
                 val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
-                setState { copy(repeatCycle = newRepeatCycle.toUiModel()) }
+                setState { copy(repeatCycle = newRepeatCycle.toUiModel(resourceProvider)) }
             }
         }
     }
@@ -80,7 +93,7 @@ class EditDateViewModel(
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels()) }
+        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: EditDateIntent) {
@@ -101,6 +114,7 @@ class EditDateViewModel(
 
             is EditDateIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
             is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
+            is EditDateIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
             is EditDateIntent.OnSaveClick -> onSaveClick(intent.isDoneSchedule)
             EditDateIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
         }
@@ -128,7 +142,7 @@ class EditDateViewModel(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 요일을 휴식할 수는 없습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_all_rest_days)))
             return
         }
 
@@ -142,20 +156,27 @@ class EditDateViewModel(
 
     @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "EditDate",
+                buttonName = "Save",
+            )
+        )
+
         val tagId = currentState.tagId ?: run {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
             return
         }
 
         if (currentState.schedules.isEmpty()) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장할 일정이 없습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_no_schedule_to_save)))
             return
         }
 
         originSchedules.forEach { alarmScheduler.cancelDailyExact(it.date) }
 
         val infoId = originSchedules.firstOrNull()?.infoId ?: run {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
             return
         }
 
@@ -165,7 +186,7 @@ class EditDateViewModel(
             dates = currentState.schedules,
             isDoneSchedules = isDoneSchedules,
             tagId = tagId,
-            priority = originSchedules.firstOrNull()?.priority,
+            isPinned = currentState.isPinned,
             restDays = currentState.restDays.toSet(),
         )
 
@@ -196,7 +217,7 @@ class EditDateViewModel(
             }
         }
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정의 날짜 및 반복 주기를 변경하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_date_repeat_changed)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(currentState.selectedDate.toFormattedString()),

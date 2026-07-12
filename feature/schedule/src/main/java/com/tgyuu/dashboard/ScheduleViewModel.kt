@@ -11,11 +11,13 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.now
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.dashboard.contract.ScheduleIntent
 import com.tgyuu.dashboard.contract.ScheduleState
 import com.tgyuu.dashboard.model.toDomainModel
 import com.tgyuu.dashboard.model.toUiModel
 import com.tgyuu.dashboard.model.toUiModels
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
@@ -40,6 +42,7 @@ class ScheduleViewModel(
     private val analyticsHelper: AnalyticsHelper,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
     internal suspend fun loadTodoSchedules() = coroutineScope {
@@ -61,7 +64,7 @@ class ScheduleViewModel(
                         TodoSchedule(
                             id = s.id, infoId = s.infoId, title = s.title,
                             tagId = s.tagId, name = s.name, color = s.color,
-                            date = s.date, memo = s.memo, priority = s.priority,
+                            date = s.date, memo = s.memo, isPinned = s.isPinned,
                             isDone = s.isDone, createdAt = s.createdAt,
                             infoCreatedAt = s.createdAt,
                         ).toUiModel()
@@ -205,7 +208,7 @@ class ScheduleViewModel(
                 TodoTag(id = tag.id, name = name, color = color, createdAt = tag.createdAt)
             )
             eventBus.sendEvent(HideBottomSheet)
-            eventBus.sendEvent(ShowSnackBar("태그를 수정하였습니다"))
+            eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_tag_updated)))
             loadTodoSchedules()
         }
     }
@@ -220,7 +223,7 @@ class ScheduleViewModel(
                 TodoTag(id = tag.id, name = tag.name, color = tag.color, createdAt = tag.createdAt)
             )
             eventBus.sendEvent(HideBottomSheet)
-            eventBus.sendEvent(ShowSnackBar("태그를 삭제하였습니다"))
+            eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_tag_deleted)))
             loadTodoSchedules()
         }
     }
@@ -242,7 +245,7 @@ class ScheduleViewModel(
         suspendRunCatching {
             todoRepository.deleteTodo(schedule.toDomainModel())
             eventBus.sendEvent(HideBottomSheet)
-            eventBus.sendEvent(ShowSnackBar("해당 일정을 지웠습니다."))
+            eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_schedule_deleted)))
             loadTodoSchedules()
         }
     }
@@ -253,7 +256,7 @@ class ScheduleViewModel(
             val toDelete = allSchedules.filter { it.date >= schedule.date }
             toDelete.forEach { todoRepository.deleteTodo(it) }
             eventBus.sendEvent(HideBottomSheet)
-            eventBus.sendEvent(ShowSnackBar("해당 일정 이후 연계된 일정들을 모두 지웠습니다."))
+            eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_remaining_deleted)))
             loadTodoSchedules()
         }
     }
@@ -265,7 +268,7 @@ class ScheduleViewModel(
                 domainSchedule.copy(date = domainSchedule.date.plus(1, DateTimeUnit.DAY))
             )
             eventBus.sendEvent(HideBottomSheet)
-            eventBus.sendEvent(ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
+            eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_delayed_single)))
             loadTodoSchedules()
         }
     }
@@ -277,7 +280,14 @@ class ScheduleViewModel(
             val updated = toDelay.map { it.copy(date = it.date.plus(1, DateTimeUnit.DAY)) }
             todoRepository.updateTodos(updated)
             eventBus.sendEvent(HideBottomSheet)
-            eventBus.sendEvent(ShowSnackBar("${updated.size}개 일정을 미뤘습니다."))
+            eventBus.sendEvent(
+                ShowSnackBar(
+                    resourceProvider.getString(
+                        R.string.schedule_snackbar_delayed_all,
+                        updated.size,
+                    )
+                )
+            )
             loadTodoSchedules()
         }
     }
@@ -297,7 +307,7 @@ class ScheduleViewModel(
             val domainSchedule = schedule.toDomainModel()
             todoRepository.updateTodo(domainSchedule.copy(memo = ""))
             eventBus.sendEvent(HideBottomSheet)
-            eventBus.sendEvent(ShowSnackBar("메모를 제거하였습니다"))
+            eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_memo_removed)))
             loadTodoSchedules()
         }
     }

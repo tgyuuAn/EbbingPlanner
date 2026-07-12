@@ -37,8 +37,14 @@ interface ConfigRepository {
     suspend fun setMondayStart(enabled: Boolean)
     fun getCalendarDefaultView(): Flow<CalendarDefaultView>
     suspend fun setCalendarDefaultView(view: CalendarDefaultView)
+    fun getAutoBackupEnabled(): Flow<Boolean>
+    suspend fun setAutoBackupEnabled(enabled: Boolean)
 
     companion object {
         const val DEFAULT_ALARM_MESSAGE: String = "{할일} 을 확인하고, 잊지 말고 복습하세요!"
+
+        // 로케일별 표시 토큰(ko {할일} / en {task} / ja {タスク})은 designsystem alarm_placeholder_token 리소스로 표시·검증한다.
+        // 아래 목록은 Context가 없는 레이어(알림 치환·analytics)에서 모든 로케일 토큰을 인식하기 위함 — 리소스와 동기화 유지.
+        val PLACEHOLDER_TOKENS: List<String> = listOf("{할일}", "{task}", "{タスク}")
     }
 }

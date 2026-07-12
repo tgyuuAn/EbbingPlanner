@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +45,7 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDef
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.repeatcycle.graph.main.contract.RepeatCycleIntent
@@ -85,7 +87,7 @@ private fun RepeatCycleScreen(
     var isShowDialog by remember { mutableStateOf(false) }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-        selectedRepeatCycle?.let { toDelete ->
+    selectedRepeatCycle?.let { toDelete ->
         if (isShowDialog) {
             DeleteDialog(
                 onDismissRequest = { isShowDialog = false },
@@ -105,11 +107,11 @@ private fun RepeatCycleScreen(
                 .clickable { selectedRepeatCycle = null },
         ) {
             EbbingSubTopBar(
-                title = "반복 주기 관리",
+                title = stringResource(R.string.repeat_manage_title),
                 onNavigationClick = onBackClick,
                 rightComponent = {
                     Text(
-                        text = "추가",
+                        text = stringResource(R.string.repeat_add_button),
                         style = EbbingTheme.typography.body16M,
                         color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier
@@ -127,7 +129,7 @@ private fun RepeatCycleScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "등록된 반복 주기가 없어요.\n우측 상단 추가 버튼을 눌러 반복 주기를 추가해보세요.",
+                        text = stringResource(R.string.repeat_empty_message),
                         style = EbbingTheme.typography.body14M,
                         textAlign = TextAlign.Center,
                         color = EbbingTheme.colors.textDisabled,
@@ -146,7 +148,7 @@ private fun RepeatCycleScreen(
                         key = { it.id },
                     ) { repeatCycle ->
                         EbbingBottomSheetListItemDefault(
-                            label = "- ${repeatCycle.displayName}",
+                            label = stringResource(R.string.repeat_cycle_list_item, repeatCycle.displayName),
                             checked = repeatCycle.id == selectedRepeatCycle?.id,
                             onChecked = { selectedRepeatCycle = repeatCycle },
                             modifier = Modifier.fillMaxWidth()
@@ -195,13 +197,13 @@ private fun RepeatCycleScreen(
                 modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
             ) {
                 EbbingOutlinedButton(
-                    label = "삭제",
+                    label = stringResource(R.string.repeat_delete),
                     onClick = { isShowDialog = true },
                     modifier = Modifier.weight(1f),
                 )
 
                 EbbingSolidButton(
-                    label = "수정",
+                    label = stringResource(R.string.repeat_edit),
                     onClick = { selectedRepeatCycle?.let(onEditClick) },
                     modifier = Modifier.weight(1f),
                 )

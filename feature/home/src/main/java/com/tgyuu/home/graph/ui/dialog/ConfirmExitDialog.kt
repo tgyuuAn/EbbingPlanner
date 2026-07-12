@@ -2,8 +2,10 @@ package com.tgyuu.home.graph.ui.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogIconTop
@@ -18,14 +20,14 @@ internal fun ConfirmExitDialog(
         dialogTop = {
             EbbingDialogIconTop(
                 iconId = com.tgyuu.designsystem.R.drawable.ic_notice,
-                title = "작성 중인 일정이 사라져요!",
-                subText = "지금 뒤로 가면 일정이 저장되지 않습니다.\n계속 이어서 작성해 보세요.",
+                title = stringResource(R.string.home_exit_confirm_title),
+                subText = stringResource(R.string.home_exit_confirm_sub),
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "작성 중단하기",
-                rightButtonText = "이어서 작성하기",
+                leftButtonText = stringResource(R.string.home_exit_confirm_stop),
+                rightButtonText = stringResource(R.string.home_exit_confirm_continue),
                 onLeftButtonClick = onExitClick,
                 onRightButtonClick = onContinueClick,
             )

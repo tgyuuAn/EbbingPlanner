@@ -1,10 +1,14 @@
 package com.tgyuu.setting.graph.widget
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.navigation.NavigationBus
@@ -18,7 +22,19 @@ class WidgetViewModel(
     private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
-) : BaseViewModel<WidgetState, WidgetIntent>(WidgetState()) {
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
+) : BaseViewModel<WidgetState, WidgetIntent>(
+    WidgetState()
+) {
+
+    init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "Widget",
+            )
+        )
+    }
 
     override suspend fun processIntent(intent: WidgetIntent) {
         when (intent) {
@@ -73,6 +89,13 @@ class WidgetViewModel(
     }
 
     private fun saveWidgetConfigure() = viewModelScope.launch {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "Widget",
+                buttonName = "Apply",
+            )
+        )
+
         val newBackgroundAlpha = currentState.selectedBackgroundAlpha ?: return@launch
         val newTextAlpha = currentState.selectedTextAlpha ?: return@launch
         val newTheme = currentState.selectedTheme ?: return@launch
@@ -95,9 +118,13 @@ class WidgetViewModel(
                 )
             }
             navigationBus.navigate(NavigationEvent.Up)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("위젯 테마를 변경하였습니다"))
+            eventBus.sendEvent(
+                EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_widget_theme_changed))
+            )
         }.onFailure {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("테마 변경에 실패하였습니다"))
+            eventBus.sendEvent(
+                EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_theme_change_failed))
+            )
         }
     }
 }

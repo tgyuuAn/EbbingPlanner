@@ -17,9 +17,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.verticalScrollbar
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -43,7 +45,7 @@ internal fun TagBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "태그",
+            title = stringResource(R.string.home_tag),
             rightComponent = {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -82,7 +84,7 @@ internal fun TagBottomSheet(
         }
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(R.string.home_apply),
             onClick = { newTag?.let { updateTag(it) } },
             modifier = Modifier
                 .fillMaxWidth()

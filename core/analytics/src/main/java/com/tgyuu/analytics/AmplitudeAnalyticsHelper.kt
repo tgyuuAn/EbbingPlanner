@@ -19,6 +19,7 @@ class AmplitudeAnalyticsHelper constructor(
         when (val event = this@toAmplitudeEvent) {
             is AnalyticsEvent.View -> {
                 eventType = "View_${event.screenName}"
+                eventProperties = event.properties?.toMutableMap()
             }
 
             is AnalyticsEvent.Click -> {

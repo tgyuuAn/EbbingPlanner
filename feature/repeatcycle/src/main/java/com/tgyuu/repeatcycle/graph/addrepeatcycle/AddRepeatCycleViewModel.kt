@@ -1,26 +1,44 @@
 package com.tgyuu.repeatcycle.graph.addrepeatcycle
 
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
-import kotlinx.datetime.DayOfWeek
 
 class AddRepeatCycleViewModel(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState()) {
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
+) : BaseViewModel<AddRepeatCycleState, AddRepeatCycleIntent>(AddRepeatCycleState(resourceProvider = resourceProvider)) {
+
+    init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddRepeatCycle",
+            )
+        )
+    }
 
     override suspend fun processIntent(intent: AddRepeatCycleIntent) {
         when (intent) {
             is AddRepeatCycleIntent.OnRepeatCycleChange -> onRepeatCycleChange(intent.repeatCycle)
-            AddRepeatCycleIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
+            AddRepeatCycleIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "AddRepeatCycle", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
             AddRepeatCycleIntent.OnSaveClick -> saveRepeatCycle()
         }
     }
@@ -33,21 +51,27 @@ class AddRepeatCycleViewModel(
 
     private suspend fun saveRepeatCycle() {
         if (currentState.intervals.isEmpty()) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_required)))
             return
         }
 
         parsingIntervals(currentState.intervals).onSuccess { intervals ->
             if (intervals.isEmpty()) {
-                eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기가 적절하지 않습니다."))
+                eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_invalid)))
                 return
             }
 
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(
+                    screenName = "AddRepeatCycle",
+                    buttonName = "SaveRepeatCycle",
+                )
+            )
             todoRepository.addRepeatCycle(intervals = intervals)
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기를 추가하였습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_added)))
             navigationBus.navigate(NavigationEvent.Up)
         }.onFailure {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("반복 주기가 적절하지 않습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.repeat_snackbar_invalid)))
             return
         }
     }

@@ -10,8 +10,13 @@ import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.now
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
+import com.tgyuu.domain.repository.FeatureFlag
+import com.tgyuu.domain.repository.FeatureFlagRepository
+import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.inappreview.InAppReviewManager
 import com.tgyuu.inappupdate.InAppUpdateManager
@@ -37,11 +42,14 @@ import kotlin.time.ExperimentalTime
 
 class SettingViewModel(
     private val configRepository: ConfigRepository,
+    private val syncRepository: SyncRepository,
     private val todoRepository: TodoRepository,
     private val alarmScheduler: AlarmScheduler,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
     private val analyticsHelper: AnalyticsHelper,
+    private val featureFlagRepository: FeatureFlagRepository,
+    private val resourceProvider: ResourceProvider,
     val inAppReviewManager: InAppReviewManager,
     val inAppUpdateManager: InAppUpdateManager,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
@@ -62,7 +70,12 @@ class SettingViewModel(
             }
 
             launch {
-                val message = configRepository.getAlarmMessage()
+                val storedMessage = configRepository.getAlarmMessage()
+                val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) {
+                    resourceProvider.getString(R.string.default_alarm_message)
+                } else {
+                    storedMessage
+                }
                 setState { copy(alarmMessage = message) }
             }
 
@@ -81,6 +94,22 @@ class SettingViewModel(
             launch {
                 configRepository.getMondayStart()
                     .collect { setState { copy(mondayStart = it) } }
+            }
+
+            launch {
+                featureFlagRepository.fetchAndAwait()
+                val featureEnabled = featureFlagRepository.getBoolean(FeatureFlag.USE_AUTO_BACKUP)
+                setState { copy(autoBackupFeatureEnabled = featureEnabled) }
+
+                if (featureEnabled) {
+                    configRepository.getAutoBackupEnabled()
+                        .collect { setState { copy(autoBackupEnabled = it) } }
+                }
+            }
+
+            launch {
+                val lastSyncTime = syncRepository.getLocalSyncedAt()
+                setState { copy(lastSyncTime = lastSyncTime) }
             }
 
             configRepository.getNotificationEnabled()
@@ -110,6 +139,8 @@ class SettingViewModel(
             is SettingIntent.OnUpdateClick -> onUpdateClick(intent.isImmediateUpdate)
             is SettingIntent.OnStartDayClick -> onStartDayClick(intent.content)
             is SettingIntent.OnUpdateStartDay -> onUpdateStartDay(intent.mondayStart)
+            SettingIntent.OnAutoBackupToggleClick -> onAutoBackupToggleClick()
+            SettingIntent.OnRestoreByDeviceIdClick -> onRestoreByDeviceIdClick()
         }
     }
 
@@ -117,21 +148,30 @@ class SettingViewModel(
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Notice")
         )
-        navigateToWebView("공지사항", BuildConfig.EBBING_NOTICE_URL)
+        navigateToWebView(
+            resourceProvider.getString(R.string.setting_announcement),
+            BuildConfig.EBBING_NOTICE_URL,
+        )
     }
 
     private suspend fun onPrivacyAndPolicyClick() {
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "PrivacyAndPolicy")
         )
-        navigateToWebView("개인정보처리방침", BuildConfig.EBBING_PRIVACY_AND_POLICY_URL)
+        navigateToWebView(
+            resourceProvider.getString(R.string.setting_privacy_policy),
+            BuildConfig.EBBING_PRIVACY_AND_POLICY_URL,
+        )
     }
 
     private suspend fun onTermsOfUseClick() {
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "TermsOfUse")
         )
-        navigateToWebView("이용약관", BuildConfig.EBBING_TERMS_OF_USE_URL)
+        navigateToWebView(
+            resourceProvider.getString(R.string.setting_term),
+            BuildConfig.EBBING_TERMS_OF_USE_URL,
+        )
     }
 
     private suspend fun onNotificationToggleClick() {
@@ -152,11 +192,18 @@ class SettingViewModel(
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "NotificationMessage")
         )
+        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
         setState {
+            val resolvedMessage =
+                if (alarmMessage.isEmpty() || alarmMessage == DEFAULT_ALARM_MESSAGE) defaultMessage
+                else alarmMessage
             copy(
                 alarmMessageBottomSheet = AlarmMessageBottomSheetState(
-                    message = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
-                    originMessage = alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE },
+                    defaultMessage = defaultMessage,
+                    message = resolvedMessage,
+                    originMessage = resolvedMessage,
+                    placeholderToken = placeholderToken,
                 )
             )
         }
@@ -173,7 +220,7 @@ class SettingViewModel(
         setState {
             copy(
                 alarmMessageBottomSheet = alarmMessageBottomSheet.copy(
-                    message = DEFAULT_ALARM_MESSAGE
+                    message = alarmMessageBottomSheet.defaultMessage
                 )
             )
         }
@@ -198,6 +245,13 @@ class SettingViewModel(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "SyncData")
         )
         navigationBus.navigate(To(SyncGraph.SyncMainRoute))
+    }
+
+    private suspend fun onRestoreByDeviceIdClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "RestoreByDeviceId")
+        )
+        navigationBus.navigate(To(SyncGraph.RestoreByDeviceIdRoute))
     }
 
     private suspend fun onAppThemeManageClick() {
@@ -240,6 +294,13 @@ class SettingViewModel(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "StartDay")
         )
         eventBus.sendEvent(EbbingEvent.ShowBottomSheet(content))
+    }
+
+    private suspend fun onAutoBackupToggleClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AutoBackup_Toggle")
+        )
+        configRepository.setAutoBackupEnabled(!currentState.autoBackupEnabled)
     }
 
     private suspend fun onUpdateStartDay(mondayStart: Boolean) {
@@ -286,7 +347,11 @@ class SettingViewModel(
         }
 
         setState { copy(alarmHour = hour, alarmMinute = minute) }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 시간을 $hour:$minute 로 변경했어요"))
+        eventBus.sendEvent(
+            EbbingEvent.ShowSnackBar(
+                resourceProvider.getString(R.string.setting_alarm_time_changed, "$hour:$minute")
+            )
+        )
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 
@@ -294,7 +359,9 @@ class SettingViewModel(
         val message = currentState.alarmMessageBottomSheet.message
         configRepository.updateAlarmMessage(message)
         setState { copy(alarmMessage = message) }
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("알람 메시지를 변경했어요"))
+        eventBus.sendEvent(
+            EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_alarm_message_changed))
+        )
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
     }
 
@@ -306,7 +373,9 @@ class SettingViewModel(
         suspendRunCatching {
             todoRepository.clearData()
         }.onSuccess {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("저장된 데이터를 초기화 했어요"))
+            eventBus.sendEvent(
+                EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_data_cleared))
+            )
         }
     }
 }

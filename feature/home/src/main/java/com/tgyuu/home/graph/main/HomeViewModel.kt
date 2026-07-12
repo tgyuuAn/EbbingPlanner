@@ -11,6 +11,8 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.now
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.calendar.totalDaysInMonth
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
@@ -54,6 +56,7 @@ class HomeViewModel(
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler?,
     private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     internal val eventBus: EventBus,
     internal val inAppReviewManager: InAppReviewManager,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
@@ -200,7 +203,7 @@ class HomeViewModel(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 지웠습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_schedule_deleted)))
     }
 
     private suspend fun onDeleteRemainingSchedule(schedule: TodoSchedule) {
@@ -227,7 +230,7 @@ class HomeViewModel(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정 이후 연계된 일정들을 모두 지웠습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_remaining_deleted)))
     }
 
     private suspend fun onDelaySchedule(schedule: TodoSchedule, includeRestDays: Boolean = false) {
@@ -296,7 +299,7 @@ class HomeViewModel(
         )
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("해당 일정을 다음 날로 미뤘습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_delayed_to_next_day)))
     }
 
     private suspend fun onDelayAllSchedules(schedule: TodoSchedule, includeRestDays: Boolean = false) {
@@ -317,7 +320,7 @@ class HomeViewModel(
                     properties = mapOf("schedule_id" to schedule.id)
                 )
             )
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("미룰 일정이 없습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_no_schedule_to_delay)))
             eventBus.sendEvent(EbbingEvent.HideBottomSheet)
             return
         }
@@ -392,7 +395,7 @@ class HomeViewModel(
         )
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("${futureSchedules.size}개 일정을 미뤘습니다."))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_schedules_delayed, futureSchedules.size)))
     }
 
     private suspend fun navigateToUpdateInfo(infoId: Int) {
@@ -436,7 +439,7 @@ class HomeViewModel(
         }
 
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 제거하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_memo_removed)))
     }
 
     private suspend fun onUpdateSortType(sortType: SortType) {
@@ -460,9 +463,29 @@ class HomeViewModel(
 
         return grouped.mapValues { (_, list) ->
             val sorted = when (sortType) {
-                SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
-                SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
-                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { -it.priority }))
+                SortType.CREATED -> list.sortedWith(
+                    compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.createdAt }
+                )
+
+                // 태그별 정책:
+                //  1) 그룹(태그) 순서 = 그 날 고정(isPinned) 일정이 많은 태그일수록 위로 (동수는 태그명)
+                //  2) 그룹 내부 = 고정 일정을 최상단, 이후 미완료 > 생성순
+                SortType.BY_TAG -> {
+                    val withinGroup = compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.createdAt }
+
+                    list.groupBy { it.tagId }
+                        .entries
+                        .sortedWith(
+                            compareByDescending<Map.Entry<Int, List<TodoSchedule>>> { entry ->
+                                entry.value.count { it.isPinned }
+                            }.thenBy { entry -> entry.value.first().name }
+                        )
+                        .flatMap { entry -> entry.value.sortedWith(withinGroup) }
+                }
             }
             sorted.toUiModels()
         }.toImmutableMap()
@@ -472,7 +495,7 @@ class HomeViewModel(
         schedules: List<TodoSchedule>,
     ): ImmutableMap<Int, ImmutableList<TodoScheduleUiModel>> {
         return schedules.groupBy { it.infoId }.mapValues { (_, list) ->
-            list.toUiModels()
+            list.sortedBy { it.date }.toUiModels()
         }.toImmutableMap()
     }
 

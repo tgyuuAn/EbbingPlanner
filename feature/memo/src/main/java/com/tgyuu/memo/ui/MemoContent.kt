@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +36,10 @@ import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
+import com.tgyuu.designsystem.component.TodoListCard
+import com.tgyuu.designsystem.model.ClickableText
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.domain.model.TodoSchedule
 
@@ -44,7 +50,7 @@ internal fun MemoContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "메모",
+        text = stringResource(R.string.memo_label),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
@@ -52,7 +58,7 @@ internal fun MemoContent(
 
     EbbingTextInputDefault(
         value = memo,
-        hint = "어떤 메모를 남겨둘까요?",
+        hint = stringResource(R.string.memo_input_hint),
         keyboardType = KeyboardType.Text,
         onValueChange = onMemoChange,
         limit = 100,
@@ -81,150 +87,36 @@ internal fun PreviewContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "미리보기",
+        text = stringResource(R.string.memo_preview_label),
         style = EbbingTheme.typography.body16M,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
     if (schedule != null) {
+        val previewTodo = TodoScheduleUiModel(
+            id = schedule.id,
+            infoId = schedule.infoId,
+            title = ClickableText.from(schedule.title),
+            tagId = schedule.tagId,
+            name = schedule.name,
+            color = schedule.color,
+            date = schedule.date,
+            memo = ClickableText.from(memo),
+            isPinned = schedule.isPinned,
+            isDone = schedule.isDone,
+            createdAt = schedule.createdAt,
+            infoCreatedAt = schedule.infoCreatedAt,
+        )
+
         TodoListCard(
-            todo = schedule,
-            memo = memo,
+            todo = previewTodo,
+            todosWithSameInfo = listOf(previewTodo),
+            onCheckedChange = {},
+            onEditScheduleClick = {},
             modifier = modifier
                 .padding(top = 20.dp)
                 .fillMaxWidth(),
         )
-    }
-}
-
-@Composable
-private fun TodoListCard(
-    todo: TodoSchedule,
-    memo: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .border(
-                color = EbbingTheme.colors.textOnBackground,
-                width = 0.5.dp,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .wrapContentHeight()
-            .animateContentSize(
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = FastOutSlowInEasing,
-                )
-            )
-            .padding(20.dp)
-    ) {
-        Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-            VerticalDivider(
-                thickness = 8.dp,
-                color = Color(todo.color),
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .animateContentSize(
-                        animationSpec = tween(
-                            durationMillis = 300,
-                            easing = FastOutSlowInEasing
-                        )
-                    )
-                    .padding(end = 8.dp),
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(EbbingTheme.colors.fillNormal)
-                        .padding(vertical = 12.dp, horizontal = 16.dp)
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = todo.title,
-                            style = EbbingTheme.typography.body16M,
-                            color = EbbingTheme.colors.textOnBackground,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(bottom = 4.dp),
-                        )
-
-                        Text(
-                            text = todo.name,
-                            style = EbbingTheme.typography.body16M,
-                            color = EbbingTheme.colors.textSub,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(bottom = 4.dp),
-                        )
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp),
-                        ) {
-                            EbbingCheck(
-                                checked = todo.isDone,
-                                colorValue = todo.color,
-                                onCheckedChange = {},
-                                modifier = Modifier.size(20.dp),
-                            )
-
-                            Text(
-                                text = "우선도 : ${todo.priority}",
-                                style = EbbingTheme.typography.heading14SB,
-                                color = EbbingTheme.colors.textSub,
-                                maxLines = 1,
-                                textAlign = TextAlign.End,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                    }
-
-                    Image(
-                        painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_3dots),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                EbbingCheck(
-                    checked = todo.isDone,
-                    colorValue = todo.color,
-                    onCheckedChange = { },
-                    modifier = Modifier.size(20.dp),
-                )
-            }
-        }
-
-        EbbingVisibleAnimation(visible = memo.isNotEmpty()) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(end = 32.dp, top = 4.dp, bottom = 4.dp),
-            ) {
-                Image(
-                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_memo),
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                )
-
-                Text(
-                    text = memo,
-                    style = EbbingTheme.typography.heading14SB,
-                    color = EbbingTheme.colors.textSub,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        }
     }
 }

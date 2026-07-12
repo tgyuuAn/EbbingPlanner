@@ -36,7 +36,7 @@ class TodoAlarmReceiver : BroadcastReceiver(), KoinComponent {
                 val date = intent.getStringExtra("date")?.toLocalDateOrThrow() ?: return@launch
                 val schedules = todoRepository.loadSchedulesByDate(date)
                     .filter { !it.isDone }
-                    .sortedBy { it.priority }
+                    .sortedByDescending { it.isPinned }
 
                 if (schedules.isNotEmpty()) {
                     notificationHelper.showTodoNotification(context, schedules, date)

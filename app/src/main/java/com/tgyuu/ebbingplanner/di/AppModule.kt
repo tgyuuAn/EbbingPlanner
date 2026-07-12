@@ -2,6 +2,9 @@ package com.tgyuu.ebbingplanner.di
 
 import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.analytics.di.analyticsModule
+import com.tgyuu.common.ui.resource.resourceModule
+import com.tgyuu.deviceinfo.di.deviceInfoModule
+import com.tgyuu.ebbingplanner.backup.AutoBackupManager
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.initializer.Initializer
 import com.tgyuu.dashboard.di.scheduleModule
@@ -38,6 +41,7 @@ val appModule = module {
     single { ErrorBus(get()) }
     single { InAppReviewManager(androidContext()) }
     single { InAppUpdateManager(androidContext()) }
+    single { AutoBackupManager(get(), get(), get(), get()) }
 
     // ViewModel
     viewModelOf(::MainViewModel)
@@ -59,6 +63,8 @@ val appModules = listOf(
     alarmModule,
     analyticsModule,
     experimentModule,
+    deviceInfoModule,
+    resourceModule,
     // Feature modules
     homeModule,
     tagModule,

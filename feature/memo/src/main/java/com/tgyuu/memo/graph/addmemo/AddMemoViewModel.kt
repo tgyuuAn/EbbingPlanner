@@ -2,10 +2,14 @@ package com.tgyuu.memo.graph.addmemo
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.memo.graph.addmemo.contract.AddMemoIntent
 import com.tgyuu.memo.graph.addmemo.contract.AddMemoState
@@ -18,10 +22,18 @@ class AddMemoViewModel(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddMemoState, AddMemoIntent>(AddMemoState()) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddMemo",
+            )
+        )
+
         val scheduleId = savedStateHandle.get<Int>("scheduleId")
             ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
@@ -30,37 +42,88 @@ class AddMemoViewModel(
                 navigationBus.navigate(NavigationEvent.Up)
                 return@launch
             }
+            val relatedSchedules = todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId)
 
-            setState { copy(originSchedule = originSchedule) }
+            setState {
+                copy(
+                    originSchedule = originSchedule,
+                    relatedScheduleCount = relatedSchedules.size,
+                )
+            }
         }
     }
 
     override suspend fun processIntent(intent: AddMemoIntent) {
         when (intent) {
             is AddMemoIntent.OnMemoChange -> onMemoChange(intent.memo)
-            AddMemoIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
-            AddMemoIntent.OnSaveClick -> saveMemo()
-            AddMemoIntent.OnDismissSaveDialog -> Unit
-            AddMemoIntent.OnSaveToAllRelatedClick -> saveMemo()
-            AddMemoIntent.OnSaveToSingleClick -> saveMemo()
+            AddMemoIntent.OnBackClick -> {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "AddMemo", buttonName = "Back")
+                )
+                navigationBus.navigate(NavigationEvent.Up)
+            }
+            AddMemoIntent.OnSaveClick -> onSaveClick()
+            AddMemoIntent.OnDismissSaveDialog -> dismissSaveDialog()
+            AddMemoIntent.OnSaveToAllRelatedClick -> saveMemoToAllRelated()
+            AddMemoIntent.OnSaveToSingleClick -> saveMemoToSingle()
         }
     }
 
     private fun onMemoChange(memo: String) {
-        if (memo.length <= 100) {
-            setState { copy(memo = memo) }
-        }
+        setState { copy(memo = memo) }
     }
 
-    private suspend fun saveMemo() {
+    private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "AddMemo",
+                buttonName = "Save",
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.memo_required_fields)))
             return
         }
 
+        if (currentState.relatedScheduleCount <= 1) {
+            saveMemoToSingle()
+        } else {
+            setState { copy(showSaveDialog = true) }
+        }
+    }
+
+    private fun dismissSaveDialog() {
+        setState { copy(showSaveDialog = false) }
+    }
+
+    private suspend fun saveMemoToSingle() {
+        setState { copy(showSaveDialog = false) }
+        val schedule = currentState.originSchedule ?: return
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "AddMemo", buttonName = "SaveMemoSingle")
+        )
+        todoRepository.updateTodo(schedule.copy(memo = currentState.memo))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.memo_added)))
+        navigationBus.navigate(
+            NavigationEvent.To(
+                route = HomeRoute(schedule.date.toFormattedString()),
+                popUpTo = true,
+            )
+        )
+    }
+
+    private suspend fun saveMemoToAllRelated() {
+        setState { copy(showSaveDialog = false) }
         val originSchedule = currentState.originSchedule ?: return
-        todoRepository.updateTodo(originSchedule.copy(memo = currentState.memo))
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("메모를 추가하였습니다"))
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = "AddMemo", buttonName = "SaveMemoAll")
+        )
+        val relatedSchedules = todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId)
+
+        todoRepository.updateTodos(relatedSchedules.map { it.copy(memo = currentState.memo) })
+
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.memo_added_all, relatedSchedules.size)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(originSchedule.date.toFormattedString()),

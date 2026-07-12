@@ -28,6 +28,7 @@ fun EbbingPicker(
     initialAmPm: String,
     initialHour: String,
     initialMinute: String,
+    amPmItems: List<String>,
     modifier: Modifier = Modifier,
     itemSpacing: Dp = 2.dp,
     onValueChange: (String, Int, Int) -> Unit,
@@ -46,7 +47,6 @@ fun EbbingPicker(
         ) {
             val scope = rememberCoroutineScope()
 
-            val amPmItems = remember { listOf("오후", "오전") }
             val hourItems = remember { (1..12).map { it.toString() } }
             val minuteItems = remember { (0..59).map { String.format(Locale.ROOT, "%02d", it) } }
 

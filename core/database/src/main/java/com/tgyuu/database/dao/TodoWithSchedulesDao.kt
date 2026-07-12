@@ -24,7 +24,7 @@ interface TodoWithSchedulesDao {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
@@ -41,7 +41,7 @@ interface TodoWithSchedulesDao {
                     infoId = infoId,
                     date = date,
                     memo = "",
-                    priority = priority ?: 0,
+                    isPinned = isPinned,
                 )
             }
         )
@@ -53,7 +53,7 @@ interface TodoWithSchedulesDao {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
@@ -71,7 +71,7 @@ interface TodoWithSchedulesDao {
                     date = date,
                     isDone = isDone,
                     memo = "",
-                    priority = priority ?: 0,
+                    isPinned = isPinned,
                 )
             }
         )
@@ -95,7 +95,7 @@ interface TodoWithSchedulesDao {
     @Query(
         """
         UPDATE schedule
-        SET date = :date, memo = :memo, priority = :priority, isDone = :isDone, updatedAt = :updatedAt
+        SET date = :date, memo = :memo, priority = :isPinned, isDone = :isDone, updatedAt = :updatedAt
         WHERE id = :id AND isDeleted = 0
         """
     )
@@ -103,7 +103,7 @@ interface TodoWithSchedulesDao {
         id: Int,
         date: LocalDate,
         memo: String,
-        priority: Int,
+        isPinned: Boolean,
         isDone: Boolean,
         updatedAt: LocalDateTime = LocalDateTime.now(),
     )
@@ -116,7 +116,7 @@ interface TodoWithSchedulesDao {
                 id = params.id,
                 date = params.date,
                 memo = params.memo,
-                priority = params.priority,
+                isPinned = params.isPinned,
                 isDone = params.isDone,
                 updatedAt = now,
             )
@@ -138,7 +138,7 @@ interface TodoWithSchedulesDao {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         require(dates.size == isDoneSchedules.size) {
@@ -161,7 +161,7 @@ interface TodoWithSchedulesDao {
                     date = date,
                     isDone = isDone,
                     memo = "",
-                    priority = priority ?: 0,
+                    isPinned = isPinned,
                 )
             }
         )
@@ -172,6 +172,6 @@ data class ScheduleUpdateParams(
     val id: Int,
     val date: LocalDate,
     val memo: String,
-    val priority: Int,
+    val isPinned: Boolean,
     val isDone: Boolean,
 )

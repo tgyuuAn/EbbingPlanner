@@ -1,6 +1,8 @@
 package com.tgyuu.designsystem.component.calendar
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -28,9 +30,11 @@ fun EbbingCalendar(
     showSyncButton: Boolean = true,
     startFromMonday: Boolean = false,
     showWeekOnly: Boolean = false,
+    showViewToggle: Boolean = false,
     onSelectDate: (LocalDate) -> Unit = {},
     onGotoTodayClick: () -> Unit = {},
     onSyncClick: () -> Unit = {},
+    onViewToggle: (Boolean) -> Unit = {},
 ) {
     val monthInitialPage = CALENDAR_PAGE_COUNT / 2
     val monthPagerState = rememberPagerState(
@@ -125,11 +129,15 @@ fun EbbingCalendar(
             },
             showSyncButton = showSyncButton,
             onSyncClick = onSyncClick,
+            showViewToggle = showViewToggle,
+            isWeekView = showWeekOnly,
+            onViewToggle = onViewToggle,
         )
 
         CalendarHeader(startFromMonday = startFromMonday)
 
-        if (showWeekOnly) {
+        Box(modifier = Modifier.fillMaxWidth().animateContentSize()) {
+            if (showWeekOnly) {
             HorizontalPager(
                 state = weekPagerState,
                 modifier = Modifier.fillMaxWidth(),
@@ -176,6 +184,7 @@ fun EbbingCalendar(
                     },
                 )
             }
+        }
         }
     }
 }

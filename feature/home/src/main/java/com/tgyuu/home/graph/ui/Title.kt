@@ -15,6 +15,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.animateScrollWhenFocus
@@ -37,15 +38,15 @@ internal fun TitleContent(
     }
 
     Text(
-        text = "제목",
-        style = EbbingTheme.typography.body16M,
+        text = stringResource(R.string.home_title),
+        style = EbbingTheme.typography.heading14SB,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
     EbbingTextInputDefault(
         value = title,
-        hint = "무엇을 학습하실건가요?",
+        hint = stringResource(R.string.home_title_hint),
         keyboardType = KeyboardType.Text,
         onValueChange = onTitleChange,
         limit = 100,

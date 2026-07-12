@@ -1,5 +1,6 @@
 package com.tgyuu.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -27,7 +28,7 @@ data class TodoScheduleEntity(
     val infoId: Int,
     val date: LocalDate,
     val memo: String,
-    val priority: Int,
+    @ColumnInfo(name = "priority") val isPinned: Boolean = false,
     val isDone: Boolean = false,
     val createdAt: LocalDate = LocalDate.now(),
     val isDeleted: Boolean = false,
@@ -39,7 +40,7 @@ fun TodoSchedule.toEntity() = TodoScheduleEntity(
     infoId = this.infoId,
     date = this.date,
     memo = this.memo,
-    priority = this.priority,
+    isPinned = this.isPinned,
     isDone = this.isDone,
     createdAt = this.createdAt,
 )
@@ -49,7 +50,7 @@ fun TodoScheduleForSync.toEntity(): TodoScheduleEntity = TodoScheduleEntity(
     infoId = this.infoId,
     date = this.date,
     memo = this.memo,
-    priority = this.priority,
+    isPinned = this.isPinned,
     isDone = this.isDone,
     createdAt = this.createdAt,
     isDeleted = this.isDeleted,

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("ebbing.android.library")
     alias(libs.plugins.kotlin.serialization)
@@ -5,6 +7,14 @@ plugins {
 
 android {
     namespace = "com.tgyuu.network"
+
+    defaultConfig {
+        val localProperties = Properties()
+        localProperties.load(project.rootProject.file("local.properties").bufferedReader())
+
+        buildConfigField("String", "SUPABASE_URL", "\"${localProperties["SUPABASE_URL"]}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProperties["SUPABASE_ANON_KEY"]}\"")
+    }
 
     buildTypes { release { consumerProguardFiles("consumer-rules.pro") } }
 
@@ -20,7 +30,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.datetime)
     implementation(libs.firebase.config)
-    implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.koin.core)
+    implementation(libs.supabase.postgrest)
+    implementation(libs.ktor.client.android)
 }

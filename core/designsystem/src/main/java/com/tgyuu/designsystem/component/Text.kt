@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.core.net.toUri
@@ -20,6 +21,7 @@ fun EbbingClickableText(
     modifier: Modifier = Modifier,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
+    onTextLayout: (TextLayoutResult) -> Unit = {},
 ) {
     val context = LocalContext.current
     val linkColor = EbbingTheme.colors.primaryNormal
@@ -30,6 +32,7 @@ fun EbbingClickableText(
         style = style.copy(color = color),
         maxLines = maxLines,
         overflow = overflow,
+        onTextLayout = onTextLayout,
         modifier = modifier,
         onClick = { offset ->
             annotatedString.getStringAnnotations(

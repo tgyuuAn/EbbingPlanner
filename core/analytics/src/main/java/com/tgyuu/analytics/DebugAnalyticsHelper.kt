@@ -7,7 +7,7 @@ class DebugAnalyticsHelper constructor(
 ) : AnalyticsHelper() {
     override fun logEvent(event: AnalyticsEvent) {
         val (eventType, properties) = when (event) {
-            is AnalyticsEvent.View -> "View_${event.screenName}" to null
+            is AnalyticsEvent.View -> "View_${event.screenName}" to event.properties
             is AnalyticsEvent.Click -> "Click_${event.buttonName}_${event.screenName}" to event.properties
             is AnalyticsEvent.Action -> buildString {
                 append("Action_${event.actionName}_${event.screenName}")

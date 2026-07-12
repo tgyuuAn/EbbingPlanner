@@ -8,8 +8,6 @@ import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.TodoSchedule
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.model.Experiment.SaveButtonPosition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
@@ -25,16 +23,14 @@ data class EditTodoState(
     val originSchedule: TodoSchedule? = null,
     val selectedDate: LocalDate = LocalDate.now(),
     val title: String = "",
-    val priority: String? = null,
+    val isPinned: Boolean = false,
     val tag: TodoTagUiModel? = null,
     val tagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
     val mondayStart: Boolean = false,
-    val saveButtonPositionVariant: SaveButtonPosition.Variant = SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
-    val isTreatment = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val isSaveEnabled = title.isNotEmpty()
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {

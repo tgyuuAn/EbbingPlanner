@@ -1,7 +1,7 @@
 package com.tgyuu.repeatcycle.graph.addrepeatcycle.contract
 
 import com.tgyuu.common.base.UiState
-import com.tgyuu.domain.model.RepeatCycle.Companion.DISPLAY_ERROR
+import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.repeatcycle.util.parsingIntervals
 import com.tgyuu.repeatcycle.util.toPreviewIntervals
 import kotlinx.datetime.DayOfWeek
@@ -9,10 +9,14 @@ import kotlinx.datetime.DayOfWeek
 data class AddRepeatCycleState(
     val intervals: String = "",
     val restDays: Set<DayOfWeek> = emptySet(),
+    val resourceProvider: ResourceProvider? = null,
 ) : UiState {
-    val previewRepeatCycle = parsingIntervals(intervals)
-        .getOrDefault(emptyList())
-        .toPreviewIntervals()
+    val previewRepeatCycle = resourceProvider?.let {
+        parsingIntervals(intervals)
+            .getOrDefault(emptyList())
+            .toPreviewIntervals(it)
+    } ?: ""
 
-    val isSaveEnabled = intervals.isNotEmpty() && previewRepeatCycle != DISPLAY_ERROR
+    val isSaveEnabled =
+        intervals.isNotEmpty() && parsingIntervals(intervals).getOrNull()?.isNotEmpty() == true
 }

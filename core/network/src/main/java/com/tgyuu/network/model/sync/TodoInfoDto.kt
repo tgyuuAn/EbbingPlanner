@@ -1,37 +1,42 @@
 package com.tgyuu.network.model.sync
 
-import com.google.firebase.firestore.ServerTimestamp
 import com.tgyuu.domain.model.sync.TodoInfoForSync
-import com.tgyuu.network.defaultDate
-import com.tgyuu.network.toDate
-import com.tgyuu.network.toLocalDate
-import com.tgyuu.network.toLocalDateTime
-import java.util.Date
+import com.tgyuu.network.util.toLocalDateTimeFromUtc
+import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.datetime.LocalDate
 
+@Serializable
 data class TodoInfoDto(
-    val id: Int = -1,
-    val title: String = "",
-    val tagId: Int = -1,
-    val createdAt: Date = defaultDate,
-    val updatedAt: Date = defaultDate,
-    val restDays: String = "",
-    @ServerTimestamp var uploadedAt: Date? = null,
+    @EncodeDefault val id: Int = -1,
+    @EncodeDefault val uuid: String = "",
+    @EncodeDefault val title: String = "",
+    @EncodeDefault @SerialName("tag_id") val tagId: Int = -1,
+    @EncodeDefault @SerialName("rest_days") val restDays: String = "",
+    @EncodeDefault @SerialName("created_at") val createdAt: String = "",
+    @EncodeDefault @SerialName("updated_at") val updatedAt: String = "",
+    @SerialName("uploaded_at") val uploadedAt: String? = null,
 ) {
     fun toDomain() = TodoInfoForSync(
         id = id,
         title = title,
         tagId = tagId,
-        createdAt = createdAt.toLocalDate(),
-        updatedAt = updatedAt.toLocalDateTime(),
+        createdAt = LocalDate.parse(createdAt),
+        updatedAt = updatedAt.toLocalDateTimeFromUtc().toKotlinLocalDateTime(),
         restDays = restDays,
     )
 }
 
-fun TodoInfoForSync.toDto() = TodoInfoDto(
+fun TodoInfoForSync.toDto(uuid: String) = TodoInfoDto(
     id = id,
+    uuid = uuid,
     title = title,
     tagId = tagId,
-    createdAt = createdAt.toDate(),
-    updatedAt = updatedAt.toDate(),
+    createdAt = createdAt.toString(),
+    updatedAt = updatedAt.toJavaLocalDateTime().toUtcIsoString(),
     restDays = restDays,
 )

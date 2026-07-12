@@ -1,31 +1,35 @@
 package com.tgyuu.network.model.sync
 
-import com.google.firebase.firestore.PropertyName
-import com.google.firebase.firestore.ServerTimestamp
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
-import com.tgyuu.network.defaultDate
-import com.tgyuu.network.toDate
-import com.tgyuu.network.toLocalDateTime
-import java.util.Date
+import com.tgyuu.network.util.toLocalDateTimeFromUtc
+import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class RepeatCycleDto(
-    val id: Int = -1,
-    val intervals: List<Int> = emptyList(),
-    @PropertyName("deleted") val isDeleted: Boolean = false,
-    val updatedAt: Date = defaultDate,
-    @ServerTimestamp var uploadedAt: Date? = null,
+    @EncodeDefault val id: Int = -1,
+    @EncodeDefault val uuid: String = "",
+    @EncodeDefault val intervals: List<Int> = emptyList(),
+    @EncodeDefault @SerialName("is_deleted") val isDeleted: Boolean = false,
+    @EncodeDefault @SerialName("updated_at") val updatedAt: String = "",
+    @SerialName("uploaded_at") val uploadedAt: String? = null,
 ) {
     fun toDomain() = RepeatCycleForSync(
         id = id,
         intervals = intervals,
         isDeleted = isDeleted,
-        updatedAt = updatedAt.toLocalDateTime(),
+        updatedAt = updatedAt.toLocalDateTimeFromUtc().toKotlinLocalDateTime(),
     )
 }
 
-fun RepeatCycleForSync.toDto() = RepeatCycleDto(
+fun RepeatCycleForSync.toDto(uuid: String) = RepeatCycleDto(
     id = id,
+    uuid = uuid,
     intervals = intervals,
     isDeleted = isDeleted,
-    updatedAt = updatedAt.toDate(),
+    updatedAt = updatedAt.toJavaLocalDateTime().toUtcIsoString(),
 )

@@ -1,16 +1,19 @@
 package com.tgyuu.home.graph.addtodo
 
 import android.util.Log
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
@@ -18,8 +21,6 @@ import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.model.toUiModel
@@ -43,38 +44,58 @@ import kotlin.time.ExperimentalTime
 class AddTodoViewModel(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
-    private val experimentRepository: ExperimentRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
+) : BaseViewModel<AddTodoState, AddTodoIntent>(
+    AddTodoState(
+        selectedDate = (savedStateHandle.get<String>("selectedDate")
+            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")).toLocalDateOrThrow(),
+        tag = DefaultTodoTag.toUiModel(),
+        repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider),
+    )
+) {
 
     init {
-        val dateStr = savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddTodo",
+            )
+        )
 
         setState {
             copy(
-                selectedDate = dateStr.toLocalDateOrThrow(),
-                tag = DefaultTodoTag.toUiModel(),
-                repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+                tag = tag?.copy(name = resourceProvider.getString(R.string.tag_unassigned))
             )
         }
+
         initNotificationState()
+
+        viewModelScope.launch {
+            configRepository.getMondayStart()
+                .collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
-        val message = configRepository.getAlarmMessage()
+        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
+        val storedMessage = configRepository.getAlarmMessage()
+        val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) defaultMessage else storedMessage
 
         setState {
             copy(
                 notificationState = notificationState.copy(
                     alarmHour = hour,
                     alarmMinute = minute,
+                    defaultMessage = defaultMessage,
                     message = message,
                     originMessage = message,
+                    placeholderToken = placeholderToken,
                 )
             )
         }
@@ -93,7 +114,7 @@ class AddTodoViewModel(
         todoRepository.recentAddedRepeatCycleId?.let {
             viewModelScope.launch {
                 val newRepeatCycle = todoRepository.loadRepeatCycle(it.toInt())
-                setState { copy(repeatCycle = newRepeatCycle.toUiModel()) }
+                setState { copy(repeatCycle = newRepeatCycle.toUiModel(resourceProvider)) }
             }
         }
     }
@@ -106,7 +127,7 @@ class AddTodoViewModel(
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels()) }
+        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {
@@ -124,7 +145,7 @@ class AddTodoViewModel(
 
             is AddTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is AddTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
+            is AddTodoIntent.OnPinnedChange -> onPinnedChange(intent.isPinned)
             is AddTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
@@ -160,11 +181,8 @@ class AddTodoViewModel(
         setState { copy(title = title) }
     }
 
-    private fun onPriorityChange(priority: String) {
-        if (!priority.isDigitsOnly()) return
-        if (priority.length >= 4) return
-
-        setState { copy(priority = priority) }
+    private fun onPinnedChange(isPinned: Boolean) {
+        setState { copy(isPinned = isPinned) }
     }
 
     private suspend fun onTagChange(todoTag: TodoTagUiModel) {
@@ -189,7 +207,7 @@ class AddTodoViewModel(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("모든 요일을 휴식할 수는 없습니다"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_all_rest_days)))
             return
         }
 
@@ -208,8 +226,15 @@ class AddTodoViewModel(
 
     @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "AddTodo",
+                buttonName = "Save",
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return
         }
 
@@ -228,7 +253,7 @@ class AddTodoViewModel(
             title = currentState.title,
             dates = currentState.schedules,
             tagId = tag.id,
-            priority = currentState.priority?.toIntOrNull(),
+            isPinned = currentState.isPinned,
             restDays = currentState.restDays.toSet(),
         )
 
@@ -262,7 +287,7 @@ class AddTodoViewModel(
         val isFirstTodo = configRepository.markFirstTodoAdded()
         configRepository.incrementTodoRegisteredCount()
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("새로운 일정을 추가하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_added)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(
@@ -307,7 +332,7 @@ class AddTodoViewModel(
         setState {
             copy(
                 notificationState = notificationState.copy(
-                    message = DEFAULT_ALARM_MESSAGE
+                    message = notificationState.defaultMessage
                 )
             )
         }

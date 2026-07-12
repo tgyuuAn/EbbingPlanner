@@ -96,5 +96,5 @@ sealed interface SyncGraph : Route {
     data object SyncMainRoute : SyncGraph
 
     @Serializable
-    data object ConnectRoute : SyncGraph
+    data object RestoreByDeviceIdRoute : SyncGraph
 }

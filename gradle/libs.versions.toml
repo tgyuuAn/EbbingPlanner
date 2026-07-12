@@ -84,7 +84,7 @@ metricsPerformance = "1.0.0-beta02"
 amplitude = "1.21.3"
 
 ## Ktor
-ktor = "3.1.1"
+ktor = "3.1.3"
 
 ## Supabase (supabase-kt, KMP)
 supabase = "3.1.4"
@@ -115,6 +115,18 @@ decompose = "3.0.0"
 ## KMP Lifecycle ViewModel
 # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-viewmodel.html
 lifecycleViewModelKmp = "2.8.0"
+
+## ML Kit
+# https://developers.google.com/ml-kit/vision/barcode-scanning/android
+mlkitBarcode = "17.3.0"
+
+## CameraX
+# https://developer.android.com/jetpack/androidx/releases/camera
+camerax = "1.4.2"
+
+## QRose (QR code generation)
+# https://github.com/alexzhirkevich/qrose
+qrose = "1.0.1"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -178,6 +190,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
@@ -231,6 +244,15 @@ lifecycle-viewmodel-compose-kmp = { group = "org.jetbrains.androidx.lifecycle", 
 # Koin Compose Multiplatform
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinComposeMultiplatform" }
 koin-compose-viewmodel-kmp = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koinComposeMultiplatform" }
+
+# QR (scan + generate)
+mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitBarcode" }
+camerax-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
+camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
+qrose = { group = "io.github.alexzhirkevich", name = "qrose", version.ref = "qrose" }
+
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 
 [bundles]
 

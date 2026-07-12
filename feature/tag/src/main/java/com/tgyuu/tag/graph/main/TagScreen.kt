@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +42,7 @@ import com.tgyuu.common.now
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -108,11 +110,11 @@ private fun TagScreen(
                 .clickable { selectedTag = null },
         ) {
             EbbingSubTopBar(
-                title = "태그 관리",
+                title = stringResource(R.string.tag_manage_title),
                 onNavigationClick = onBackClick,
                 rightComponent = {
                     Text(
-                        text = "추가",
+                        text = stringResource(R.string.tag_add_button),
                         style = EbbingTheme.typography.body16M,
                         color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier
@@ -130,7 +132,7 @@ private fun TagScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "등록된 태그가 없어요.\n우측 상단 추가 버튼을 눌러 태그를 추가해보세요.",
+                        text = stringResource(R.string.tag_empty_message),
                         style = EbbingTheme.typography.body14M,
                         textAlign = TextAlign.Center,
                         color = EbbingTheme.colors.textDisabled,
@@ -200,13 +202,13 @@ private fun TagScreen(
                 modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
             ) {
                 EbbingOutlinedButton(
-                    label = "삭제",
+                    label = stringResource(R.string.tag_delete),
                     onClick = { isShowDialog = true },
                     modifier = Modifier.weight(1f),
                 )
 
                 EbbingSolidButton(
-                    label = "수정",
+                    label = stringResource(R.string.tag_edit),
                     onClick = { selectedTag?.let(onEditClick) },
                     modifier = Modifier.weight(1f),
                 )

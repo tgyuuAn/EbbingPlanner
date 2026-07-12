@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,6 +31,7 @@ import com.tgyuu.common.util.MemoryAnimationController
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.ebbingplanner.backup.AutoBackupManager
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.HandleAppUpdate
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
@@ -50,6 +50,7 @@ import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.sync.network.NetworkMonitor
+import com.tgyuu.sync.network.NetworkState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
     private val eventBus: EventBus by inject()
     private val networkMonitor: NetworkMonitor by inject()
     private val analyticsHelper: AnalyticsHelper by inject()
+    private val autoBackupManager: AutoBackupManager by inject()
 
     private var isInitialized = true
 
@@ -76,6 +78,14 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             viewModel.initAppState()
             isInitialized = false
+        }
+
+        lifecycleScope.launch {
+            networkMonitor.networkState.collect { state ->
+                if (state == NetworkState.Connected) {
+                    autoBackupManager.tryPendingBackup()
+                }
+            }
         }
 
         setContent {
@@ -111,7 +121,7 @@ class MainActivity : ComponentActivity() {
                                     navigationBus.navigate(
                                         To(
                                             SettingGraph.WebViewRoute(
-                                                title = "공지사항",
+                                                title = getString(com.tgyuu.designsystem.R.string.setting_announcement),
                                                 url = BuildConfig.EBBING_NOTICE_URL,
                                             )
                                         )
@@ -133,6 +143,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
+        if (!isChangingConfigurations) {
+            lifecycleScope.launch { autoBackupManager.onAppStop() }
+        }
+
         sendBroadcast(
             Intent(this, TodayTodoWidgetReceiver::class.java).apply {
                 action = RefreshAction.UPDATE_ACTION
@@ -185,7 +199,7 @@ class MainActivity : ComponentActivity() {
 
             launch {
                 navigationBus.navigationFlow.collect { event ->
-                    eventBus.sendEvent(EbbingEvent.HideSnackBar)
+                    snackBarHostState.currentSnackbarData?.dismiss()
 
                     when (event) {
                         is NavigationEvent.To -> {

@@ -1,11 +1,11 @@
 package com.tgyuu.network.model.sync
 
-import com.google.firebase.Timestamp
+import java.time.ZonedDateTime
 
 data class SyncDataDto(
     val schedules: List<TodoScheduleDto> = emptyList(),
     val todoInfos: List<TodoInfoDto> = emptyList(),
     val repeatCycles: List<RepeatCycleDto> = emptyList(),
     val tags: List<TodoTagDto> = emptyList(),
-    val syncedAt: Timestamp? = null,
+    val syncedAt: ZonedDateTime? = null,
 )

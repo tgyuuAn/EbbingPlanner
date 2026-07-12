@@ -2,9 +2,13 @@ package com.tgyuu.tag.graph.edittag
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
@@ -16,10 +20,18 @@ class EditTagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "EditTag",
+            )
+        )
+
         val tagId = savedStateHandle.get<Int>("tagId")
             ?: throw IllegalArgumentException("해당 태그는 없습니다")
 
@@ -64,8 +76,15 @@ class EditTagViewModel(
     }
 
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "EditTag",
+                buttonName = "Save",
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_required_fields)))
             return
         }
 
@@ -83,7 +102,7 @@ class EditTagViewModel(
                 color = currentState.colorValue,
             )
         )
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그를 수정하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_updated)))
         navigationBus.navigate(NavigationEvent.Up)
     }
 }

@@ -25,9 +25,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -38,9 +38,9 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.now
 import com.tgyuu.common.util.EbbingPageTransitionAnimation
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingColors
@@ -55,7 +55,7 @@ import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.ui.dialog.ConfirmExitDialog
 import com.tgyuu.home.graph.notification.NotificationScreen
-import com.tgyuu.home.graph.ui.PriorityContent
+import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleContent
@@ -103,7 +103,7 @@ internal fun AddTodoRoute(
                     )
                 },
                 onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
-                onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
+                onPinnedChange = { viewModel.onIntent(AddTodoIntent.OnPinnedChange(it)) },
                 onTagDropDownClick = {
                     viewModel.onIntent(
                         AddTodoIntent.OnTagDropDownClick(
@@ -148,7 +148,6 @@ internal fun AddTodoRoute(
 
             AddTodoState.Page.NOTIFICATION -> NotificationScreen(
                 state = state.notificationState,
-                isTreatment = state.isTreatment,
                 onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
                 onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
                 onNotificationToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
@@ -168,7 +167,7 @@ private fun AddTodoScreen(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -201,7 +200,7 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
-            onPriorityChange = onPriorityChange,
+            onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
@@ -217,7 +216,7 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
-            onPriorityChange = onPriorityChange,
+            onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
@@ -233,7 +232,7 @@ private fun AddTodoScreenPhone(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -249,26 +248,9 @@ private fun AddTodoScreenPhone(
             .imePadding()
     ) {
         EbbingSubTopBar(
-            title = "일정 추가",
+            title = stringResource(R.string.home_add_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                if (!state.isTreatment) {
-                    Text(
-                        text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -286,7 +268,7 @@ private fun AddTodoScreenPhone(
                 onSelectedDateChangeClick = onSelectedDateChangeClick,
                 onTitleChange = onTitleChange,
                 onTagDropDownClick = onTagDropDownClick,
-                onPriorityChange = onPriorityChange,
+                onPinnedChange = onPinnedChange,
                 onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                 onRestDayChange = onRestDayChange,
             )
@@ -294,20 +276,18 @@ private fun AddTodoScreenPhone(
             ScheduleContent(schedules = state.schedules)
         }
 
-        if (state.isTreatment) {
-            EbbingSolidButton(
-                label = "저장",
-                onClick = {
-                    onSaveClick()
-                    focusManager.clearFocus()
-                },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        EbbingSolidButton(
+            label = stringResource(R.string.home_add_todo_button),
+            onClick = {
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
@@ -317,7 +297,7 @@ private fun AddTodoScreenTablet(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
@@ -333,29 +313,16 @@ private fun AddTodoScreenTablet(
             .imePadding()
     ) {
         EbbingSubTopBar(
-            title = "일정 추가",
+            title = stringResource(R.string.home_add_todo_title),
             onNavigationClick = onBackClick,
-            rightComponent = {
-                Text(
-                    text = "저장",
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
-                )
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier
@@ -371,7 +338,7 @@ private fun AddTodoScreenTablet(
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onTitleChange = onTitleChange,
                     onTagDropDownClick = onTagDropDownClick,
-                    onPriorityChange = onPriorityChange,
+                    onPinnedChange = onPinnedChange,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     onRestDayChange = onRestDayChange,
                 )
@@ -386,6 +353,19 @@ private fun AddTodoScreenTablet(
                 ScheduleContent(schedules = state.schedules)
             }
         }
+
+        EbbingSolidButton(
+            label = stringResource(R.string.home_add_todo_button),
+            onClick = {
+                onSaveClick()
+                focusManager.clearFocus()
+            },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
@@ -396,10 +376,16 @@ private fun TodoMainFormContent(
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
     onTagDropDownClick: () -> Unit,
-    onPriorityChange: (String) -> Unit,
+    onPinnedChange: (Boolean) -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
 ) {
+    val monthDayText = stringResource(
+        R.string.home_month_day,
+        state.selectedDate.monthNumber,
+        state.selectedDate.dayOfMonth,
+    )
+    val addTodoHeaderSuffix = stringResource(R.string.home_add_todo_header_suffix)
     Text(
         text = buildAnnotatedString {
             withStyle(
@@ -408,9 +394,9 @@ private fun TodoMainFormContent(
                     color = EbbingTheme.colors.textPrimary,
                 )
             ) {
-                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
+                append(monthDayText)
             }
-            append(" 부터\n시작하는 일정을 만들어요")
+            append(addTodoHeaderSuffix)
         },
         style = EbbingTheme.typography.heading24B,
         color = EbbingTheme.colors.textOnBackground,
@@ -428,11 +414,6 @@ private fun TodoMainFormContent(
         onTagDropDownClick = onTagDropDownClick,
     )
 
-    PriorityContent(
-        priority = state.priority,
-        onPriorityChange = onPriorityChange,
-    )
-
     RepeatCycleContent(
         repeatCycle = state.repeatCycle,
         onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -441,6 +422,11 @@ private fun TodoMainFormContent(
     RestDayContent(
         restDays = state.restDays,
         onRestDayChange = onRestDayChange,
+    )
+
+    PinnedContent(
+        isPinned = state.isPinned,
+        onPinnedChange = onPinnedChange,
     )
 }
 
@@ -452,7 +438,7 @@ private fun PreviewAddTodo() {
             state = AddTodoState(
                 selectedDate = LocalDate.now(),
                 title = "토익",
-                priority = "3",
+                isPinned = true,
                 repeatCycle = RepeatCycleUiModel(
                     id = 1,
                     intervals = persistentListOf(1, 3, 7, 14, 30),
@@ -464,7 +450,7 @@ private fun PreviewAddTodo() {
             onSaveClick = {},
             onBackClick = {},
             onTitleChange = {},
-            onPriorityChange = {},
+            onPinnedChange = {},
             onTagDropDownClick = {},
             onRepeatCycleDropDownClick = {},
             onRestDayChange = {},

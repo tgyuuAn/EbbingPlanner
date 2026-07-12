@@ -9,7 +9,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
-import kotlin.math.absoluteValue
 
 /**
  * 현재 시스템 날짜/시간 가져오기
@@ -81,26 +80,6 @@ fun String.toLocalDateTimeOrThrow(): LocalDateTime {
     } catch (e: Exception) {
         throw IllegalArgumentException("날짜 시간 형식이 올바르지 않습니다: $this", e)
     }
-}
-
-/**
- * 기준일(referenceDate, 기본값: 오늘)로부터 이 날짜(this)가
- * 같으면 "오늘", 미래면 "N일 후", 과거면 "N일 전"을 반환
- */
-fun LocalDate.toRelativeDayDescription(referenceDate: LocalDate = LocalDate.now()): String {
-    val diff = this.daysUntil(referenceDate)
-    return when {
-        diff == 0 -> "오늘"
-        diff > 0 -> "${diff}일 전"
-        else -> "${diff.absoluteValue}일 후"
-    }
-}
-
-/**
- * 두 날짜 사이 일수 계산
- */
-fun LocalDate.daysUntil(other: LocalDate): Int {
-    return (other.toEpochDays() - this.toEpochDays()).toInt()
 }
 
 /**

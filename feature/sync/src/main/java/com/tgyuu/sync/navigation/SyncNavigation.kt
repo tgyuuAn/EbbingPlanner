@@ -5,8 +5,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.tgyuu.navigation.SyncBaseRoute
 import com.tgyuu.navigation.SyncGraph
-import com.tgyuu.sync.graph.connect.ConnectRoute
 import com.tgyuu.sync.graph.main.SyncMainRoute
+import com.tgyuu.sync.graph.restore.RestoreByDeviceIdRoute
 
 fun NavGraphBuilder.syncNavigation() {
     navigation<SyncBaseRoute>(startDestination = SyncGraph.SyncMainRoute) {
@@ -14,8 +14,8 @@ fun NavGraphBuilder.syncNavigation() {
             SyncMainRoute()
         }
 
-        composable<SyncGraph.ConnectRoute> {
-            ConnectRoute()
+        composable<SyncGraph.RestoreByDeviceIdRoute> {
+            RestoreByDeviceIdRoute()
         }
     }
 }

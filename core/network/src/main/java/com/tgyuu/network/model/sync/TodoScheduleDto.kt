@@ -1,47 +1,51 @@
 package com.tgyuu.network.model.sync
 
-import com.google.firebase.firestore.PropertyName
-import com.google.firebase.firestore.ServerTimestamp
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
-import com.tgyuu.network.defaultDate
-import com.tgyuu.network.toDate
-import com.tgyuu.network.toLocalDate
-import com.tgyuu.network.toLocalDateTime
-import java.util.Date
+import com.tgyuu.network.util.toLocalDateTimeFromUtc
+import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.datetime.LocalDate
 
+@Serializable
 data class TodoScheduleDto(
-    val id: Int = -1,
-    val infoId: Int = -1,
-    val date: Date = defaultDate,
-    val memo: String = "",
-    val priority: Int = 0,
-    @PropertyName("done") val isDone: Boolean = false,
-    val createdAt: Date = defaultDate,
-    @PropertyName("deleted") val isDeleted: Boolean = false,
-    val updatedAt: Date = defaultDate,
-    @ServerTimestamp var uploadedAt: Date? = null,
+    @EncodeDefault val id: Int = -1,
+    @EncodeDefault val uuid: String = "",
+    @EncodeDefault @SerialName("info_id") val infoId: Int = -1,
+    @EncodeDefault val date: String = "",
+    @EncodeDefault val memo: String = "",
+    @EncodeDefault val priority: Int = 0,
+    @EncodeDefault @SerialName("is_done") val isDone: Boolean = false,
+    @EncodeDefault @SerialName("is_deleted") val isDeleted: Boolean = false,
+    @EncodeDefault @SerialName("created_at") val createdAt: String = "",
+    @EncodeDefault @SerialName("updated_at") val updatedAt: String = "",
+    @SerialName("uploaded_at") val uploadedAt: String? = null,
 ) {
     fun toDomain(): TodoScheduleForSync = TodoScheduleForSync(
         id = id,
         infoId = infoId,
-        date = date.toLocalDate(),
+        date = LocalDate.parse(date),
         memo = memo,
-        priority = priority,
+        isPinned = priority != 0,
         isDone = isDone,
-        createdAt = createdAt.toLocalDate(),
+        createdAt = LocalDate.parse(createdAt),
         isDeleted = isDeleted,
-        updatedAt = updatedAt.toLocalDateTime(),
+        updatedAt = updatedAt.toLocalDateTimeFromUtc().toKotlinLocalDateTime(),
     )
 }
 
-fun TodoScheduleForSync.toDto(): TodoScheduleDto = TodoScheduleDto(
+fun TodoScheduleForSync.toDto(uuid: String): TodoScheduleDto = TodoScheduleDto(
     id = id,
+    uuid = uuid,
     infoId = infoId,
-    date = date.toDate(),
+    date = date.toString(),
     memo = memo,
-    priority = priority,
+    priority = if (isPinned) 1 else 0,
     isDone = isDone,
-    createdAt = createdAt.toDate(),
     isDeleted = isDeleted,
-    updatedAt = updatedAt.toDate(),
+    createdAt = createdAt.toString(),
+    updatedAt = updatedAt.toJavaLocalDateTime().toUtcIsoString(),
 )

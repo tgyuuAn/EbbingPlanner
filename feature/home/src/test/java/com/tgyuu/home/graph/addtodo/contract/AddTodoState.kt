@@ -20,9 +20,9 @@ class EditDateStateTest {
     }
 
     @Test
-    fun `우선순위를 입력하였을 경우 작성상태이다`(){
+    fun `상단 고정을 선택하였을 경우 작성상태이다`(){
         // given
-        val addTodoState = AddTodoState(priority = "1")
+        val addTodoState = AddTodoState(isPinned = true)
 
         // when
         val actual = addTodoState.isModified

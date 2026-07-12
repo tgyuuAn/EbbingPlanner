@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
@@ -29,8 +31,11 @@ internal fun OptionsBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "편집",
-            subTitle = "${selectedSchedule.title.originalText} 일정을 어떻게 할까요?"
+            title = stringResource(R.string.home_options_title),
+            subTitle = stringResource(
+                R.string.home_options_subtitle,
+                selectedSchedule.title.originalText,
+            )
         )
 
         Column(
@@ -39,7 +44,7 @@ internal fun OptionsBottomSheet(
                 .padding(top = 20.dp, bottom = 22.dp),
         ) {
             Text(
-                text = "수정하기",
+                text = stringResource(R.string.home_options_edit),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
@@ -51,7 +56,7 @@ internal fun OptionsBottomSheet(
             )
 
             Text(
-                text = "삭제하기",
+                text = stringResource(R.string.home_options_delete),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
@@ -63,7 +68,7 @@ internal fun OptionsBottomSheet(
             )
 
             Text(
-                text = "내일로 미루기",
+                text = stringResource(R.string.home_options_delay_tomorrow),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
@@ -75,7 +80,7 @@ internal fun OptionsBottomSheet(
             )
 
             Text(
-                text = if (selectedSchedule.memo.originalText.isEmpty()) "메모 추가하기" else "메모 수정하기",
+                text = if (selectedSchedule.memo.originalText.isEmpty()) stringResource(R.string.home_options_add_memo) else stringResource(R.string.home_options_edit_memo),
                 style = EbbingTheme.typography.body16M,
                 color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
@@ -88,7 +93,7 @@ internal fun OptionsBottomSheet(
 
             if (selectedSchedule.memo.originalText.isNotEmpty()) {
                 Text(
-                    text = "메모 지우기",
+                    text = stringResource(R.string.home_options_delete_memo),
                     style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.textOnBackground,
                     maxLines = 1,

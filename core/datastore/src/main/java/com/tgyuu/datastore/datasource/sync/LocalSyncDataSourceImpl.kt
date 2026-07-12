@@ -31,6 +31,18 @@ class LocalSyncDataSourceImpl(
         get() = dataStore.data
             .map { prefs -> prefs[CONNECT_CODE_EXPIRATION_TIME]?.let { LocalDateTime.parse(it) } }
 
+    override val peerUuid: Flow<String?>
+        get() = dataStore.data
+            .map { prefs -> prefs[PEER_UUID] }
+
+    override val peerDeviceName: Flow<String?>
+        get() = dataStore.data
+            .map { prefs -> prefs[PEER_DEVICE_NAME] }
+
+    override val linkCode: Flow<String?>
+        get() = dataStore.data
+            .map { prefs -> prefs[LINK_CODE] }
+
     override suspend fun ensureUUIDExists() {
         dataStore.edit { prefs ->
             val savedUuid = prefs[UUID]
@@ -85,11 +97,39 @@ class LocalSyncDataSourceImpl(
         }
     }
 
+    override suspend fun setPeer(uuid: String?, deviceName: String?) {
+        dataStore.edit { prefs ->
+            if (uuid == null) {
+                prefs.remove(PEER_UUID)
+            } else {
+                prefs[PEER_UUID] = uuid
+            }
+            if (deviceName == null) {
+                prefs.remove(PEER_DEVICE_NAME)
+            } else {
+                prefs[PEER_DEVICE_NAME] = deviceName
+            }
+        }
+    }
+
+    override suspend fun setLinkCode(code: String?) {
+        dataStore.edit { prefs ->
+            if (code == null) {
+                prefs.remove(LINK_CODE)
+            } else {
+                prefs[LINK_CODE] = code
+            }
+        }
+    }
+
     companion object {
         private val UUID = stringPreferencesKey("UUID")
         private val CONNECTED_UUID = stringPreferencesKey("CONNECTED_UUID")
         private val LAST_SYNC_TIME = stringPreferencesKey("LAST_SYNC_TIME")
         private val CONNECT_CODE = stringPreferencesKey("CONNECT_CODE")
         private val CONNECT_CODE_EXPIRATION_TIME = stringPreferencesKey("CODE_EXPIRATION_TIME")
+        private val PEER_UUID = stringPreferencesKey("PEER_UUID")
+        private val PEER_DEVICE_NAME = stringPreferencesKey("PEER_DEVICE_NAME")
+        private val LINK_CODE = stringPreferencesKey("LINK_CODE")
     }
 }

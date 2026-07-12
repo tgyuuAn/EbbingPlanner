@@ -20,6 +20,7 @@ android {
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.domain)
+    implementation(projects.core.designsystem)
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.koin.core)

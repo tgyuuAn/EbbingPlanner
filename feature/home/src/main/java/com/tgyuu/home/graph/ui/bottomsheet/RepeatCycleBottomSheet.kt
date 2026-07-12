@@ -20,9 +20,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.verticalScrollbar
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -51,6 +54,7 @@ internal fun RepeatCycleBottomSheet(
     var showEndDatePicker by remember(openKey) { mutableStateOf(false) }
     var dailyEndDate by remember(openKey) { mutableStateOf<LocalDate?>(null) }
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -62,12 +66,12 @@ internal fun RepeatCycleBottomSheet(
         }
 
         EbbingBottomSheetHeader(
-            title = if (showEndDatePicker) "종료일 선택" else "반복 주기",
+            title = if (showEndDatePicker) stringResource(R.string.home_select_end_date) else stringResource(R.string.home_repeat_cycle),
             rightComponent = {
                 if (showEndDatePicker) {
                     if (dayCountForHeader != null && dayCountForHeader > 0 && dayCountForHeader < RepeatCycle.MAX_DAILY_REPEAT_DAYS) {
                         Text(
-                            text = "총 ${dayCountForHeader + 1}일간 매일 반복",
+                            text = stringResource(R.string.home_daily_repeat_total, dayCountForHeader + 1),
                             style = EbbingTheme.typography.body14M,
                             color = EbbingTheme.colors.primaryNormal,
                         )
@@ -119,7 +123,11 @@ internal fun RepeatCycleBottomSheet(
 
             Column {
                 Text(
-                    text = "${selectedDate.monthNumber}월 ${selectedDate.dayOfMonth}일부터 언제까지 반복할까요?",
+                    text = stringResource(
+                        R.string.home_daily_repeat_prompt,
+                        selectedDate.monthNumber,
+                        selectedDate.dayOfMonth,
+                    ),
                     style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(top = 8.dp),
@@ -149,7 +157,10 @@ internal fun RepeatCycleBottomSheet(
 
                 if (exceedsMax) {
                     Text(
-                        text = "최대 ${RepeatCycle.MAX_DAILY_REPEAT_DAYS}일까지 설정할 수 있습니다",
+                        text = stringResource(
+                            R.string.home_daily_repeat_max,
+                            RepeatCycle.MAX_DAILY_REPEAT_DAYS,
+                        ),
                         style = EbbingTheme.typography.body14M,
                         color = EbbingTheme.colors.statusError,
                         modifier = Modifier.padding(top = 4.dp),
@@ -159,7 +170,7 @@ internal fun RepeatCycleBottomSheet(
         }
 
         EbbingSolidButton(
-            label = if (showEndDatePicker) "적용하기" else "적용하기",
+            label = stringResource(R.string.home_apply),
             enabled = if (showEndDatePicker) {
                 val dayCount = dailyEndDate?.let {
                     selectedDate.until(it, DateTimeUnit.DAY).toInt()
@@ -172,14 +183,26 @@ internal fun RepeatCycleBottomSheet(
                         val dayCount = selectedDate.until(endDate, DateTimeUnit.DAY).toInt()
                         val intervals = (0..dayCount).toList()
                         val endDateText = if (endDate.year != selectedDate.year) {
-                            "${endDate.year}년 ${endDate.monthNumber}월 ${endDate.dayOfMonth}일"
+                            context.getString(
+                                R.string.home_end_date_with_year,
+                                endDate.year,
+                                endDate.monthNumber,
+                                endDate.dayOfMonth,
+                            )
                         } else {
-                            "${endDate.monthNumber}월 ${endDate.dayOfMonth}일"
+                            context.getString(
+                                R.string.home_month_day,
+                                endDate.monthNumber,
+                                endDate.dayOfMonth,
+                            )
                         }
                         val dailyCycle = RepeatCycleUiModel(
                             id = RepeatCycle.DAILY_REPEAT_ID,
                             intervals = intervals.toImmutableList(),
-                            displayName = "매일하기 ($endDateText 까지)",
+                            displayName = context.getString(
+                                R.string.home_daily_repeat_display_name,
+                                endDateText,
+                            ),
                         )
                         updateRepeatCycle(dailyCycle)
                     }

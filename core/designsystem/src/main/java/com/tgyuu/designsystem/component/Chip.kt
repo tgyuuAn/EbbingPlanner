@@ -29,8 +29,8 @@ fun EbbingChip(
         label = {
             Text(
                 text = label,
-                style = if (selected) EbbingTheme.typography.heading14SB
-                else EbbingTheme.typography.body14M,
+                style = if (selected) EbbingTheme.typography.heading16SB
+                else EbbingTheme.typography.body16M,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

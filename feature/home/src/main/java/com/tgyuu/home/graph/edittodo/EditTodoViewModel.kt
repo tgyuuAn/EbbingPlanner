@@ -1,15 +1,18 @@
 package com.tgyuu.home.graph.edittodo
 
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.now
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
@@ -38,10 +41,18 @@ class EditTodoViewModel(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
     init {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "EditTodo",
+            )
+        )
+
         val scheduleId = savedStateHandle.get<Int>("scheduleId")
             ?: throw IllegalArgumentException("해당 일정은 없습니다")
 
@@ -72,7 +83,7 @@ class EditTodoViewModel(
                         .toImmutableMap(),
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
-                    priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
+                    isPinned = originSchedule.isPinned,
                     tag = originTag.toUiModel(),
                     restDays = todoInfo.restDays.toImmutableSet(),
                 )
@@ -109,7 +120,7 @@ class EditTodoViewModel(
 
             is EditTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is EditTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is EditTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
+            is EditTodoIntent.OnPinnedChange -> onPinnedChange(intent.isPinned)
             is EditTodoIntent.OnTagDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
             )
@@ -129,7 +140,7 @@ class EditTodoViewModel(
             ?: emptySet()
 
         if (date in scheduledDates) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 해당 날짜에 일정이 있습니다."))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_date_already_has_schedule)))
             eventBus.sendEvent(EbbingEvent.HideBottomSheet)
             return
         }
@@ -142,11 +153,8 @@ class EditTodoViewModel(
         setState { copy(title = title) }
     }
 
-    private fun onPriorityChange(priority: String) {
-        if (!priority.isDigitsOnly()) return
-        if (priority.length >= 4) return
-
-        setState { copy(priority = priority) }
+    private fun onPinnedChange(isPinned: Boolean) {
+        setState { copy(isPinned = isPinned) }
     }
 
     private suspend fun onTagChange(todoTag: TodoTagUiModel) {
@@ -162,8 +170,15 @@ class EditTodoViewModel(
 
     @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "EditTodo",
+                buttonName = "Save",
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("필수 항목을 작성해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return
         }
 
@@ -175,7 +190,7 @@ class EditTodoViewModel(
             tagId = tag.id,
             name = tag.name,
             color = tag.color,
-            priority = currentState.priority?.toIntOrNull() ?: 0,
+            isPinned = currentState.isPinned,
         )
 
         todoRepository.updateTodo(newSchedule)
@@ -207,7 +222,7 @@ class EditTodoViewModel(
             }
         }
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정을 업데이트 하였습니다"))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_updated)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeGraph.HomeRoute(currentState.selectedDate.toFormattedString()),

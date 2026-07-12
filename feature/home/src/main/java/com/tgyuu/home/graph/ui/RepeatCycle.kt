@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingTextInputDropDown
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
@@ -17,8 +19,8 @@ internal fun RepeatCycleContent(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "반복 주기",
-        style = EbbingTheme.typography.body16M,
+        text = stringResource(R.string.home_repeat_cycle),
+        style = EbbingTheme.typography.heading14SB,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )

@@ -15,20 +15,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.repeatcycle.graph.addrepeatcycle.AddRepeatCycleViewModel
+import com.tgyuu.designsystem.R
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.contract.AddRepeatCycleState
 import com.tgyuu.repeatcycle.ui.PreviewContent
@@ -61,26 +60,9 @@ private fun AddRepeatCycleScreen(
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         Column(modifier = modifier.fillMaxSize()) {
             EbbingSubTopBar(
-                title = "반복 주기 추가",
+                title = stringResource(R.string.repeat_add_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {
-                    if (true) {
-                        Text(
-                            text = "저장",
-                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .throttledClickable(
-                                    throttleTime = 1500L,
-                                    enabled = state.isSaveEnabled
-                                ) {
-                                    onSaveClick()
-                                    focusManager.clearFocus()
-                                },
-                        )
-                    }
-                },
+                rightComponent = {},
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
@@ -92,7 +74,7 @@ private fun AddRepeatCycleScreen(
                     .imePadding(),
             ) {
                 Text(
-                    text = "나만의 반복 주기를 추가해요.",
+                    text = stringResource(R.string.repeat_add_headline),
                     style = EbbingTheme.typography.heading24B,
                     color = EbbingTheme.colors.textOnBackground,
                 )
@@ -107,20 +89,18 @@ private fun AddRepeatCycleScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            if (false) {
-                EbbingSolidButton(
-                    label = "저장",
-                    onClick = {
-                        onSaveClick()
-                        focusManager.clearFocus()
-                    },
-                    enabled = state.isSaveEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(EbbingTheme.colors.background)
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                )
-            }
+            EbbingSolidButton(
+                label = stringResource(R.string.repeat_register_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     } else {
         Column(
@@ -129,29 +109,15 @@ private fun AddRepeatCycleScreen(
                 .padding(horizontal = 20.dp),
         ) {
             EbbingSubTopBar(
-                title = "반복 주기 추가",
+                title = stringResource(R.string.repeat_add_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {
-                    Text(
-                        text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                },
+                rightComponent = {},
             )
 
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .imePadding()
             ) {
                 Column(
@@ -161,7 +127,7 @@ private fun AddRepeatCycleScreen(
                         .padding(horizontal = 20.dp),
                 ) {
                     Text(
-                        text = "나만의 반복 주기를 추가해요.",
+                        text = stringResource(R.string.repeat_add_headline),
                         style = EbbingTheme.typography.heading24B,
                         color = EbbingTheme.colors.textOnBackground,
                     )
@@ -181,6 +147,19 @@ private fun AddRepeatCycleScreen(
                     PreviewContent(preview = state.previewRepeatCycle)
                 }
             }
+
+            EbbingSolidButton(
+                label = stringResource(R.string.repeat_register_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

@@ -15,9 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -41,6 +41,15 @@ import com.tgyuu.memo.ui.dialog.SaveMemoDialog
 @Composable
 internal fun EditMemoRoute(viewModel: EditMemoViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    if (state.showSaveDialog) {
+        SaveMemoDialog(
+            relatedCount = state.relatedScheduleCount,
+            onDismissRequest = { viewModel.onIntent(EditMemoIntent.OnDismissSaveDialog) },
+            onSaveToAllClick = { viewModel.onIntent(EditMemoIntent.OnSaveToAllRelatedClick) },
+            onSaveToSingleClick = { viewModel.onIntent(EditMemoIntent.OnSaveToSingleClick) },
+        )
+    }
 
     EditMemoScreen(
         state = state,
@@ -65,26 +74,9 @@ private fun EditMemoScreen(
     if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         Column(modifier = modifier.fillMaxSize().imePadding()) {
             EbbingSubTopBar(
-                title = "메모 수정",
+                title = stringResource(R.string.memo_edit_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {
-                    if (true) {
-                        Text(
-                            text = "저장",
-                            style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                            color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .throttledClickable(
-                                    throttleTime = 1500L,
-                                    enabled = state.isSaveEnabled
-                                ) {
-                                    onSaveClick()
-                                    focusManager.clearFocus()
-                                },
-                        )
-                    }
-                },
+                rightComponent = {},
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
@@ -94,12 +86,13 @@ private fun EditMemoScreen(
                     .verticalScroll(scrollState)
                     .padding(20.dp),
             ) {
+                val headlineSuffix = stringResource(R.string.memo_edit_headline_suffix)
                 Text(
                     text = buildAnnotatedString {
                         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                             append("${state.originSchedule?.title}")
                         }
-                        append(" 일정에\n메모를 수정해요")
+                        append(headlineSuffix)
                     },
                     style = EbbingTheme.typography.heading24B,
                     color = EbbingTheme.colors.textOnBackground,
@@ -118,20 +111,18 @@ private fun EditMemoScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
 
-            if (false) {
-                EbbingSolidButton(
-                    label = "저장",
-                    onClick = {
-                        onSaveClick()
-                        focusManager.clearFocus()
-                    },
-                    enabled = state.isSaveEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(EbbingTheme.colors.background)
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                )
-            }
+            EbbingSolidButton(
+                label = stringResource(R.string.memo_edit_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     } else {
         Column(
@@ -140,29 +131,15 @@ private fun EditMemoScreen(
                 .padding(horizontal = 20.dp),
         ) {
             EbbingSubTopBar(
-                title = "메모 수정",
+                title = stringResource(R.string.memo_edit_title),
                 onNavigationClick = onBackClick,
-                rightComponent = {
-                    Text(
-                        text = "저장",
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.body16M else EbbingTheme.typography.body16M,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled
-                            ) {
-                                onSaveClick()
-                                focusManager.clearFocus()
-                            },
-                    )
-                },
+                rightComponent = {},
             )
 
             Row(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .imePadding()
             ) {
                 Column(
@@ -171,12 +148,13 @@ private fun EditMemoScreen(
                         .padding(20.dp)
                         .padding(horizontal = 20.dp),
                 ) {
+                    val headlineSuffix = stringResource(R.string.memo_edit_headline_suffix)
                     Text(
                         text = buildAnnotatedString {
                             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                                 append("${state.originSchedule?.title}")
                             }
-                            append(" 일정에\n메모를 수정해요")
+                            append(headlineSuffix)
                         },
                         style = EbbingTheme.typography.heading24B,
                         color = EbbingTheme.colors.textOnBackground,
@@ -200,6 +178,19 @@ private fun EditMemoScreen(
                     )
                 }
             }
+
+            EbbingSolidButton(
+                label = stringResource(R.string.memo_edit_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
         }
     }
 }

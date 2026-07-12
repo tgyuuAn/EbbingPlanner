@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
@@ -51,7 +52,7 @@ internal fun ColorBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "색상")
+        EbbingBottomSheetHeader(title = stringResource(R.string.tag_color))
 
         LazyVerticalGrid(
             state = listState,
@@ -100,7 +101,7 @@ internal fun ColorBottomSheet(
         }
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(R.string.tag_apply),
             onClick = { updateColor(newColor) },
             modifier = Modifier
                 .fillMaxWidth()

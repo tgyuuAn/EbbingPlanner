@@ -8,3 +8,7 @@ android {
 
     buildTypes { release { consumerProguardFiles("consumer-rules.pro") } }
 }
+
+dependencies {
+    implementation(libs.koin.android)
+}

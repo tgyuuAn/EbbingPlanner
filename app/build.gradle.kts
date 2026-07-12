@@ -13,8 +13,8 @@ android {
     namespace = "com.tgyuu.ebbingplanner"
 
     defaultConfig {
-        versionCode = 31
-        versionName = "1.0.30"
+        versionCode = 39
+        versionName = "1.1.0"
         targetSdk = 35
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -74,6 +74,7 @@ dependencies {
     implementation(projects.core.datastore)
     implementation(projects.core.network)
     implementation(projects.core.experiment.data)
+    implementation(projects.core.deviceInfo)
 
     implementation(projects.feature.onboarding)
     implementation(projects.feature.home)
@@ -85,6 +86,8 @@ dependencies {
     implementation(projects.feature.sync)
     implementation(projects.feature.widget)
     baselineProfile(projects.baselineprofile)
+
+    testImplementation(libs.mockk)
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)

@@ -7,8 +7,6 @@ import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.experiment.domain.model.Experiment
-import com.tgyuu.experiment.domain.model.Experiment.SaveButtonPosition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -25,10 +23,9 @@ data class EditDateState(
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
+    val isPinned: Boolean = false,
     val mondayStart: Boolean = false,
-    val saveButtonPositionVariant: SaveButtonPosition.Variant = SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
-    val isTreatment = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             if (it.id == RepeatCycle.DAILY_REPEAT_ID) {

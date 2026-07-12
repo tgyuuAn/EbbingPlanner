@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
@@ -37,11 +39,12 @@ internal fun SelectedDateBottomSheet(
             onSelectDate = { newSelectedDate = it },
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 20.dp)
                 .padding(top = 20.dp, bottom = 8.dp),
         )
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(R.string.home_apply),
             onClick = { updateSelectedDate(newSelectedDate) },
             modifier = Modifier
                 .fillMaxWidth()

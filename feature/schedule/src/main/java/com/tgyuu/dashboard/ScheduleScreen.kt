@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -49,7 +50,6 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.common.toFormattedString
-import com.tgyuu.common.toRelativeDayDescription
 import com.tgyuu.dashboard.contract.ScheduleIntent
 import com.tgyuu.dashboard.contract.ScheduleState
 import com.tgyuu.dashboard.ui.bottomsheet.ScheduleDeleteBottomSheet
@@ -64,10 +64,11 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingRoundSolidButton
-import com.tgyuu.designsystem.component.calendar.toKorean
+import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoInfoUiModel
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import com.tgyuu.designsystem.util.toRelativeDayLabel
 import com.tgyuu.domain.model.DefaultTodoTag
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -254,7 +255,7 @@ private fun PhoneScheduleScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         EbbingMainTopBar(
-            title = "일정 모아보기",
+            title = stringResource(R.string.schedule_top_bar_title),
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -293,7 +294,7 @@ private fun TabletScheduleScreen(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         EbbingMainTopBar(
-            title = "일정 모아보기",
+            title = stringResource(R.string.schedule_top_bar_title),
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -419,7 +420,11 @@ private fun TagCard(
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "${scheduleCount}개의 일정, 완료율 ${Math.round(achievementRate * 100)}%",
+                    text = stringResource(
+                        R.string.schedule_tag_count_completion,
+                        scheduleCount,
+                        Math.round(achievementRate * 100),
+                    ),
                     style = EbbingTheme.typography.body16M,
                     color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub,
                 )
@@ -492,7 +497,7 @@ private fun TagCard(
                         .padding(top = 10.dp),
                 ) {
                     Text(
-                        text = "닫기",
+                        text = stringResource(R.string.schedule_collapse),
                         style = EbbingTheme.typography.heading14SB,
                         color = EbbingTheme.colors.textSub,
                     )
@@ -669,14 +674,19 @@ private fun ScheduleCard(
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(
-            text = "${schedule.date.monthNumber}월 ${schedule.date.dayOfMonth}일 (${schedule.date.dayOfWeek.toKorean()})",
+            text = stringResource(
+                R.string.schedule_card_date,
+                schedule.date.monthNumber,
+                schedule.date.dayOfMonth,
+                schedule.date.dayOfWeek.toShortLabel(),
+            ),
             style = dateStyle,
             color = dateColor,
             textDecoration = textDecoration,
         )
 
         Text(
-            text = schedule.date.toRelativeDayDescription(),
+            text = schedule.date.toRelativeDayLabel(),
             style = EbbingTheme.typography.caption12R,
             color = subColor,
             textDecoration = textDecoration,
@@ -718,13 +728,16 @@ private fun EmptyScheduleContent(
         modifier = modifier.fillMaxWidth(),
     ) {
         Text(
-            text = "아직 일정이 없어요.\n새로운 일정을 등록해볼까요?",
+            text = stringResource(R.string.schedule_empty_message),
             style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textSub,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        EbbingRoundSolidButton(label = "일정 등록하러 가기", onClick = onNavigateToAddTodo)
+        EbbingRoundSolidButton(
+            label = stringResource(R.string.schedule_empty_register_button),
+            onClick = onNavigateToAddTodo,
+        )
     }
 }
 
@@ -738,19 +751,24 @@ private fun DeleteTagDialog(
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
+    val dialogTitle = stringResource(R.string.schedule_delete_tag_dialog_title, tagName)
+    val dialogSubText = stringResource(R.string.schedule_delete_tag_dialog_subtext)
+    val cancelText = stringResource(R.string.schedule_dialog_cancel)
+    val deleteText = stringResource(R.string.schedule_dialog_delete)
+
     EbbingDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("$tagName 태그를 삭제하시겠습니까?")
+                    append(dialogTitle)
                 },
-                subText = "이 태그는 현재 연결된 모든 일정에서 함께 삭제되며,삭제 후에는 복구할 수 없습니다."
+                subText = dialogSubText
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = "취소",
-                rightButtonText = "삭제",
+                leftButtonText = cancelText,
+                rightButtonText = deleteText,
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onDeleteClick,
             )

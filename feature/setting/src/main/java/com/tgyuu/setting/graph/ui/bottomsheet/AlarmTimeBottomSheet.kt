@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.picker.EbbingPicker
@@ -20,11 +22,14 @@ internal fun AlarmTimeBottomSheet(
     originMinute: String,
     onUpdateClick: (String, String) -> Unit,
 ) {
-    var newAmPm by remember { mutableStateOf(if (originHour.toInt() >= 12) "오후" else "오전") }
+    val pmLabel = stringResource(R.string.ds_pm)
+    val amLabel = stringResource(R.string.ds_am)
+
+    var newAmPm by remember { mutableStateOf(if (originHour.toInt() >= 12) pmLabel else amLabel) }
     var newHour by remember { mutableStateOf(originHour) }
     var newMinute by remember { mutableStateOf(originMinute) }
 
-    val initialAmPm = if (originHour.toInt() >= 12) "오후" else "오전"
+    val initialAmPm = if (originHour.toInt() >= 12) pmLabel else amLabel
     val initialHour =
         if (originHour.toInt() >= 12) (originHour.toInt() - 12).toString() else originHour
     val initialMinute = originMinute
@@ -35,14 +40,15 @@ internal fun AlarmTimeBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = "알람 시간",
-            subTitle = "언제 남은 일정 알림을 보낼까요?"
+            title = stringResource(R.string.setting_alarm_time_title),
+            subTitle = stringResource(R.string.setting_alarm_time_subtitle)
         )
 
         EbbingPicker(
             initialAmPm = initialAmPm,
             initialHour = initialHour,
             initialMinute = initialMinute,
+            amPmItems = listOf(pmLabel, amLabel),
             onValueChange = { amPm, hour, minute ->
                 newAmPm = amPm
                 newHour = hour.toString()
@@ -52,9 +58,9 @@ internal fun AlarmTimeBottomSheet(
         )
 
         EbbingSolidButton(
-            label = "적용하기",
+            label = stringResource(R.string.setting_apply_action),
             onClick = {
-                var hour = if (newAmPm == "오후") (newHour.toInt() + 12).toString() else newHour
+                var hour = if (newAmPm == pmLabel) (newHour.toInt() + 12).toString() else newHour
                 if (hour == "24") {
                     hour = "0"
                 }

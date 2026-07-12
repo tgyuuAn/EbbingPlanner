@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,14 +48,14 @@ internal fun WidgetNudgeDialog(
                     .clickable { onDismiss() },
             )
             Text(
-                text = "첫 일정 등록 완료!",
+                text = stringResource(R.string.home_widget_nudge_label),
                 style = EbbingTheme.typography.body14M,
                 color = EbbingTheme.colors.textDisabled,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             Text(
-                text = "에빙플래너 위젯으로도\n일정을 간편하게 체크해보세요.",
+                text = stringResource(R.string.home_widget_nudge_title),
                 textAlign = TextAlign.Center,
                 style = EbbingTheme.typography.heading18B,
                 color = EbbingTheme.colors.textOnBackground,

@@ -9,7 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDefault
@@ -26,7 +28,7 @@ internal fun CalendarStartDayBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = "달력 시작 요일")
+        EbbingBottomSheetHeader(title = stringResource(R.string.setting_calendar_start_day))
 
         Column(
             modifier = Modifier
@@ -34,19 +36,19 @@ internal fun CalendarStartDayBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             EbbingBottomSheetListItemDefault(
-                label = "월요일",
+                label = stringResource(R.string.setting_monday),
                 checked = newMondayStart,
                 onChecked = { newMondayStart = true },
             )
 
             EbbingBottomSheetListItemDefault(
-                label = "일요일",
+                label = stringResource(R.string.setting_sunday),
                 checked = !newMondayStart,
                 onChecked = { newMondayStart = false },
             )
 
             EbbingSolidButton(
-                label = "적용하기",
+                label = stringResource(R.string.setting_apply_action),
                 onClick = { onUpdateClick(newMondayStart) },
                 modifier = Modifier
                     .fillMaxWidth()
