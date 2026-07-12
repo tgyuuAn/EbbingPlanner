@@ -1,8 +1,5 @@
 package com.tgyuu.setting.graph.theme
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,28 +7,25 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,8 +34,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,9 +43,9 @@ import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.EbbingCheck
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.foundation.LocalColors
 import com.tgyuu.designsystem.foundation.forestDarkColorScheme
@@ -66,11 +58,14 @@ import com.tgyuu.designsystem.foundation.normalDarkColorScheme
 import com.tgyuu.designsystem.foundation.normalLightColorScheme
 import com.tgyuu.designsystem.foundation.sunsetDarkColorScheme
 import com.tgyuu.designsystem.foundation.sunsetLightColorScheme
+import com.tgyuu.designsystem.model.ClickableText
+import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.Theme
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
 import com.tgyuu.setting.graph.ui.animateEbbingColors
+import java.time.LocalDate
 
 @Composable
 internal fun ThemeRoute(viewModel: ThemeViewModel = hiltViewModel()) {
@@ -320,7 +315,7 @@ internal fun PreviewBody(
     )
 
     CompositionLocalProvider(LocalColors provides animatedLight) {
-        TodoListCard(
+        ThemePreviewCard(
             isDarkMode = false,
             modifier = modifier
                 .padding(top = 20.dp)
@@ -329,7 +324,7 @@ internal fun PreviewBody(
     }
 
     CompositionLocalProvider(LocalColors provides animatedDark) {
-        TodoListCard(
+        ThemePreviewCard(
             isDarkMode = true,
             modifier = modifier
                 .padding(top = 20.dp)
@@ -339,141 +334,56 @@ internal fun PreviewBody(
 }
 
 @Composable
-private fun TodoListCard(
+private fun ThemePreviewCard(
     isDarkMode: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = modifier
-                .background(EbbingTheme.colors.background, shape = RoundedCornerShape(12.dp))
-                .border(
-                    color = EbbingTheme.colors.textOnBackground,
-                    width = 0.5.dp,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .wrapContentHeight()
-                .animateContentSize(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = FastOutSlowInEasing,
-                    )
-                )
-                .padding(20.dp)
-        ) {
-            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-                VerticalDivider(
-                    thickness = 8.dp,
-                    color = Color(DefaultTodoTag.color),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .animateContentSize(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        )
-                        .padding(end = 8.dp),
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(EbbingTheme.colors.fillNormal)
-                            .padding(vertical = 12.dp, horizontal = 16.dp)
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.setting_ebbing_planner_preview),
-                                style = EbbingTheme.typography.body16M,
-                                color = EbbingTheme.colors.textOnBackground,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(bottom = 4.dp),
-                            )
-
-                            Text(
-                                text = stringResource(R.string.setting_ebbing_planner_preview),
-                                style = EbbingTheme.typography.body16M,
-                                color = EbbingTheme.colors.textSub,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(bottom = 4.dp),
-                            )
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                            ) {
-                                EbbingCheck(
-                                    checked = true,
-                                    colorValue = DefaultTodoTag.color,
-                                    onCheckedChange = {},
-                                    modifier = Modifier.size(20.dp),
-                                )
-
-                                Spacer(modifier = Modifier.weight(1f))
-
-                                Image(
-                                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_pin),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
-                                    modifier = Modifier.size(16.dp),
-                                )
-                            }
-                        }
-
-                        Image(
-                            painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_3dots),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    EbbingCheck(
-                        checked = true,
-                        colorValue = DefaultTodoTag.color,
-                        onCheckedChange = { },
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(end = 32.dp, top = 4.dp, bottom = 4.dp),
-            ) {
-                Image(
-                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_memo),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
-                    modifier = Modifier.size(16.dp),
-                )
-
-                Text(
-                    text = stringResource(R.string.setting_ebbing_planner_preview),
-                    style = EbbingTheme.typography.heading14SB,
-                    color = EbbingTheme.colors.textSub,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+    val previewText = stringResource(R.string.setting_ebbing_planner_preview)
+    val sampleTodos = remember(previewText) {
+        val today = LocalDate.now()
+        List(3) { index ->
+            TodoScheduleUiModel(
+                id = index + 1,
+                infoId = 1,
+                title = ClickableText.from(previewText),
+                tagId = 1,
+                name = previewText,
+                color = DefaultTodoTag.color,
+                date = today.plusDays(index.toLong()),
+                memo = ClickableText.from(previewText),
+                isPinned = true,
+                isDone = index == 0,
+                createdAt = today,
+                infoCreatedAt = today,
+            )
         }
+    }
+
+    Box(
+        modifier = modifier
+            .background(EbbingTheme.colors.background, shape = RoundedCornerShape(12.dp))
+            .border(
+                color = EbbingTheme.colors.textOnBackground,
+                width = 0.5.dp,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(20.dp)
+    ) {
+        TodoListCard(
+            todo = sampleTodos.first(),
+            todosWithSameInfo = sampleTodos,
+            onCheckedChange = {},
+            onEditScheduleClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 28.dp),
+        )
 
         Text(
             text = if (isDarkMode) stringResource(R.string.setting_dark) else stringResource(R.string.setting_light),
             style = EbbingTheme.typography.heading14SB,
             color = EbbingTheme.colors.textOnBackground,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 8.dp, end = 20.dp)
+            modifier = Modifier.align(Alignment.BottomEnd)
         )
     }
 }
