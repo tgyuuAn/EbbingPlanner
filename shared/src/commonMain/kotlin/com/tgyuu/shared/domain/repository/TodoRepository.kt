@@ -36,7 +36,7 @@ interface TodoRepository {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek> = emptySet(),
     )
 
@@ -45,7 +45,7 @@ interface TodoRepository {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek> = emptySet(),
     )
 
@@ -61,6 +61,7 @@ interface TodoRepository {
 
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<DayOfWeek> = emptySet())
     suspend fun updateTodo(todoSchedule: TodoSchedule)
+    suspend fun updateTodos(schedules: List<TodoSchedule>)
     suspend fun deleteTodo(todoSchedule: TodoSchedule)
     suspend fun deleteTodoByTodoInfo(id: Int)
 

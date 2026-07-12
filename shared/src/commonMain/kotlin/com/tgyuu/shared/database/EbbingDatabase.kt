@@ -23,7 +23,7 @@ import com.tgyuu.shared.database.model.TodoTagEntity
         TodoInfoEntity::class,
         RepeatCycleEntity::class,
     ],
-    version = 4,
+    version = 5,
 )
 @TypeConverters(EbbingConverters::class)
 @ConstructedBy(EbbingDatabaseConstructor::class)

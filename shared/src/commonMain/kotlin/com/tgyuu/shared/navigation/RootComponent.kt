@@ -23,7 +23,7 @@ interface RootComponent {
     fun navigateToAddRepeatCycle()
     fun navigateToEditTag(tagId: Int)
     fun navigateToEditRepeatCycle(repeatCycleId: Int)
-    fun navigateToConnect()
+    fun navigateToSyncRestore()
     fun navigateToEditMemo(scheduleId: Int)
     fun navigateToTheme()
     fun navigateToWebView(title: String, url: String)
@@ -46,7 +46,7 @@ interface RootComponent {
         data object AddRepeatCycle : Child()
         class EditTag(val tagId: Int) : Child()
         class EditRepeatCycle(val repeatCycleId: Int) : Child()
-        data object Connect : Child()
+        data object SyncRestore : Child()
         class EditMemo(val scheduleId: Int) : Child()
         data object ThemeChild : Child()
         class WebView(val title: String, val url: String) : Child()
@@ -106,7 +106,7 @@ sealed interface Configuration {
     data class EditRepeatCycle(val repeatCycleId: Int) : Configuration
 
     @Serializable
-    data object Connect : Configuration
+    data object SyncRestore : Configuration
 
     @Serializable
     data class EditMemo(val scheduleId: Int) : Configuration

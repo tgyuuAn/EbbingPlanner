@@ -1,16 +1,18 @@
 package com.tgyuu.shared.ui.feature.home.addtodo.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.common.toRelativeDayLabel
+import com.tgyuu.shared.designsystem.component.EbbingCheckBox
 import com.tgyuu.shared.designsystem.component.EbbingChip
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.component.EbbingTextInputDropDown
@@ -33,9 +36,9 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.home_delete
-import ebbingplanner.shared.generated.resources.home_priority
-import ebbingplanner.shared.generated.resources.home_priority_hint
+import ebbingplanner.shared.generated.resources.home_pin_to_top
 import ebbingplanner.shared.generated.resources.home_repeat_cycle
+import ebbingplanner.shared.generated.resources.home_schedule_date_day
 import ebbingplanner.shared.generated.resources.home_rest_day
 import ebbingplanner.shared.generated.resources.home_study_schedule_count
 import ebbingplanner.shared.generated.resources.home_tag
@@ -108,27 +111,30 @@ fun TagContent(
 }
 
 @Composable
-fun PriorityContent(
-    priority: String,
-    onPriorityChange: (String) -> Unit,
+fun PinnedContent(
+    isPinned: Boolean,
+    onPinnedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = stringResource(Res.string.home_priority),
-        style = EbbingTheme.typography.bodyMSB,
-        color = EbbingTheme.colors.black,
-        modifier = Modifier.padding(top = 32.dp),
-    )
-
-    EbbingTextInputDefault(
-        value = priority,
-        onValueChange = onPriorityChange,
-        hint = stringResource(Res.string.home_priority_hint),
-        keyboardType = KeyboardType.Number,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-    )
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+            .clickable { onPinnedChange(!isPinned) },
+    ) {
+        EbbingCheckBox(
+            checked = isPinned,
+            onCheckedChange = onPinnedChange,
+        )
+
+        Text(
+            text = stringResource(Res.string.home_pin_to_top),
+            style = EbbingTheme.typography.bodySSB,
+            color = EbbingTheme.colors.black,
+        )
+    }
 }
 
 @Composable
@@ -190,34 +196,31 @@ fun ScheduleContent(
 ) {
     if (schedules.isEmpty()) return
 
-    Column(modifier = modifier) {
+    val shape = RoundedCornerShape(12.dp)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+            .clip(shape)
+            .border(width = 1.dp, color = EbbingTheme.colors.light2, shape = shape)
+            .background(EbbingTheme.colors.background)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 8.dp),
+    ) {
         Text(
             text = stringResource(Res.string.home_study_schedule_count, schedules.size),
-            style = EbbingTheme.typography.headingMSB,
+            style = EbbingTheme.typography.headingMB,
             color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(top = 32.dp),
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
         )
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(EbbingTheme.colors.light3)
-        ) {
-            schedules.forEachIndexed { idx, item ->
-                ScheduleCard(
-                    idx = idx + 1,
-                    schedule = item,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 20.dp,
-                            vertical = 16.dp,
-                        )
-                )
-            }
+        schedules.forEachIndexed { idx, item ->
+            ScheduleCard(
+                idx = idx + 1,
+                schedule = item,
+                showDivider = idx < schedules.lastIndex,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }
@@ -226,32 +229,60 @@ fun ScheduleContent(
 private fun ScheduleCard(
     idx: Int,
     schedule: LocalDate,
+    showDivider: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
-    ) {
-        Text(
-            text = idx.toString(),
-            style = EbbingTheme.typography.bodyMSB,
-            textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
-        )
+    Column(modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clip(CircleShape)
+                        .background(EbbingTheme.colors.light3),
+                ) {
+                    Text(
+                        text = idx.toString(),
+                        style = EbbingTheme.typography.captionR12,
+                        color = EbbingTheme.colors.dark3,
+                    )
+                }
 
-        Text(
-            text = "${schedule.toFormattedString()} (${schedule.dayOfWeek.toLocalizedShort()})",
-            style = EbbingTheme.typography.bodyMSB,
-            textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
-        )
+                Text(
+                    text = stringResource(
+                        Res.string.home_schedule_date_day,
+                        schedule.toFormattedString(),
+                        schedule.dayOfWeek.toLocalizedShort(),
+                    ),
+                    style = EbbingTheme.typography.bodyMM,
+                    color = EbbingTheme.colors.black,
+                )
+            }
 
-        Text(
-            text = schedule.toRelativeDayLabel(),
-            style = EbbingTheme.typography.bodyMSB,
-            textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.black,
-        )
+            Text(
+                text = schedule.toRelativeDayLabel(),
+                style = EbbingTheme.typography.bodyMM,
+                color = EbbingTheme.colors.dark3,
+            )
+        }
+
+        if (showDivider) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(EbbingTheme.colors.light2),
+            )
+        }
     }
 }

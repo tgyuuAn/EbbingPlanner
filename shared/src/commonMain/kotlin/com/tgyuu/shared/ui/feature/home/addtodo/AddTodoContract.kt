@@ -3,7 +3,6 @@ package com.tgyuu.shared.ui.feature.home.addtodo
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
-import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.model.RepeatCycle
 import com.tgyuu.shared.common.generateDailySchedules
 import com.tgyuu.shared.common.generateValidSchedules
@@ -21,18 +20,16 @@ import kotlinx.datetime.LocalDate
 data class AddTodoState(
     val selectedDate: LocalDate = LocalDate.now(),
     val title: String = "",
-    val priority: String = "",
+    val isPinned: Boolean = false,
     val tag: TodoTagUiModel? = null,
     val tagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
     val isLoading: Boolean = false,
-    val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
-    val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val isSaveEnabled: Boolean = title.isNotEmpty()
-    val isModified: Boolean = title.isNotEmpty() || priority.isNotEmpty() || restDays.isNotEmpty()
+    val isModified: Boolean = title.isNotEmpty() || isPinned || restDays.isNotEmpty()
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
@@ -55,7 +52,7 @@ sealed class AddTodoIntent : UiIntent {
     data object OnBackClick : AddTodoIntent()
     data class OnSelectedDateChange(val selectedDate: LocalDate) : AddTodoIntent()
     data class OnTitleChange(val title: String) : AddTodoIntent()
-    data class OnPriorityChange(val priority: String) : AddTodoIntent()
+    data class OnPinnedChange(val isPinned: Boolean) : AddTodoIntent()
     data object OnTagDropDownClick : AddTodoIntent()
     data class OnTagChange(val tag: TodoTagUiModel) : AddTodoIntent()
     data object OnAddTagClick : AddTodoIntent()

@@ -2,7 +2,6 @@ package com.tgyuu.shared.ui.feature.home.edittodo
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
-import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
@@ -32,7 +31,6 @@ class EditTodoViewModel(
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
     init {
-        loadExperimentVariant()
         loadScheduleData()
     }
 
@@ -61,7 +59,7 @@ class EditTodoViewModel(
                         .toImmutableMap(),
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
-                    priority = originSchedule.priority.takeIf { it != 0 }?.toString() ?: "",
+                    isPinned = originSchedule.isPinned,
                     tag = originTag?.toUiModel(),
                     restDays = todoInfo.restDays.toImmutableSet(),
                 )
@@ -83,7 +81,7 @@ class EditTodoViewModel(
             EditTodoIntent.OnSelectedDateDropDownClick -> onShowDateBottomSheet?.invoke()
             is EditTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is EditTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is EditTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
+            is EditTodoIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
             EditTodoIntent.OnTagDropDownClick -> onShowTagBottomSheet?.invoke()
             is EditTodoIntent.OnTagChange -> setState { copy(tag = intent.tag) }
             EditTodoIntent.OnAddTagClick -> { /* Navigate to add tag */ }
@@ -111,12 +109,6 @@ class EditTodoViewModel(
         setState { copy(title = title) }
     }
 
-    private fun onPriorityChange(priority: String) {
-        if (priority.isNotEmpty() && !priority.all { it.isDigit() }) return
-        if (priority.length >= 4) return
-        setState { copy(priority = priority) }
-    }
-
     private suspend fun onSaveClick() {
         if (!currentState.isSaveEnabled) {
             onShowSnackbar(getString(Res.string.snack_required_fields))
@@ -131,7 +123,7 @@ class EditTodoViewModel(
             tagId = tag.id,
             name = tag.name,
             color = tag.color,
-            priority = currentState.priority.toIntOrNull() ?: 0,
+            isPinned = currentState.isPinned,
         )
 
         try {
@@ -160,18 +152,10 @@ class EditTodoViewModel(
         tagId = tagId,
         name = name,
         color = color,
-        priority = priority,
+        isPinned = isPinned,
         isDone = isDone,
         memo = memo,
         createdAt = createdAt,
         infoCreatedAt = infoCreatedAt,
     )
-
-    private fun loadExperimentVariant() {
-        safeScope.launch {
-            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
-                ?: Experiment.SaveButtonPosition.Variant.CONTROL
-            setState { copy(saveButtonPositionVariant = variant) }
-        }
-    }
 }

@@ -2,7 +2,6 @@ package com.tgyuu.shared.ui.feature.home.addtodo
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
-import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
@@ -39,7 +38,6 @@ class AddTodoViewModel(
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState(selectedDate = selectedDate)) {
 
     init {
-        loadExperimentVariant()
         loadInitialData()
     }
 
@@ -79,7 +77,7 @@ class AddTodoViewModel(
             AddTodoIntent.OnBackClick -> onNavigateBack()
             is AddTodoIntent.OnSelectedDateChange -> setState { copy(selectedDate = intent.selectedDate) }
             is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
-            is AddTodoIntent.OnPriorityChange -> onPriorityChange(intent.priority)
+            is AddTodoIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
             AddTodoIntent.OnTagDropDownClick -> onShowTagBottomSheet?.invoke()
             is AddTodoIntent.OnTagChange -> setState { copy(tag = intent.tag) }
             AddTodoIntent.OnAddTagClick -> onNavigateToAddTag()
@@ -93,12 +91,6 @@ class AddTodoViewModel(
 
     private fun onTitleChange(title: String) {
         setState { copy(title = title) }
-    }
-
-    private fun onPriorityChange(priority: String) {
-        if (priority.isNotEmpty() && !priority.all { it.isDigit() }) return
-        if (priority.length >= 4) return
-        setState { copy(priority = priority) }
     }
 
     private fun onRestDayChange(restDay: DayOfWeek) {
@@ -135,7 +127,7 @@ class AddTodoViewModel(
                 title = currentState.title,
                 dates = schedules,
                 tagId = tag.id,
-                priority = currentState.priority.toIntOrNull(),
+                isPinned = currentState.isPinned,
                 restDays = currentState.restDays.toSet(),
             )
 
@@ -161,13 +153,5 @@ class AddTodoViewModel(
             intervals = intervals.toImmutableList(),
             displayName = toDisplayName(),
         )
-    }
-
-    private fun loadExperimentVariant() {
-        safeScope.launch {
-            val variant = experimentRepository?.getVariant(Experiment.SaveButtonPosition)
-                ?: Experiment.SaveButtonPosition.Variant.CONTROL
-            setState { copy(saveButtonPositionVariant = variant) }
-        }
     }
 }

@@ -64,6 +64,10 @@ class HomeViewModel(
                 ?.collect { setState { copy(mondayStart = it) } }
         }
         viewModelScope.launch {
+            configRepository?.getCalendarDefaultView()
+                ?.collect { setState { copy(calendarDefaultView = it) } }
+        }
+        viewModelScope.launch {
             todoRepository.loadAllSchedules().let { schedules ->
                 if (schedules.size >= 3 && configRepository?.consumeInAppReview() == true) {
                     setState { copy(showInAppReviewDialog = true) }
@@ -161,6 +165,9 @@ class HomeViewModel(
 
             is HomeIntent.OnCalendarViewChanged -> {
                 setState { copy(calendarDefaultView = intent.view) }
+                viewModelScope.launch {
+                    configRepository?.setCalendarDefaultView(intent.view)
+                }
             }
 
             HomeIntent.OnWidgetNudgeDismiss -> {
@@ -310,9 +317,29 @@ class HomeViewModel(
 
         return grouped.mapValues { (_, list) ->
             val sorted = when (sortType) {
-                SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
-                SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
-                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { -it.priority }))
+                SortType.CREATED -> list.sortedWith(
+                    compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.createdAt }
+                )
+
+                // 태그별 정책:
+                //  1) 그룹(태그) 순서 = 그 날 고정(isPinned) 일정이 많은 태그일수록 위로 (동수는 태그명)
+                //  2) 그룹 내부 = 고정 일정을 최상단, 이후 미완료 > 생성순
+                SortType.BY_TAG -> {
+                    val withinGroup = compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.createdAt }
+
+                    list.groupBy { it.tagId }
+                        .entries
+                        .sortedWith(
+                            compareByDescending<Map.Entry<Int, List<TodoSchedule>>> { entry ->
+                                entry.value.count { it.isPinned }
+                            }.thenBy { entry -> entry.value.first().name }
+                        )
+                        .flatMap { entry -> entry.value.sortedWith(withinGroup) }
+                }
             }
             sorted.map { it.toUiModel() }.toImmutableList()
         }.toImmutableMap()
@@ -360,7 +387,7 @@ class HomeViewModel(
         color = color,
         date = date,
         memo = memo,
-        priority = priority,
+        isPinned = isPinned,
         isDone = isDone,
         createdAt = createdAt,
         infoCreatedAt = infoCreatedAt,
@@ -375,7 +402,7 @@ class HomeViewModel(
         color = color,
         date = date,
         memo = memo,
-        priority = priority,
+        isPinned = isPinned,
         isDone = isDone,
         createdAt = createdAt,
         infoCreatedAt = infoCreatedAt,

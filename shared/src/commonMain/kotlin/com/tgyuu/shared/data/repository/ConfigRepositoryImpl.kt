@@ -1,5 +1,6 @@
 package com.tgyuu.shared.data.repository
 
+import com.tgyuu.shared.domain.model.CalendarDefaultView
 import com.tgyuu.shared.domain.model.SortType
 import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.domain.model.UpdateInfo
@@ -109,6 +110,14 @@ class ConfigRepositoryImpl(
         settings.putBoolean(KEY_MONDAY_START, enabled)
     }
 
+    override fun getCalendarDefaultView(): Flow<CalendarDefaultView> =
+        settings.observeString(KEY_CALENDAR_DEFAULT_VIEW, CalendarDefaultView.MONTHLY.name)
+            .map { CalendarDefaultView.create(it) }
+
+    override suspend fun setCalendarDefaultView(view: CalendarDefaultView) {
+        settings.putString(KEY_CALENDAR_DEFAULT_VIEW, view.name)
+    }
+
     override fun getAutoBackupEnabled(): Flow<Boolean> =
         settings.observeBoolean(KEY_AUTO_BACKUP_ENABLED, true)
 
@@ -155,6 +164,7 @@ class ConfigRepositoryImpl(
         private const val KEY_WIDGET_TEXT_ALPHA = "WIDGET_TEXT_ALPHA"
         private const val KEY_HAS_EVER_ADDED_TODO = "HAS_EVER_ADDED_TODO"
         private const val KEY_MONDAY_START = "MONDAY_START"
+        private const val KEY_CALENDAR_DEFAULT_VIEW = "CALENDAR_DEFAULT_VIEW"
         private const val KEY_AUTO_BACKUP_ENABLED = "AUTO_BACKUP_ENABLED"
         private const val KEY_HAS_SHOWN_IN_APP_REVIEW = "HAS_SHOWN_IN_APP_REVIEW"
     }

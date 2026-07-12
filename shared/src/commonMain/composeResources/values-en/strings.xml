@@ -141,7 +141,7 @@
     <string name="home_title_hint">What would you like to study?</string>
     <string name="home_priority">Priority</string>
     <string name="home_priority_hint">How important is this task?</string>
-    <string name="home_priority_value">Priority: %1$d</string>
+    <string name="home_list_date">%1$d/%2$d %3$s</string>
     <string name="home_repeat_cycle">Repeat cycle</string>
     <string name="home_rest_day">Rest days</string>
     <string name="home_delete">Delete</string>
@@ -152,6 +152,10 @@
     <string name="home_edit_date_header_suffix">"\nLet\'s change it to start from"</string>
     <string name="home_edit_date_description">- Changing the schedule resets the completion status of existing tasks.\n- You can set the completion status of new tasks in the checkboxes above.\n- Changing the schedule removes any memos attached to existing tasks.</string>
     <string name="home_study_schedule_count">%1$d study tasks</string>
+    <string name="home_schedule_date_day">%1$s (%2$s)</string>
+    <string name="home_pin_to_top">Always pin this schedule to the top</string>
+    <string name="home_add_todo_button">Add task</string>
+    <string name="home_edit_todo_button">Edit task</string>
     <string name="home_todo_count_label">"%1$s tasks "</string>
     <string name="home_empty_schedule">No tasks on %1$d/%2$d.\nTap the + button in the top right to create a new task.</string>
     <string name="home_review_title">Has Ebbing Planner been helpful?</string>
@@ -229,6 +233,14 @@
     <string name="theme_select_headline">Choose a theme color.</string>
     <string name="calendar_go_today">Go to today</string>
     <string name="calendar_year_month">%1$d-%2$d</string>
+    <string name="calendar_today">Today</string>
+    <string name="calendar_view_month">Month</string>
+    <string name="calendar_view_week">Week</string>
+    <string name="calendar_cd_controller">Calendar controller</string>
+    <string name="calendar_cd_header">Calendar header</string>
+    <string name="calendar_cd_body">Calendar body</string>
+    <string name="calendar_cd_week_body">Weekly calendar body</string>
+    <string name="card_round_count">Round %1$d</string>
 
     <!-- Note -->
     <string name="memo_label">Note</string>
@@ -239,6 +251,12 @@
     <string name="memo_edit_title">Edit note</string>
     <string name="memo_add_headline_suffix">" schedule\nAdd a note"</string>
     <string name="memo_edit_headline_suffix">" schedule\nEdit the note"</string>
+    <string name="memo_save_scope_title">Choose where to save the note</string>
+    <string name="memo_save_scope_subtext">You can save it to just one schedule\nor to all related schedules</string>
+    <string name="memo_save_scope_single">Selected schedule only</string>
+    <string name="memo_save_scope_all">All related (%1$d)</string>
+    <string name="memo_add_button">Add note</string>
+    <string name="memo_edit_button">Edit note</string>
 
     <!-- Notification -->
     <string name="notification_placeholder_desc">Using {task} automatically replaces it with the schedule name</string>
@@ -310,6 +328,8 @@
     <string name="snack_schedule_load_failed">Failed to load the schedule</string>
     <string name="snack_memo_updated">The memo has been updated</string>
     <string name="snack_memo_added">The memo has been added</string>
+    <string name="snack_memo_updated_all">Note updated for %1$d schedules including the current one</string>
+    <string name="snack_memo_added_all">Note added to %1$d schedules including the current one</string>
     <string name="snack_memo_save_failed">Failed to save the memo</string>
     <string name="snack_sync_done">Sync complete</string>
     <string name="snack_sync_failed">Sync failed</string>
@@ -346,8 +366,7 @@
     <string name="day_fri">Fri</string>
     <string name="day_sat">Sat</string>
     <string name="sort_created">By created</string>
-    <string name="sort_name">By name</string>
-    <string name="sort_priority">By priority</string>
+    <string name="sort_by_tag">By tag</string>
     <string name="repeat_display_daily">Daily</string>
     <string name="repeat_display_daily_days">Daily (%1$d days)</string>
     <string name="repeat_display_error">Please enter a valid format.</string>
@@ -369,4 +388,60 @@
     <string name="setting_alarm_message_error_length">You can enter up to 50 characters</string>
     <string name="setting_alarm_message_length">%1$d / 50</string>
     <string name="setting_alarm_message_preview_sample">English word review</string>
+
+    <!-- Sync main (QR redesign) -->
+    <string name="sync_title">Use on Other Devices</string>
+    <string name="sync_cancel">Cancel</string>
+    <string name="sync_allow">Allow</string>
+    <string name="sync_connected_device">Connected device</string>
+    <string name="sync_unknown_device">Unknown device</string>
+    <string name="sync_last_sync">Last sync</string>
+    <string name="sync_advanced_info">Advanced info</string>
+    <string name="sync_copy_device_info">Copy advanced info</string>
+    <string name="sync_device_info_copied">Advanced info copied.</string>
+    <string name="sync_new_device_section">Connect a new device</string>
+    <string name="sync_generate_qr">Generate QR</string>
+    <string name="sync_generate_qr_desc">Send this device\'s schedule to another device</string>
+    <string name="sync_scan_qr">Scan QR</string>
+    <string name="sync_scan_qr_desc">Bring another device\'s schedule to this device</string>
+    <string name="sync_scan_qr_warning">This device\'s schedule will be replaced with the other device\'s schedule.</string>
+    <string name="sync_qr_code_title">Sync QR code</string>
+    <string name="sync_remaining_time">Time left: %1$s</string>
+    <string name="sync_scan_this_qr">Scan this QR code from another device.</string>
+    <string name="sync_camera_permission_title">Camera permission required</string>
+    <string name="sync_camera_permission_rationale">Camera permission is required to scan QR codes.</string>
+    <string name="sync_camera_permission_rationale_settings">To scan QR codes, please allow camera permission in Settings.</string>
+    <string name="sync_go_settings">Go to Settings</string>
+    <string name="sync_network_check">Please check your network connection.</string>
+    <string name="sync_synced">Data has been synced.</string>
+    <string name="sync_sync_failed">Sync failed.</string>
+    <string name="sync_disconnect_success">Disconnected successfully.</string>
+    <string name="sync_disconnect_failed">Failed to disconnect.</string>
+    <string name="sync_generate_failed">Failed to generate QR code. Please try again.</string>
+    <string name="sync_connect_success">Connected successfully.</string>
+    <string name="sync_connect_failed">Failed to connect. Please try again.</string>
+    <string name="sync_code_invalid_or_expired">The code is invalid or has expired.</string>
+    <string name="sync_already_linked_self">You are already connected to another device. Please disconnect first and try again.</string>
+    <string name="sync_code_already_taken">This code is already linked to another device.</string>
+    <string name="sync_already_latest">Your data is already up to date.</string>
+    <string name="sync_peer_connected">Connected to %1$s.</string>
+    <string name="sync_peer_disconnected">The other device disconnected.</string>
+
+    <!-- Restore by deviceId -->
+    <string name="sync_restore_title">Restore data</string>
+    <string name="sync_restore_headline">Restore your backed-up data</string>
+    <string name="sync_restore_description">Enter the deviceId shown on the other device\'s sync screen to bring its backed-up data to this device.</string>
+    <string name="sync_restore_input_label">deviceId</string>
+    <string name="sync_restore_input_hint">e.g. 3f2a8b1c</string>
+    <string name="sync_restore_button">Restore</string>
+    <string name="sync_restore_done">Restored data from %1$s.</string>
+    <string name="sync_restore_not_found">No backup found for that deviceId.</string>
+    <string name="sync_restore_empty_data">That device\'s backup is empty. If it was linked to another device, try that device\'s deviceId instead.</string>
+    <string name="sync_restore_ambiguous">Multiple devices match. Please check the deviceId again.</string>
+    <string name="sync_restore_self">That\'s this device\'s deviceId. Please enter another device\'s deviceId.</string>
+    <string name="sync_restore_linked">You can\'t restore while linked to another device. Unlink and try again.</string>
+    <string name="sync_restore_failed">Restore failed. Please try again later.</string>
+    <string name="sync_restore_confirm_title">Restore data?</string>
+    <string name="sync_restore_confirm_desc">All data on this device will be replaced and cannot be undone.</string>
+    <string name="sync_restore_confirm_cancel">Go back</string>
 </resources>

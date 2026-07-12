@@ -1,5 +1,6 @@
 package com.tgyuu.shared.domain.repository
 
+import com.tgyuu.shared.domain.model.CalendarDefaultView
 import com.tgyuu.shared.domain.model.SortType
 import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.domain.model.UpdateInfo
@@ -29,6 +30,9 @@ interface ConfigRepository {
 
     fun getMondayStart(): Flow<Boolean>
     suspend fun setMondayStart(enabled: Boolean)
+
+    fun getCalendarDefaultView(): Flow<CalendarDefaultView>
+    suspend fun setCalendarDefaultView(view: CalendarDefaultView)
 
     fun getAutoBackupEnabled(): Flow<Boolean>
     suspend fun setAutoBackupEnabled(enabled: Boolean)

@@ -3,7 +3,6 @@ package com.tgyuu.shared.ui.feature.home.editdate
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
-import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.model.RepeatCycle
 import com.tgyuu.shared.common.generateDailySchedules
 import com.tgyuu.shared.common.generateValidSchedules
@@ -25,10 +24,9 @@ data class EditDateState(
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
+    val isPinned: Boolean = false,
     val isLoading: Boolean = false,
-    val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
-    val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
@@ -55,5 +53,6 @@ sealed class EditDateIntent : UiIntent {
     data class OnRepeatCycleChange(val repeatCycle: RepeatCycleUiModel) : EditDateIntent()
     data object OnAddRepeatCycleClick : EditDateIntent()
     data class OnRestDayChange(val restDay: DayOfWeek) : EditDateIntent()
+    data class OnPinnedChange(val isPinned: Boolean) : EditDateIntent()
     data class OnSaveClick(val isDoneSchedules: List<Boolean>) : EditDateIntent()
 }

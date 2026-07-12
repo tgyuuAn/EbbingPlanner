@@ -46,5 +46,7 @@
     </array>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+    <key>NSCameraUsageDescription</key>
+    <string>QR 코드 스캔으로 기기를 연동하기 위해 카메라를 사용합니다.</string>
 </dict>
 </plist>

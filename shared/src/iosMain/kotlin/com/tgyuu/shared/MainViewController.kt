@@ -120,7 +120,6 @@ fun MainViewController(): UIViewController {
                             ),
                         )
                     )
-                override fun navigateToConnect() {}
                 override fun onBack() {}
             }
         },

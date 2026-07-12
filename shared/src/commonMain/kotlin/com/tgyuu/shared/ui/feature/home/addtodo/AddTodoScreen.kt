@@ -32,14 +32,13 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
-import com.tgyuu.shared.designsystem.util.throttledClickable
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomSheet
 import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.feature.home.addtodo.bottomsheet.RepeatCycleBottomSheetContent
 import com.tgyuu.shared.ui.feature.home.addtodo.bottomsheet.SelectedDateBottomSheetContent
 import com.tgyuu.shared.ui.feature.home.addtodo.bottomsheet.TagBottomSheetContent
-import com.tgyuu.shared.ui.feature.home.addtodo.component.PriorityContent
+import com.tgyuu.shared.ui.feature.home.addtodo.component.PinnedContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.RepeatCycleContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.RestDayContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.ScheduleContent
@@ -47,6 +46,7 @@ import com.tgyuu.shared.ui.feature.home.addtodo.component.TagContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.TitleContent
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_add_todo_button
 import ebbingplanner.shared.generated.resources.home_add_todo_header_suffix
 import ebbingplanner.shared.generated.resources.home_add_todo_title
 import ebbingplanner.shared.generated.resources.home_exit_confirm_continue
@@ -54,7 +54,6 @@ import ebbingplanner.shared.generated.resources.home_exit_confirm_stop
 import ebbingplanner.shared.generated.resources.home_exit_confirm_sub
 import ebbingplanner.shared.generated.resources.home_exit_confirm_title
 import ebbingplanner.shared.generated.resources.home_month_day
-import ebbingplanner.shared.generated.resources.home_save
 import org.jetbrains.compose.resources.stringResource
 
 private enum class BottomSheetType {
@@ -165,23 +164,7 @@ fun AddTodoScreen(
                 if (state.isModified) showExitDialog = true
                 else viewModel.onIntent(AddTodoIntent.OnBackClick)
             },
-            rightComponent = {
-                if (!state.isTreatment) {
-                    Text(
-                        text = stringResource(Res.string.home_save),
-                        style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
-                        else EbbingTheme.typography.bodyMM,
-                        color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                        else EbbingTheme.colors.dark3,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .throttledClickable(
-                                throttleTime = 1500L,
-                                enabled = state.isSaveEnabled,
-                            ) { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
-                    )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -263,17 +246,15 @@ fun AddTodoScreen(
             }
         }
 
-        if (state.isTreatment) {
-            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = stringResource(Res.string.home_save),
-                onClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+            label = stringResource(Res.string.home_add_todo_button),
+            onClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
 }
 
@@ -305,11 +286,6 @@ private fun AddTodoFormContent(
         onTagDropDownClick = onTagClick,
     )
 
-    PriorityContent(
-        priority = state.priority,
-        onPriorityChange = { viewModel.onIntent(AddTodoIntent.OnPriorityChange(it)) },
-    )
-
     RepeatCycleContent(
         repeatCycle = state.repeatCycle,
         onRepeatCycleDropDownClick = onRepeatCycleClick,
@@ -318,6 +294,11 @@ private fun AddTodoFormContent(
     RestDayContent(
         restDays = state.restDays,
         onRestDayChange = { viewModel.onIntent(AddTodoIntent.OnRestDayChange(it)) },
+    )
+
+    PinnedContent(
+        isPinned = state.isPinned,
+        onPinnedChange = { viewModel.onIntent(AddTodoIntent.OnPinnedChange(it)) },
     )
 }
 

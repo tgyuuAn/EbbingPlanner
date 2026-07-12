@@ -15,6 +15,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -207,8 +210,15 @@ fun RootContent(
     val appTheme by configRepository.getAppTheme()
         .collectAsState(initial = com.tgyuu.shared.domain.model.Theme.NORMAL)
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarScope = rememberCoroutineScope()
+    val showSnackbar: (String) -> Unit = remember(snackbarHostState) {
+        { message -> snackbarScope.launch { snackbarHostState.showSnackbar(message) } }
+    }
+
     EbbingTheme(theme = appTheme) {
         Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             bottomBar = {
                 if (showBottomNav) {
                     EbbingBottomNavigationBar(
@@ -246,7 +256,7 @@ fun RootContent(
                         is RootComponent.Child.Tag -> TagScreenWrapper(component)
                         is RootComponent.Child.Memo -> MemoScreenWrapper(component, instance.scheduleId)
                         is RootComponent.Child.RepeatCycle -> RepeatCycleScreenWrapper(component)
-                        is RootComponent.Child.Sync -> SyncScreenWrapper(component)
+                        is RootComponent.Child.Sync -> SyncScreenWrapper(component, showSnackbar)
                         is RootComponent.Child.Onboarding -> OnboardingScreenWrapper(component)
                         is RootComponent.Child.AddTodo -> AddTodoScreenWrapper(component, instance.selectedDate)
                         is RootComponent.Child.EditTodo -> EditTodoScreenWrapper(component, instance.scheduleId)
@@ -255,7 +265,7 @@ fun RootContent(
                         is RootComponent.Child.AddRepeatCycle -> AddRepeatCycleScreenWrapper(component)
                         is RootComponent.Child.EditTag -> EditTagScreenWrapper(component, instance.tagId)
                         is RootComponent.Child.EditRepeatCycle -> EditRepeatCycleScreenWrapper(component, instance.repeatCycleId)
-                        is RootComponent.Child.Connect -> ConnectScreenWrapper(component)
+                        is RootComponent.Child.SyncRestore -> RestoreScreenWrapper(component, showSnackbar)
                         is RootComponent.Child.EditMemo -> EditMemoScreenWrapper(component, instance.scheduleId)
                         is RootComponent.Child.ThemeChild -> ThemeScreenWrapper(component)
                         is RootComponent.Child.WebView -> WebViewScreenWrapper(component, instance.title, instance.url)
@@ -359,16 +369,36 @@ private fun RepeatCycleScreenWrapper(component: RootComponent) {
 }
 
 @Composable
-private fun SyncScreenWrapper(component: RootComponent) {
+private fun SyncScreenWrapper(
+    component: RootComponent,
+    onShowSnackbar: (String) -> Unit,
+) {
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
     val viewModel = remember {
         SyncViewModel(
             syncRepository = syncRepository,
             onNavigateBack = { component.onBack() },
-            onNavigateToConnect = { component.navigateToConnect() },
+            onNavigateToRestore = { component.navigateToSyncRestore() },
+            onShowSnackbar = onShowSnackbar,
         )
     }
     SyncScreen(viewModel = viewModel)
+}
+
+@Composable
+private fun RestoreScreenWrapper(
+    component: RootComponent,
+    onShowSnackbar: (String) -> Unit,
+) {
+    val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
+    val viewModel = remember {
+        com.tgyuu.shared.ui.feature.sync.restore.RestoreViewModel(
+            syncRepository = syncRepository,
+            onNavigateBack = { component.onBack() },
+            onShowSnackbar = onShowSnackbar,
+        )
+    }
+    com.tgyuu.shared.ui.feature.sync.restore.RestoreScreen(viewModel = viewModel)
 }
 
 @Composable
@@ -509,18 +539,6 @@ private fun EditRepeatCycleScreenWrapper(
         )
     }
     EditRepeatCycleScreen(viewModel = viewModel)
-}
-
-@Composable
-private fun ConnectScreenWrapper(component: RootComponent) {
-    val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
-    val viewModel = remember {
-        com.tgyuu.shared.ui.feature.sync.connect.ConnectViewModel(
-            syncRepository = syncRepository,
-            onNavigateBack = { component.onBack() },
-        )
-    }
-    com.tgyuu.shared.ui.feature.sync.connect.ConnectScreen(viewModel = viewModel)
 }
 
 @Composable
