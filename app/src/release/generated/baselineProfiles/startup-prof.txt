@@ -494,6 +494,7 @@ SPLandroidx/collection/MutableScatterSet;->addAll(Landroidx/collection/ScatterSe
 SPLandroidx/collection/MutableScatterSet;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterSet;->asMutableSet()Ljava/util/Set;
 SPLandroidx/collection/MutableScatterSet;->clear()V
+SPLandroidx/collection/MutableScatterSet;->dropDeletes$collection()V
 HSPLandroidx/collection/MutableScatterSet;->findAbsoluteInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterSet;->findFirstAvailableSlot(I)I
 SPLandroidx/collection/MutableScatterSet;->initializeGrowth()V
@@ -6246,7 +6247,6 @@ SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementatio
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->makeNode(ILjava/lang/Object;Ljava/lang/Object;ILjava/lang/Object;Ljava/lang/Object;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/MutabilityOwnership;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->moveEntryToNode(IIILjava/lang/Object;Ljava/lang/Object;I)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutableInsertEntryAt(ILjava/lang/Object;Ljava/lang/Object;Landroidx/compose/runtime/external/kotlinx/collections/immutable/internal/MutabilityOwnership;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
-SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutableMoveEntryToNode(IIILjava/lang/Object;Ljava/lang/Object;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/MutabilityOwnership;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutablePut(ILjava/lang/Object;Ljava/lang/Object;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/PersistentHashMapBuilder;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutablePutAll(Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;ILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/DeltaCounter;Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/PersistentHashMapBuilder;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
 SPLandroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;->mutablePutAllFromOtherNodeCell(Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;IILandroidx/compose/runtime/external/kotlinx/collections/immutable/internal/DeltaCounter;Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/PersistentHashMapBuilder;)Landroidx/compose/runtime/external/kotlinx/collections/immutable/implementations/immutableMap/TrieNode;
@@ -13130,6 +13130,7 @@ Landroidx/datastore/core/DataStoreImpl$incrementCollector$2$1$1;
 SPLandroidx/datastore/core/DataStoreImpl$incrementCollector$2$1$1;-><init>(Landroidx/datastore/core/DataStoreImpl;)V
 Landroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;
 SPLandroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;-><init>(Landroidx/datastore/core/DataStoreImpl;Lkotlin/coroutines/Continuation;)V
+SPLandroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/datastore/core/DataStoreImpl$readDataAndUpdateCache$1;
 SPLandroidx/datastore/core/DataStoreImpl$readDataAndUpdateCache$1;-><init>(Landroidx/datastore/core/DataStoreImpl;Lkotlin/coroutines/Continuation;)V
 Landroidx/datastore/core/DataStoreImpl$readDataOrHandleCorruption$1;
@@ -13206,6 +13207,7 @@ SPLandroidx/datastore/core/RunOnce;->awaitComplete(Lkotlin/coroutines/Continuati
 SPLandroidx/datastore/core/RunOnce;->runIfNeeded(Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 Landroidx/datastore/core/RunOnce$runIfNeeded$1;
 SPLandroidx/datastore/core/RunOnce$runIfNeeded$1;-><init>(Landroidx/datastore/core/RunOnce;Lkotlin/coroutines/Continuation;)V
+SPLandroidx/datastore/core/RunOnce$runIfNeeded$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/datastore/core/SimpleActor;
 SPLandroidx/datastore/core/SimpleActor;-><init>(Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;)V
 SPLandroidx/datastore/core/SimpleActor;->access$getConsumeMessage$p(Landroidx/datastore/core/SimpleActor;)Lkotlin/jvm/functions/Function2;
@@ -15386,9 +15388,14 @@ Landroidx/room/BaseRoomConnectionManager;
 SPLandroidx/room/BaseRoomConnectionManager;-><clinit>()V
 SPLandroidx/room/BaseRoomConnectionManager;-><init>()V
 SPLandroidx/room/BaseRoomConnectionManager;->checkIdentity(Landroidx/sqlite/SQLiteConnection;)V
+SPLandroidx/room/BaseRoomConnectionManager;->createMasterTableIfNotExists(Landroidx/sqlite/SQLiteConnection;)V
+SPLandroidx/room/BaseRoomConnectionManager;->hasEmptySchema(Landroidx/sqlite/SQLiteConnection;)Z
 SPLandroidx/room/BaseRoomConnectionManager;->hasRoomMasterTable(Landroidx/sqlite/SQLiteConnection;)Z
+SPLandroidx/room/BaseRoomConnectionManager;->invokeCreateCallback(Landroidx/sqlite/SQLiteConnection;)V
 SPLandroidx/room/BaseRoomConnectionManager;->invokeOpenCallback(Landroidx/sqlite/SQLiteConnection;)V
+SPLandroidx/room/BaseRoomConnectionManager;->onCreate(Landroidx/sqlite/SQLiteConnection;)V
 SPLandroidx/room/BaseRoomConnectionManager;->onOpen(Landroidx/sqlite/SQLiteConnection;)V
+SPLandroidx/room/BaseRoomConnectionManager;->updateIdentity(Landroidx/sqlite/SQLiteConnection;)V
 Landroidx/room/BaseRoomConnectionManager$Companion;
 SPLandroidx/room/BaseRoomConnectionManager$Companion;-><init>()V
 SPLandroidx/room/BaseRoomConnectionManager$Companion;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -15478,6 +15485,7 @@ Landroidx/room/RoomConnectionManager$NoOpOpenDelegate;
 SPLandroidx/room/RoomConnectionManager$NoOpOpenDelegate;-><init>()V
 Landroidx/room/RoomConnectionManager$SupportOpenHelperCallback;
 SPLandroidx/room/RoomConnectionManager$SupportOpenHelperCallback;-><init>(Landroidx/room/RoomConnectionManager;I)V
+SPLandroidx/room/RoomConnectionManager$SupportOpenHelperCallback;->onCreate(Landroidx/sqlite/db/SupportSQLiteDatabase;)V
 SPLandroidx/room/RoomConnectionManager$SupportOpenHelperCallback;->onOpen(Landroidx/sqlite/db/SupportSQLiteDatabase;)V
 Landroidx/room/RoomConnectionManager$installOnOpenCallback$newCallbacks$1;
 SPLandroidx/room/RoomConnectionManager$installOnOpenCallback$newCallbacks$1;-><init>(Lkotlin/jvm/functions/Function1;)V
@@ -15557,6 +15565,10 @@ Landroidx/room/RoomDatabaseKt__RoomDatabaseKt;
 SPLandroidx/room/RoomDatabaseKt__RoomDatabaseKt;->validateAutoMigrations(Landroidx/room/RoomDatabase;Landroidx/room/DatabaseConfiguration;)V
 SPLandroidx/room/RoomDatabaseKt__RoomDatabaseKt;->validateMigrationsNotRequired(Ljava/util/Set;Ljava/util/Set;)V
 SPLandroidx/room/RoomDatabaseKt__RoomDatabaseKt;->validateTypeConverters(Landroidx/room/RoomDatabase;Landroidx/room/DatabaseConfiguration;)V
+Landroidx/room/RoomMasterTable;
+SPLandroidx/room/RoomMasterTable;-><clinit>()V
+SPLandroidx/room/RoomMasterTable;-><init>()V
+SPLandroidx/room/RoomMasterTable;->createInsertQuery(Ljava/lang/String;)Ljava/lang/String;
 Landroidx/room/RoomOpenDelegate;
 SPLandroidx/room/RoomOpenDelegate;-><init>(ILjava/lang/String;Ljava/lang/String;)V
 SPLandroidx/room/RoomOpenDelegate;->getIdentityHash()Ljava/lang/String;
@@ -15964,6 +15976,7 @@ SPLandroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper;->getWrappe
 SPLandroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper;->getWritableOrReadableDatabase(Z)Landroid/database/sqlite/SQLiteDatabase;
 SPLandroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper;->innerGetDatabase(Z)Landroid/database/sqlite/SQLiteDatabase;
 SPLandroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper;->onConfigure(Landroid/database/sqlite/SQLiteDatabase;)V
+SPLandroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V
 SPLandroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V
 Landroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper$$ExternalSyntheticLambda0;
 SPLandroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$OpenHelper$$ExternalSyntheticLambda0;-><init>(Landroidx/sqlite/db/SupportSQLiteOpenHelper$Callback;Landroidx/sqlite/db/framework/FrameworkSQLiteOpenHelper$DBRefHolder;)V
@@ -16914,7 +16927,6 @@ SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onAvailable(Landroid/net/Network;)V
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onBlockedStatusChanged(Landroid/net/Network;Z)V
 SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onCapabilitiesChanged(Landroid/net/Network;Landroid/net/NetworkCapabilities;)V
-SPLcom/amplitude/android/utilities/AndroidNetworkListener$setupNetworkCallback$1;->onLost(Landroid/net/Network;)V
 Lcom/amplitude/common/ContextProvider;
 Lcom/amplitude/common/Logger;
 Lcom/amplitude/common/Logger$LogMode;
@@ -20514,6 +20526,7 @@ SPLcom/google/android/gms/measurement/internal/zzgr;->zzz()V
 Lcom/google/android/gms/measurement/internal/zzgt;
 SPLcom/google/android/gms/measurement/internal/zzgt;-><init>(Lcom/google/android/gms/measurement/internal/zzgu;Landroid/content/Context;Ljava/lang/String;)V
 SPLcom/google/android/gms/measurement/internal/zzgt;->getWritableDatabase()Landroid/database/sqlite/SQLiteDatabase;
+SPLcom/google/android/gms/measurement/internal/zzgt;->onCreate(Landroid/database/sqlite/SQLiteDatabase;)V
 SPLcom/google/android/gms/measurement/internal/zzgt;->onOpen(Landroid/database/sqlite/SQLiteDatabase;)V
 Lcom/google/android/gms/measurement/internal/zzgu;
 SPLcom/google/android/gms/measurement/internal/zzgu;-><clinit>()V
@@ -20616,6 +20629,7 @@ SPLcom/google/android/gms/measurement/internal/zzho;->zza(Lcom/google/android/gm
 SPLcom/google/android/gms/measurement/internal/zzho;->zzac()V
 SPLcom/google/android/gms/measurement/internal/zzho;->zzad()Z
 SPLcom/google/android/gms/measurement/internal/zzho;->zzb(Ljava/lang/String;)V
+SPLcom/google/android/gms/measurement/internal/zzho;->zzb(Z)V
 SPLcom/google/android/gms/measurement/internal/zzho;->zzc()Landroid/content/SharedPreferences;
 SPLcom/google/android/gms/measurement/internal/zzho;->zzc(Ljava/lang/String;)V
 SPLcom/google/android/gms/measurement/internal/zzho;->zzg()Landroid/content/SharedPreferences;
@@ -20644,6 +20658,7 @@ SPLcom/google/android/gms/measurement/internal/zzhs;-><init>(Lcom/google/android
 SPLcom/google/android/gms/measurement/internal/zzhs;->zza()Landroid/util/Pair;
 SPLcom/google/android/gms/measurement/internal/zzhs;->zza(Ljava/lang/String;J)V
 SPLcom/google/android/gms/measurement/internal/zzhs;->zzb()J
+SPLcom/google/android/gms/measurement/internal/zzhs;->zzc()V
 Lcom/google/android/gms/measurement/internal/zzht;
 SPLcom/google/android/gms/measurement/internal/zzht;-><init>(Lcom/google/android/gms/measurement/internal/zzpk;)V
 SPLcom/google/android/gms/measurement/internal/zzht;->zza()Z
@@ -23634,6 +23649,7 @@ SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->getConf
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->getStringFromCache(Lcom/google/firebase/remoteconfig/internal/ConfigCacheClient;Ljava/lang/String;)Ljava/lang/String;
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->getValue(Ljava/lang/String;)Lcom/google/firebase/remoteconfig/FirebaseRemoteConfigValue;
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->lambda$callListeners$0(Lcom/google/android/gms/common/util/BiConsumer;Ljava/lang/String;Lcom/google/firebase/remoteconfig/internal/ConfigContainer;)V
+SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->logParameterValueDoesNotExist(Ljava/lang/String;Ljava/lang/String;)V
 Lcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler$$ExternalSyntheticLambda0;
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler$$ExternalSyntheticLambda0;-><init>(Lcom/google/android/gms/common/util/BiConsumer;Ljava/lang/String;Lcom/google/firebase/remoteconfig/internal/ConfigContainer;)V
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler$$ExternalSyntheticLambda0;->run()V
@@ -24629,6 +24645,8 @@ SPLcom/tgyuu/database/EbbingDatabase_Impl$$ExternalSyntheticLambda4;-><init>(Lco
 SPLcom/tgyuu/database/EbbingDatabase_Impl$$ExternalSyntheticLambda4;->invoke()Ljava/lang/Object;
 Lcom/tgyuu/database/EbbingDatabase_Impl$createOpenDelegate$_openDelegate$1;
 SPLcom/tgyuu/database/EbbingDatabase_Impl$createOpenDelegate$_openDelegate$1;-><init>(Lcom/tgyuu/database/EbbingDatabase_Impl;)V
+SPLcom/tgyuu/database/EbbingDatabase_Impl$createOpenDelegate$_openDelegate$1;->createAllTables(Landroidx/sqlite/SQLiteConnection;)V
+SPLcom/tgyuu/database/EbbingDatabase_Impl$createOpenDelegate$_openDelegate$1;->onCreate(Landroidx/sqlite/SQLiteConnection;)V
 SPLcom/tgyuu/database/EbbingDatabase_Impl$createOpenDelegate$_openDelegate$1;->onOpen(Landroidx/sqlite/SQLiteConnection;)V
 Lcom/tgyuu/database/converter/EbbingConverters;
 SPLcom/tgyuu/database/converter/EbbingConverters;-><init>()V
@@ -26683,7 +26701,6 @@ SPLcom/tgyuu/sync/network/NetworkMonitor;->registerNetworkCallback(Landroid/net/
 Lcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;-><init>(Lcom/tgyuu/sync/network/NetworkMonitor;)V
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->onAvailable(Landroid/net/Network;)V
-SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->onLost(Landroid/net/Network;)V
 SPLcom/tgyuu/sync/network/NetworkMonitor$networkCallback$1;->updateNetworkState(Ljava/util/Set;)V
 Lcom/tgyuu/sync/network/NetworkState;
 SPLcom/tgyuu/sync/network/NetworkState;-><clinit>()V
@@ -27906,6 +27923,7 @@ SPLkotlin/collections/ArraysKt___ArraysKt;->$r8$lambda$PKubxOHN_pxnzmRNrTRznCh2y
 SPLkotlin/collections/ArraysKt___ArraysKt;->filterNotNull([Ljava/lang/Object;)Ljava/util/List;
 SPLkotlin/collections/ArraysKt___ArraysKt;->filterNotNullTo([Ljava/lang/Object;Ljava/util/Collection;)Ljava/util/Collection;
 SPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([I)I
+SPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([J)I
 SPLkotlin/collections/ArraysKt___ArraysKt;->getLastIndex([Ljava/lang/Object;)I
 SPLkotlin/collections/ArraysKt___ArraysKt;->getOrNull([II)Ljava/lang/Integer;
 SPLkotlin/collections/ArraysKt___ArraysKt;->getOrNull([Ljava/lang/Object;I)Ljava/lang/Object;
@@ -29721,7 +29739,7 @@ Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;-><clinit>()V
 HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/ExtensionRegistryLite;)V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/ExtensionRegistryLite;Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$1;)V
-HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;)V
+SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;)V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$1;)V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;-><init>(Z)V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->access$4402(Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;I)I
@@ -29836,7 +29854,7 @@ SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Argument$Value$
 Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Argument$ValueOrBuilder;
 Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$ArgumentOrBuilder;
 Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;
-HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;-><init>()V
+SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;-><init>()V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;->access$4200()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;->build()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;->build()Lkotlin/reflect/jvm/internal/impl/protobuf/MessageLite;
@@ -30620,7 +30638,7 @@ SPLkotlin/reflect/jvm/internal/impl/name/StandardClassIdsKt;->reflectId(Ljava/la
 SPLkotlin/reflect/jvm/internal/impl/name/StandardClassIdsKt;->unsignedId(Lkotlin/reflect/jvm/internal/impl/name/ClassId;)Lkotlin/reflect/jvm/internal/impl/name/ClassId;
 Lkotlin/reflect/jvm/internal/impl/platform/TargetPlatform;
 Lkotlin/reflect/jvm/internal/impl/protobuf/AbstractMessageLite;
-SPLkotlin/reflect/jvm/internal/impl/protobuf/AbstractMessageLite;-><init>()V
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/AbstractMessageLite;-><init>()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/AbstractMessageLite;->writeDelimitedTo(Ljava/io/OutputStream;)V
 Lkotlin/reflect/jvm/internal/impl/protobuf/AbstractMessageLite$Builder;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/AbstractMessageLite$Builder;-><init>()V
@@ -30654,7 +30672,7 @@ HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->toByteString()
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->write([BII)V
 Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;-><init>(Ljava/io/InputStream;)V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->checkLastTagWas(I)V
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->checkLastTagWas(I)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->decodeZigZag64(J)J
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->getBytesUntilLimit()I
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->isAtEnd()Z
@@ -30694,7 +30712,7 @@ SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->computePreferre
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->computeRawVarint32Size(I)I
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->computeTagSize(I)I
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->flush()V
-HSPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->newInstance(Ljava/io/OutputStream;I)Lkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;
+SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->newInstance(Ljava/io/OutputStream;I)Lkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->writeBool(IZ)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->writeBoolNoTag(Z)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;->writeEnum(II)V
@@ -30737,7 +30755,7 @@ HSPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->isInitialized()Z
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->isInitialized(Ljava/util/Map$Entry;)Z
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->iterator()Ljava/util/Iterator;
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->makeImmutable()V
-HSPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->newFieldSet()Lkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;
+SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->newFieldSet()Lkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->readPrimitiveField(Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/WireFormat$FieldType;Z)Ljava/lang/Object;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->setField(Lkotlin/reflect/jvm/internal/impl/protobuf/FieldSet$FieldDescriptorLite;Ljava/lang/Object;)V
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->verifyType(Lkotlin/reflect/jvm/internal/impl/protobuf/WireFormat$FieldType;Ljava/lang/Object;)V
@@ -30758,16 +30776,16 @@ HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite;->parseUnknow
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$1;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$1;-><clinit>()V
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;
-HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;-><init>()V
+SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;-><init>()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;->getUnknownFields()Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;->setUnknownFields(Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;)Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableBuilder;
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;
-HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;-><init>()V
+SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;-><init>()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->access$200(Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;)Lkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->extensionsAreInitialized()Z
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->extensionsSerializedSize()I
-HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->makeExtensionsImmutable()V
+SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->makeExtensionsImmutable()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->newExtensionWriter()Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage$ExtensionWriter;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->parseUnknownField(Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/ExtensionRegistryLite;I)Z
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage$ExtensionWriter;
@@ -30833,10 +30851,11 @@ SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->getNumArrayEntries
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->getOverflowEntries()Ljava/lang/Iterable;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->isImmutable()Z
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->makeImmutable()V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->newFieldMap(I)Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->newFieldMap(I)Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->put(Ljava/lang/Comparable;Ljava/lang/Object;)Ljava/lang/Object;
 Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$1;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$1;-><init>(I)V
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$1;->makeImmutable()V
 Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$EmptySet;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$EmptySet;-><clinit>()V
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$EmptySet;->access$700()Ljava/util/Iterator;
@@ -32673,7 +32692,6 @@ SPLkotlinx/coroutines/channels/BufferedChannel;->getSendSegment$volatile$FU()Lja
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersAndCloseStatus$volatile$FU()Ljava/util/concurrent/atomic/AtomicLongFieldUpdater;
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersCounter$kotlinx_coroutines_core()J
 SPLkotlinx/coroutines/channels/BufferedChannel;->get_closeCause$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
-SPLkotlinx/coroutines/channels/BufferedChannel;->hasElements$kotlinx_coroutines_core()Z
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts$default(Lkotlinx/coroutines/channels/BufferedChannel;JILjava/lang/Object;)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts(J)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->invokeCloseHandler()V
@@ -32720,7 +32738,6 @@ SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNext
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNextOnNoWaiterSuspend(Lkotlinx/coroutines/channels/ChannelSegment;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->invokeOnCancellation(Lkotlinx/coroutines/internal/Segment;I)V
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->next()Ljava/lang/Object;
-SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->onClosedHasNext()Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNext(Ljava/lang/Object;)Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNextOnClosedChannel()V
 Lkotlinx/coroutines/channels/BufferedChannel$SendBroadcast;
@@ -33038,6 +33055,7 @@ SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$$inlined$collectWhile$1;
 SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$$inlined$collectWhile$1;->emit(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 Lkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$1;
 SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$1;-><init>(Lkotlin/coroutines/Continuation;)V
+SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lkotlinx/coroutines/flow/FlowKt__ShareKt;
 SPLkotlinx/coroutines/flow/FlowKt__ShareKt;->asSharedFlow(Lkotlinx/coroutines/flow/MutableSharedFlow;)Lkotlinx/coroutines/flow/SharedFlow;
 SPLkotlinx/coroutines/flow/FlowKt__ShareKt;->asStateFlow(Lkotlinx/coroutines/flow/MutableStateFlow;)Lkotlinx/coroutines/flow/StateFlow;
@@ -33611,6 +33629,7 @@ SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;-><init>(Lkotlinx/cor
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->access$getThis$0$p(Lkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;)Lkotlinx/coroutines/scheduling/CoroutineScheduler;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->executeTask(Lkotlinx/coroutines/scheduling/Task;)V
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findAnyTask(Z)Lkotlinx/coroutines/scheduling/Task;
+SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findBlockingTask()Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->findTask(Z)Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->getIndexInArray()I
 SPLkotlinx/coroutines/scheduling/CoroutineScheduler$Worker;->getNextParkedWorker()Ljava/lang/Object;
@@ -33673,7 +33692,10 @@ SPLkotlinx/coroutines/scheduling/WorkQueue;->getConsumerIndex$volatile$FU()Ljava
 SPLkotlinx/coroutines/scheduling/WorkQueue;->getLastScheduledTask$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->getProducerIndex$volatile$FU()Ljava/util/concurrent/atomic/AtomicIntegerFieldUpdater;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->poll()Lkotlinx/coroutines/scheduling/Task;
+SPLkotlinx/coroutines/scheduling/WorkQueue;->pollBlocking()Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->pollBuffer()Lkotlinx/coroutines/scheduling/Task;
+SPLkotlinx/coroutines/scheduling/WorkQueue;->pollWithExclusiveMode(Z)Lkotlinx/coroutines/scheduling/Task;
+SPLkotlinx/coroutines/scheduling/WorkQueue;->stealWithExclusiveMode(I)Lkotlinx/coroutines/scheduling/Task;
 SPLkotlinx/coroutines/scheduling/WorkQueue;->trySteal(ILkotlin/jvm/internal/Ref$ObjectRef;)J
 SPLkotlinx/coroutines/scheduling/WorkQueue;->tryStealLastScheduled(ILkotlin/jvm/internal/Ref$ObjectRef;)J
 Lkotlinx/coroutines/selects/SelectInstance;
@@ -34189,6 +34211,7 @@ SPLokio/FileHandle$FileHandleSink;->write(Lokio/Buffer;J)V
 Lokio/FileMetadata;
 SPLokio/FileMetadata;-><init>(ZZLokio/Path;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/Map;)V
 SPLokio/FileMetadata;-><init>(ZZLokio/Path;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+SPLokio/FileMetadata;->isDirectory()Z
 Lokio/FileSystem;
 SPLokio/FileSystem;-><clinit>()V
 SPLokio/FileSystem;-><init>()V
