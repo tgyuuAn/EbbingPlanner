@@ -12,11 +12,13 @@ internal fun Project.configureTest() {
         "testImplementation"(libs.findLibrary("junit4").get())
         "testImplementation"(libs.findLibrary("junit-jupiter").get())
         "testImplementation"(libs.findLibrary("coroutines-test").get())
+        "testRuntimeOnly"(libs.findLibrary("junit-platform-launcher").get())
     }
 }
 
 internal fun Project.configureJUnit() {
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+        failOnNoDiscoveredTests.set(false)
     }
 }
