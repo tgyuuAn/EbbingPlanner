@@ -9,9 +9,9 @@
     <string name="setting_privacy_policy">개인정보처리방침</string>
     <string name="setting_term">이용약관</string>
     <!-- 문서 URL 로케일 분기: ko/ja 외 로케일은 기본값(영어)으로 폴백, 한국어는 values-ko 참조 -->
-    <string name="setting_announcement_url">https://app.notion.com/p/Notice-0ce18348ef114015af88ddaab2131de6?pvs=21</string>
-    <string name="setting_privacy_policy_url">https://app.notion.com/p/Privacy-Policy-7e36be7e6229490a93c5499568b1cae8?pvs=21</string>
-    <string name="setting_term_url">https://app.notion.com/p/Terms-of-Service-970ee20d02884e08b936894e35f5d563?pvs=21</string>
+    <string name="setting_announcement_url">https://mousy-banjo-f6d.notion.site/Notice-0ce18348ef114015af88ddaab2131de6?source=copy_link</string>
+    <string name="setting_privacy_policy_url">https://mousy-banjo-f6d.notion.site/Privacy-Policy-7e36be7e6229490a93c5499568b1cae8?source=copy_link</string>
+    <string name="setting_term_url">https://mousy-banjo-f6d.notion.site/Terms-of-Service-970ee20d02884e08b936894e35f5d563?source=copy_link</string>
     <string name="setting_version">현재 버전 정보 %1$s</string>
     <string name="setting_inquiry">문의</string>
     <string name="setting_contact_us">문의하기</string>
