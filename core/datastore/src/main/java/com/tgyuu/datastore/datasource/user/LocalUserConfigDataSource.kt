@@ -41,4 +41,5 @@ interface LocalUserConfigDataSource {
     val repeatCycleUsageOrder: Flow<List<Int>>
     suspend fun recordRepeatCycleUsage(cycleId: Int)
     suspend fun removeRepeatCycleUsage(cycleId: Int)
+    suspend fun clearUsageOrder()
 }

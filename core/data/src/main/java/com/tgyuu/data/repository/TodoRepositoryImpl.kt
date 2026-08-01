@@ -182,10 +182,12 @@ class TodoRepositoryImpl @Inject constructor(
         val todoJob = launch { localTodoDataSource.softDeleteAllTodos() }
         val todoInfoJob = launch { localTodoDataSource.deleteAllTodoInfos() }
         val repeatCycleJob = launch { localRepeatCycleDataSource.softDeleteAllRepeatCycles() }
+        val usageOrderJob = launch { localUserConfigDataSource.clearUsageOrder() }
 
         tagJob.join()
         todoJob.join()
         todoInfoJob.join()
         repeatCycleJob.join()
+        usageOrderJob.join()
     }
 }

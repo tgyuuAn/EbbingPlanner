@@ -187,6 +187,14 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         }
     }
 
+    /** 전체 초기화 시 태그·반복 주기 최근 사용순을 모두 비운다. */
+    override suspend fun clearUsageOrder() {
+        dataStore.edit { prefs ->
+            prefs.remove(TAG_USAGE_ORDER)
+            prefs.remove(REPEAT_CYCLE_USAGE_ORDER)
+        }
+    }
+
     override suspend fun consumeInAppReview(): Boolean {
         var shouldShow = false
         dataStore.edit { prefs ->
