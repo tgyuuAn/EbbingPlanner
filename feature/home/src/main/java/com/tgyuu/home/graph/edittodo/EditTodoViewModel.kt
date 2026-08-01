@@ -205,7 +205,7 @@ class EditTodoViewModel @Inject constructor(
 
         todoRepository.updateTodo(newSchedule)
         todoRepository.updateTodoInfo(newSchedule, currentState.restDays.toSet())
-        configRepository.recordTagUsage(tag.id)
+        runCatching { configRepository.recordTagUsage(tag.id) }
         val (hour, minute) = configRepository.getAlarmTime()
 
         currentState.originSchedule?.date?.let { originDate ->

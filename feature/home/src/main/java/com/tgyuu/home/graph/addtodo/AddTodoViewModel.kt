@@ -282,8 +282,10 @@ class AddTodoViewModel @Inject constructor(
             restDays = currentState.restDays.toSet(),
         )
 
-        configRepository.recordTagUsage(tag.id)
-        currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
+        runCatching {
+            configRepository.recordTagUsage(tag.id)
+            currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
+        }
 
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
@@ -305,8 +307,8 @@ class AddTodoViewModel @Inject constructor(
             }
         }
 
-        val isFirstTodo = configRepository.markFirstTodoAdded()
-        configRepository.incrementTodoRegisteredCount()
+        val isFirstTodo = runCatching { configRepository.markFirstTodoAdded() }.getOrDefault(false)
+        runCatching { configRepository.incrementTodoRegisteredCount() }
 
         eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_added)))
         navigationBus.navigate(
