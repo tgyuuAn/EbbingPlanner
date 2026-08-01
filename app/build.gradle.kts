@@ -88,4 +88,5 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.adaptive.navigation.suite)
+    implementation(libs.androidx.compose.navigation)
 }

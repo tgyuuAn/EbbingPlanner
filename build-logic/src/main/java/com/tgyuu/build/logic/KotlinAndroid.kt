@@ -3,41 +3,32 @@ package com.tgyuu.build.logic
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 internal fun Project.configureKotlinAndroid() {
-    plugins.apply("org.jetbrains.kotlin.android")
-
     androidExtension.apply {
         compileSdk = 35
 
-        defaultConfig {
-            minSdk = 28
+        defaultConfig.minSdk = 28
+
+        buildTypes.getByName("release").apply {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
 
-        buildTypes {
-            getByName("release") {
-                isMinifyEnabled = false
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro",
-                )
-            }
-        }
-
-        compileOptions {
+        compileOptions.apply {
             sourceCompatibility = JavaVersion.VERSION_21
             targetCompatibility = JavaVersion.VERSION_21
         }
 
-        packaging {
-            resources {
-                excludes += "META-INF/LICENSE.md"
-                excludes += "META-INF/LICENSE-notice.md"
-            }
+        packaging.resources.apply {
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
         }
     }
 
@@ -57,7 +48,7 @@ internal fun Project.configureKotlin() {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
 
-            val warningsAsErrors: String? by project
+            val warningsAsErrors = project.findProperty("warningsAsErrors") as? String
             allWarningsAsErrors.set(warningsAsErrors.toBoolean())
             freeCompilerArgs.set(
                 freeCompilerArgs.get() + listOf(
