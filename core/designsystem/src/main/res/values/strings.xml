@@ -174,7 +174,7 @@
     <string name="home_review_sub">남겨주신 리뷰를 바탕으로 \n더 편리한 서비스를 만들겠습니다.</string>
     <string name="home_review_button">리뷰 작성하기</string>
     <string name="home_widget_nudge_label">첫 일정 등록 완료!</string>
-    <string name="home_widget_nudge_title">에빙플래너 위젯으로도\n일정을 간편하게 체크해보세요.</string>
+    <string name="home_widget_nudge_title">에빙플래너 위젯으로도\n일정을 간편하게 체크해보세요</string>
     <string name="home_notification_title">알림 설정</string>
     <string name="home_notification_header_sub">알림을 설정하면 다음 복습일에 일정을 알려드려요.\n알림은 언제든 설정 탭에서 변경할 수 있어요.</string>
     <string name="home_notification_nudge">바쁜 날에도\n복습일을 자동으로 챙겨드릴게요</string>
@@ -279,7 +279,7 @@
     <string name="setting_theme_change">테마 변경</string>
     <string name="setting_apply">적용</string>
     <string name="setting_apply_action">적용하기</string>
-    <string name="setting_change_app_theme">앱 테마를 변경해요.</string>
+    <string name="setting_change_app_theme">앱 테마를 변경해요</string>
     <string name="setting_preview">미리보기</string>
     <string name="setting_ebbing_planner_preview">에빙 플래너 미리보기</string>
     <string name="setting_dark">다크</string>
@@ -287,7 +287,7 @@
     <string name="setting_app_theme_changed">앱 테마를 변경하였습니다</string>
     <string name="setting_theme_change_failed">테마 변경에 실패하였습니다</string>
     <string name="setting_widget_theme_change">위젯 테마 변경</string>
-    <string name="setting_change_widget_theme">위젯 테마를 변경해요.</string>
+    <string name="setting_change_widget_theme">위젯 테마를 변경해요</string>
     <string name="setting_background_alpha">배경 투명도</string>
     <string name="setting_content_alpha">내용 투명도</string>
     <string name="setting_alpha_percent">%1$d %%</string>
@@ -366,8 +366,8 @@
     <string name="repeat_cycle_list_item">- %1$s</string>
     <string name="repeat_add_title">반복 주기 추가</string>
     <string name="repeat_edit_title">반복 주기 수정</string>
-    <string name="repeat_add_headline">나만의 반복 주기를 추가해요.</string>
-    <string name="repeat_edit_headline">나만의 반복 주기를 수정해요.</string>
+    <string name="repeat_add_headline">나만의 반복 주기를 추가해요</string>
+    <string name="repeat_edit_headline">나만의 반복 주기를 수정해요</string>
     <string name="repeat_save">저장</string>
     <string name="repeat_edit">수정</string>
     <string name="repeat_delete">삭제</string>

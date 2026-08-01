@@ -174,7 +174,7 @@
     <string name="home_review_sub">いただいたレビューをもとに \nもっと便利なサービスを作ります。</string>
     <string name="home_review_button">レビューを書く</string>
     <string name="home_widget_nudge_label">初めての予定登録が完了！</string>
-    <string name="home_widget_nudge_title">エビングプランナーのウィジェットでも\n予定を手軽にチェックしてみましょう。</string>
+    <string name="home_widget_nudge_title">エビングプランナーのウィジェットでも\n予定を手軽にチェックしてみましょう</string>
     <string name="home_notification_title">通知設定</string>
     <string name="home_notification_header_sub">通知を設定すると、次の復習日に予定をお知らせします。\n通知はいつでも設定タブで変更できます。</string>
     <string name="home_notification_nudge">忙しい日でも\n復習日を自動でお知らせします</string>
@@ -279,7 +279,7 @@
     <string name="setting_theme_change">テーマ変更</string>
     <string name="setting_apply">適用</string>
     <string name="setting_apply_action">適用する</string>
-    <string name="setting_change_app_theme">アプリのテーマを変更します。</string>
+    <string name="setting_change_app_theme">アプリのテーマを変更します</string>
     <string name="setting_preview">プレビュー</string>
     <string name="setting_ebbing_planner_preview">エビングプランナー プレビュー</string>
     <string name="setting_dark">ダーク</string>
@@ -287,7 +287,7 @@
     <string name="setting_app_theme_changed">アプリのテーマを変更しました</string>
     <string name="setting_theme_change_failed">テーマの変更に失敗しました</string>
     <string name="setting_widget_theme_change">ウィジェットのテーマ変更</string>
-    <string name="setting_change_widget_theme">ウィジェットのテーマを変更します。</string>
+    <string name="setting_change_widget_theme">ウィジェットのテーマを変更します</string>
     <string name="setting_background_alpha">背景の透明度</string>
     <string name="setting_content_alpha">内容の透明度</string>
     <string name="setting_alpha_percent">%1$d %%</string>
@@ -366,8 +366,8 @@
     <string name="repeat_cycle_list_item">- %1$s</string>
     <string name="repeat_add_title">繰り返し周期の追加</string>
     <string name="repeat_edit_title">繰り返し周期の編集</string>
-    <string name="repeat_add_headline">自分だけの繰り返し周期を追加しましょう。</string>
-    <string name="repeat_edit_headline">自分だけの繰り返し周期を編集しましょう。</string>
+    <string name="repeat_add_headline">自分だけの繰り返し周期を追加しましょう</string>
+    <string name="repeat_edit_headline">自分だけの繰り返し周期を編集しましょう</string>
     <string name="repeat_save">保存</string>
     <string name="repeat_edit">編集</string>
     <string name="repeat_delete">削除</string>

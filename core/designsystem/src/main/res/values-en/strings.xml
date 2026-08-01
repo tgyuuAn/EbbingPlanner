@@ -174,7 +174,7 @@
     <string name="home_review_sub">We\'ll use your review \nto build an even more convenient service.</string>
     <string name="home_review_button">Write a review</string>
     <string name="home_widget_nudge_label">First task registered!</string>
-    <string name="home_widget_nudge_title">Check your tasks easily\nwith the Ebbing Planner widget too.</string>
+    <string name="home_widget_nudge_title">Check your tasks easily\nwith the Ebbing Planner widget too</string>
     <string name="home_notification_title">Notification settings</string>
     <string name="home_notification_header_sub">Set a notification and we\'ll remind you of tasks on the next review day.\nYou can change notifications anytime in the Settings tab.</string>
     <string name="home_notification_nudge">Even on busy days,\nwe\'ll keep track of your review days automatically</string>
@@ -279,7 +279,7 @@
     <string name="setting_theme_change">Change theme</string>
     <string name="setting_apply">Apply</string>
     <string name="setting_apply_action">Apply</string>
-    <string name="setting_change_app_theme">Change the app theme.</string>
+    <string name="setting_change_app_theme">Change the app theme</string>
     <string name="setting_preview">Preview</string>
     <string name="setting_ebbing_planner_preview">Ebbing Planner preview</string>
     <string name="setting_dark">Dark</string>
@@ -287,7 +287,7 @@
     <string name="setting_app_theme_changed">App theme changed</string>
     <string name="setting_theme_change_failed">Failed to change theme</string>
     <string name="setting_widget_theme_change">Change widget theme</string>
-    <string name="setting_change_widget_theme">Change the widget theme.</string>
+    <string name="setting_change_widget_theme">Change the widget theme</string>
     <string name="setting_background_alpha">Background opacity</string>
     <string name="setting_content_alpha">Content opacity</string>
     <string name="setting_alpha_percent">%1$d %%</string>
@@ -366,8 +366,8 @@
     <string name="repeat_cycle_list_item">- %1$s</string>
     <string name="repeat_add_title">Add repeat cycle</string>
     <string name="repeat_edit_title">Edit repeat cycle</string>
-    <string name="repeat_add_headline">Add your own repeat cycle.</string>
-    <string name="repeat_edit_headline">Edit your own repeat cycle.</string>
+    <string name="repeat_add_headline">Add your own repeat cycle</string>
+    <string name="repeat_edit_headline">Edit your own repeat cycle</string>
     <string name="repeat_save">Save</string>
     <string name="repeat_edit">Edit</string>
     <string name="repeat_delete">Delete</string>
