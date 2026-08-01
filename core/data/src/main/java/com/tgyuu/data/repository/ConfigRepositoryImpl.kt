@@ -111,6 +111,18 @@ class ConfigRepositoryImpl @Inject constructor(
     override suspend fun setAutoBackupEnabled(enabled: Boolean) =
         localUserConfigDataSource.setAutoBackupEnabled(enabled)
 
+    override suspend fun getTagUsageOrder(): List<Int> =
+        localUserConfigDataSource.tagUsageOrder.first()
+
+    override suspend fun recordTagUsage(tagId: Int) =
+        localUserConfigDataSource.recordTagUsage(tagId)
+
+    override suspend fun getRepeatCycleUsageOrder(): List<Int> =
+        localUserConfigDataSource.repeatCycleUsageOrder.first()
+
+    override suspend fun recordRepeatCycleUsage(cycleId: Int) =
+        localUserConfigDataSource.recordRepeatCycleUsage(cycleId)
+
     private suspend fun logNotificationConfigSilently() = runCatching {
         val uuid = localSyncDataSource.uuid.first()
         val enabled = localUserConfigDataSource.notificationEnabled.first()

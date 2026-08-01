@@ -17,6 +17,7 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
+import com.tgyuu.home.model.sortedByUsageOrder
 import com.tgyuu.home.model.toUiModel
 import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph
@@ -97,7 +98,9 @@ class EditTodoViewModel @Inject constructor(
 
     internal fun loadTags() = viewModelScope.launch {
         val loadedTagList = todoRepository.loadTags()
-        setState { copy(tagList = loadedTagList.toUiModels()) }
+        val usageOrder = configRepository.getTagUsageOrder()
+        val sortedTagList = loadedTagList.sortedByUsageOrder(usageOrder) { it.id }
+        setState { copy(tagList = sortedTagList.toUiModels()) }
     }
 
     internal fun loadNewTag() {
@@ -202,6 +205,7 @@ class EditTodoViewModel @Inject constructor(
 
         todoRepository.updateTodo(newSchedule)
         todoRepository.updateTodoInfo(newSchedule, currentState.restDays.toSet())
+        runCatching { configRepository.recordTagUsage(tag.id) }
         val (hour, minute) = configRepository.getAlarmTime()
 
         currentState.originSchedule?.date?.let { originDate ->

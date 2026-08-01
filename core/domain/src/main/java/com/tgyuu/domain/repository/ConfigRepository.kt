@@ -40,6 +40,11 @@ interface ConfigRepository {
     fun getAutoBackupEnabled(): Flow<Boolean>
     suspend fun setAutoBackupEnabled(enabled: Boolean)
 
+    suspend fun getTagUsageOrder(): List<Int>
+    suspend fun recordTagUsage(tagId: Int)
+    suspend fun getRepeatCycleUsageOrder(): List<Int>
+    suspend fun recordRepeatCycleUsage(cycleId: Int)
+
     companion object {
         const val DEFAULT_ALARM_MESSAGE: String = "{할일} 을 확인하고, 잊지 말고 복습하세요!"
 

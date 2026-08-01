@@ -5,6 +5,7 @@ import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
 import com.tgyuu.database.source.todo.LocalTodoDataSource
+import com.tgyuu.datastore.datasource.user.LocalUserConfigDataSource
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoInfo
@@ -21,6 +22,7 @@ class TodoRepositoryImpl @Inject constructor(
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
     private val localRepeatCycleDataSource: LocalRepeatCycleDataSource,
+    private val localUserConfigDataSource: LocalUserConfigDataSource,
 ) : TodoRepository {
     private var _recentAddedTagId: Long? = null
     override val recentAddedTagId: Long?
@@ -119,8 +121,10 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) =
         localRepeatCycleDataSource.updateRepeatCycle(repeatCycle)
 
-    override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) =
+    override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) {
         localRepeatCycleDataSource.softDeleteRepeatCycle(repeatCycle)
+        localUserConfigDataSource.removeRepeatCycleUsage(repeatCycle.id)
+    }
 
     override suspend fun loadSchedule(id: Int): TodoSchedule? =
         localTodoDataSource.getTodoSchedule(id)
@@ -168,17 +172,22 @@ class TodoRepositoryImpl @Inject constructor(
         localTodoDataSource.softDeleteTodoByTodoInfo(id)
 
     override suspend fun updateTag(todoTag: TodoTag) = localTagDataSource.updateTag(todoTag)
-    override suspend fun deleteTag(todoTag: TodoTag) = localTagDataSource.softDeleteTag(todoTag)
+    override suspend fun deleteTag(todoTag: TodoTag) {
+        localTagDataSource.softDeleteTag(todoTag)
+        localUserConfigDataSource.removeTagUsage(todoTag.id)
+    }
 
     override suspend fun clearData() = coroutineScope {
         val tagJob = launch { localTagDataSource.softDeleteAllTags() }
         val todoJob = launch { localTodoDataSource.softDeleteAllTodos() }
         val todoInfoJob = launch { localTodoDataSource.deleteAllTodoInfos() }
         val repeatCycleJob = launch { localRepeatCycleDataSource.softDeleteAllRepeatCycles() }
+        val usageOrderJob = launch { localUserConfigDataSource.clearUsageOrder() }
 
         tagJob.join()
         todoJob.join()
         todoInfoJob.join()
         repeatCycleJob.join()
+        usageOrderJob.join()
     }
 }

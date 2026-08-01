@@ -19,6 +19,8 @@ class FakeSyncRepository : SyncRepository {
     override suspend fun getServerLastUpdatedAt(): ServerSyncInfo? =
         serverLastUpdatedAt?.let { ServerSyncInfo(lastUpdatedAt = it, connectedDeviceName = "") }
     override suspend fun getLocalSyncedAt(): ZonedDateTime? = null
+    override suspend fun restoreByDeviceId(deviceIdPrefix: String): RestoreResult =
+        RestoreResult.NotFound
 
     override suspend fun syncUpData(): ZonedDateTime {
         syncUpCallCount++
