@@ -105,4 +105,19 @@ class FakeConfigRepository : ConfigRepository {
     override fun getAutoBackupEnabled(): Flow<Boolean> = flowOf(false)
 
     override suspend fun setAutoBackupEnabled(enabled: Boolean) {}
+
+    private var tagUsageOrder: List<Int> = emptyList()
+    private var repeatCycleUsageOrder: List<Int> = emptyList()
+
+    override suspend fun getTagUsageOrder(): List<Int> = tagUsageOrder
+
+    override suspend fun recordTagUsage(tagId: Int) {
+        tagUsageOrder = listOf(tagId) + tagUsageOrder.filter { it != tagId }
+    }
+
+    override suspend fun getRepeatCycleUsageOrder(): List<Int> = repeatCycleUsageOrder
+
+    override suspend fun recordRepeatCycleUsage(cycleId: Int) {
+        repeatCycleUsageOrder = listOf(cycleId) + repeatCycleUsageOrder.filter { it != cycleId }
+    }
 }

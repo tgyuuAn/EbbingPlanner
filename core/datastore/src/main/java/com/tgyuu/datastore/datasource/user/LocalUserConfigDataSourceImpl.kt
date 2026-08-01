@@ -152,6 +152,27 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         dataStore.edit { prefs -> prefs[AUTO_BACKUP_ENABLED] = enabled }
     }
 
+    override val tagUsageOrder: Flow<List<Int>>
+        get() = dataStore.data.map { prefs -> prefs[TAG_USAGE_ORDER].toIdList() }
+
+    override suspend fun recordTagUsage(tagId: Int) {
+        dataStore.edit { prefs ->
+            val newOrder = listOf(tagId) + prefs[TAG_USAGE_ORDER].toIdList().filter { it != tagId }
+            prefs[TAG_USAGE_ORDER] = newOrder.joinToString(",")
+        }
+    }
+
+    override val repeatCycleUsageOrder: Flow<List<Int>>
+        get() = dataStore.data.map { prefs -> prefs[REPEAT_CYCLE_USAGE_ORDER].toIdList() }
+
+    override suspend fun recordRepeatCycleUsage(cycleId: Int) {
+        dataStore.edit { prefs ->
+            val newOrder =
+                listOf(cycleId) + prefs[REPEAT_CYCLE_USAGE_ORDER].toIdList().filter { it != cycleId }
+            prefs[REPEAT_CYCLE_USAGE_ORDER] = newOrder.joinToString(",")
+        }
+    }
+
     override suspend fun consumeInAppReview(): Boolean {
         var shouldShow = false
         dataStore.edit { prefs ->
@@ -201,5 +222,10 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
         private val MONDAY_START = booleanPreferencesKey("MONDAY_START")
         private val CALENDAR_DEFAULT_VIEW = stringPreferencesKey("CALENDAR_DEFAULT_VIEW")
         private val AUTO_BACKUP_ENABLED = booleanPreferencesKey("AUTO_BACKUP_ENABLED")
+        private val TAG_USAGE_ORDER = stringPreferencesKey("TAG_USAGE_ORDER")
+        private val REPEAT_CYCLE_USAGE_ORDER = stringPreferencesKey("REPEAT_CYCLE_USAGE_ORDER")
     }
 }
+
+private fun String?.toIdList(): List<Int> =
+    this?.split(",")?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()

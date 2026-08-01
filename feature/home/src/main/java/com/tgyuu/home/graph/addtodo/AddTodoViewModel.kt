@@ -23,6 +23,7 @@ import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESS
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.model.sortedByUsageOrder
 import com.tgyuu.home.model.toUiModel
 import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph.HomeRoute
@@ -72,10 +73,32 @@ class AddTodoViewModel @Inject constructor(
         }
 
         initNotificationState()
+        initLastSelected()
 
         viewModelScope.launch {
             configRepository.getMondayStart()
                 .collect { setState { copy(mondayStart = it) } }
+        }
+    }
+
+    private fun initLastSelected() = viewModelScope.launch {
+        configRepository.getTagUsageOrder().firstOrNull()?.let { tagId ->
+            val tag = todoRepository.loadTag(tagId) ?: return@let
+            val uiTag = tag.toUiModel().let {
+                if (it.id == DefaultTodoTag.id) {
+                    it.copy(name = resourceProvider.getString(R.string.tag_unassigned))
+                } else {
+                    it
+                }
+            }
+            setState { copy(tag = uiTag) }
+        }
+
+        configRepository.getRepeatCycleUsageOrder().firstOrNull()?.let { cycleId ->
+            val repeatCycle = DefaultRepeatCycles.find { it.id == cycleId }
+                ?: todoRepository.loadRepeatCycles().find { it.id == cycleId }
+                ?: return@let
+            setState { copy(repeatCycle = repeatCycle.toUiModel(resourceProvider)) }
         }
     }
 
@@ -120,13 +143,17 @@ class AddTodoViewModel @Inject constructor(
 
     internal fun loadTags() = viewModelScope.launch {
         val loadedTagList = todoRepository.loadTags()
-        setState { copy(tagList = loadedTagList.toUiModels()) }
+        val usageOrder = configRepository.getTagUsageOrder()
+        val sortedTagList = loadedTagList.sortedByUsageOrder(usageOrder) { it.id }
+        setState { copy(tagList = sortedTagList.toUiModels()) }
     }
 
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
+        val usageOrder = configRepository.getRepeatCycleUsageOrder()
+        val sortedRepeatCycles = allRepeatCycles.sortedByUsageOrder(usageOrder) { it.id }
+        setState { copy(repeatCycleList = sortedRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {
@@ -254,6 +281,9 @@ class AddTodoViewModel @Inject constructor(
             isPinned = currentState.isPinned,
             restDays = currentState.restDays.toSet(),
         )
+
+        configRepository.recordTagUsage(tag.id)
+        currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
 
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
