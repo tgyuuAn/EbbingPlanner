@@ -49,7 +49,6 @@ import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.NavigationEvent.BottomBarTo
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
-import com.tgyuu.setting.BuildConfig
 import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
 import dagger.hilt.android.AndroidEntryPoint
@@ -133,7 +132,7 @@ class MainActivity : ComponentActivity() {
                                         To(
                                             SettingGraph.WebViewRoute(
                                                 title = getString(com.tgyuu.designsystem.R.string.setting_announcement),
-                                                url = BuildConfig.EBBING_NOTICE_URL,
+                                                url = getString(com.tgyuu.designsystem.R.string.setting_announcement_url),
                                             )
                                         )
                                     )

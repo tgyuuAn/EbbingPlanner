@@ -8,6 +8,9 @@
     <string name="setting_announcement">お知らせ</string>
     <string name="setting_privacy_policy">プライバシーポリシー</string>
     <string name="setting_term">利用規約</string>
+    <string name="setting_announcement_url">https://app.notion.com/p/95851f05c1bd4692861ba009b0468c25?pvs=21</string>
+    <string name="setting_privacy_policy_url">https://app.notion.com/p/4dd9642402484a35a8a5e7829e83b825?pvs=21</string>
+    <string name="setting_term_url">https://app.notion.com/p/af6c60f5e61748a997de6f3df90d1987?pvs=21</string>
     <string name="setting_version">現在のバージョン %1$s</string>
     <string name="setting_inquiry">お問い合わせ</string>
     <string name="setting_contact_us">お問い合わせする</string>
