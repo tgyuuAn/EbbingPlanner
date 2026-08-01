@@ -82,8 +82,10 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun initLastSelected() = viewModelScope.launch {
-        configRepository.getTagUsageOrder().firstOrNull()?.let { tagId ->
-            val tag = todoRepository.loadTag(tagId) ?: return@let
+        // 사용 이력에 삭제된 id가 남아 있을 수 있으므로, 아직 존재하는 가장 최근 항목을 선택한다.
+        val lastTag = configRepository.getTagUsageOrder()
+            .firstNotNullOfOrNull { tagId -> todoRepository.loadTag(tagId) }
+        lastTag?.let { tag ->
             val uiTag = tag.toUiModel().let {
                 if (it.id == DefaultTodoTag.id) {
                     it.copy(name = resourceProvider.getString(R.string.tag_unassigned))
@@ -94,11 +96,14 @@ class AddTodoViewModel @Inject constructor(
             setState { copy(tag = uiTag) }
         }
 
-        configRepository.getRepeatCycleUsageOrder().firstOrNull()?.let { cycleId ->
-            val repeatCycle = DefaultRepeatCycles.find { it.id == cycleId }
-                ?: todoRepository.loadRepeatCycles().find { it.id == cycleId }
-                ?: return@let
-            setState { copy(repeatCycle = repeatCycle.toUiModel(resourceProvider)) }
+        val customRepeatCycles = todoRepository.loadRepeatCycles()
+        val lastRepeatCycle = configRepository.getRepeatCycleUsageOrder()
+            .firstNotNullOfOrNull { cycleId ->
+                DefaultRepeatCycles.find { it.id == cycleId }
+                    ?: customRepeatCycles.find { it.id == cycleId }
+            }
+        lastRepeatCycle?.let {
+            setState { copy(repeatCycle = it.toUiModel(resourceProvider)) }
         }
     }
 

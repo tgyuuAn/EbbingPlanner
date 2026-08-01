@@ -37,6 +37,8 @@ interface LocalUserConfigDataSource {
     suspend fun setAutoBackupEnabled(enabled: Boolean)
     val tagUsageOrder: Flow<List<Int>>
     suspend fun recordTagUsage(tagId: Int)
+    suspend fun removeTagUsage(tagId: Int)
     val repeatCycleUsageOrder: Flow<List<Int>>
     suspend fun recordRepeatCycleUsage(cycleId: Int)
+    suspend fun removeRepeatCycleUsage(cycleId: Int)
 }

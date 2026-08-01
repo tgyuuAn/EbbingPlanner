@@ -153,23 +153,37 @@ class LocalUserConfigDataSourceImpl @Inject constructor(
     }
 
     override val tagUsageOrder: Flow<List<Int>>
-        get() = dataStore.data.map { prefs -> prefs[TAG_USAGE_ORDER].toIdList() }
+        get() = usageOrderFlow(TAG_USAGE_ORDER)
 
-    override suspend fun recordTagUsage(tagId: Int) {
+    override suspend fun recordTagUsage(tagId: Int) = recordUsage(TAG_USAGE_ORDER, tagId)
+
+    override suspend fun removeTagUsage(tagId: Int) = removeUsage(TAG_USAGE_ORDER, tagId)
+
+    override val repeatCycleUsageOrder: Flow<List<Int>>
+        get() = usageOrderFlow(REPEAT_CYCLE_USAGE_ORDER)
+
+    override suspend fun recordRepeatCycleUsage(cycleId: Int) =
+        recordUsage(REPEAT_CYCLE_USAGE_ORDER, cycleId)
+
+    override suspend fun removeRepeatCycleUsage(cycleId: Int) =
+        removeUsage(REPEAT_CYCLE_USAGE_ORDER, cycleId)
+
+    private fun usageOrderFlow(key: Preferences.Key<String>): Flow<List<Int>> =
+        dataStore.data.map { prefs -> prefs[key].toIdList() }
+
+    /** 사용한 [id]를 맨 앞으로 옮겨 최근 사용순을 유지한다. */
+    private suspend fun recordUsage(key: Preferences.Key<String>, id: Int) {
         dataStore.edit { prefs ->
-            val newOrder = listOf(tagId) + prefs[TAG_USAGE_ORDER].toIdList().filter { it != tagId }
-            prefs[TAG_USAGE_ORDER] = newOrder.joinToString(",")
+            val newOrder = listOf(id) + prefs[key].toIdList().filter { it != id }
+            prefs[key] = newOrder.joinToString(",")
         }
     }
 
-    override val repeatCycleUsageOrder: Flow<List<Int>>
-        get() = dataStore.data.map { prefs -> prefs[REPEAT_CYCLE_USAGE_ORDER].toIdList() }
-
-    override suspend fun recordRepeatCycleUsage(cycleId: Int) {
+    /** 삭제된 항목의 [id]를 최근 사용순에서 제거해 오펀 id가 남지 않도록 한다. */
+    private suspend fun removeUsage(key: Preferences.Key<String>, id: Int) {
         dataStore.edit { prefs ->
-            val newOrder =
-                listOf(cycleId) + prefs[REPEAT_CYCLE_USAGE_ORDER].toIdList().filter { it != cycleId }
-            prefs[REPEAT_CYCLE_USAGE_ORDER] = newOrder.joinToString(",")
+            val newOrder = prefs[key].toIdList().filter { it != id }
+            prefs[key] = newOrder.joinToString(",")
         }
     }
 
