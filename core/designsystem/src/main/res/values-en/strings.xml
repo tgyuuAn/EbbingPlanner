@@ -8,6 +8,9 @@
     <string name="setting_announcement">Announcements</string>
     <string name="setting_privacy_policy">Privacy Policy</string>
     <string name="setting_term">Terms of Service</string>
+    <string name="setting_announcement_url">https://mousy-banjo-f6d.notion.site/Notice-0ce18348ef114015af88ddaab2131de6?source=copy_link</string>
+    <string name="setting_privacy_policy_url">https://mousy-banjo-f6d.notion.site/Privacy-Policy-7e36be7e6229490a93c5499568b1cae8?source=copy_link</string>
+    <string name="setting_term_url">https://mousy-banjo-f6d.notion.site/Terms-of-Service-970ee20d02884e08b936894e35f5d563?source=copy_link</string>
     <string name="setting_version">Current version %1$s</string>
     <string name="setting_inquiry">Inquiry</string>
     <string name="setting_contact_us">Contact us</string>
