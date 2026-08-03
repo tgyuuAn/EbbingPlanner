@@ -50,7 +50,7 @@ kotlinxCoroutine = "1.10.1"
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlinxCollectionsImmutable = "0.4.0"
 # https://github.com/Kotlin/kotlinx-datetime
-kotlinxDatetime = "0.6.1"
+kotlinxDatetime = "0.7.1"
 # https://github.com/google/gson
 gson = "2.12.1"
 
@@ -107,11 +107,11 @@ koinComposeMultiplatform = "4.0.0"
 
 ## Compose Multiplatform
 # https://github.com/JetBrains/compose-multiplatform
-composeMultiplatform = "1.7.0"
+composeMultiplatform = "1.11.1"
 
 ## Decompose (KMP Navigation)
 # https://github.com/arkivanov/Decompose
-decompose = "3.0.0"
+decompose = "3.5.0"
 
 ## KMP Lifecycle ViewModel
 # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-viewmodel.html
@@ -253,6 +253,8 @@ camerax-camera2 = { group = "androidx.camera", name = "camera-camera2", version.
 camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 qrose = { group = "io.github.alexzhirkevich", name = "qrose", version.ref = "qrose" }
+# CMP 1.8+부터 material3가 material-icons를 더 이상 전이 의존하지 않아 마지막 배포 버전(1.7.3)을 직접 참조
+compose-material-icons-core = { group = "org.jetbrains.compose.material", name = "material-icons-core", version = "1.7.3" }
 
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 
@@ -261,6 +263,8 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+# 버전 명시 없음: build-logic 클래스패스의 AGP 버전을 그대로 사용 (버전 지정 시 already-on-classpath 충돌)
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

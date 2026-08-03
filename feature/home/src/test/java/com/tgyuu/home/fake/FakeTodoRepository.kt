@@ -170,9 +170,9 @@ class FakeTodoRepository : TodoRepository {
                     memo = "",
                     isPinned = isPinned,
                     isDone = isDone,
-                    createdAt = kotlinx.datetime.Clock.System.now()
+                    createdAt = kotlin.time.Clock.System.now()
                         .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
-                    infoCreatedAt = kotlinx.datetime.Clock.System.now()
+                    infoCreatedAt = kotlin.time.Clock.System.now()
                         .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
                 )
             )

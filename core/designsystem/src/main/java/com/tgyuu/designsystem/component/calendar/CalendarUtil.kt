@@ -2,10 +2,13 @@ package com.tgyuu.designsystem.component.calendar
 
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.number
 
+// kotlinx-datetime 0.7부터 DayOfWeek가 java.time typealias가 아니므로 변환 후 표시명 조회
 fun DayOfWeek.toShortLabel(): String =
-    getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.getDefault())
+    java.time.DayOfWeek.of(isoDayNumber)
+        .getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.getDefault())
 
 fun yearMonthDiff(from: LocalDate, to: LocalDate): Int {
     return (to.year - from.year) * 12 + (to.monthNumber - from.monthNumber)

@@ -27,7 +27,8 @@ fun getWeekStart(date: LocalDate, startFromMonday: Boolean = false): LocalDate {
 fun weeksBetween(from: LocalDate, to: LocalDate, startFromMonday: Boolean = false): Int {
     val fromWeekStart = getWeekStart(from, startFromMonday)
     val toWeekStart = getWeekStart(to, startFromMonday)
-    return (toWeekStart.toEpochDays() - fromWeekStart.toEpochDays()) / 7
+    // kotlinx-datetime 0.7부터 toEpochDays()가 Long을 반환
+    return ((toWeekStart.toEpochDays() - fromWeekStart.toEpochDays()) / 7).toInt()
 }
 
 fun getWeekDates(date: LocalDate, startFromMonday: Boolean = false): List<CalendarDate> {

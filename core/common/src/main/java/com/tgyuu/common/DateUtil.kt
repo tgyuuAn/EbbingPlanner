@@ -1,14 +1,24 @@
 package com.tgyuu.common
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+
+/**
+ * kotlinx-datetime 0.7부터 DayOfWeek가 java.time typealias가 아니므로
+ * java.time으로 변환해 로케일 표시명을 조회하는 호환 확장
+ */
+fun DayOfWeek.getDisplayName(
+    style: java.time.format.TextStyle,
+    locale: java.util.Locale,
+): String = java.time.DayOfWeek.of(isoDayNumber).getDisplayName(style, locale)
 
 /**
  * 현재 시스템 날짜/시간 가져오기

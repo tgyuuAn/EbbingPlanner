@@ -27,5 +27,6 @@ migration/
 *.aab
 app/release/
 
-# iOS 로컬 작업 (안드로이드 레포에 커밋하지 않음)
-iosApp/
+# KMP 브랜치에서는 iosApp을 추적함 (develop의 iosApp/ ignore는 미적용)
+iosApp/xcuserdata/
+iosApp/**/xcuserdata/

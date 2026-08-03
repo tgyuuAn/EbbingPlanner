@@ -16,7 +16,7 @@ fun Modifier.throttledClickable(
     var lastClickTime by remember { mutableLongStateOf(0L) }
 
     clickable(enabled = enabled) {
-        val now = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+        val now = kotlin.time.Clock.System.now().toEpochMilliseconds()
         if (now - lastClickTime >= throttleTime) {
             lastClickTime = now
             onClick()
