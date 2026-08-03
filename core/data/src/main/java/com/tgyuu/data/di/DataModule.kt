@@ -15,9 +15,11 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val dataModule = module {
-    single { TodoRepositoryImpl(get(), get(), get()) } bind TodoRepository::class
-    single { ConfigRepositoryImpl(get(), get()) } bind ConfigRepository::class
-    single { SyncRepositoryImpl(get(), get(), get(), get(), get(), get()) } bind SyncRepository::class
+    single { TodoRepositoryImpl(get(), get(), get(), get()) } bind TodoRepository::class
+    single { ConfigRepositoryImpl(get(), get(), get(), get()) } bind ConfigRepository::class
+    single {
+        SyncRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get())
+    } bind SyncRepository::class
     single { ErrorRepositoryImpl(get()) } bind ErrorRepository::class
     single { Timer() }
 }

@@ -20,3 +20,13 @@ iosApp/iosApp/GoogleService-Info.plist
 iosApp/iosApp/Secrets.plist
 iosApp/Pods/
 iosApp/EbbingPlanner.xcworkspace/
+migration/
+
+# 빌드 산출물
+*.apk
+*.aab
+app/release/
+
+# KMP 브랜치에서는 iosApp을 추적함 (develop의 iosApp/ ignore는 미적용)
+iosApp/xcuserdata/
+iosApp/**/xcuserdata/

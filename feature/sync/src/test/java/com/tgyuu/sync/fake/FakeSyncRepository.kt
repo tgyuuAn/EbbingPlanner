@@ -6,7 +6,11 @@ import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.model.sync.RestoreResult
 import com.tgyuu.domain.model.sync.ServerSyncInfo
 import com.tgyuu.domain.repository.SyncRepository
-import java.time.LocalDateTime
+import kotlin.time.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import java.time.ZonedDateTime
 
 class FakeSyncRepository : SyncRepository {

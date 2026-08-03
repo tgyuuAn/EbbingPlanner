@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
@@ -14,14 +14,19 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    androidTarget {
+    // AGP 9+ KMP 전용 안드로이드 라이브러리 타깃 (구 androidTarget + android {} 블록 대체)
+    androidLibrary {
+        namespace = "com.tgyuu.shared"
+        compileSdk = 35
+        minSdk = 28
+
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
         }
     }
 
+    // iosX64(Intel 시뮬레이터)는 CMP 1.11부터 미지원이라 제거
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach {
@@ -43,6 +48,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.components.resources)
+            implementation(libs.compose.material.icons.core)
 
             // Decompose Navigation
             implementation(libs.decompose)
@@ -91,27 +97,12 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.tgyuu.shared"
-    compileSdk = 35
-
-    defaultConfig {
-        minSdk = 28
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
 room {
     schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }
