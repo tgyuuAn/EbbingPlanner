@@ -2,6 +2,8 @@ package com.tgyuu.shared.ui.feature.home.editdate
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.common.sortedByUsageOrder
+import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
 import com.tgyuu.shared.domain.model.TodoSchedule
@@ -29,6 +31,7 @@ class EditDateViewModel(
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
+    private val configRepository: ConfigRepository? = null,
     private val onShowDateBottomSheet: (() -> Unit)? = null,
     private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
@@ -71,7 +74,9 @@ class EditDateViewModel(
     private suspend fun loadRepeatCycles() {
         val repeatCycles = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + repeatCycles
-        val models = buildList { for (cycle in allRepeatCycles) add(cycle.toUiModel()) }
+        val usageOrder = configRepository?.getRepeatCycleUsageOrder() ?: emptyList()
+        val sortedRepeatCycles = allRepeatCycles.sortedByUsageOrder(usageOrder) { it.id }
+        val models = buildList { for (cycle in sortedRepeatCycles) add(cycle.toUiModel()) }
         setState {
             copy(repeatCycleList = models.toImmutableList())
         }
@@ -133,6 +138,11 @@ class EditDateViewModel(
                 isPinned = currentState.isPinned,
                 restDays = currentState.restDays.toSet(),
             )
+
+            // 저장 완료 후 부가 기록 실패가 완료 흐름을 막지 않도록 격리
+            runCatching {
+                currentState.repeatCycle?.let { configRepository?.recordRepeatCycleUsage(it.id) }
+            }
 
             onShowSnackbar(getString(Res.string.snack_date_repeat_changed))
             onNavigateToHome(currentState.selectedDate)

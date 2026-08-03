@@ -21,6 +21,7 @@ import ebbingplanner.shared.generated.resources.snack_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_add_failed
 import ebbingplanner.shared.generated.resources.snack_todo_added
 import org.jetbrains.compose.resources.getString
+import com.tgyuu.shared.common.sortedByUsageOrder
 import com.tgyuu.shared.designsystem.model.toDisplayName
 
 class AddTodoViewModel(
@@ -53,20 +54,45 @@ class AddTodoViewModel(
             }
             loadTags()
             loadRepeatCycles()
+            initLastSelected()
+        }
+    }
+
+    private suspend fun initLastSelected() {
+        // 사용 이력에 삭제된 id가 남아 있을 수 있으므로, 아직 존재하는 가장 최근 항목을 선택한다.
+        val lastTag = (configRepository?.getTagUsageOrder() ?: emptyList())
+            .firstNotNullOfOrNull { tagId -> todoRepository.loadTag(tagId) }
+        lastTag?.let { tag ->
+            setState { copy(tag = tag.toUiModel()) }
+        }
+
+        val customRepeatCycles = todoRepository.loadRepeatCycles()
+        val lastRepeatCycle = (configRepository?.getRepeatCycleUsageOrder() ?: emptyList())
+            .firstNotNullOfOrNull { cycleId ->
+                DefaultRepeatCycles.find { it.id == cycleId }
+                    ?: customRepeatCycles.find { it.id == cycleId }
+            }
+        lastRepeatCycle?.let {
+            val model = it.toUiModel() // suspend 호출은 setState 람다 밖에서 수행
+            setState { copy(repeatCycle = model) }
         }
     }
 
     private suspend fun loadTags() {
         val tags = todoRepository.loadTags()
+        val usageOrder = configRepository?.getTagUsageOrder() ?: emptyList()
+        val sortedTags = tags.sortedByUsageOrder(usageOrder) { it.id }
         setState {
-            copy(tagList = tags.map { it.toUiModel() }.toImmutableList())
+            copy(tagList = sortedTags.map { it.toUiModel() }.toImmutableList())
         }
     }
 
     private suspend fun loadRepeatCycles() {
         val repeatCycles = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + repeatCycles
-        val models = buildList { for (cycle in allRepeatCycles) add(cycle.toUiModel()) }
+        val usageOrder = configRepository?.getRepeatCycleUsageOrder() ?: emptyList()
+        val sortedRepeatCycles = allRepeatCycles.sortedByUsageOrder(usageOrder) { it.id }
+        val models = buildList { for (cycle in sortedRepeatCycles) add(cycle.toUiModel()) }
         setState {
             copy(repeatCycleList = models.toImmutableList())
         }
@@ -131,7 +157,12 @@ class AddTodoViewModel(
                 restDays = currentState.restDays.toSet(),
             )
 
-            configRepository?.markFirstTodoAdded()
+            // 저장 완료 후 부가 기록 실패가 완료 흐름을 막지 않도록 격리
+            runCatching {
+                configRepository?.recordTagUsage(tag.id)
+                currentState.repeatCycle?.let { configRepository?.recordRepeatCycleUsage(it.id) }
+            }
+            runCatching { configRepository?.markFirstTodoAdded() }
 
             onShowSnackbar(getString(Res.string.snack_todo_added))
             onNavigateToHome(currentState.selectedDate)

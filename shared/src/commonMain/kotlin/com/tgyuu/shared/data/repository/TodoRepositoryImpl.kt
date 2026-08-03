@@ -8,6 +8,7 @@ import com.tgyuu.shared.database.dao.TodoWithSchedulesDao
 import com.tgyuu.shared.database.model.RepeatCycleEntity
 import com.tgyuu.shared.database.model.TodoTagEntity
 import com.tgyuu.shared.database.model.toEntity
+import com.tgyuu.shared.data.source.UsageOrderStore
 import com.tgyuu.shared.domain.model.DefaultTodoTag
 import com.tgyuu.shared.domain.model.RepeatCycle
 import com.tgyuu.shared.domain.model.TodoInfo
@@ -26,6 +27,7 @@ class TodoRepositoryImpl(
     private val todoSchedulesDao: TodoSchedulesDao,
     private val todoWithSchedulesDao: TodoWithSchedulesDao,
     private val repeatCyclesDao: RepeatCyclesDao,
+    private val usageOrderStore: UsageOrderStore,
 ) : TodoRepository {
 
     private var _recentAddedTagId: Long? = null
@@ -127,6 +129,7 @@ class TodoRepositoryImpl(
 
     override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) {
         repeatCyclesDao.softDeleteRepeatCycle(repeatCycle.id, LocalDateTime.now())
+        usageOrderStore.removeRepeatCycleUsage(repeatCycle.id)
     }
 
     override suspend fun loadSchedule(id: Int): TodoSchedule? =
@@ -185,6 +188,7 @@ class TodoRepositoryImpl(
 
     override suspend fun deleteTag(todoTag: TodoTag) {
         todoTagsDao.softDeleteTagWithReset(todoTag.toEntity())
+        usageOrderStore.removeTagUsage(todoTag.id)
     }
 
     override suspend fun clearData() {
@@ -192,6 +196,7 @@ class TodoRepositoryImpl(
             launch { todoTagsDao.softDeleteAllTags(LocalDateTime.now()) }
             launch { todoSchedulesDao.softDeleteAllSchedules(LocalDateTime.now()) }
             launch { repeatCyclesDao.softDeleteAllRepeatCycles(LocalDateTime.now()) }
+            launch { usageOrderStore.clearUsageOrder() }
         }
     }
 }

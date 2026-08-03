@@ -6,6 +6,7 @@ import com.tgyuu.shared.data.repository.ExperimentRepositoryImpl
 import com.tgyuu.shared.data.repository.FeatureFlagRepositoryImpl
 import com.tgyuu.shared.data.repository.SyncRepositoryImpl
 import com.tgyuu.shared.data.repository.TodoRepositoryImpl
+import com.tgyuu.shared.data.source.UsageOrderStore
 import com.tgyuu.shared.database.EbbingDatabase
 import com.tgyuu.shared.domain.AutoBackupManager
 import com.tgyuu.shared.domain.model.ErrorBus
@@ -34,6 +35,9 @@ val sharedModule = module {
     single { get<EbbingDatabase>().repeatCyclesDao() }
     single { get<EbbingDatabase>().syncDao() }
 
+    // 태그·반복 주기 최근 사용순 저장소
+    single { UsageOrderStore(settings = get()) }
+
     // Repository
     single<TodoRepository> {
         TodoRepositoryImpl(
@@ -41,11 +45,12 @@ val sharedModule = module {
             todoSchedulesDao = get(),
             todoWithSchedulesDao = get(),
             repeatCyclesDao = get(),
+            usageOrderStore = get(),
         )
     }
 
     single<ConfigRepository> {
-        ConfigRepositoryImpl(settings = get())
+        ConfigRepositoryImpl(settings = get(), usageOrderStore = get())
     }
 
     single<ErrorDataSource> { DebugErrorDataSource() }

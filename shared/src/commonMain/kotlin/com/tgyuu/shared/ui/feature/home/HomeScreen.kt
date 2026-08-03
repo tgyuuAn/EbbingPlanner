@@ -27,6 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -350,11 +352,13 @@ private fun PhoneHomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
+    var selectedDate by rememberSaveable(workedDate, stateSaver = LocalDateSaver) {
+        mutableStateOf(workedDate)
+    }
     val calendarState = rememberCalendarState()
 
     LaunchedEffect(workedDate) {
-        calendarState.onDateSelect(workedDate)
+        calendarState.onDateSelect(selectedDate)
     }
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {
@@ -500,11 +504,13 @@ private fun TabletHomeScreen(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
+    var selectedDate by rememberSaveable(workedDate, stateSaver = LocalDateSaver) {
+        mutableStateOf(workedDate)
+    }
     val calendarState = rememberCalendarState()
 
     LaunchedEffect(workedDate) {
-        calendarState.onDateSelect(workedDate)
+        calendarState.onDateSelect(selectedDate)
     }
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {
@@ -635,3 +641,9 @@ private fun HandleDialogs(
         }
     }
 }
+
+/** 화면 이동 후 복귀 시 선택 날짜를 복원하기 위한 LocalDate Saver */
+private val LocalDateSaver = Saver<LocalDate, String>(
+    save = { it.toString() },
+    restore = { LocalDate.parse(it) },
+)

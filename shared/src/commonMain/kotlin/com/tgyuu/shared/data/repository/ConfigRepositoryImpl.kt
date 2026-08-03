@@ -4,6 +4,7 @@ import com.tgyuu.shared.domain.model.CalendarDefaultView
 import com.tgyuu.shared.domain.model.SortType
 import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.domain.model.UpdateInfo
+import com.tgyuu.shared.data.source.UsageOrderStore
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.platform.Settings
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.map
 
 class ConfigRepositoryImpl(
     private val settings: Settings,
+    private val usageOrderStore: UsageOrderStore,
 ) : ConfigRepository {
 
     override fun getAppTheme(): Flow<Theme> =
@@ -149,6 +151,16 @@ class ConfigRepositoryImpl(
         }
         return !hasAdded
     }
+
+    override suspend fun getTagUsageOrder(): List<Int> = usageOrderStore.tagUsageOrder()
+
+    override suspend fun recordTagUsage(tagId: Int) = usageOrderStore.recordTagUsage(tagId)
+
+    override suspend fun getRepeatCycleUsageOrder(): List<Int> =
+        usageOrderStore.repeatCycleUsageOrder()
+
+    override suspend fun recordRepeatCycleUsage(cycleId: Int) =
+        usageOrderStore.recordRepeatCycleUsage(cycleId)
 
     companion object {
         private const val KEY_CLEAR_SYNC_FLAG = "CLEAR_SYNC_FLAG"
