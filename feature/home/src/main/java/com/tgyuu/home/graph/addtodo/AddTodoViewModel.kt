@@ -23,6 +23,7 @@ import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESS
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.model.sortedByUsageOrder
 import com.tgyuu.home.model.toUiModel
 import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph.HomeRoute
@@ -73,10 +74,37 @@ class AddTodoViewModel(
         }
 
         initNotificationState()
+        initLastSelected()
 
         viewModelScope.launch {
             configRepository.getMondayStart()
                 .collect { setState { copy(mondayStart = it) } }
+        }
+    }
+
+    private fun initLastSelected() = viewModelScope.launch {
+        // 사용 이력에 삭제된 id가 남아 있을 수 있으므로, 아직 존재하는 가장 최근 항목을 선택한다.
+        val lastTag = configRepository.getTagUsageOrder()
+            .firstNotNullOfOrNull { tagId -> todoRepository.loadTag(tagId) }
+        lastTag?.let { tag ->
+            val uiTag = tag.toUiModel().let {
+                if (it.id == DefaultTodoTag.id) {
+                    it.copy(name = resourceProvider.getString(R.string.tag_unassigned))
+                } else {
+                    it
+                }
+            }
+            setState { copy(tag = uiTag) }
+        }
+
+        val customRepeatCycles = todoRepository.loadRepeatCycles()
+        val lastRepeatCycle = configRepository.getRepeatCycleUsageOrder()
+            .firstNotNullOfOrNull { cycleId ->
+                DefaultRepeatCycles.find { it.id == cycleId }
+                    ?: customRepeatCycles.find { it.id == cycleId }
+            }
+        lastRepeatCycle?.let {
+            setState { copy(repeatCycle = it.toUiModel(resourceProvider)) }
         }
     }
 
@@ -121,13 +149,17 @@ class AddTodoViewModel(
 
     internal fun loadTags() = viewModelScope.launch {
         val loadedTagList = todoRepository.loadTags()
-        setState { copy(tagList = loadedTagList.toUiModels()) }
+        val usageOrder = configRepository.getTagUsageOrder()
+        val sortedTagList = loadedTagList.sortedByUsageOrder(usageOrder) { it.id }
+        setState { copy(tagList = sortedTagList.toUiModels()) }
     }
 
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
+        val usageOrder = configRepository.getRepeatCycleUsageOrder()
+        val sortedRepeatCycles = allRepeatCycles.sortedByUsageOrder(usageOrder) { it.id }
+        setState { copy(repeatCycleList = sortedRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: AddTodoIntent) {
@@ -257,6 +289,11 @@ class AddTodoViewModel(
             restDays = currentState.restDays.toSet(),
         )
 
+        runCatching {
+            configRepository.recordTagUsage(tag.id)
+            currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
+        }
+
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
             try {
@@ -284,8 +321,8 @@ class AddTodoViewModel(
             }
         }
 
-        val isFirstTodo = configRepository.markFirstTodoAdded()
-        configRepository.incrementTodoRegisteredCount()
+        val isFirstTodo = runCatching { configRepository.markFirstTodoAdded() }.getOrDefault(false)
+        runCatching { configRepository.incrementTodoRegisteredCount() }
 
         eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_added)))
         navigationBus.navigate(

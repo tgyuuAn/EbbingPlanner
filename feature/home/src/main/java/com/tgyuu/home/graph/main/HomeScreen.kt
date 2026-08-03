@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -312,11 +313,11 @@ private fun PhoneHomeScreen(
     val analyticsHelper = LocalAnalyticsHelper.current
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
+    var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
 
     LaunchedEffect(workedDate) {
-        calendarState.onDateSelect(workedDate)
+        calendarState.onDateSelect(selectedDate)
     }
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {
@@ -474,11 +475,11 @@ private fun TabletHomeScreen(
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
     val scope = rememberCoroutineScope()
-    var selectedDate by remember(workedDate) { mutableStateOf(workedDate) }
+    var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
 
     LaunchedEffect(workedDate) {
-        calendarState.onDateSelect(workedDate)
+        calendarState.onDateSelect(selectedDate)
     }
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {

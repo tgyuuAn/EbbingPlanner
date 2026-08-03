@@ -7,7 +7,7 @@ plugins {
 android {
     namespace = "com.tgyuu.database"
 
-    sourceSets { getByName("androidTest").assets.srcDir("$projectDir/schemas") }
+    sourceSets { getByName("androidTest").assets.directories += "schemas" }
 }
 
 room {

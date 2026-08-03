@@ -26,3 +26,6 @@ migration/
 *.apk
 *.aab
 app/release/
+
+# iOS 로컬 작업 (안드로이드 레포에 커밋하지 않음)
+iosApp/

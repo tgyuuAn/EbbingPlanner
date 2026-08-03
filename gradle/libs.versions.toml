@@ -1,6 +1,6 @@
 [versions]
 ## Android gradle plugin
-androidGradlePlugin = "8.7.3"
+androidGradlePlugin = "9.2.0"
 
 ## AndroidX
 # https://developer.android.com/jetpack/androidx/releases/core
@@ -32,17 +32,17 @@ material = "1.12.0"
 
 ## Kotlin Symbol Processing
 # https://github.com/google/ksp/
-ksp = "2.1.0-1.0.29"
+ksp = "2.3.10"
 
 ## Hilt
 # https://github.com/google/dagger/releases
-hilt = "2.55"
+hilt = "2.60.1"
 # https://developer.android.com/jetpack/androidx/releases/hilt
 hiltCommon = "1.2.0"
 
 ## Kotlin
 # https://github.com/JetBrains/kotlin
-kotlin = "2.1.0"
+kotlin = "2.3.21"
 # https://github.com/Kotlin/kotlinx.serialization
 kotlinxSerializationJson = "1.8.0"
 # https://github.com/Kotlin/kotlinx.coroutines
@@ -58,25 +58,26 @@ gson = "2.12.1"
 # https://github.com/junit-team/junit4
 junit4 = "4.13.2"
 junitJupiter = "5.8.2"
+junitPlatformLauncher = "1.8.2"
 # https://mockk.io/
 mockk = "1.13.11"
 # https://github.com/pinterest/ktlint
-ktlint = "12.1.1"
+ktlint = "14.2.0"
 # https://developer.android.com/jetpack/androidx/releases/test
 androidxTestRunner = "1.6.2"
 androidxTestExt = "1.2.1"
 androidxEspresso = "3.6.1"
 
 ## BenchMark
-benchmarkMacroJunit4 = "1.3.3"
-baselineprofile = "1.3.3"
+benchmarkMacroJunit4 = "1.5.0-alpha07"
+baselineprofile = "1.5.0-alpha07"
 profileinstaller = "1.4.1"
 uiautomator = "2.3.0"
 
 ## firebase
-googleServices = "4.4.2"
+googleServices = "4.5.0"
 firebaseBom = "33.10.0"
-crashlytics = "3.0.3"
+crashlytics = "3.0.7"
 metricsPerformance = "1.0.0-beta02"
 
 ## Amplitude
@@ -190,6 +191,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatformLauncher" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
@@ -259,7 +261,6 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

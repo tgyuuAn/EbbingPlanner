@@ -150,6 +150,49 @@ class LocalUserConfigDataSourceImpl(
         dataStore.edit { prefs -> prefs[AUTO_BACKUP_ENABLED] = enabled }
     }
 
+    override val tagUsageOrder: Flow<List<Int>>
+        get() = usageOrderFlow(TAG_USAGE_ORDER)
+
+    override suspend fun recordTagUsage(tagId: Int) = recordUsage(TAG_USAGE_ORDER, tagId)
+
+    override suspend fun removeTagUsage(tagId: Int) = removeUsage(TAG_USAGE_ORDER, tagId)
+
+    override val repeatCycleUsageOrder: Flow<List<Int>>
+        get() = usageOrderFlow(REPEAT_CYCLE_USAGE_ORDER)
+
+    override suspend fun recordRepeatCycleUsage(cycleId: Int) =
+        recordUsage(REPEAT_CYCLE_USAGE_ORDER, cycleId)
+
+    override suspend fun removeRepeatCycleUsage(cycleId: Int) =
+        removeUsage(REPEAT_CYCLE_USAGE_ORDER, cycleId)
+
+    private fun usageOrderFlow(key: Preferences.Key<String>): Flow<List<Int>> =
+        dataStore.data.map { prefs -> prefs[key].toIdList() }
+
+    /** 사용한 [id]를 맨 앞으로 옮겨 최근 사용순을 유지한다. */
+    private suspend fun recordUsage(key: Preferences.Key<String>, id: Int) {
+        dataStore.edit { prefs ->
+            val newOrder = listOf(id) + prefs[key].toIdList().filter { it != id }
+            prefs[key] = newOrder.joinToString(",")
+        }
+    }
+
+    /** 삭제된 항목의 [id]를 최근 사용순에서 제거해 오펀 id가 남지 않도록 한다. */
+    private suspend fun removeUsage(key: Preferences.Key<String>, id: Int) {
+        dataStore.edit { prefs ->
+            val newOrder = prefs[key].toIdList().filter { it != id }
+            prefs[key] = newOrder.joinToString(",")
+        }
+    }
+
+    /** 전체 초기화 시 태그·반복 주기 최근 사용순을 모두 비운다. */
+    override suspend fun clearUsageOrder() {
+        dataStore.edit { prefs ->
+            prefs.remove(TAG_USAGE_ORDER)
+            prefs.remove(REPEAT_CYCLE_USAGE_ORDER)
+        }
+    }
+
     override suspend fun consumeInAppReview(): Boolean {
         var shouldShow = false
         dataStore.edit { prefs ->
@@ -199,5 +242,10 @@ class LocalUserConfigDataSourceImpl(
         private val MONDAY_START = booleanPreferencesKey("MONDAY_START")
         private val CALENDAR_DEFAULT_VIEW = stringPreferencesKey("CALENDAR_DEFAULT_VIEW")
         private val AUTO_BACKUP_ENABLED = booleanPreferencesKey("AUTO_BACKUP_ENABLED")
+        private val TAG_USAGE_ORDER = stringPreferencesKey("TAG_USAGE_ORDER")
+        private val REPEAT_CYCLE_USAGE_ORDER = stringPreferencesKey("REPEAT_CYCLE_USAGE_ORDER")
     }
 }
+
+private fun String?.toIdList(): List<Int> =
+    this?.split(",")?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()

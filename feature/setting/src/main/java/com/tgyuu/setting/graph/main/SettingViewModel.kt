@@ -26,7 +26,6 @@ import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.navigation.SyncGraph
 import com.tgyuu.navigation.TagGraph
-import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.AlarmMessageBottomSheetState
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingSideEffect
@@ -150,7 +149,7 @@ class SettingViewModel(
         )
         navigateToWebView(
             resourceProvider.getString(R.string.setting_announcement),
-            BuildConfig.EBBING_NOTICE_URL,
+            resourceProvider.getString(R.string.setting_announcement_url),
         )
     }
 
@@ -160,7 +159,7 @@ class SettingViewModel(
         )
         navigateToWebView(
             resourceProvider.getString(R.string.setting_privacy_policy),
-            BuildConfig.EBBING_PRIVACY_AND_POLICY_URL,
+            resourceProvider.getString(R.string.setting_privacy_policy_url),
         )
     }
 
@@ -170,7 +169,7 @@ class SettingViewModel(
         )
         navigateToWebView(
             resourceProvider.getString(R.string.setting_term),
-            BuildConfig.EBBING_TERMS_OF_USE_URL,
+            resourceProvider.getString(R.string.setting_term_url),
         )
     }
 
