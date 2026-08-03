@@ -1,7 +1,6 @@
 package com.tgyuu.ebbingplanner.backup.fake
 
 import com.tgyuu.domain.model.sync.ConnectResult
-import com.tgyuu.domain.model.sync.RestoreResult
 import com.tgyuu.domain.model.sync.ConnectedPeer
 import com.tgyuu.domain.model.sync.RestoreResult
 import com.tgyuu.domain.model.sync.ServerSyncInfo
@@ -20,8 +19,6 @@ class FakeSyncRepository : SyncRepository {
     override suspend fun getServerLastUpdatedAt(): ServerSyncInfo? =
         serverLastUpdatedAt?.let { ServerSyncInfo(lastUpdatedAt = it, connectedDeviceName = "") }
     override suspend fun getLocalSyncedAt(): ZonedDateTime? = null
-    override suspend fun restoreByDeviceId(deviceIdPrefix: String): RestoreResult =
-        RestoreResult.NotFound
 
     override suspend fun syncUpData(): ZonedDateTime {
         syncUpCallCount++
