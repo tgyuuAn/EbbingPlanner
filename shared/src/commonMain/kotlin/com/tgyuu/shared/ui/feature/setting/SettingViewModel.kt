@@ -13,6 +13,9 @@ import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.setting_announcement_url
+import ebbingplanner.shared.generated.resources.setting_privacy_policy_url
+import ebbingplanner.shared.generated.resources.setting_term_url
 import ebbingplanner.shared.generated.resources.snack_alarm_message_changed
 import ebbingplanner.shared.generated.resources.snack_alarm_time_changed
 import ebbingplanner.shared.generated.resources.snack_data_clear_failed
@@ -37,9 +40,6 @@ class SettingViewModel(
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
 
     companion object {
-        private const val PRIVACY_POLICY_URL = "https://tgyuuan.notion.site/ebbing-privacy"
-        private const val TERMS_OF_USE_URL = "https://tgyuuan.notion.site/ebbing-terms"
-        private const val NOTICE_URL = "https://mousy-banjo-f6d.notion.site/1dd9de61e3bd80d2b4f4c70c84ad1d98"
         private const val INQUIRY_URL = "https://open.kakao.com/o/sdZLoCHh"
     }
 
@@ -109,12 +109,16 @@ class SettingViewModel(
             SettingIntent.OnAlarmMessageReset -> resetAlarmMessage()
             SettingIntent.OnApplyAlarmMessage -> applyAlarmMessage()
             SettingIntent.OnInAppReviewClick -> onRequestInAppReview()
-            SettingIntent.OnPrivacyPolicyClick -> onOpenUrl(PRIVACY_POLICY_URL)
-            SettingIntent.OnTermsOfUseClick -> onOpenUrl(TERMS_OF_USE_URL)
+            // 문서 URL은 로케일별 공개 게시(notion.site) 링크로 분기
+            SettingIntent.OnPrivacyPolicyClick ->
+                onOpenUrl(getString(Res.string.setting_privacy_policy_url))
+            SettingIntent.OnTermsOfUseClick ->
+                onOpenUrl(getString(Res.string.setting_term_url))
             SettingIntent.OnWidgetClick -> onNavigateToWidget()
             is SettingIntent.OnUpdateStartDay -> updateStartDay(intent.mondayStart)
             SettingIntent.OnAutoBackupToggleClick -> onAutoBackupToggleClick()
-            SettingIntent.OnNoticeClick -> onOpenUrl(NOTICE_URL)
+            SettingIntent.OnNoticeClick ->
+                onOpenUrl(getString(Res.string.setting_announcement_url))
             SettingIntent.OnInquiryClick -> onOpenUrl(INQUIRY_URL)
         }
     }

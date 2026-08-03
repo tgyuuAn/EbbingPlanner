@@ -29,6 +29,10 @@
     <string name="setting_announcement">お知らせ</string>
     <string name="setting_privacy_policy">プライバシーポリシー</string>
     <string name="setting_term">利用規約</string>
+    <!-- 문서 URL 로케일 분기 -->
+    <string name="setting_announcement_url">https://mousy-banjo-f6d.notion.site/95851f05c1bd4692861ba009b0468c25?source=copy_link</string>
+    <string name="setting_privacy_policy_url">https://mousy-banjo-f6d.notion.site/4dd9642402484a35a8a5e7829e83b825?source=copy_link</string>
+    <string name="setting_term_url">https://mousy-banjo-f6d.notion.site/af6c60f5e61748a997de6f3df90d1987?source=copy_link</string>
     <string name="setting_version">現在のバージョン %1$s</string>
     <string name="setting_calendar_start_day">週の開始曜日</string>
     <string name="setting_monday">月曜日</string>
@@ -124,8 +128,8 @@
     <string name="repeat_add_title">繰り返し周期の追加</string>
     <string name="repeat_edit_title">繰り返し周期の編集</string>
     <string name="repeat_save">保存</string>
-    <string name="repeat_add_headline">自分だけの繰り返し周期を追加しましょう。</string>
-    <string name="repeat_edit_headline">自分だけの繰り返し周期を編集しましょう。</string>
+    <string name="repeat_add_headline">自分だけの繰り返し周期を追加しましょう</string>
+    <string name="repeat_edit_headline">自分だけの繰り返し周期を編集しましょう</string>
     <string name="repeat_cycle_label">繰り返し周期</string>
     <string name="repeat_cycle_input_hint">どの周期で予定を繰り返しますか？</string>
     <string name="repeat_cycle_input_guide">\' , \' を基準に数字を区切ってください\n当日を含める場合は 0 を入力してください\n1000 未満の数字のみ入力できます。\n ex) 0, 1, 3, 7, 15</string>
@@ -220,7 +224,7 @@
     <string name="home_delay_date_part">%1$d月%2$d日(%3$s)</string>
     <string name="home_delay_date_transition">%1$s → %2$s</string>
     <string name="home_widget_nudge_label">初めての予定登録が完了！</string>
-    <string name="home_widget_nudge_title">エビングプランナーのウィジェットでも\n予定を手軽にチェックしてみましょう。</string>
+    <string name="home_widget_nudge_title">エビングプランナーのウィジェットでも\n予定を手軽にチェックしてみましょう</string>
 
     <!-- ウィジェット / テーマ / カレンダー -->
     <string name="widget_setting_title">ウィジェット設定</string>

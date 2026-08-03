@@ -425,6 +425,7 @@ private fun AddTodoScreenWrapper(
         }
     }
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
     val viewModel = remember(selectedDate) {
         AddTodoViewModel(
             selectedDate = selectedDate,
@@ -434,6 +435,7 @@ private fun AddTodoScreenWrapper(
             onNavigateToAddTag = { component.navigateToAddTag() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             experimentRepository = experimentRepository,
+            configRepository = configRepository,
         )
     }
     AddTodoScreen(viewModel = viewModel)
@@ -446,6 +448,7 @@ private fun EditTodoScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
     val viewModel = remember(scheduleId) {
         EditTodoViewModel(
             scheduleId = scheduleId,
@@ -453,6 +456,7 @@ private fun EditTodoScreenWrapper(
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             experimentRepository = experimentRepository,
+            configRepository = configRepository,
         )
     }
     EditTodoScreen(viewModel = viewModel)
@@ -465,6 +469,7 @@ private fun EditDateScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
     val viewModel = remember(infoId) {
         EditDateViewModel(
             infoId = infoId,
@@ -472,6 +477,7 @@ private fun EditDateScreenWrapper(
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             experimentRepository = experimentRepository,
+            configRepository = configRepository,
         )
     }
     EditDateScreen(viewModel = viewModel)

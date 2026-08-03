@@ -2,6 +2,8 @@ package com.tgyuu.shared.ui.feature.home.edittodo
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.common.sortedByUsageOrder
+import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
@@ -26,6 +28,7 @@ class EditTodoViewModel(
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
+    private val configRepository: ConfigRepository? = null,
     private val onShowTagBottomSheet: (() -> Unit)? = null,
     private val onShowDateBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
@@ -70,8 +73,10 @@ class EditTodoViewModel(
 
     private suspend fun loadTags() {
         val tags = todoRepository.loadTags()
+        val usageOrder = configRepository?.getTagUsageOrder() ?: emptyList()
+        val sortedTags = tags.sortedByUsageOrder(usageOrder) { it.id }
         setState {
-            copy(tagList = tags.map { it.toUiModel() }.toImmutableList())
+            copy(tagList = sortedTags.map { it.toUiModel() }.toImmutableList())
         }
     }
 
@@ -129,6 +134,8 @@ class EditTodoViewModel(
         try {
             todoRepository.updateTodo(newSchedule)
             todoRepository.updateTodoInfo(newSchedule, currentState.restDays.toSet())
+            // 저장 완료 후 부가 기록 실패가 완료 흐름을 막지 않도록 격리
+            runCatching { configRepository?.recordTagUsage(tag.id) }
 
             onShowSnackbar(getString(Res.string.snack_todo_updated))
             onNavigateToHome(currentState.selectedDate)
