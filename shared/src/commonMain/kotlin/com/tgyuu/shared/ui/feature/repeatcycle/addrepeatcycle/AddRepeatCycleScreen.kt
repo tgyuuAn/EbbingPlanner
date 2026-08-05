@@ -43,7 +43,7 @@ import ebbingplanner.shared.generated.resources.repeat_delete_dialog_suffix
 import ebbingplanner.shared.generated.resources.repeat_delete_dialog_sub_text
 import ebbingplanner.shared.generated.resources.repeat_add_title
 import ebbingplanner.shared.generated.resources.repeat_edit_title
-import ebbingplanner.shared.generated.resources.repeat_save
+import ebbingplanner.shared.generated.resources.repeat_register_button
 import ebbingplanner.shared.generated.resources.repeat_add_headline
 import ebbingplanner.shared.generated.resources.repeat_edit_headline
 import ebbingplanner.shared.generated.resources.repeat_cycle_label
@@ -73,7 +73,7 @@ fun AddRepeatCycleScreen(
             rightComponent = {
                 if (!state.isTreatment) {
                 Text(
-                    text = stringResource(Res.string.repeat_save),
+                    text = stringResource(Res.string.repeat_register_button),
                     style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
                     else EbbingTheme.typography.bodyMM,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
@@ -122,7 +122,7 @@ fun AddRepeatCycleScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = stringResource(Res.string.repeat_save),
+                label = stringResource(Res.string.repeat_register_button),
                 onClick = { viewModel.onIntent(AddRepeatCycleIntent.OnSaveClick) },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),

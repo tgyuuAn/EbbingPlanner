@@ -157,7 +157,12 @@ fun AddTodoScreen(
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    // 저장 버튼까지 포함하는 최상위 Column에 imePadding을 적용해 키보드에 버튼이 가리지 않게 함 (Android 동일)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding(),
+    ) {
         EbbingSubTopBar(
             title = stringResource(Res.string.home_add_todo_title),
             onNavigationClick = {
@@ -174,9 +179,7 @@ fun AddTodoScreen(
             if (isWide) {
                 // Tablet: two columns
                 Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .imePadding(),
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     Column(
                         modifier = Modifier
@@ -219,8 +222,7 @@ fun AddTodoScreen(
                 Column(
                     modifier = Modifier
                         .verticalScroll(scrollState)
-                        .padding(20.dp)
-                        .imePadding(),
+                        .padding(20.dp),
                 ) {
                     AddTodoFormContent(
                         state = state,

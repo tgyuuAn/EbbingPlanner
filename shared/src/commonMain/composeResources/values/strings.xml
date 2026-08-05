@@ -448,4 +448,11 @@
     <string name="sync_restore_confirm_title">데이터를 복원할까요?</string>
     <string name="sync_restore_confirm_desc">현재 기기의 데이터가 모두 교체되며, 되돌릴 수 없어요.</string>
     <string name="sync_restore_confirm_cancel">돌아가기</string>
+    <string name="sort_latest">최신순</string>
+    <string name="setting_theme_change">테마 변경</string>
+    <string name="setting_widget_theme_change">위젯 테마 변경</string>
+    <string name="tag_register_button">태그 등록하기</string>
+    <string name="tag_edit_button">태그 수정하기</string>
+    <string name="repeat_register_button">반복 주기 등록하기</string>
+    <string name="repeat_edit_button">반복 주기 수정하기</string>
 </resources>

@@ -448,4 +448,11 @@
     <string name="sync_restore_confirm_title">データを復元しますか？</string>
     <string name="sync_restore_confirm_desc">この端末のデータはすべて置き換えられ、元に戻せません。</string>
     <string name="sync_restore_confirm_cancel">戻る</string>
+    <string name="sort_latest">最新順</string>
+    <string name="setting_theme_change">テーマ変更</string>
+    <string name="setting_widget_theme_change">ウィジェットのテーマ変更</string>
+    <string name="tag_register_button">タグを登録</string>
+    <string name="tag_edit_button">タグを編集</string>
+    <string name="repeat_register_button">繰り返し周期を登録</string>
+    <string name="repeat_edit_button">繰り返し周期を編集</string>
 </resources>

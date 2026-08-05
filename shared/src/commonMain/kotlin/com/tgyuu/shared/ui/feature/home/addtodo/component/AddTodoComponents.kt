@@ -16,9 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,6 +59,12 @@ fun TitleContent(
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Android와 동일: 진입 시 제목 입력에 자동 포커스 → 키보드 자동 노출
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Text(
         text = stringResource(Res.string.home_title),
         style = EbbingTheme.typography.bodyMSB,
@@ -83,7 +93,8 @@ fun TitleContent(
         },
         modifier = modifier
             .padding(top = 8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .focusRequester(focusRequester),
     )
 }
 
