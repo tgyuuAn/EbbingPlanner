@@ -448,4 +448,11 @@
     <string name="sync_restore_confirm_title">Restore data?</string>
     <string name="sync_restore_confirm_desc">All data on this device will be replaced and cannot be undone.</string>
     <string name="sync_restore_confirm_cancel">Go back</string>
+    <string name="sort_latest">Latest</string>
+    <string name="setting_theme_change">Change theme</string>
+    <string name="setting_widget_theme_change">Change widget theme</string>
+    <string name="tag_register_button">Add tag</string>
+    <string name="tag_edit_button">Edit tag</string>
+    <string name="repeat_register_button">Add repeat cycle</string>
+    <string name="repeat_edit_button">Edit repeat cycle</string>
 </resources>

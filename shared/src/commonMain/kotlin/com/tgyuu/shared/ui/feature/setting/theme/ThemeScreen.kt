@@ -37,7 +37,7 @@ import ebbingplanner.shared.generated.resources.setting_apply
 import ebbingplanner.shared.generated.resources.setting_dark
 import ebbingplanner.shared.generated.resources.setting_light
 import ebbingplanner.shared.generated.resources.setting_preview
-import ebbingplanner.shared.generated.resources.setting_theme
+import ebbingplanner.shared.generated.resources.setting_theme_change
 import ebbingplanner.shared.generated.resources.theme_select_headline
 import org.jetbrains.compose.resources.stringResource
 
@@ -53,7 +53,7 @@ fun ThemeScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = stringResource(Res.string.setting_theme),
+            title = stringResource(Res.string.setting_theme_change),
             onNavigationClick = { viewModel.onIntent(ThemeIntent.OnBackClick) },
             rightComponent = {
                 if (!state.isTreatment) {

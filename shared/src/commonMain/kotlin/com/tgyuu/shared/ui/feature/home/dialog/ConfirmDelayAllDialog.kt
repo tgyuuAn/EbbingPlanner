@@ -106,7 +106,8 @@ internal fun ConfirmDelayAllDialog(
                 leftButtonText = stringResource(Res.string.home_go_back),
                 rightButtonText = stringResource(Res.string.home_delay_button),
                 onLeftButtonClick = onDismissRequest,
-                onRightButtonClick = { onDelayClick(!excludeRestDays) },
+                // Android와 동일: 전체 미루기는 항상 쉬는 요일 제외(false)
+                onRightButtonClick = { onDelayClick(false) },
             )
         }
     }

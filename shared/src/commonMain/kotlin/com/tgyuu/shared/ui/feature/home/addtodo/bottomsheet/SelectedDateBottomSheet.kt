@@ -23,6 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 fun SelectedDateBottomSheetContent(
     originSelectedDate: LocalDate,
     schedulesByDateMap: Map<LocalDate, List<TodoScheduleUiModel>> = emptyMap(),
+    startFromMonday: Boolean = false,
     onDateSelected: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -37,8 +38,10 @@ fun SelectedDateBottomSheetContent(
             schedulesByDateMap = schedulesByDateMap,
             onSelectDate = { newSelectedDate = it },
             showSyncButton = false,
+            startFromMonday = startFromMonday,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 20.dp)
                 .padding(top = 20.dp, bottom = 8.dp),
         )
 

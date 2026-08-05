@@ -49,7 +49,7 @@ import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
 import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
 import ebbingplanner.shared.generated.resources.tag_add_title
 import ebbingplanner.shared.generated.resources.tag_edit_title
-import ebbingplanner.shared.generated.resources.tag_save
+import ebbingplanner.shared.generated.resources.tag_register_button
 import ebbingplanner.shared.generated.resources.tag_add_headline
 import ebbingplanner.shared.generated.resources.tag_edit_headline
 import ebbingplanner.shared.generated.resources.tag_name_label
@@ -87,7 +87,7 @@ fun AddTagScreen(
             rightComponent = {
                 if (!state.isTreatment) {
                 Text(
-                    text = stringResource(Res.string.tag_save),
+                    text = stringResource(Res.string.tag_register_button),
                     style = EbbingTheme.typography.headingSSB,
                     color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
                     else EbbingTheme.colors.dark3,
@@ -144,7 +144,7 @@ fun AddTagScreen(
 
         if (state.isTreatment) {
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = stringResource(Res.string.tag_save),
+                label = stringResource(Res.string.tag_register_button),
                 onClick = { viewModel.onIntent(AddTagIntent.OnSaveClick) },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier

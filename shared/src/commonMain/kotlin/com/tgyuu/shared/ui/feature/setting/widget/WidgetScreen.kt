@@ -40,7 +40,7 @@ import ebbingplanner.shared.generated.resources.home_save
 import ebbingplanner.shared.generated.resources.setting_background_alpha
 import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.widget_preview_sample
-import ebbingplanner.shared.generated.resources.widget_setting_title
+import ebbingplanner.shared.generated.resources.setting_widget_theme_change
 import ebbingplanner.shared.generated.resources.widget_text_alpha
 import ebbingplanner.shared.generated.resources.widget_theme
 import org.jetbrains.compose.resources.stringResource
@@ -57,7 +57,7 @@ fun WidgetScreen(
     val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
     Column(modifier = Modifier.fillMaxSize()) {
         EbbingSubTopBar(
-            title = stringResource(Res.string.widget_setting_title),
+            title = stringResource(Res.string.setting_widget_theme_change),
             onNavigationClick = { viewModel.onIntent(WidgetIntent.OnBackClick) },
             rightComponent = {
                 if (!state.isTreatment) {
