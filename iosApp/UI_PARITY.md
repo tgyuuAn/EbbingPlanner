@@ -97,7 +97,7 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 ### HIGH (사용자 눈에 보이는 차이/깨짐) — 체크박스로 진행 관리
 
 - [ ] **알림 설정 화면 - 메시지 글자수 카운터/에러** (feature/home/notification/NotificationScreen.kt:176) — Android는 메시지 입력 영역 하단에 '글자수 카운터(%1$d / 50자)'와 에러 메시지(플레이스홀더 2회 이상, 50자 초과)를 항상 표시한다(Android NotificationScreen
-- [ ] **알림 설정 화면 - 헤더(넛지) 섹션 누락** (feature/home/notification/NotificationScreen.kt:73) — Android 화면 상단에는 큰 제목 '바쁜 날에도 복습일을 자동으로 챙겨드릴게요'(home_notification_nudge, heading24B)와 서브텍스트 '알림을 설정하면...'(home_
+- [x] **알림 설정 화면 - 헤더(넛지) 섹션 누락** (feature/home/notification/NotificationScreen.kt:73) — Android 화면 상단에는 큰 제목 '바쁜 날에도 복습일을 자동으로 챙겨드릴게요'(home_notification_nudge, heading24B)와 서브텍스트 '알림을 설정하면...'(home_
 - [ ] **홈 메인 - 리스트 헤더 정렬 토글** (designsystem/model/SortTypeExt.kt:12) — 정렬 토글의 첫 번째(생성순/최신순) 라벨 문자열이 Android와 다르다. Android는 SortType.CREATED를 sort_latest("최신순")로 표시하는데(feature 홈 헤더가 
 - [x] **할일 추가(AddTodo) / 할일 수정(EditTodo) 화면** (feature/home/addtodo/component/AddTodoComponents.kt:53) — 제목 입력 필드가 iOS에서 진입 시 자동 포커스/키보드 자동 노출이 안 된다. Android의 TitleContent(feature/home/.../ui/Title.kt:34-38)는 FocusR
 - [x] **할일 추가(AddTodo) 화면 - 저장 버튼** (feature/home/addtodo/AddTodoScreen.kt:249) — 제목 입력으로 키보드가 올라오면 하단 저장 버튼('추가하기')이 키보드에 가려진다. Android AddTodoScreenPhone은 imePadding()을 버튼까지 포함하는 최상위 Column(
@@ -108,14 +108,14 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - [x] **ConfirmDelayAllDialog (이후 일정 모두 미루기 확인)** (feature/home/dialog/ConfirmDelayAllDialog.kt:109) — 미루기 버튼 콜백 인자가 Android와 다르다. Android는 onRightButtonClick = { onDelayClick(false) } 로 체크박스 상태와 무관하게 항상 false(쉬는 
 - [x] **ConfirmExitDialog (작성 이탈 확인, AddTodo)** (feature/home/addtodo/AddTodoScreen.kt:315) — Android는 EbbingDialogIconTop 을 써서 상단에 ic_notice 아이콘 + 타이틀 + 서브텍스트(모두 중앙정렬 규격)를 표시하는데, iOS 인라인 구현은 아이콘이 전혀 없고 타
 - [ ] **설정 메인 - 데이터 섹션 (DataBody)** (feature/setting/SettingScreen.kt:255) — Android DataBody에는 '데이터 복원'(sync_restore_title) 항목이 존재해 기기 ID 기반 복원 화면으로 진입하는 행이 있는데(SettingScreen.kt:744-763,
-- [ ] **설정 메인 - 섹션 배치 순서** (feature/setting/SettingScreen.kt:217) — 폰(compact) 레이아웃에서 섹션 순서가 Android와 다름. Android PhoneSettingScreen 순서: 알림 → 캘린더 → 태그/반복 → 테마 → 문의 → 안내 → 데이터 → 리
-- [ ] **데이터 초기화 다이얼로그 (ClearDataDialog / ConfirmClearDialog)** (feature/setting/SettingScreen.kt:602) — 다이얼로그 문구/구성이 완전히 다름. Android ConfirmClearDialog는 제목을 prefix+highlight+suffix로 조합('데이터를 ' + 붉은색 '초기화' + ' 하시겠습니
+- [x] **설정 메인 - 섹션 배치 순서** (feature/setting/SettingScreen.kt:217) — 폰(compact) 레이아웃에서 섹션 순서가 Android와 다름. Android PhoneSettingScreen 순서: 알림 → 캘린더 → 태그/반복 → 테마 → 문의 → 안내 → 데이터 → 리
+- [x] **데이터 초기화 다이얼로그 (ClearDataDialog / ConfirmClearDialog)** (feature/setting/SettingScreen.kt:602) — 다이얼로그 문구/구성이 완전히 다름. Android ConfirmClearDialog는 제목을 prefix+highlight+suffix로 조합('데이터를 ' + 붉은색 '초기화' + ' 하시겠습니
 - [x] **테마 변경 화면 (ThemeScreen) - 상단바 타이틀** (feature/setting/theme/ThemeScreen.kt:56) — 상단바 타이틀이 Android는 setting_theme_change("테마 변경")인데 iOS는 setting_theme("테마")를 사용한다. 사용자에게 보이는 화면 제목이 다르다.
 - [ ] **테마 변경 화면 - 미리보기 카드(PreviewBody)** (feature/setting/theme/ThemeScreen.kt:150) — Android 미리보기는 실제 TodoListCard(에빙 플래너 미리보기 샘플 할일 3개, 라이트/다크 각각 세로로 쌓인 카드, 좌하단 '라이트/다크' 라벨)로 렌더한다. iOS는 단순히 배경색만
 - [x] **위젯 테마 변경 화면 (WidgetScreen) - 상단바 타이틀** (feature/setting/widget/WidgetScreen.kt:60) — Android 상단바 타이틀은 setting_widget_theme_change("위젯 테마 변경")인데 iOS는 widget_setting_title("위젯 설정")을 사용한다. 화면 제목이 다르
 - [ ] **위젯 테마 변경 화면 - 저장 버튼 라벨/위치** (feature/setting/widget/WidgetScreen.kt:65) — Android는 하단 full-width EbbingSolidButton에 라벨 setting_apply("적용")를 쓴다. iOS는 기본(CONTROL) 상태에서 상단바 텍스트 링크로 home_s
 - [ ] **위젯 테마 변경 화면 - 미리보기 카드(WidgetCard)** (feature/setting/widget/WidgetScreen.kt:174) — Android 미리보기는 실제 위젯 모양(라이트/다크 2개 카드, 상단 '오늘 할 일  0 /0' 배지+plus 아이콘, 하단 setting_no_schedule_today('금일 스케줄이 없어요.
-- [ ] **일정 화면 - 태그 카드 완료율 텍스트 (TagCard)** (feature/schedule/ScheduleScreen.kt:351) — 태그 헤더의 '완료율' 문구가 schedule_tag_count_completion 리소스를 쓰는데, 이 문자열이 세 로케일 모두 '완료율 %2$d%%'처럼 %% (퍼센트 이스케이프)를 포함한다. 
+- [x] **일정 화면 - 태그 카드 완료율 텍스트 (TagCard)** (feature/schedule/ScheduleScreen.kt:351) — 태그 헤더의 '완료율' 문구가 schedule_tag_count_completion 리소스를 쓰는데, 이 문자열이 세 로케일 모두 '완료율 %2$d%%'처럼 %% (퍼센트 이스케이프)를 포함한다. 
 - [ ] **동기화 메인 - QR 카드 / 연동기기 / 마지막동기화 (description·기기명·날짜 등 주요 강조 텍스트)** (feature/sync/SyncScreen.kt:393) — Android가 heading16SB(16sp SemiBold)를 쓰는 강조 텍스트들을 iOS는 전부 headingSSB(18sp Bold)로 매핑했다. 폰트 크기(16→18sp)와 굵기(SemiB
 - [x] **색상 선택 바텀시트 (ColorBottomSheet)** (feature/tag/bottomsheet/ColorBottomSheet.kt:59) — iOS의 색상 팔레트(TAG_COLORS, 라인 59-78)가 Android 원본(core/designsystem/.../ColorOptions.kt)과 완전히 다르다. Android는 순색 계열(
 - [x] **태그 추가/수정 화면 저장 버튼 (AddTagScreen/EditTagScreen)** (feature/tag/addtag/AddTagScreen.kt:147) — 하단 저장 버튼 라벨이 Android와 다르다. Android AddTag는 tag_register_button("태그 등록하기"), EditTag는 tag_edit_button("태그 수정하기")
@@ -132,3 +132,6 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - 🔧 태그 색상 팔레트를 Android ColorOptions 값으로 통일(동기화 색 일치).
 - 🔧 이탈 다이얼로그 제목 textAlign Center.
 - ⬜ 남은 high: 알림화면 헤더/카운터(H1/H2), WidgetNudge 이미지(H9), 설정 복원행/섹션순서/초기화다이얼로그(H12~14), 테마·위젯 미리보기(H16/18/19), sync 타이포(H21), %%(H20), 메모 카드(H25/26), ConfirmExit 아이콘 — 드로어블/컴포넌트/네비 이식 필요분 포함, findings JSON 참조.
+
+### 배치3 적용 (커밋)
+- 🔧 완료율 %% → % (CMP), 알림화면 넛지 헤더 추가, 설정 섹션 순서 Android 일치(데이터→안내 뒤로), 초기화 다이얼로그 빨강 강조 제목+서브텍스트+뒤로 버튼.

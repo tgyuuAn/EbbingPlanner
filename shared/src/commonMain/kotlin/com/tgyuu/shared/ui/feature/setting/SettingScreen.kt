@@ -58,7 +58,6 @@ import ebbingplanner.shared.generated.resources.setting_inquiry
 import ebbingplanner.shared.generated.resources.setting_notification
 import ebbingplanner.shared.generated.resources.setting_tag_repeat_cycle
 import ebbingplanner.shared.generated.resources.setting_theme
-import ebbingplanner.shared.generated.resources.common_cancel
 import ebbingplanner.shared.generated.resources.ds_am
 import ebbingplanner.shared.generated.resources.ds_pm
 import ebbingplanner.shared.generated.resources.setting_title
@@ -82,9 +81,12 @@ import ebbingplanner.shared.generated.resources.setting_alarm_time
 import ebbingplanner.shared.generated.resources.setting_alarm_message
 import ebbingplanner.shared.generated.resources.setting_contact_us
 import ebbingplanner.shared.generated.resources.setting_app_review
-import ebbingplanner.shared.generated.resources.setting_clear_data_dialog_title
-import ebbingplanner.shared.generated.resources.setting_clear_data_dialog_message
 import ebbingplanner.shared.generated.resources.setting_clear
+import ebbingplanner.shared.generated.resources.setting_clear_dialog_title_prefix
+import ebbingplanner.shared.generated.resources.setting_clear_dialog_title_highlight
+import ebbingplanner.shared.generated.resources.setting_clear_dialog_title_suffix
+import ebbingplanner.shared.generated.resources.setting_clear_dialog_subtext
+import ebbingplanner.shared.generated.resources.setting_back
 import ebbingplanner.shared.generated.resources.setting_apply
 import ebbingplanner.shared.generated.resources.setting_apply_action
 import ebbingplanner.shared.generated.resources.setting_alarm_time_title
@@ -214,14 +216,15 @@ fun SettingScreen(
                 }
             }
         } else {
+            // Android PhoneSettingScreen과 동일 순서: 알림→캘린더→태그/반복→테마→문의→안내→데이터→리뷰→버전
             Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
                 NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
                 CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
                 TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
-                DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
                 ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) }, onWidgetAlphaClick = { viewModel.onIntent(SettingIntent.OnWidgetClick) })
                 InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
                 AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
+                DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
                 InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
                 VersionRow(version = state.appVersion)
                 Spacer(modifier = Modifier.height(24.dp))
@@ -609,15 +612,23 @@ private fun ClearDataDialog(
             horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
+            // Android ConfirmClearDialog와 동일: '데이터를 [초기화](빨강) 하시겠습니까?'
             Text(
-                text = stringResource(Res.string.setting_clear_data_dialog_title),
+                text = buildAnnotatedString {
+                    append(stringResource(Res.string.setting_clear_dialog_title_prefix))
+                    withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
+                        append(stringResource(Res.string.setting_clear_dialog_title_highlight))
+                    }
+                    append(stringResource(Res.string.setting_clear_dialog_title_suffix))
+                },
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
             Text(
-                text = stringResource(Res.string.setting_clear_data_dialog_message),
+                text = stringResource(Res.string.setting_clear_dialog_subtext),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark1,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
@@ -625,7 +636,7 @@ private fun ClearDataDialog(
             )
 
             EbbingDialogBottom(
-                leftButtonText = stringResource(Res.string.common_cancel),
+                leftButtonText = stringResource(Res.string.setting_back),
                 rightButtonText = stringResource(Res.string.setting_clear),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,

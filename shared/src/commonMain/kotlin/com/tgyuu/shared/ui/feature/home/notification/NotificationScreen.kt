@@ -43,6 +43,8 @@ import ebbingplanner.shared.generated.resources.setting_alarm_time
 import ebbingplanner.shared.generated.resources.setting_alarm_time_subtitle
 import ebbingplanner.shared.generated.resources.setting_clear
 import ebbingplanner.shared.generated.resources.setting_notification
+import ebbingplanner.shared.generated.resources.home_notification_nudge
+import ebbingplanner.shared.generated.resources.home_notification_header_sub
 import ebbingplanner.shared.generated.resources.setting_notification_setting
 import ebbingplanner.shared.generated.resources.setting_preview
 import org.jetbrains.compose.resources.stringResource
@@ -86,6 +88,7 @@ fun NotificationScreen(
                         .verticalScroll(scrollState)
                         .padding(20.dp),
                 ) {
+                    NotificationHeader()
                     NotificationToggleSection(
                         isEnabled = state.isNotificationEnabled,
                         onToggle = { viewModel.onIntent(NotificationIntent.OnNotificationToggle(it)) },
@@ -111,6 +114,7 @@ fun NotificationScreen(
                     .verticalScroll(scrollState)
                     .padding(20.dp),
             ) {
+                NotificationHeader()
                 NotificationToggleSection(
                     isEnabled = state.isNotificationEnabled,
                     onToggle = { viewModel.onIntent(NotificationIntent.OnNotificationToggle(it)) },
@@ -126,6 +130,23 @@ fun NotificationScreen(
         }
     }
     } // BoxWithConstraints
+}
+
+@Composable
+private fun NotificationHeader() {
+    // Android NotificationHeader와 동일: 상단 큰 제목 + 안내 서브텍스트
+    Text(
+        text = stringResource(Res.string.home_notification_nudge),
+        style = EbbingTheme.typography.headingLSB,
+        color = EbbingTheme.colors.black,
+    )
+    Text(
+        text = stringResource(Res.string.home_notification_header_sub),
+        style = EbbingTheme.typography.bodyMM,
+        color = EbbingTheme.colors.dark3,
+        modifier = Modifier.padding(top = 12.dp),
+    )
+    Spacer(modifier = Modifier.height(32.dp))
 }
 
 @Composable
