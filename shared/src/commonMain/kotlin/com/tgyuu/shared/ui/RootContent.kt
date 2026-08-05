@@ -168,6 +168,7 @@ fun RootContent(
             onNavigateToTag = { component.navigateToTag() },
             onNavigateToRepeatCycle = { component.navigateToRepeatCycle() },
             onNavigateToSync = { component.navigateToSync() },
+            onNavigateToRestore = { component.navigateToSyncRestore() },
             onNavigateToTheme = { component.navigateToTheme() },
             onNavigateToNotification = { component.navigateToNotification() },
             onNavigateToWidget = { component.navigateToWidget() },

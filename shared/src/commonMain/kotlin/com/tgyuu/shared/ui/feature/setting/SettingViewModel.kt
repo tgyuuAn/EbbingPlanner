@@ -31,6 +31,7 @@ class SettingViewModel(
     private val onNavigateToTag: () -> Unit,
     private val onNavigateToRepeatCycle: () -> Unit,
     private val onNavigateToSync: () -> Unit,
+    private val onNavigateToRestore: () -> Unit = {},
     private val onNavigateToTheme: () -> Unit = {},
     private val onNavigateToNotification: () -> Unit = {},
     private val onNavigateToWidget: () -> Unit = {},
@@ -98,6 +99,7 @@ class SettingViewModel(
             SettingIntent.OnTagManageClick -> onNavigateToTag()
             SettingIntent.OnRepeatCycleManageClick -> onNavigateToRepeatCycle()
             SettingIntent.OnSyncClick -> onNavigateToSync()
+            SettingIntent.OnRestoreByDeviceIdClick -> onNavigateToRestore()
             SettingIntent.OnClearDataClick -> { /* Show dialog from UI */ }
             SettingIntent.OnClearDataConfirm -> clearData()
             SettingIntent.OnThemeClick -> onNavigateToTheme()

@@ -107,7 +107,7 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - [x] **WidgetNudgeDialog (위젯 넛지 다이얼로그)** (feature/home/dialog/WidgetNudgeDialog.kt:74) — Android는 하단 영역에 위젯 미리보기 일러스트(ic_widget_nudge, 220x152dp 이미지)를 표시하는데, iOS는 이미지 대신 영어 리터럴 'Widget Preview' 텍스트를 
 - [x] **ConfirmDelayAllDialog (이후 일정 모두 미루기 확인)** (feature/home/dialog/ConfirmDelayAllDialog.kt:109) — 미루기 버튼 콜백 인자가 Android와 다르다. Android는 onRightButtonClick = { onDelayClick(false) } 로 체크박스 상태와 무관하게 항상 false(쉬는 
 - [x] **ConfirmExitDialog (작성 이탈 확인, AddTodo)** (feature/home/addtodo/AddTodoScreen.kt:315) — Android는 EbbingDialogIconTop 을 써서 상단에 ic_notice 아이콘 + 타이틀 + 서브텍스트(모두 중앙정렬 규격)를 표시하는데, iOS 인라인 구현은 아이콘이 전혀 없고 타
-- [ ] **설정 메인 - 데이터 섹션 (DataBody)** (feature/setting/SettingScreen.kt:255) — Android DataBody에는 '데이터 복원'(sync_restore_title) 항목이 존재해 기기 ID 기반 복원 화면으로 진입하는 행이 있는데(SettingScreen.kt:744-763,
+- [x] **설정 메인 - 데이터 섹션 (DataBody)** (feature/setting/SettingScreen.kt:255) — Android DataBody에는 '데이터 복원'(sync_restore_title) 항목이 존재해 기기 ID 기반 복원 화면으로 진입하는 행이 있는데(SettingScreen.kt:744-763,
 - [x] **설정 메인 - 섹션 배치 순서** (feature/setting/SettingScreen.kt:217) — 폰(compact) 레이아웃에서 섹션 순서가 Android와 다름. Android PhoneSettingScreen 순서: 알림 → 캘린더 → 태그/반복 → 테마 → 문의 → 안내 → 데이터 → 리
 - [x] **데이터 초기화 다이얼로그 (ClearDataDialog / ConfirmClearDialog)** (feature/setting/SettingScreen.kt:602) — 다이얼로그 문구/구성이 완전히 다름. Android ConfirmClearDialog는 제목을 prefix+highlight+suffix로 조합('데이터를 ' + 붉은색 '초기화' + ' 하시겠습니
 - [x] **테마 변경 화면 (ThemeScreen) - 상단바 타이틀** (feature/setting/theme/ThemeScreen.kt:56) — 상단바 타이틀이 Android는 setting_theme_change("테마 변경")인데 iOS는 setting_theme("테마")를 사용한다. 사용자에게 보이는 화면 제목이 다르다.
@@ -144,3 +144,6 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 
 ### 배치6 적용 (커밋)
 - 🔧 sync 화면 강조 텍스트 headingSSB(18B) → bodyMSB(16SB), Android heading16SB와 크기/굵기 일치.
+
+### 배치7 적용 (커밋)
+- 🔧 설정 데이터 섹션에 "데이터 복원" 행 추가(기기ID 복원 화면 진입). Contract/VM/RootContent 배선.

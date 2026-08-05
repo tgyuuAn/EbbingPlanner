@@ -67,6 +67,7 @@ import ebbingplanner.shared.generated.resources.setting_sync_with_other_device
 import ebbingplanner.shared.generated.resources.setting_auto_backup
 import ebbingplanner.shared.generated.resources.setting_last_sync_time
 import ebbingplanner.shared.generated.resources.setting_clear_data
+import ebbingplanner.shared.generated.resources.sync_restore_title
 import ebbingplanner.shared.generated.resources.setting_theme_color_change
 import ebbingplanner.shared.generated.resources.setting_widget_alpha_change
 import ebbingplanner.shared.generated.resources.setting_announcement
@@ -202,7 +203,7 @@ fun SettingScreen(
                     NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
                     CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
                     TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
-                    DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
+                    DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onRestoreClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
                     Spacer(modifier = Modifier.height(24.dp))
                 }
                 // Right column
@@ -224,7 +225,7 @@ fun SettingScreen(
                 ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) }, onWidgetAlphaClick = { viewModel.onIntent(SettingIntent.OnWidgetClick) })
                 InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
                 AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
-                DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
+                DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onRestoreClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
                 InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
                 VersionRow(version = state.appVersion)
                 Spacer(modifier = Modifier.height(24.dp))
@@ -260,6 +261,7 @@ private fun DataBody(
     autoBackupEnabled: Boolean,
     lastSyncTime: String?,
     onSyncClick: () -> Unit,
+    onRestoreClick: () -> Unit,
     onClearClick: () -> Unit,
     onAutoBackupToggle: () -> Unit,
 ) {
@@ -303,6 +305,12 @@ private fun DataBody(
             }
         }
     }
+
+    // Android DataBody와 동일: 기기 ID 기반 데이터 복원 진입 행
+    SettingRow(
+        title = stringResource(Res.string.sync_restore_title),
+        onClick = onRestoreClick,
+    )
 
     SettingRow(
         title = stringResource(Res.string.setting_clear_data),

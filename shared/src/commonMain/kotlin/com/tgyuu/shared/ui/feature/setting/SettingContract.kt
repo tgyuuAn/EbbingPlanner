@@ -45,6 +45,7 @@ sealed class SettingIntent : UiIntent {
     data object OnTagManageClick : SettingIntent()
     data object OnRepeatCycleManageClick : SettingIntent()
     data object OnSyncClick : SettingIntent()
+    data object OnRestoreByDeviceIdClick : SettingIntent()
     data object OnClearDataClick : SettingIntent()
     data object OnClearDataConfirm : SettingIntent()
     data object OnThemeClick : SettingIntent()
