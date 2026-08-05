@@ -35,6 +35,7 @@ import com.arkivanov.decompose.extensions.compose.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.navigation.RootComponent
 import com.tgyuu.shared.platform.InAppReviewManager
@@ -105,7 +106,7 @@ fun RootContent(
     val childStack by component.stack.subscribeAsState()
     val activeChild = childStack.active.instance
     val todoRepository = koinInject<TodoRepository>()
-    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val configRepository = koinInject<ConfigRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val featureFlagRepository = koinInject<com.tgyuu.shared.domain.repository.FeatureFlagRepository>()
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
@@ -425,7 +426,7 @@ private fun AddTodoScreenWrapper(
         }
     }
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
-    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val configRepository = koinInject<ConfigRepository>()
     val viewModel = remember(selectedDate) {
         AddTodoViewModel(
             selectedDate = selectedDate,
@@ -448,7 +449,7 @@ private fun EditTodoScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
-    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val configRepository = koinInject<ConfigRepository>()
     val viewModel = remember(scheduleId) {
         EditTodoViewModel(
             scheduleId = scheduleId,
@@ -469,7 +470,7 @@ private fun EditDateScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
-    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val configRepository = koinInject<ConfigRepository>()
     val viewModel = remember(infoId) {
         EditDateViewModel(
             infoId = infoId,
@@ -568,7 +569,7 @@ private fun EditMemoScreenWrapper(
 
 @Composable
 private fun ThemeScreenWrapper(component: RootComponent) {
-    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val configRepository = koinInject<ConfigRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember {
         ThemeViewModel(
@@ -602,7 +603,7 @@ private fun WebViewScreenWrapper(
 
 @Composable
 private fun NotificationScreenWrapper(component: RootComponent) {
-    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val configRepository = koinInject<ConfigRepository>()
     val viewModel = remember {
         com.tgyuu.shared.ui.feature.home.notification.NotificationViewModel(
             configRepository = configRepository,
@@ -614,7 +615,7 @@ private fun NotificationScreenWrapper(component: RootComponent) {
 
 @Composable
 private fun WidgetScreenWrapper(component: RootComponent) {
-    val configRepository = koinInject<com.tgyuu.shared.domain.repository.ConfigRepository>()
+    val configRepository = koinInject<ConfigRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val viewModel = remember {
         com.tgyuu.shared.ui.feature.setting.widget.WidgetViewModel(

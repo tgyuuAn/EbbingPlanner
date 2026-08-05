@@ -1,5 +1,7 @@
 package com.tgyuu.shared.data.source
 
+import com.tgyuu.shared.common.toCsv
+import com.tgyuu.shared.common.toIntListFromCsv
 import com.tgyuu.shared.platform.Settings
 
 /**
@@ -27,17 +29,16 @@ class UsageOrderStore(private val settings: Settings) {
     }
 
     private fun order(key: String): List<Int> =
-        settings.getString(key, "").toIdList()
+        settings.getString(key, "").toIntListFromCsv()
 
     /** 사용한 [id]를 맨 앞으로 옮겨 최근 사용순을 유지한다. */
     private fun record(key: String, id: Int) {
-        val newOrder = listOf(id) + order(key).filter { it != id }
-        settings.putString(key, newOrder.joinToString(","))
+        settings.putString(key, (listOf(id) + order(key).filter { it != id }).toCsv())
     }
 
     /** 삭제된 항목의 [id]를 최근 사용순에서 제거해 오펀 id가 남지 않도록 한다. */
     private fun remove(key: String, id: Int) {
-        settings.putString(key, order(key).filter { it != id }.joinToString(","))
+        settings.putString(key, order(key).filter { it != id }.toCsv())
     }
 
     companion object {
@@ -45,6 +46,3 @@ class UsageOrderStore(private val settings: Settings) {
         private const val KEY_REPEAT_CYCLE_USAGE_ORDER = "REPEAT_CYCLE_USAGE_ORDER"
     }
 }
-
-private fun String.toIdList(): List<Int> =
-    split(",").mapNotNull { it.trim().toIntOrNull() }

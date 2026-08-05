@@ -17,9 +17,9 @@ import ebbingplanner.shared.generated.resources.date_days_after
 import ebbingplanner.shared.generated.resources.date_days_before
 
 /**
- * 현재 시스템 날짜/시간 가져오기 - expect/actual 패턴
+ * 현재 시스템 날짜/시간 가져오기 (kotlin.time.Clock은 commonMain에서 바로 사용 가능)
  */
-expect fun currentInstant(): kotlin.time.Instant
+fun currentInstant(): kotlin.time.Instant = kotlin.time.Clock.System.now()
 
 fun LocalDate.Companion.now(): LocalDate =
     currentInstant().toLocalDateTime(TimeZone.currentSystemDefault()).date

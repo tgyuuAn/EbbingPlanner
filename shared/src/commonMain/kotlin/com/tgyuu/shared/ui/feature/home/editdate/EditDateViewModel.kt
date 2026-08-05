@@ -2,7 +2,7 @@ package com.tgyuu.shared.ui.feature.home.editdate
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
-import com.tgyuu.shared.common.sortedByUsageOrder
+import com.tgyuu.shared.common.loadRepeatCyclesByUsage
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
@@ -31,7 +31,7 @@ class EditDateViewModel(
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-    private val configRepository: ConfigRepository? = null,
+    private val configRepository: ConfigRepository,
     private val onShowDateBottomSheet: (() -> Unit)? = null,
     private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
@@ -72,13 +72,10 @@ class EditDateViewModel(
     }
 
     private suspend fun loadRepeatCycles() {
-        val repeatCycles = todoRepository.loadRepeatCycles()
-        val allRepeatCycles = DefaultRepeatCycles + repeatCycles
-        val usageOrder = configRepository?.getRepeatCycleUsageOrder() ?: emptyList()
-        val sortedRepeatCycles = allRepeatCycles.sortedByUsageOrder(usageOrder) { it.id }
-        val models = buildList { for (cycle in sortedRepeatCycles) add(cycle.toUiModel()) }
+        val models = todoRepository.loadRepeatCyclesByUsage(configRepository)
+            .map { it.toUiModel() }.toImmutableList()
         setState {
-            copy(repeatCycleList = models.toImmutableList())
+            copy(repeatCycleList = models)
         }
     }
 
@@ -141,7 +138,7 @@ class EditDateViewModel(
 
             // 저장 완료 후 부가 기록 실패가 완료 흐름을 막지 않도록 격리
             runCatching {
-                currentState.repeatCycle?.let { configRepository?.recordRepeatCycleUsage(it.id) }
+                currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
             }
 
             onShowSnackbar(getString(Res.string.snack_date_repeat_changed))
