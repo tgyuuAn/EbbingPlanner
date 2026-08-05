@@ -104,7 +104,7 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - [ ] **할일 수정(EditTodo) 화면 - 저장 버튼** (feature/home/edittodo/EditTodoScreen.kt:171) — Phone(!isWide) 레이아웃에서 imePadding()이 스크롤 Column(라인132)에만 적용되고 EbbingSolidButton('수정하기')은 imePadding 없는 바깥 Colum
 - [x] **SelectedDateBottomSheet (일정 날짜 선택 시트)** (feature/home/addtodo/bottomsheet/SelectedDateBottomSheet.kt:23) — iOS SelectedDateBottomSheetContent은 startFromMonday 파라미터 자체가 없고 EbbingCalendar에 전달하지 않는다. iOS EbbingCalendar는 
 - [x] **SelectedDateBottomSheet (일정 날짜 선택 시트)** (feature/home/addtodo/bottomsheet/SelectedDateBottomSheet.kt:40) — iOS는 EbbingCalendar에 horizontal=20.dp 패딩이 빠져 있다(padding(top=20, bottom=8)만 있음). Android는 padding(horizontal=20
-- [ ] **WidgetNudgeDialog (위젯 넛지 다이얼로그)** (feature/home/dialog/WidgetNudgeDialog.kt:74) — Android는 하단 영역에 위젯 미리보기 일러스트(ic_widget_nudge, 220x152dp 이미지)를 표시하는데, iOS는 이미지 대신 영어 리터럴 'Widget Preview' 텍스트를 
+- [x] **WidgetNudgeDialog (위젯 넛지 다이얼로그)** (feature/home/dialog/WidgetNudgeDialog.kt:74) — Android는 하단 영역에 위젯 미리보기 일러스트(ic_widget_nudge, 220x152dp 이미지)를 표시하는데, iOS는 이미지 대신 영어 리터럴 'Widget Preview' 텍스트를 
 - [x] **ConfirmDelayAllDialog (이후 일정 모두 미루기 확인)** (feature/home/dialog/ConfirmDelayAllDialog.kt:109) — 미루기 버튼 콜백 인자가 Android와 다르다. Android는 onRightButtonClick = { onDelayClick(false) } 로 체크박스 상태와 무관하게 항상 false(쉬는 
 - [x] **ConfirmExitDialog (작성 이탈 확인, AddTodo)** (feature/home/addtodo/AddTodoScreen.kt:315) — Android는 EbbingDialogIconTop 을 써서 상단에 ic_notice 아이콘 + 타이틀 + 서브텍스트(모두 중앙정렬 규격)를 표시하는데, iOS 인라인 구현은 아이콘이 전혀 없고 타
 - [ ] **설정 메인 - 데이터 섹션 (DataBody)** (feature/setting/SettingScreen.kt:255) — Android DataBody에는 '데이터 복원'(sync_restore_title) 항목이 존재해 기기 ID 기반 복원 화면으로 진입하는 행이 있는데(SettingScreen.kt:744-763,
@@ -135,3 +135,6 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 
 ### 배치3 적용 (커밋)
 - 🔧 완료율 %% → % (CMP), 알림화면 넛지 헤더 추가, 설정 섹션 순서 Android 일치(데이터→안내 뒤로), 초기화 다이얼로그 빨강 강조 제목+서브텍스트+뒤로 버튼.
+
+### 배치4 적용 (커밋)
+- 🔧 ic_widget_nudge / ic_notice 드로어블 iOS 포팅. WidgetNudge 'Widget Preview' 영어 리터럴 → 실제 위젯 미리보기 이미지. 이탈 다이얼로그 상단 notice 아이콘 추가.
