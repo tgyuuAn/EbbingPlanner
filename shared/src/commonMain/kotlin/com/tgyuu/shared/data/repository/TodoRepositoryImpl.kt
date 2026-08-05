@@ -195,6 +195,8 @@ class TodoRepositoryImpl(
         coroutineScope {
             launch { todoTagsDao.softDeleteAllTags(LocalDateTime.now()) }
             launch { todoSchedulesDao.softDeleteAllSchedules(LocalDateTime.now()) }
+            // Android(core/data)와 동일하게 todo_info는 하드 삭제해 고아 레코드가 남지 않도록 한다
+            launch { todoSchedulesDao.hardDeleteAllTodoInfos() }
             launch { repeatCyclesDao.softDeleteAllRepeatCycles(LocalDateTime.now()) }
             launch { usageOrderStore.clearUsageOrder() }
         }
