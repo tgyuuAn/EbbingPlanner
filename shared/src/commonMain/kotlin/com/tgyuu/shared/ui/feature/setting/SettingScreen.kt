@@ -741,7 +741,8 @@ private fun AlarmMessageBottomSheetContent(
         }
         val previewSample = stringResource(Res.string.setting_alarm_message_preview_sample)
         val previewMessageText = when (sheetState.placeholderCount) {
-            1 -> sheetState.message.replace("{할일}", previewSample)
+            // 토큰은 로케일별로 다르므로 하드코딩("{할일}") 대신 placeholderToken 사용 (Android 동일)
+            1 -> sheetState.message.replace(placeholderToken, previewSample)
             0 -> sheetState.message
             else -> ""
         }
