@@ -318,6 +318,7 @@ private fun ConfirmExitDialog(
                 text = stringResource(Res.string.home_exit_confirm_title),
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp),
             )
 
