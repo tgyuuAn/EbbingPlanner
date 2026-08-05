@@ -263,7 +263,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64\nelse\n  ./gradlew :shared:linkDebugFrameworkIosArm64\nfi\n";
+			shellScript = "cd \"$SRCROOT/..\"\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n  ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64\nelse\n  ./gradlew :shared:linkDebugFrameworkIosArm64\nfi\n./gradlew :shared:syncComposeResourcesForIos\n";
 		};
 		23DBE543796B46971B6DA534 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
