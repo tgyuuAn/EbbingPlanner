@@ -37,6 +37,7 @@ import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.ui.feature.setting.widget.WidgetState
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.home_save
+import ebbingplanner.shared.generated.resources.setting_apply
 import ebbingplanner.shared.generated.resources.setting_background_alpha
 import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.widget_preview_sample
@@ -59,22 +60,7 @@ fun WidgetScreen(
         EbbingSubTopBar(
             title = stringResource(Res.string.setting_widget_theme_change),
             onNavigationClick = { viewModel.onIntent(WidgetIntent.OnBackClick) },
-            rightComponent = {
-                if (!state.isTreatment) {
-                Text(
-                    text = stringResource(Res.string.home_save),
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
-                    else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickable(enabled = state.isSaveEnabled) {
-                            viewModel.onIntent(WidgetIntent.OnSaveClick)
-                        },
-                )
-                }
-            },
+            rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
@@ -112,14 +98,13 @@ fun WidgetScreen(
             }
         } // else
 
-        if (state.isTreatment) {
-            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = stringResource(Res.string.home_save),
-                onClick = { viewModel.onIntent(WidgetIntent.OnSaveClick) },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
-            )
-        }
+        // Android와 동일: 항상 하단 풀폭 '적용' 버튼
+        com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+            label = stringResource(Res.string.setting_apply),
+            onClick = { viewModel.onIntent(WidgetIntent.OnSaveClick) },
+            enabled = state.isSaveEnabled,
+            modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
+        )
     }
     } // BoxWithConstraints
 }
