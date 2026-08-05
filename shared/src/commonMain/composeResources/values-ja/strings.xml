@@ -462,4 +462,6 @@
     <string name="setting_clear_dialog_title_suffix">しますか？</string>
     <string name="setting_clear_dialog_subtext">削除したデータは元に戻せません。</string>
     <string name="setting_back">戻る</string>
+    <string name="setting_widget_today_todo">今日のやること  </string>
+    <string name="setting_no_schedule_today">本日のスケジュールはありません。</string>
 </resources>

@@ -462,4 +462,6 @@
     <string name="setting_clear_dialog_title_suffix">?</string>
     <string name="setting_clear_dialog_subtext">Deleted data cannot be recovered.</string>
     <string name="setting_back">Back</string>
+    <string name="setting_widget_today_todo">Today\'s to-dos  </string>
+    <string name="setting_no_schedule_today">No schedule for today.</string>
 </resources>
