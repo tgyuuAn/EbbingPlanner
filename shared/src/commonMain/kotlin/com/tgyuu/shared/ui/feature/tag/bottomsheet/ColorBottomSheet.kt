@@ -55,26 +55,26 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.painterResource
 import ebbingplanner.shared.generated.resources.ic_check
 
-// 6 color families with 6 shades each (dark to light)
+// Android core/designsystem ColorOptions와 동일한 6계열 × 6음영 (동기화 색상값 일치)
 val TAG_COLORS = listOf(
     // Red
-    0xFFB71C1C.toInt(), 0xFFD32F2F.toInt(), 0xFFE53935.toInt(),
-    0xFFEF5350.toInt(), 0xFFEF9A9A.toInt(), 0xFFFFCDD2.toInt(),
+    0xFFFF0000.toInt(), 0xFFFF4C4C.toInt(), 0xFFFF8080.toInt(),
+    0xFFFF9999.toInt(), 0xFFFFB3B3.toInt(), 0xFFFFC7C7.toInt(),
     // Orange
-    0xFFE65100.toInt(), 0xFFF57C00.toInt(), 0xFFFF9800.toInt(),
-    0xFFFFB74D.toInt(), 0xFFFFCC80.toInt(), 0xFFFFE0B2.toInt(),
+    0xFFFF7F00.toInt(), 0xFFFF9933.toInt(), 0xFFFFB266.toInt(),
+    0xFFFFCC99.toInt(), 0xFFFFD9B3.toInt(), 0xFFFFE5CC.toInt(),
     // Yellow
-    0xFFF9A825.toInt(), 0xFFFBC02D.toInt(), 0xFFFFEB3B.toInt(),
-    0xFFFFF176.toInt(), 0xFFFFF59D.toInt(), 0xFFFFF9C4.toInt(),
+    0xFFFFFF00.toInt(), 0xFFFFF000.toInt(), 0xFFFFF380.toInt(),
+    0xFFFFF5A3.toInt(), 0xFFFFF7C2.toInt(), 0xFFFFFAE0.toInt(),
     // Green
-    0xFF1B5E20.toInt(), 0xFF388E3C.toInt(), 0xFF4CAF50.toInt(),
-    0xFF81C784.toInt(), 0xFFA5D6A7.toInt(), 0xFFC8E6C9.toInt(),
+    0xFF008000.toInt(), 0xFF33A766.toInt(), 0xFF66C28C.toInt(),
+    0xFF99DAB3.toInt(), 0xFFBFEBD2.toInt(), 0xFFE0F8E9.toInt(),
     // Blue
-    0xFF0D47A1.toInt(), 0xFF1976D2.toInt(), 0xFF2196F3.toInt(),
-    0xFF64B5F6.toInt(), 0xFF90CAF9.toInt(), 0xFFBBDEFB.toInt(),
+    0xFF0000FF.toInt(), 0xFF4285F4.toInt(), 0xFF6FA8FF.toInt(),
+    0xFF99C2FF.toInt(), 0xFFCCE0FF.toInt(), 0xFFE3F0FF.toInt(),
     // Purple
-    0xFF4A148C.toInt(), 0xFF7B1FA2.toInt(), 0xFF9C27B0.toInt(),
-    0xFFBA68C8.toInt(), 0xFFCE93D8.toInt(), 0xFFE1BEE7.toInt(),
+    0xFF8A2BE2.toInt(), 0xFF9B4DCC.toInt(), 0xFFB36EFF.toInt(),
+    0xFFD1A3FF.toInt(), 0xFFE5CCFF.toInt(), 0xFFF0E5FF.toInt(),
 )
 
 @Composable
