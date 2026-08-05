@@ -387,7 +387,7 @@
     <string name="webview_terms_title">Terms of Service</string>
 
     <!-- Notification settings format -->
-    <string name="alarm_time_format">%1$s %2$d:%3$02d</string>
+    <string name="alarm_time_format">%1$s %2$d:%3$s</string>
     <string name="setting_alarm_message_error_placeholder">{task} can be used at most once</string>
     <string name="setting_alarm_message_error_length">You can enter up to 50 characters</string>
     <string name="setting_alarm_message_length">%1$d / 50</string>
