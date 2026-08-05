@@ -12,5 +12,7 @@ import org.jetbrains.compose.resources.stringResource
 fun alarmTimeText(hour: Int, minute: Int): String {
     val period = if (hour < 12) stringResource(Res.string.ds_am) else stringResource(Res.string.ds_pm)
     val displayHour = if (hour % 12 == 0) 12 else hour % 12
-    return stringResource(Res.string.alarm_time_format, period, displayHour, minute)
+    // CMP stringResource는 %02d(0채움) 지시자를 지원하지 않으므로 분을 미리 0채움해 %s로 전달
+    val paddedMinute = minute.toString().padStart(2, '0')
+    return stringResource(Res.string.alarm_time_format, period, displayHour, paddedMinute)
 }
