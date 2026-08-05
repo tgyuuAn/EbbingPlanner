@@ -116,7 +116,7 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - [ ] **위젯 테마 변경 화면 - 저장 버튼 라벨/위치** (feature/setting/widget/WidgetScreen.kt:65) — Android는 하단 full-width EbbingSolidButton에 라벨 setting_apply("적용")를 쓴다. iOS는 기본(CONTROL) 상태에서 상단바 텍스트 링크로 home_s
 - [ ] **위젯 테마 변경 화면 - 미리보기 카드(WidgetCard)** (feature/setting/widget/WidgetScreen.kt:174) — Android 미리보기는 실제 위젯 모양(라이트/다크 2개 카드, 상단 '오늘 할 일  0 /0' 배지+plus 아이콘, 하단 setting_no_schedule_today('금일 스케줄이 없어요.
 - [x] **일정 화면 - 태그 카드 완료율 텍스트 (TagCard)** (feature/schedule/ScheduleScreen.kt:351) — 태그 헤더의 '완료율' 문구가 schedule_tag_count_completion 리소스를 쓰는데, 이 문자열이 세 로케일 모두 '완료율 %2$d%%'처럼 %% (퍼센트 이스케이프)를 포함한다. 
-- [ ] **동기화 메인 - QR 카드 / 연동기기 / 마지막동기화 (description·기기명·날짜 등 주요 강조 텍스트)** (feature/sync/SyncScreen.kt:393) — Android가 heading16SB(16sp SemiBold)를 쓰는 강조 텍스트들을 iOS는 전부 headingSSB(18sp Bold)로 매핑했다. 폰트 크기(16→18sp)와 굵기(SemiB
+- [x] **동기화 메인 - QR 카드 / 연동기기 / 마지막동기화 (description·기기명·날짜 등 주요 강조 텍스트)** (feature/sync/SyncScreen.kt:393) — Android가 heading16SB(16sp SemiBold)를 쓰는 강조 텍스트들을 iOS는 전부 headingSSB(18sp Bold)로 매핑했다. 폰트 크기(16→18sp)와 굵기(SemiB
 - [x] **색상 선택 바텀시트 (ColorBottomSheet)** (feature/tag/bottomsheet/ColorBottomSheet.kt:59) — iOS의 색상 팔레트(TAG_COLORS, 라인 59-78)가 Android 원본(core/designsystem/.../ColorOptions.kt)과 완전히 다르다. Android는 순색 계열(
 - [x] **태그 추가/수정 화면 저장 버튼 (AddTagScreen/EditTagScreen)** (feature/tag/addtag/AddTagScreen.kt:147) — 하단 저장 버튼 라벨이 Android와 다르다. Android AddTag는 tag_register_button("태그 등록하기"), EditTag는 tag_edit_button("태그 수정하기")
 - [x] **반복 주기 추가/수정 화면 (하단 등록 버튼)** (feature/repeatcycle/addrepeatcycle/AddRepeatCycleScreen.kt:125) — 하단 저장 버튼 라벨이 Android와 다르다. Android 추가 화면은 하단 버튼에 repeat_register_button("반복 주기 등록하기"), 수정 화면은 repeat_edit_butt
@@ -141,3 +141,6 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 
 ### 배치5 적용 (커밋)
 - 🔧 메모 미리보기를 자체 카드('M' 배지)에서 공용 TodoListCard로 교체(Android 동일, 홈/투두와 동일 카드).
+
+### 배치6 적용 (커밋)
+- 🔧 sync 화면 강조 텍스트 headingSSB(18B) → bodyMSB(16SB), Android heading16SB와 크기/굵기 일치.
