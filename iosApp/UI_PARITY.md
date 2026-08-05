@@ -96,7 +96,7 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 
 ### HIGH (사용자 눈에 보이는 차이/깨짐) — 체크박스로 진행 관리
 
-- [ ] **알림 설정 화면 - 메시지 글자수 카운터/에러** (feature/home/notification/NotificationScreen.kt:176) — Android는 메시지 입력 영역 하단에 '글자수 카운터(%1$d / 50자)'와 에러 메시지(플레이스홀더 2회 이상, 50자 초과)를 항상 표시한다(Android NotificationScreen
+- [x] **알림 설정 화면 - 메시지 글자수 카운터/에러** (feature/home/notification/NotificationScreen.kt:176) — Android는 메시지 입력 영역 하단에 '글자수 카운터(%1$d / 50자)'와 에러 메시지(플레이스홀더 2회 이상, 50자 초과)를 항상 표시한다(Android NotificationScreen
 - [x] **알림 설정 화면 - 헤더(넛지) 섹션 누락** (feature/home/notification/NotificationScreen.kt:73) — Android 화면 상단에는 큰 제목 '바쁜 날에도 복습일을 자동으로 챙겨드릴게요'(home_notification_nudge, heading24B)와 서브텍스트 '알림을 설정하면...'(home_
 - [ ] **홈 메인 - 리스트 헤더 정렬 토글** (designsystem/model/SortTypeExt.kt:12) — 정렬 토글의 첫 번째(생성순/최신순) 라벨 문자열이 Android와 다르다. Android는 SortType.CREATED를 sort_latest("최신순")로 표시하는데(feature 홈 헤더가 
 - [x] **할일 추가(AddTodo) / 할일 수정(EditTodo) 화면** (feature/home/addtodo/component/AddTodoComponents.kt:53) — 제목 입력 필드가 iOS에서 진입 시 자동 포커스/키보드 자동 노출이 안 된다. Android의 TitleContent(feature/home/.../ui/Title.kt:34-38)는 FocusR
@@ -147,3 +147,6 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 
 ### 배치7 적용 (커밋)
 - 🔧 설정 데이터 섹션에 "데이터 복원" 행 추가(기기ID 복원 화면 진입). Contract/VM/RootContent 배선.
+
+### 배치8 적용 (커밋)
+- 🔧 알림 설정 화면 메시지 글자수 카운터(%1$d / 50자)+검증 에러(플레이스홀더 2회↑, 50자 초과) 추가, 입력 limit 100→50, 미리보기 토큰 로케일화.
