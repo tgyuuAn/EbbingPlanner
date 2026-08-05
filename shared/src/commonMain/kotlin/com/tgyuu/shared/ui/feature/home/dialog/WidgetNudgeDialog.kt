@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.home.dialog
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
@@ -26,6 +28,7 @@ import ebbingplanner.shared.generated.resources.home_widget_nudge_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.painterResource
 import ebbingplanner.shared.generated.resources.ic_close
+import ebbingplanner.shared.generated.resources.ic_widget_nudge
 
 @Composable
 internal fun WidgetNudgeDialog(
@@ -69,12 +72,12 @@ internal fun WidgetNudgeDialog(
                     .background(color = EbbingTheme.colors.light3)
                     .padding(vertical = 24.dp),
             ) {
-                // Placeholder for widget preview image
-                // In actual implementation, this would be replaced with actual widget preview
-                Text(
-                    text = "Widget Preview",
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark2,
+                // Android와 동일: 위젯 미리보기 일러스트
+                Image(
+                    painter = painterResource(Res.drawable.ic_widget_nudge),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.size(width = 220.dp, height = 152.dp),
                 )
             }
         }

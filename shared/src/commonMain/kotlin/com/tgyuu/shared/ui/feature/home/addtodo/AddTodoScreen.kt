@@ -1,9 +1,11 @@
 package com.tgyuu.shared.ui.feature.home.addtodo
 
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -45,6 +47,8 @@ import com.tgyuu.shared.ui.feature.home.addtodo.component.ScheduleContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.TagContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.TitleContent
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_notice
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.home_add_todo_button
 import ebbingplanner.shared.generated.resources.home_add_todo_header_suffix
@@ -314,12 +318,20 @@ private fun ConfirmExitDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(horizontal = 20.dp),
         ) {
+            // Android EbbingDialogIconTop과 동일: 상단 notice 아이콘
+            Image(
+                painter = painterResource(Res.drawable.ic_notice),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(top = 40.dp)
+                    .size(40.dp),
+            )
             Text(
                 text = stringResource(Res.string.home_exit_confirm_title),
                 style = EbbingTheme.typography.headingMSB,
                 color = EbbingTheme.colors.black,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 40.dp),
+                modifier = Modifier.padding(top = 16.dp),
             )
 
             Text(
