@@ -53,6 +53,8 @@ targets:
           else
             ./gradlew :shared:linkDebugFrameworkIosArm64
           fi
+          # compose 리소스를 앱 번들에 복사 (정적 프레임워크라 필수)
+          ./gradlew :shared:syncComposeResourcesForIos
         basedOnDependencyAnalysis: false
     entitlements:
       path: iosApp/EbbingPlanner.entitlements
