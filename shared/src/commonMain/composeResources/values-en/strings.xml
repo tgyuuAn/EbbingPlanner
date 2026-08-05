@@ -178,7 +178,7 @@
 
     <!-- All Schedules -->
     <string name="schedule_top_bar_title">All Schedules</string>
-    <string name="schedule_tag_count_completion">%1$d schedules, %2$d%% completed</string>
+    <string name="schedule_tag_count_completion">%1$d schedules, %2$d% completed</string>
     <string name="schedule_collapse">Collapse</string>
     <string name="schedule_card_date">%1$d/%2$d (%3$s)</string>
     <string name="schedule_empty_message">No schedules yet.\nShall we add a new one?</string>
@@ -455,4 +455,11 @@
     <string name="tag_edit_button">Edit tag</string>
     <string name="repeat_register_button">Add repeat cycle</string>
     <string name="repeat_edit_button">Edit repeat cycle</string>
+    <string name="home_notification_nudge">Even on busy days,\nwe\'ll keep track of your review days automatically</string>
+    <string name="home_notification_header_sub">Set a notification and we\'ll remind you of tasks on the next review day.\nYou can change notifications anytime in the Settings tab.</string>
+    <string name="setting_clear_dialog_title_prefix">Reset </string>
+    <string name="setting_clear_dialog_title_highlight">data</string>
+    <string name="setting_clear_dialog_title_suffix">?</string>
+    <string name="setting_clear_dialog_subtext">Deleted data cannot be recovered.</string>
+    <string name="setting_back">Back</string>
 </resources>

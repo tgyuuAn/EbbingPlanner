@@ -178,7 +178,7 @@
 
     <!-- 일정 모아보기 -->
     <string name="schedule_top_bar_title">일정 모아보기</string>
-    <string name="schedule_tag_count_completion">%1$d개의 일정, 완료율 %2$d%%</string>
+    <string name="schedule_tag_count_completion">%1$d개의 일정, 완료율 %2$d%</string>
     <string name="schedule_collapse">닫기</string>
     <string name="schedule_card_date">%1$d월 %2$d일 (%3$s)</string>
     <string name="schedule_empty_message">아직 일정이 없어요.\n새로운 일정을 등록해볼까요?</string>
@@ -455,4 +455,11 @@
     <string name="tag_edit_button">태그 수정하기</string>
     <string name="repeat_register_button">반복 주기 등록하기</string>
     <string name="repeat_edit_button">반복 주기 수정하기</string>
+    <string name="home_notification_nudge">바쁜 날에도\n복습일을 자동으로 챙겨드릴게요</string>
+    <string name="home_notification_header_sub">알림을 설정하면 다음 복습일에 일정을 알려드려요.\n알림은 언제든 설정 탭에서 변경할 수 있어요.</string>
+    <string name="setting_clear_dialog_title_prefix">데이터를 </string>
+    <string name="setting_clear_dialog_title_highlight">초기화</string>
+    <string name="setting_clear_dialog_title_suffix"> 하시겠습니까?</string>
+    <string name="setting_clear_dialog_subtext">삭제한 데이터는 되돌릴 수 없습니다.</string>
+    <string name="setting_back">뒤로</string>
 </resources>
