@@ -120,8 +120,8 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - [x] **색상 선택 바텀시트 (ColorBottomSheet)** (feature/tag/bottomsheet/ColorBottomSheet.kt:59) — iOS의 색상 팔레트(TAG_COLORS, 라인 59-78)가 Android 원본(core/designsystem/.../ColorOptions.kt)과 완전히 다르다. Android는 순색 계열(
 - [x] **태그 추가/수정 화면 저장 버튼 (AddTagScreen/EditTagScreen)** (feature/tag/addtag/AddTagScreen.kt:147) — 하단 저장 버튼 라벨이 Android와 다르다. Android AddTag는 tag_register_button("태그 등록하기"), EditTag는 tag_edit_button("태그 수정하기")
 - [x] **반복 주기 추가/수정 화면 (하단 등록 버튼)** (feature/repeatcycle/addrepeatcycle/AddRepeatCycleScreen.kt:125) — 하단 저장 버튼 라벨이 Android와 다르다. Android 추가 화면은 하단 버튼에 repeat_register_button("반복 주기 등록하기"), 수정 화면은 repeat_edit_butt
-- [ ] **메모 추가/수정 화면 - 미리보기(Preview) 카드** (feature/memo/MemoScreen.kt:265) — iOS는 MemoScreen 안에 자체 private TodoListCard(265~343줄)를 새로 그려 미리보기를 표시한다. Android 원본(MemoContent.kt PreviewConte
-- [ ] **메모 추가/수정 화면 - 미리보기 카드 내 메모 표시** (feature/memo/MemoScreen.kt:320) — iOS 자체 카드는 메모를 light1 원형 안 'M' 글자 배지 + dark3 텍스트로 표시한다(320~340줄). Android/공용 카드에는 이런 'M' 배지가 존재하지 않으며, 메모는 lig
+- [x] **메모 추가/수정 화면 - 미리보기(Preview) 카드** (feature/memo/MemoScreen.kt:265) — iOS는 MemoScreen 안에 자체 private TodoListCard(265~343줄)를 새로 그려 미리보기를 표시한다. Android 원본(MemoContent.kt PreviewConte
+- [x] **메모 추가/수정 화면 - 미리보기 카드 내 메모 표시** (feature/memo/MemoScreen.kt:320) — iOS 자체 카드는 메모를 light1 원형 안 'M' 글자 배지 + dark3 텍스트로 표시한다(320~340줄). Android/공용 카드에는 이런 'M' 배지가 존재하지 않으며, 메모는 lig
 
 ### 배치1 적용 (커밋)
 - 🔧 정렬 라벨 최신순, AddTodo 자동포커스+저장버튼 imePadding, 날짜시트 패딩+월요일파라미터, DelayAll 동작, 테마/위젯 제목, 태그/반복 등록·수정 버튼 라벨.
@@ -138,3 +138,6 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 
 ### 배치4 적용 (커밋)
 - 🔧 ic_widget_nudge / ic_notice 드로어블 iOS 포팅. WidgetNudge 'Widget Preview' 영어 리터럴 → 실제 위젯 미리보기 이미지. 이탈 다이얼로그 상단 notice 아이콘 추가.
+
+### 배치5 적용 (커밋)
+- 🔧 메모 미리보기를 자체 카드('M' 배지)에서 공용 TodoListCard로 교체(Android 동일, 홈/투두와 동일 카드).

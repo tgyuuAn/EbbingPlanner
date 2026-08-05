@@ -37,6 +37,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingCheck
+import com.tgyuu.shared.designsystem.component.TodoListCard
+import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
@@ -247,6 +249,22 @@ private fun PreviewContent(
     memo: String,
     modifier: Modifier = Modifier,
 ) {
+    // Android MemoContent와 동일: 홈/투두 리스트와 같은 공용 TodoListCard로 미리보기
+    val previewTodo = TodoScheduleUiModel(
+        id = schedule.id,
+        infoId = schedule.infoId,
+        title = schedule.title,
+        tagId = schedule.tagId,
+        name = schedule.name,
+        color = schedule.color,
+        date = schedule.date,
+        memo = memo,
+        isPinned = schedule.isPinned,
+        isDone = schedule.isDone,
+        createdAt = schedule.createdAt,
+        infoCreatedAt = schedule.infoCreatedAt,
+    )
+
     Column(modifier = modifier) {
         Text(
             text = stringResource(Res.string.memo_preview_label),
@@ -256,88 +274,11 @@ private fun PreviewContent(
         )
 
         TodoListCard(
-            schedule = schedule,
-            memo = memo,
+            todo = previewTodo,
+            todosWithSameInfo = listOf(previewTodo),
+            onCheckedChange = {},
+            onEditScheduleClick = {},
+            modifier = Modifier.fillMaxWidth(),
         )
-    }
-}
-
-@Composable
-private fun TodoListCard(
-    schedule: TodoSchedule,
-    memo: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(EbbingTheme.colors.light3)
-            .padding(16.dp),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            VerticalDivider(
-                thickness = 8.dp,
-                color = Color(schedule.color),
-                modifier = Modifier
-                    .height(48.dp)
-                    .padding(end = 8.dp),
-            )
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = schedule.title,
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                Text(
-                    text = schedule.name,
-                    style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark3,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            EbbingCheck(
-                checked = schedule.isDone,
-                colorValue = schedule.color,
-                onCheckedChange = {},
-                modifier = Modifier.size(24.dp),
-            )
-        }
-
-        if (memo.isNotEmpty()) {
-            Row(
-                modifier = Modifier.padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clip(CircleShape)
-                        .background(EbbingTheme.colors.light1),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "M",
-                        style = EbbingTheme.typography.captionM,
-                        color = EbbingTheme.colors.dark2,
-                    )
-                }
-
-                Text(
-                    text = memo,
-                    style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.dark3,
-                    modifier = Modifier.padding(start = 4.dp),
-                )
-            }
-        }
     }
 }
