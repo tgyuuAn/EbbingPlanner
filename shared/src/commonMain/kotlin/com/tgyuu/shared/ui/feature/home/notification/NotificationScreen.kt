@@ -38,6 +38,10 @@ import ebbingplanner.shared.generated.resources.ds_pm
 import ebbingplanner.shared.generated.resources.home_apply
 import ebbingplanner.shared.generated.resources.notification_placeholder_desc
 import ebbingplanner.shared.generated.resources.setting_alarm_message
+import ebbingplanner.shared.generated.resources.alarm_placeholder_token
+import ebbingplanner.shared.generated.resources.setting_alarm_message_error_placeholder
+import ebbingplanner.shared.generated.resources.setting_alarm_message_error_length
+import ebbingplanner.shared.generated.resources.setting_alarm_message_length
 import ebbingplanner.shared.generated.resources.setting_alarm_message_hint
 import ebbingplanner.shared.generated.resources.setting_alarm_time
 import ebbingplanner.shared.generated.resources.setting_alarm_time_subtitle
@@ -190,6 +194,10 @@ private fun NotificationDetailSection(
     HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
 
     // Alarm message
+    val placeholderToken = stringResource(Res.string.alarm_placeholder_token)
+    val placeholderCount = if (placeholderToken.isEmpty()) 0
+        else state.alarmMessage.split(placeholderToken).size - 1
+    val isValidLength = state.alarmMessage.length <= 50
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Text(text = stringResource(Res.string.setting_alarm_message), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.weight(1f))
         Text(text = stringResource(Res.string.setting_clear), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.clickable { onResetMessage() })
@@ -198,15 +206,25 @@ private fun NotificationDetailSection(
         value = state.alarmMessage,
         hint = stringResource(Res.string.setting_alarm_message_hint),
         onValueChange = onMessageChange,
-        limit = 100,
+        limit = 50,
         modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
     )
+    // Android와 동일: 글자수 카운터 + 검증 에러 메시지
+    val errorText = when {
+        placeholderCount > 1 -> stringResource(Res.string.setting_alarm_message_error_placeholder)
+        !isValidLength -> stringResource(Res.string.setting_alarm_message_error_length)
+        else -> ""
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Text(text = errorText, style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.error, modifier = Modifier.weight(1f))
+        Text(text = stringResource(Res.string.setting_alarm_message_length, state.alarmMessage.length), style = EbbingTheme.typography.captionR12, color = if (isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error)
+    }
     Text(text = stringResource(Res.string.notification_placeholder_desc), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(top = 4.dp, start = 4.dp))
     HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
 
     // Preview
     Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
-    Text(text = state.alarmMessage.replace("{할일}", stringResource(Res.string.setting_alarm_message_preview_sample)), style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
+    Text(text = state.alarmMessage.replace(placeholderToken, stringResource(Res.string.setting_alarm_message_preview_sample)), style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
 }
 
 @Composable
