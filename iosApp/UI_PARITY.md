@@ -75,4 +75,18 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
   - 조치: `AlarmFormat.alarmTimeText`에서 분을 `padStart(2,'0')` 후 `%3$s`로 전달. ko/en/ja 문자열 3개 `%3$02d`→`%3$s`.
   - 영향: 설정 알림시간, 알림시간 바텀시트, 알림설정 화면 등 동일 함수 사용처 전부.
 - Setting 섹션 구조 차이: Android엔 `UpdateBody`(앱 업데이트) 있으나 iOS 없음 → 소프트/하드 업데이트는 iOS에서 remote config 미구현(TODO)이라 보류.
-- 검증용으로 초기 라우트 임시 Setting, config-cache 임시 off (원복 대상).
+- 설정 바텀시트(알림시간/알림메시지/시작요일): 헤더·구조·패딩·버튼 Android와 일치 ✅.
+  - 단, 알림메시지 미리보기 토큰 치환이 `"{할일}"` 하드코딩(en/ja 미치환) → 🔧`placeholderToken` 사용으로 수정(Android 동일).
+- 검증 완료 후 초기 라우트/‌config-cache 원복함.
+
+### 검증 방법(다음 턴 참고)
+- 탭 자동화 불가(System Events 접근성 차단, idb 없음). 화면별 시각 검증은:
+  1) `DefaultRootComponent`의 `initialConfiguration`를 임시로 대상 화면으로, `gradle.properties` config-cache 임시 off,
+  2) `/tmp/run_ios.sh <out.png>` 로 빌드·설치, 이후 **재실행(온보딩 스킵)** 후 스크린샷,
+  3) 검증 끝나면 두 임시변경 원복.
+- 바텀시트/다이얼로그는 `MainViewController`에서 해당 Content 컴포저블을 EbbingTheme로 감싸 직접 렌더 후 스크린샷(탭 불필요).
+
+## 완료/진행 요약
+- ✅ 치명적: compose 리소스 미번들 크래시(앱 실행 불가) → syncComposeResourcesForIos 추가로 해결(별도 커밋).
+- 🔧 설정: 알림시간 `%02d` 깨짐, 알림메시지 토큰 하드코딩.
+- ⬜ 남은 대상: 홈/모아보기/태그/반복주기/동기화/메모 화면 및 각 바텀시트·다이얼로그 전수 대조.
