@@ -3,6 +3,7 @@ package com.tgyuu.designsystem.component.calendar
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
@@ -27,8 +28,7 @@ fun getWeekStart(date: LocalDate, startFromMonday: Boolean = false): LocalDate {
 fun weeksBetween(from: LocalDate, to: LocalDate, startFromMonday: Boolean = false): Int {
     val fromWeekStart = getWeekStart(from, startFromMonday)
     val toWeekStart = getWeekStart(to, startFromMonday)
-    // kotlinx-datetime 0.7부터 toEpochDays()가 Long을 반환
-    return ((toWeekStart.toEpochDays() - fromWeekStart.toEpochDays()) / 7).toInt()
+    return fromWeekStart.daysUntil(toWeekStart) / 7
 }
 
 fun getWeekDates(date: LocalDate, startFromMonday: Boolean = false): List<CalendarDate> {

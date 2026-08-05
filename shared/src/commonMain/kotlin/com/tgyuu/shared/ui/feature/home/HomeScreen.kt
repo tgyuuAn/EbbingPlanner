@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -38,6 +39,9 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.now
+import com.tgyuu.shared.common.toFormattedString
+import com.tgyuu.shared.common.toLocalDateOrThrow
+import com.tgyuu.shared.designsystem.component.calendar.CalendarState
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
@@ -352,14 +356,8 @@ private fun PhoneHomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    var selectedDate by rememberSaveable(workedDate, stateSaver = LocalDateSaver) {
-        mutableStateOf(workedDate)
-    }
     val calendarState = rememberCalendarState()
-
-    LaunchedEffect(workedDate) {
-        calendarState.onDateSelect(selectedDate)
-    }
+    var selectedDate by rememberRestoredSelectedDate(workedDate, calendarState)
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {
         onCurrentDateChanged(calendarState.currentDisplayDate)
@@ -504,14 +502,8 @@ private fun TabletHomeScreen(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
-    var selectedDate by rememberSaveable(workedDate, stateSaver = LocalDateSaver) {
-        mutableStateOf(workedDate)
-    }
     val calendarState = rememberCalendarState()
-
-    LaunchedEffect(workedDate) {
-        calendarState.onDateSelect(selectedDate)
-    }
+    var selectedDate by rememberRestoredSelectedDate(workedDate, calendarState)
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {
         onCurrentDateChanged(calendarState.currentDisplayDate)
@@ -644,6 +636,24 @@ private fun HandleDialogs(
 
 /** 화면 이동 후 복귀 시 선택 날짜를 복원하기 위한 LocalDate Saver */
 private val LocalDateSaver = Saver<LocalDate, String>(
-    save = { it.toString() },
-    restore = { LocalDate.parse(it) },
+    save = { it.toFormattedString() },
+    restore = { it.toLocalDateOrThrow() },
 )
+
+/**
+ * 화면 이동 후 복귀 시 선택 날짜를 유지하고 캘린더에 복원한다.
+ * Phone/Tablet 레이아웃이 공유한다.
+ */
+@Composable
+private fun rememberRestoredSelectedDate(
+    workedDate: LocalDate,
+    calendarState: CalendarState,
+): MutableState<LocalDate> {
+    val selectedDate = rememberSaveable(workedDate, stateSaver = LocalDateSaver) {
+        mutableStateOf(workedDate)
+    }
+    LaunchedEffect(workedDate) {
+        calendarState.onDateSelect(selectedDate.value)
+    }
+    return selectedDate
+}

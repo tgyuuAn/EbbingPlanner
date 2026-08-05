@@ -28,5 +28,5 @@ migration/
 app/release/
 
 # KMP 브랜치에서는 iosApp을 추적함 (develop의 iosApp/ ignore는 미적용)
-iosApp/xcuserdata/
+# 단, Xcode 사용자 상태(xcuserdata)는 실행 때마다 바뀌므로 추적 제외
 iosApp/**/xcuserdata/

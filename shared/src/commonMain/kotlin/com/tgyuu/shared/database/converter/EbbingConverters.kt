@@ -1,7 +1,9 @@
 package com.tgyuu.shared.database.converter
 
 import androidx.room.TypeConverter
+import com.tgyuu.shared.common.toCsv
 import com.tgyuu.shared.common.toFormattedString
+import com.tgyuu.shared.common.toIntListFromCsv
 import com.tgyuu.shared.common.toLocalDateOrThrow
 import com.tgyuu.shared.common.toLocalDateTimeOrThrow
 import kotlinx.datetime.DayOfWeek
@@ -33,12 +35,10 @@ class EbbingConverters {
 
     // --- List<Int> ---
     @TypeConverter
-    fun fromIntList(list: List<Int>?): String? =
-        list?.joinToString(",")
+    fun fromIntList(list: List<Int>?): String? = list?.toCsv()
 
     @TypeConverter
-    fun toIntList(data: String?): List<Int> =
-        data?.split(",")?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()
+    fun toIntList(data: String?): List<Int> = data.toIntListFromCsv()
 
     // --- Set<DayOfWeek> ---
     @TypeConverter
