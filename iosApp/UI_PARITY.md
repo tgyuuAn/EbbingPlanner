@@ -113,8 +113,8 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - [x] **테마 변경 화면 (ThemeScreen) - 상단바 타이틀** (feature/setting/theme/ThemeScreen.kt:56) — 상단바 타이틀이 Android는 setting_theme_change("테마 변경")인데 iOS는 setting_theme("테마")를 사용한다. 사용자에게 보이는 화면 제목이 다르다.
 - [ ] **테마 변경 화면 - 미리보기 카드(PreviewBody)** (feature/setting/theme/ThemeScreen.kt:150) — Android 미리보기는 실제 TodoListCard(에빙 플래너 미리보기 샘플 할일 3개, 라이트/다크 각각 세로로 쌓인 카드, 좌하단 '라이트/다크' 라벨)로 렌더한다. iOS는 단순히 배경색만
 - [x] **위젯 테마 변경 화면 (WidgetScreen) - 상단바 타이틀** (feature/setting/widget/WidgetScreen.kt:60) — Android 상단바 타이틀은 setting_widget_theme_change("위젯 테마 변경")인데 iOS는 widget_setting_title("위젯 설정")을 사용한다. 화면 제목이 다르
-- [ ] **위젯 테마 변경 화면 - 저장 버튼 라벨/위치** (feature/setting/widget/WidgetScreen.kt:65) — Android는 하단 full-width EbbingSolidButton에 라벨 setting_apply("적용")를 쓴다. iOS는 기본(CONTROL) 상태에서 상단바 텍스트 링크로 home_s
-- [ ] **위젯 테마 변경 화면 - 미리보기 카드(WidgetCard)** (feature/setting/widget/WidgetScreen.kt:174) — Android 미리보기는 실제 위젯 모양(라이트/다크 2개 카드, 상단 '오늘 할 일  0 /0' 배지+plus 아이콘, 하단 setting_no_schedule_today('금일 스케줄이 없어요.
+- [x] **위젯 테마 변경 화면 - 저장 버튼 라벨/위치** (feature/setting/widget/WidgetScreen.kt:65) — Android는 하단 full-width EbbingSolidButton에 라벨 setting_apply("적용")를 쓴다. iOS는 기본(CONTROL) 상태에서 상단바 텍스트 링크로 home_s
+- [x] **위젯 테마 변경 화면 - 미리보기 카드(WidgetCard)** (feature/setting/widget/WidgetScreen.kt:174) — Android 미리보기는 실제 위젯 모양(라이트/다크 2개 카드, 상단 '오늘 할 일  0 /0' 배지+plus 아이콘, 하단 setting_no_schedule_today('금일 스케줄이 없어요.
 - [x] **일정 화면 - 태그 카드 완료율 텍스트 (TagCard)** (feature/schedule/ScheduleScreen.kt:351) — 태그 헤더의 '완료율' 문구가 schedule_tag_count_completion 리소스를 쓰는데, 이 문자열이 세 로케일 모두 '완료율 %2$d%%'처럼 %% (퍼센트 이스케이프)를 포함한다. 
 - [x] **동기화 메인 - QR 카드 / 연동기기 / 마지막동기화 (description·기기명·날짜 등 주요 강조 텍스트)** (feature/sync/SyncScreen.kt:393) — Android가 heading16SB(16sp SemiBold)를 쓰는 강조 텍스트들을 iOS는 전부 headingSSB(18sp Bold)로 매핑했다. 폰트 크기(16→18sp)와 굵기(SemiB
 - [x] **색상 선택 바텀시트 (ColorBottomSheet)** (feature/tag/bottomsheet/ColorBottomSheet.kt:59) — iOS의 색상 팔레트(TAG_COLORS, 라인 59-78)가 Android 원본(core/designsystem/.../ColorOptions.kt)과 완전히 다르다. Android는 순색 계열(
@@ -150,3 +150,6 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 
 ### 배치8 적용 (커밋)
 - 🔧 알림 설정 화면 메시지 글자수 카운터(%1$d / 50자)+검증 에러(플레이스홀더 2회↑, 50자 초과) 추가, 입력 limit 100→50, 미리보기 토큰 로케일화.
+
+### 배치9 적용 (커밋)
+- 🔧 위젯 화면 저장 버튼 항상 하단 적용, 미리보기를 실제 위젯 카드(오늘 할 일 0/0+plus+빈 문구, alpha 반영)로 재구성. 시각 검증 완료.

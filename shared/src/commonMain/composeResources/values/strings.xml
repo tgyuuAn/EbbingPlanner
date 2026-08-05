@@ -462,4 +462,6 @@
     <string name="setting_clear_dialog_title_suffix"> 하시겠습니까?</string>
     <string name="setting_clear_dialog_subtext">삭제한 데이터는 되돌릴 수 없습니다.</string>
     <string name="setting_back">뒤로</string>
+    <string name="setting_widget_today_todo">오늘 할 일  </string>
+    <string name="setting_no_schedule_today">금일 스케줄이 없어요.</string>
 </resources>

@@ -45,6 +45,10 @@ import ebbingplanner.shared.generated.resources.setting_widget_theme_change
 import ebbingplanner.shared.generated.resources.widget_text_alpha
 import ebbingplanner.shared.generated.resources.widget_theme
 import org.jetbrains.compose.resources.stringResource
+import ebbingplanner.shared.generated.resources.setting_no_schedule_today
+import ebbingplanner.shared.generated.resources.setting_widget_today_todo
+import ebbingplanner.shared.generated.resources.ic_plus
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun WidgetScreen(
@@ -162,10 +166,45 @@ private fun WidgetPreviewSection(state: WidgetState) {
     val previewTheme = state.selectedTheme ?: Theme.NORMAL
     val bgAlpha = state.selectedBackgroundAlpha ?: 1f
     val textAlpha = state.selectedTextAlpha ?: 1f
-    Box(
-        modifier = Modifier.fillMaxWidth().height(120.dp).clip(RoundedCornerShape(12.dp)).background(Color(previewTheme.lightBg).copy(alpha = bgAlpha)).border(1.dp, EbbingTheme.colors.light2, RoundedCornerShape(12.dp)),
-        contentAlignment = Alignment.Center,
+    val contentColor = Color.Black.copy(alpha = textAlpha)
+    // Android WidgetCard와 동일: 실제 위젯 모양(오늘 할 일 배지+plus, 빈 일정 문구)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(previewTheme.lightBg).copy(alpha = bgAlpha))
+            .border(1.dp, EbbingTheme.colors.light2, RoundedCornerShape(16.dp))
+            .padding(16.dp),
     ) {
-        Text(text = stringResource(Res.string.widget_preview_sample), style = EbbingTheme.typography.bodyMM, color = Color.Black.copy(alpha = textAlpha))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(Res.string.setting_widget_today_todo),
+                style = EbbingTheme.typography.bodyMSB,
+                color = contentColor,
+            )
+            Text(
+                text = "0",
+                style = EbbingTheme.typography.bodyMSB,
+                color = EbbingTheme.colors.primaryDefault.copy(alpha = textAlpha),
+            )
+            Text(
+                text = " /0",
+                style = EbbingTheme.typography.bodyMSB,
+                color = contentColor,
+                modifier = Modifier.weight(1f),
+            )
+            androidx.compose.foundation.Image(
+                painter = painterResource(Res.drawable.ic_plus),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(Res.string.setting_no_schedule_today),
+            style = EbbingTheme.typography.bodySM,
+            color = contentColor,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        )
     }
 }
