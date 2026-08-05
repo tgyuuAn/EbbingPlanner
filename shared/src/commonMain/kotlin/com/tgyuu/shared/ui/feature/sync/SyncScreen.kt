@@ -390,7 +390,7 @@ private fun QrActionCard(
 
             Text(
                 text = description,
-                style = EbbingTheme.typography.headingSSB,
+                style = EbbingTheme.typography.bodyMSB,
                 color = EbbingTheme.colors.black,
             )
 
@@ -484,7 +484,7 @@ private fun ConnectedDeviceSection(
         ) {
             Text(
                 text = state.connectedDeviceEmoji,
-                style = EbbingTheme.typography.headingSSB,
+                style = EbbingTheme.typography.bodyMSB,
             )
         }
 
@@ -540,7 +540,7 @@ private fun LastSyncSection(
         Text(
             text = state.localLastSyncedAt?.toFormattedString()
                 ?: stringResource(Res.string.sync_no_record),
-            style = EbbingTheme.typography.headingSSB,
+            style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),
         )
@@ -620,7 +620,7 @@ private fun AdvancedInfoSection(
         ) {
             Text(
                 text = stringResource(Res.string.sync_restore_title),
-                style = EbbingTheme.typography.headingSSB,
+                style = EbbingTheme.typography.bodyMSB,
                 color = EbbingTheme.colors.dark1,
                 modifier = Modifier.weight(1f),
             )
