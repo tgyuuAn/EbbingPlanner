@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -147,7 +148,11 @@ fun TagEditBottomSheet(
             ) {
                 items(TAG_COLORS) { colorValue ->
                     val baseColor = Color(colorValue)
-                    val displayColor = if (selectedColor == colorValue) lerp(baseColor, Color.Black, 0.2f) else baseColor
+                    val isSelected = selectedColor == colorValue
+                    // Android와 동일: 선택 시 색 어둡게 애니메이션 + 체크 페이드
+                    val displayColor by animateColorAsState(
+                        if (isSelected) lerp(baseColor, Color.Black, 0.2f) else baseColor
+                    )
 
                     Box(
                         modifier = Modifier.fillMaxWidth(),
@@ -164,7 +169,11 @@ fun TagEditBottomSheet(
                                 }
                         )
 
-                        if (selectedColor == colorValue) {
+                        androidx.compose.animation.AnimatedVisibility(
+                            visible = isSelected,
+                            enter = androidx.compose.animation.fadeIn(),
+                            exit = androidx.compose.animation.fadeOut(),
+                        ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_check),
                                 contentDescription = null,

@@ -219,4 +219,4 @@ L29 태그 헤드라인 top패딩 제거, L35 메모 wide 미리보기 상단 Sp
 - L31 반복 삭제 타이틀 타이포: M27로 공용 컴포넌트화되어 해소.
 보류(별도 작업 필요):
 - ✅ L8/L9/L21 verticalScrollbar: shared designsystem/util/Scrollbar.kt 신설(LazyList/LazyGrid 오버로드) 후 태그/반복/일정색상 시트에 적용.
-- L4/L16/L22 등장/펼침 애니메이션: 표준 AnimatedVisibility 이식 대상(조건부 블록 범위 커 개별 리팩터 필요).
+- ✅ L22 일정 색상 그리드 선택 애니메이션(animateColorAsState+체크 페이드). ⬜ L4/L16 등장/펼침 애니메이션 진행 중.
