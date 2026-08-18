@@ -47,6 +47,7 @@ import ebbingplanner.shared.generated.resources.setting_light
 import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.setting_theme_change
 import ebbingplanner.shared.generated.resources.theme_select_headline
+import ebbingplanner.shared.generated.resources.setting_change_app_theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -84,7 +85,7 @@ fun ThemeScreen(
         if (isWide) {
             Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
-                    Text(text = stringResource(Res.string.theme_select_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    Text(text = stringResource(Res.string.setting_change_app_theme), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
                     Spacer(modifier = Modifier.height(32.dp))
                     ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
                 }
@@ -95,7 +96,7 @@ fun ThemeScreen(
             }
         } else {
             Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
-                Text(text = stringResource(Res.string.theme_select_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                Text(text = stringResource(Res.string.setting_change_app_theme), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
                 Spacer(modifier = Modifier.height(32.dp))
                 ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
                 Spacer(modifier = Modifier.height(32.dp))

@@ -48,7 +48,6 @@ import ebbingplanner.shared.generated.resources.tag_edit_headline
 import ebbingplanner.shared.generated.resources.tag_name_label
 import ebbingplanner.shared.generated.resources.tag_name_hint
 import ebbingplanner.shared.generated.resources.tag_color
-import ebbingplanner.shared.generated.resources.tag_color_select_title
 import ebbingplanner.shared.generated.resources.tag_apply
 import ebbingplanner.shared.generated.resources.common_clear
 import org.jetbrains.compose.resources.stringResource
@@ -90,7 +89,7 @@ fun ColorBottomSheet(
         modifier = modifier.padding(bottom = 32.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = stringResource(Res.string.tag_color_select_title),
+            title = stringResource(Res.string.tag_color),
         )
 
         LazyVerticalGrid(

@@ -43,6 +43,8 @@ import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.widget_preview_sample
 import ebbingplanner.shared.generated.resources.setting_widget_theme_change
 import ebbingplanner.shared.generated.resources.widget_text_alpha
+import ebbingplanner.shared.generated.resources.setting_content_alpha
+import ebbingplanner.shared.generated.resources.setting_change_widget_theme
 import ebbingplanner.shared.generated.resources.widget_theme
 import org.jetbrains.compose.resources.stringResource
 import ebbingplanner.shared.generated.resources.setting_no_schedule_today
@@ -120,6 +122,8 @@ private fun WidgetControlSection(
     onBgAlphaChange: (Float) -> Unit,
     onTextAlphaChange: (Float) -> Unit,
 ) {
+    Text(text = stringResource(Res.string.setting_change_widget_theme), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+    Spacer(modifier = Modifier.height(32.dp))
     Text(text = stringResource(Res.string.widget_theme), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Spacer(modifier = Modifier.height(16.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
@@ -149,7 +153,7 @@ private fun WidgetControlSection(
     )
     Text(text = "${((state.selectedBackgroundAlpha ?: 1f) * 100).roundToInt()}%", style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2)
     Spacer(modifier = Modifier.height(24.dp))
-    Text(text = stringResource(Res.string.widget_text_alpha), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+    Text(text = stringResource(Res.string.setting_content_alpha), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
     Slider(
         value = state.selectedTextAlpha ?: 1f,
         onValueChange = onTextAlphaChange,

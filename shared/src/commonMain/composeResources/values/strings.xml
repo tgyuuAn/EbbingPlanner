@@ -465,4 +465,9 @@
     <string name="setting_widget_today_todo">오늘 할 일  </string>
     <string name="setting_no_schedule_today">금일 스케줄이 없어요.</string>
     <string name="setting_ebbing_planner_preview">에빙 플래너 미리보기</string>
+    <string name="home_notification_receive">알림 받기</string>
+    <string name="setting_use_on_other_device">다른 기기에서도 사용하기</string>
+    <string name="setting_change_app_theme">앱 테마를 변경해요</string>
+    <string name="setting_change_widget_theme">위젯 테마를 변경해요</string>
+    <string name="setting_content_alpha">내용 투명도</string>
 </resources>
