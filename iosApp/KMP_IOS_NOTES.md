@@ -46,7 +46,10 @@
 3. **cleanup 13건**: 중복 코덱/Saver/헬퍼 통합, expect/actual 축소, nullable configRepository 필수화, RootContent FQN 정리 등.
 4. **UI 패리티 (Android↔iOS) high 26/26**: 워크플로로 91건 발견 → high 전량 수정. 상세·체크리스트는 `UI_PARITY.md`, 원본 발견 목록은 `UI_PARITY_FINDINGS.json`.
    - 주요: 알림시간 %02d, 정렬 라벨, AddTodo 자동포커스+키보드 imePadding, 날짜시트 패딩, 태그 색상 팔레트, 완료율 %%, 알림 헤더/카운터, 설정 섹션순서·초기화 다이얼로그·데이터 복원 행, 테마/위젯 제목·미리보기 카드·저장 버튼, WidgetNudge/notice/plus 드로어블 포팅, sync 타이포, 메모 미리보기 공용 카드.
-   - 남음: med 30 / low 35 (경미, `UI_PARITY_FINDINGS.json` 참조).
+   - medium: 라벨/레이아웃/타이포/로그 다수 반영 + 구조적(M14 테마선택기, M23/L22 색상 애니메이션, M27 반복삭제 다이얼로그 공용화, M30 메모 진입모드) 완료. 나머지는 플랫폼/의도적 차이로 기록.
+   - low: analytics 로깅, verticalScrollbar 유틸 이식(L8/L9/L21), 등장/펼침 애니메이션(L4/L16/L22), 문구/간격 정렬 완료. 색 토큰 미세차 등은 무해로 기록.
+   - 상세 완료/보류(사유)는 UI_PARITY.md의 MEDIUM/LOW 섹션 참조.
+5. **신규 공용 유틸/헬퍼**: colorSchemeFor(테마별 색스킴), verticalScrollbar(Modifier), IntListCodec, UsageOrderStore 등.
 
 ## 검증 원칙
 - 변경 후 `./gradlew :shared:compileKotlinIosSimulatorArm64`로 컴파일 확인.
