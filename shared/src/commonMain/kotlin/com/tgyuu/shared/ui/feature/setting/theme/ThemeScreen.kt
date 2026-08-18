@@ -65,7 +65,7 @@ fun ThemeScreen(
             title = stringResource(Res.string.setting_theme_change),
             onNavigationClick = { viewModel.onIntent(ThemeIntent.OnBackClick) },
             rightComponent = {
-                if (!state.isTreatment) {
+                if (false) { // Android 정렬: 상단 저장 링크 미사용
                 Text(
                     text = stringResource(Res.string.setting_apply),
                     style = EbbingTheme.typography.bodyMM,
@@ -104,7 +104,7 @@ fun ThemeScreen(
             }
         }
 
-        if (state.isTreatment) {
+        if (true) { // Android 정렬: 항상 하단 저장 버튼
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
                 label = stringResource(Res.string.setting_apply),
                 onClick = { viewModel.onIntent(ThemeIntent.OnUpdateClick) },

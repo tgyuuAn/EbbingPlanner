@@ -188,3 +188,6 @@ M24 태그이름 카운터제거+limit20, M25 태그색상행, M28 메모구분�
 - M26 반복 저장버튼 실험분기 / 테마·태그도 동일: 아래 배치로 always-bottom 정렬 검토.
 - M27 반복 삭제 다이얼로그 EbbingDialogDefaultTop화: 스타일 미세, 추후.
 - M30 메모 Add/Edit 모드 플래그: VM state 필요 → 별도.
+
+### 저장버튼 실험 정렬 (M26+테마/태그)
+- 🔧 AddTag/EditTag/AddRepeatCycle/EditRepeatCycle/Theme: 상단 CONTROL 저장 링크 숨김 + 하단 버튼 항상 노출(Android 실험 제거·항상 하단과 일치). 위젯은 H18에서 완료.
