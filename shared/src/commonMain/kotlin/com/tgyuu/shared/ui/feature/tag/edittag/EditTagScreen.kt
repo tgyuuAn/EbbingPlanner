@@ -86,7 +86,7 @@ fun EditTagScreen(
             title = stringResource(Res.string.tag_edit_title),
             onNavigationClick = { viewModel.onIntent(EditTagIntent.OnBackClick) },
             rightComponent = {
-                if (!state.isTreatment) {
+                if (false) { // Android 정렬: 상단 저장 링크 미사용
                 Text(
                     text = stringResource(Res.string.tag_edit_button),
                     style = EbbingTheme.typography.headingSSB,
@@ -143,7 +143,7 @@ fun EditTagScreen(
             )
         }
 
-        if (state.isTreatment) {
+        if (true) { // Android 정렬: 항상 하단 저장 버튼
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
                 label = stringResource(Res.string.tag_edit_button),
                 onClick = { viewModel.onIntent(EditTagIntent.OnUpdateClick) },
