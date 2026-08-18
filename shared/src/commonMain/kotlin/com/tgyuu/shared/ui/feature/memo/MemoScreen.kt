@@ -94,11 +94,6 @@ fun MemoScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        HorizontalDivider(
-            color = EbbingTheme.colors.light2,
-            thickness = 1.dp,
-        )
-
         if (isWide) {
             Row(
                 modifier = Modifier
