@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import com.tgyuu.shared.designsystem.util.verticalScrollbar
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -131,14 +133,17 @@ fun TagEditBottomSheet(
         }
 
         if (isColorExpanded) {
+            val gridState = rememberLazyGridState()
             LazyVerticalGrid(
                 columns = GridCells.Fixed(6),
+                state = gridState,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
-                    .heightIn(max = 228.dp),
+                    .heightIn(max = 228.dp)
+                    .verticalScrollbar(gridState, color = EbbingTheme.colors.light2),
             ) {
                 items(TAG_COLORS) { colorValue ->
                     val baseColor = Color(colorValue)
