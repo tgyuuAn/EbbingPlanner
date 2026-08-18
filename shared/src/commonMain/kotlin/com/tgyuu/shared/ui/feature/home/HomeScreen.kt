@@ -39,6 +39,9 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.now
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.AnalyticsEvent
+import org.koin.compose.koinInject
 import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.common.toLocalDateOrThrow
 import com.tgyuu.shared.designsystem.component.calendar.CalendarState
@@ -357,6 +360,7 @@ private fun PhoneHomeScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val calendarState = rememberCalendarState()
+    val analyticsHelper = koinInject<AnalyticsHelper>()
     var selectedDate by rememberRestoredSelectedDate(workedDate, calendarState)
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {
@@ -405,7 +409,10 @@ private fun PhoneHomeScreen(
                     }
                 },
                 onSyncClick = onSyncClick,
+                onGotoTodayClick = { analyticsHelper.logEvent(homeClickEvent("ReturnToToday")) },
                 onViewToggle = { isWeek ->
+                    // Android와 동일: 주/월 전환 클릭 로깅
+                    analyticsHelper.logEvent(homeClickEvent(if (isWeek) "SwitchToWeekly" else "SwitchToMonthly"))
                     onCalendarViewChanged(
                         if (isWeek) CalendarDefaultView.WEEKLY else CalendarDefaultView.MONTHLY
                     )
@@ -503,6 +510,7 @@ private fun TabletHomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val calendarState = rememberCalendarState()
+    val analyticsHelper = koinInject<AnalyticsHelper>()
     var selectedDate by rememberRestoredSelectedDate(workedDate, calendarState)
 
     LaunchedEffect(calendarState.currentDisplayDate.month) {
@@ -523,6 +531,7 @@ private fun TabletHomeScreen(
                     }
                 },
                 onSyncClick = onSyncClick,
+                onGotoTodayClick = { analyticsHelper.logEvent(homeClickEvent("ReturnToToday")) },
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(0.8f)
@@ -657,3 +666,12 @@ private fun rememberRestoredSelectedDate(
     }
     return selectedDate
 }
+
+/** Android AnalyticsEvent.Click(screenName="Home", buttonName=..) 대응 */
+private fun homeClickEvent(buttonName: String): AnalyticsEvent = AnalyticsEvent(
+    type = AnalyticsEvent.Types.BUTTON_CLICK,
+    properties = mapOf(
+        AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "Home",
+        AnalyticsEvent.PropertiesKeys.BUTTON_NAME to buttonName,
+    ),
+)
