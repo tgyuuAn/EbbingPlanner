@@ -464,4 +464,5 @@
     <string name="setting_back">뒤로</string>
     <string name="setting_widget_today_todo">오늘 할 일  </string>
     <string name="setting_no_schedule_today">금일 스케줄이 없어요.</string>
+    <string name="setting_ebbing_planner_preview">에빙 플래너 미리보기</string>
 </resources>

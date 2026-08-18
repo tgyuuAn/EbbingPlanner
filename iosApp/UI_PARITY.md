@@ -111,7 +111,7 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - [x] **설정 메인 - 섹션 배치 순서** (feature/setting/SettingScreen.kt:217) — 폰(compact) 레이아웃에서 섹션 순서가 Android와 다름. Android PhoneSettingScreen 순서: 알림 → 캘린더 → 태그/반복 → 테마 → 문의 → 안내 → 데이터 → 리
 - [x] **데이터 초기화 다이얼로그 (ClearDataDialog / ConfirmClearDialog)** (feature/setting/SettingScreen.kt:602) — 다이얼로그 문구/구성이 완전히 다름. Android ConfirmClearDialog는 제목을 prefix+highlight+suffix로 조합('데이터를 ' + 붉은색 '초기화' + ' 하시겠습니
 - [x] **테마 변경 화면 (ThemeScreen) - 상단바 타이틀** (feature/setting/theme/ThemeScreen.kt:56) — 상단바 타이틀이 Android는 setting_theme_change("테마 변경")인데 iOS는 setting_theme("테마")를 사용한다. 사용자에게 보이는 화면 제목이 다르다.
-- [ ] **테마 변경 화면 - 미리보기 카드(PreviewBody)** (feature/setting/theme/ThemeScreen.kt:150) — Android 미리보기는 실제 TodoListCard(에빙 플래너 미리보기 샘플 할일 3개, 라이트/다크 각각 세로로 쌓인 카드, 좌하단 '라이트/다크' 라벨)로 렌더한다. iOS는 단순히 배경색만
+- [x] **테마 변경 화면 - 미리보기 카드(PreviewBody)** (feature/setting/theme/ThemeScreen.kt:150) — Android 미리보기는 실제 TodoListCard(에빙 플래너 미리보기 샘플 할일 3개, 라이트/다크 각각 세로로 쌓인 카드, 좌하단 '라이트/다크' 라벨)로 렌더한다. iOS는 단순히 배경색만
 - [x] **위젯 테마 변경 화면 (WidgetScreen) - 상단바 타이틀** (feature/setting/widget/WidgetScreen.kt:60) — Android 상단바 타이틀은 setting_widget_theme_change("위젯 테마 변경")인데 iOS는 widget_setting_title("위젯 설정")을 사용한다. 화면 제목이 다르
 - [x] **위젯 테마 변경 화면 - 저장 버튼 라벨/위치** (feature/setting/widget/WidgetScreen.kt:65) — Android는 하단 full-width EbbingSolidButton에 라벨 setting_apply("적용")를 쓴다. iOS는 기본(CONTROL) 상태에서 상단바 텍스트 링크로 home_s
 - [x] **위젯 테마 변경 화면 - 미리보기 카드(WidgetCard)** (feature/setting/widget/WidgetScreen.kt:174) — Android 미리보기는 실제 위젯 모양(라이트/다크 2개 카드, 상단 '오늘 할 일  0 /0' 배지+plus 아이콘, 하단 setting_no_schedule_today('금일 스케줄이 없어요.
@@ -158,6 +158,10 @@ feature/* 의 Android 원본과 1:1 비교해 맞춘다.
 - ✅ 완료(25건): 알림시간 %02d, 정렬 라벨, 자동포커스, AddTodo 키보드/버튼, 날짜시트 패딩, DelayAll 동작,
   이탈 다이얼로그 아이콘/정렬, 태그 색상 팔레트, 완료율 %%, 알림 헤더/카운터, 설정 섹션순서/초기화 다이얼로그/복원행,
   테마·위젯 화면 제목, 위젯 저장버튼/미리보기, WidgetNudge 이미지, sync 타이포, 메모 카드, 태그/반복 버튼 라벨 등.
-- ⬜ 남음(1건): **H16 테마 미리보기 카드** — Android는 실제 TodoListCard 샘플(라이트/다크)로 렌더. 현재 iOS는 테마 색
+- ✅ 완료(26/26): H16 테마 미리보기 포함 전체 high 반영
+- (구)남음: **H16 테마 미리보기 카드** — Android는 실제 TodoListCard 샘플(라이트/다크)로 렌더. 현재 iOS는 테마 색
   박스+라벨. 완전 재구성은 샘플 모델/중첩 EbbingTheme 처리가 필요해 blind 편집 리스크가 큼 → 시각 반복 검증하며 별도 진행 권장.
 - med 30 / low 35: findings JSON 참조, 후속.
+
+### 배치10 (최종) 적용 (커밋)
+- 🔧 H16 테마 미리보기: 색 박스+라벨 → 라이트/다크 각각 실제 샘플 TodoListCard(테마 적용)로 재구성. Android PreviewBody 대응. **high 26/26 완료.**

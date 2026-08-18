@@ -464,4 +464,5 @@
     <string name="setting_back">Back</string>
     <string name="setting_widget_today_todo">Today\'s to-dos  </string>
     <string name="setting_no_schedule_today">No schedule for today.</string>
+    <string name="setting_ebbing_planner_preview">Ebbing Planner preview</string>
 </resources>

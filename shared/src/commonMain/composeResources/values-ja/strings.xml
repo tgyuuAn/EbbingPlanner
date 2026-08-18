@@ -464,4 +464,5 @@
     <string name="setting_back">戻る</string>
     <string name="setting_widget_today_todo">今日のやること  </string>
     <string name="setting_no_schedule_today">本日のスケジュールはありません。</string>
+    <string name="setting_ebbing_planner_preview">エビングプランナー プレビュー</string>
 </resources>
