@@ -351,6 +351,7 @@ private fun MemoScreenWrapper(
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { component.navigateToHome() },
             experimentRepository = experimentRepository,
+            isEditEntry = false,
         )
     }
     MemoScreen(viewModel = viewModel)
@@ -563,6 +564,7 @@ private fun EditMemoScreenWrapper(
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { component.navigateToHome() },
             experimentRepository = experimentRepository,
+            isEditEntry = true,
         )
     }
     MemoScreen(viewModel = viewModel)

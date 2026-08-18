@@ -73,7 +73,7 @@ fun MemoScreen(
     val state by viewModel.state.collectAsState()
     val addHeadlineSuffix = stringResource(Res.string.memo_add_headline_suffix)
     val editHeadlineSuffix = stringResource(Res.string.memo_edit_headline_suffix)
-    val isEditMode = !state.originSchedule?.memo.isNullOrEmpty()
+    val isEditMode = state.isEditEntry
 
     if (state.showSaveDialog) {
         SaveMemoDialog(
@@ -110,7 +110,7 @@ fun MemoScreen(
                                 withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                                     append(schedule.title)
                                 }
-                                append(if (schedule.memo.isNullOrEmpty()) addHeadlineSuffix else editHeadlineSuffix)
+                                append(if (state.isEditEntry) editHeadlineSuffix else addHeadlineSuffix)
                             },
                             style = EbbingTheme.typography.headingLSB,
                             color = EbbingTheme.colors.black,
@@ -142,7 +142,7 @@ fun MemoScreen(
                             withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
                                 append(schedule.title)
                             }
-                            append(if (schedule.memo.isNullOrEmpty()) addHeadlineSuffix else editHeadlineSuffix)
+                            append(if (state.isEditEntry) editHeadlineSuffix else addHeadlineSuffix)
                         },
                         style = EbbingTheme.typography.headingLSB,
                         color = EbbingTheme.colors.black,
