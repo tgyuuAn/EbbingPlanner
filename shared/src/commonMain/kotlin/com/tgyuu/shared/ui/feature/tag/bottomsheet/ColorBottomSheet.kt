@@ -25,6 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
@@ -129,22 +134,22 @@ private fun ColorItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Android와 동일: 선택 시 색을 어둡게(lerp) 애니메이션 + 체크 아이콘 페이드
+    val targetColor = if (isSelected) lerp(Color(color), Color.Black, 0.2f) else Color(color)
+    val animatedColor by animateColorAsState(targetColor)
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(Color(color))
-            .then(
-                if (isSelected) Modifier.border(
-                    width = 2.dp,
-                    color = EbbingTheme.colors.black,
-                    shape = CircleShape
-                ) else Modifier
-            )
+            .background(animatedColor)
             .clickable { onClick() },
     ) {
-        if (isSelected) {
+        AnimatedVisibility(
+            visible = isSelected,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_check),
                 contentDescription = null,
