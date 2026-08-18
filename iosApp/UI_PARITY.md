@@ -194,3 +194,4 @@ M24 태그이름 카운터제거+limit20, M25 태그색상행, M28 메모구분�
 
 ### 구조적 medium 진행
 - ✅ M14 테마 선택기: 원 색상 theme.lightBg→해당 테마 primary(colorSchemeFor 헬퍼 신설), 선택 표시 유니코드 체크→ic_check 아이콘. EbbingTheme도 colorSchemeFor 재사용하도록 정리.
+- ✅ M27 반복 삭제 다이얼로그: 수동 재구현 → 공용 EbbingDialogDefaultTop(AnnotatedString)+EbbingDialogBottom 슬롯으로 교체(Android 간격 spacedBy8/top40 bottom12, subText bodySM 일치).

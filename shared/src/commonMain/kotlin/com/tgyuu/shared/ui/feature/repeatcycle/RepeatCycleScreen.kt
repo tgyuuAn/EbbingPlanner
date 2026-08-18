@@ -39,6 +39,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
+import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
@@ -194,42 +195,31 @@ private fun DeleteRepeatCycleDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    EbbingDialog(onDismissRequest = onDismiss) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        ) {
-            val deletePrefix = stringResource(Res.string.repeat_delete_dialog_prefix)
-            val deleteHighlight = stringResource(Res.string.repeat_delete_dialog_highlight)
-            val deleteSuffix = stringResource(Res.string.repeat_delete_dialog_suffix)
-            Text(
-                text = buildAnnotatedString {
+    // Android DeleteDialog와 동일: 공용 EbbingDialogDefaultTop(제목 강조 + 서브텍스트) + EbbingDialogBottom
+    val deletePrefix = stringResource(Res.string.repeat_delete_dialog_prefix)
+    val deleteHighlight = stringResource(Res.string.repeat_delete_dialog_highlight)
+    val deleteSuffix = stringResource(Res.string.repeat_delete_dialog_suffix)
+    EbbingDialog(
+        dialogTop = {
+            EbbingDialogDefaultTop(
+                title = buildAnnotatedString {
                     append(deletePrefix)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
                         append(deleteHighlight)
                     }
                     append(deleteSuffix)
                 },
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 40.dp),
+                subText = stringResource(Res.string.repeat_delete_dialog_sub_text),
             )
-
-            Text(
-                text = stringResource(Res.string.repeat_delete_dialog_sub_text),
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark1,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
-            )
-
+        },
+        dialogBottom = {
             EbbingDialogBottom(
                 leftButtonText = stringResource(Res.string.repeat_dialog_back),
                 rightButtonText = stringResource(Res.string.repeat_delete),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )
-        }
-    }
+        },
+        onDismissRequest = onDismiss,
+    )
 }
