@@ -31,6 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import ebbingplanner.shared.generated.resources.ic_check
+import com.tgyuu.shared.designsystem.foundation.colorSchemeFor
+import androidx.compose.material3.Icon
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.tgyuu.shared.domain.model.Theme
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.setting_apply
@@ -48,6 +52,7 @@ import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.setting_theme_change
 import ebbingplanner.shared.generated.resources.theme_select_headline
 import ebbingplanner.shared.generated.resources.setting_change_app_theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -126,8 +131,11 @@ private fun ThemeSelector(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.fillMaxWidth(),
     ) {
+        val darkTheme = isSystemInDarkTheme()
         Theme.entries.forEach { theme ->
             val isSelected = theme == selectedTheme
+            // Android\uc640 \ub3d9\uc77c: \uc6d0 \uc0c9\uc0c1\uc740 \ud574\ub2f9 \ud14c\ub9c8\uc758 primary, \uc120\ud0dd \ud45c\uc2dc\ub294 ic_check \uc544\uc774\ucf58
+            val circleColor = colorSchemeFor(theme, darkTheme).primaryDefault
 
             Box(
                 contentAlignment = Alignment.Center,
@@ -137,7 +145,7 @@ private fun ThemeSelector(
                     modifier = Modifier
                         .size(45.dp)
                         .clip(CircleShape)
-                        .background(Color(theme.lightBg)),
+                        .background(circleColor),
                 )
 
                 androidx.compose.animation.AnimatedVisibility(
@@ -145,10 +153,11 @@ private fun ThemeSelector(
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
-                    Text(
-                        text = "\u2713",
-                        style = EbbingTheme.typography.bodyMSB,
-                        color = EbbingTheme.colors.white,
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_check),
+                        contentDescription = null,
+                        tint = EbbingTheme.colors.white,
+                        modifier = Modifier.size(20.dp),
                     )
                 }
             }

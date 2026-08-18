@@ -15,19 +15,22 @@ val LocalTypography = staticCompositionLocalOf {
     EbbingTypography()
 }
 
+/** 테마+다크모드에 해당하는 색상 스킴 (Android Theme.primaryNormalColor 대응 접근용) */
+fun colorSchemeFor(theme: Theme, darkTheme: Boolean): EbbingColors = when (theme) {
+    Theme.NORMAL -> if (darkTheme) normalDarkColorScheme else normalLightColorScheme
+    Theme.FOREST -> if (darkTheme) forestDarkColorScheme else forestLightColorScheme
+    Theme.SUNSET -> if (darkTheme) sunsetDarkColorScheme else sunsetLightColorScheme
+    Theme.MARINE -> if (darkTheme) marineDarkColorScheme else marineLightColorScheme
+    Theme.LILAC -> if (darkTheme) lilacDarkColorScheme else lilacLightColorScheme
+}
+
 @Composable
 fun EbbingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     theme: Theme = Theme.NORMAL,
     content: @Composable () -> Unit,
 ) {
-    val colors = when (theme) {
-        Theme.NORMAL -> if (darkTheme) normalDarkColorScheme else normalLightColorScheme
-        Theme.FOREST -> if (darkTheme) forestDarkColorScheme else forestLightColorScheme
-        Theme.SUNSET -> if (darkTheme) sunsetDarkColorScheme else sunsetLightColorScheme
-        Theme.MARINE -> if (darkTheme) marineDarkColorScheme else marineLightColorScheme
-        Theme.LILAC -> if (darkTheme) lilacDarkColorScheme else lilacLightColorScheme
-    }
+    val colors = colorSchemeFor(theme, darkTheme)
 
     CompositionLocalProvider(
         LocalColors provides colors,
