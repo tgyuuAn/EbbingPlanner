@@ -212,7 +212,8 @@ private fun MemoContent(
             text = stringResource(Res.string.memo_label),
             style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(bottom = 8.dp),
+            // Android MemoContent와 동일: 헤드라인과 간격 확보 위해 top=32
+            modifier = Modifier.padding(top = 32.dp, bottom = 8.dp),
         )
 
         EbbingTextInputDefault(
