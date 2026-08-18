@@ -35,6 +35,14 @@ import com.tgyuu.shared.domain.model.Theme
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.setting_apply
 import ebbingplanner.shared.generated.resources.setting_dark
+import ebbingplanner.shared.generated.resources.setting_ebbing_planner_preview
+import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import com.tgyuu.shared.designsystem.component.TodoListCard
+import com.tgyuu.shared.domain.model.DefaultTodoTag
+import com.tgyuu.shared.common.now
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.plus
 import ebbingplanner.shared.generated.resources.setting_light
 import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.setting_theme_change
@@ -160,50 +168,72 @@ private fun ThemePreview(
             modifier = Modifier.padding(bottom = 12.dp),
         )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            PreviewCard(
-                label = stringResource(Res.string.setting_light),
-                backgroundColor = Color(theme.lightBg),
-                modifier = Modifier.weight(1f),
-            )
-
-            PreviewCard(
-                label = stringResource(Res.string.setting_dark),
-                backgroundColor = Color(theme.darkBg),
-                textColor = Color.White,
-                modifier = Modifier.weight(1f),
-            )
-        }
+        // Android PreviewBody와 동일: 라이트/다크 각각 실제 TodoListCard 샘플을 세로로 표시
+        ThemePreviewCard(
+            theme = theme,
+            darkTheme = false,
+            modifier = Modifier.padding(top = 20.dp).fillMaxWidth(),
+        )
+        ThemePreviewCard(
+            theme = theme,
+            darkTheme = true,
+            modifier = Modifier.padding(top = 20.dp).fillMaxWidth(),
+        )
     }
 }
 
 @Composable
-private fun PreviewCard(
-    label: String,
-    backgroundColor: Color,
+private fun ThemePreviewCard(
+    theme: Theme,
+    darkTheme: Boolean,
     modifier: Modifier = Modifier,
-    textColor: Color = Color.Black,
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .height(120.dp)
-            .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
-            .background(backgroundColor)
-            .border(
-                1.dp,
-                EbbingTheme.colors.light2,
-                androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-            ),
-    ) {
-        Text(
-            text = label,
-            style = EbbingTheme.typography.bodyMM,
-            color = textColor,
-        )
+    val previewText = stringResource(Res.string.setting_ebbing_planner_preview)
+    val labelText = stringResource(if (darkTheme) Res.string.setting_dark else Res.string.setting_light)
+    // 해당 테마/다크모드 색을 적용해 실제 카드 모양으로 미리보기 (Android ThemePreviewCard 대응)
+    EbbingTheme(darkTheme = darkTheme, theme = theme) {
+        val today = LocalDate.now()
+        val sampleTodos = List(3) { index ->
+            TodoScheduleUiModel(
+                id = index + 1,
+                infoId = 1,
+                title = previewText,
+                tagId = 1,
+                name = previewText,
+                color = DefaultTodoTag.color,
+                date = today.plus(index, DateTimeUnit.DAY),
+                memo = previewText,
+                isPinned = true,
+                isDone = index == 0,
+                createdAt = today,
+                infoCreatedAt = today,
+            )
+        }
+        Box(
+            modifier = modifier
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                .background(EbbingTheme.colors.background)
+                .border(
+                    0.5.dp,
+                    EbbingTheme.colors.black,
+                    androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                )
+                .padding(20.dp),
+        ) {
+            TodoListCard(
+                todo = sampleTodos.first(),
+                todosWithSameInfo = sampleTodos,
+                onCheckedChange = {},
+                onEditScheduleClick = {},
+                modifier = Modifier.fillMaxWidth().padding(bottom = 28.dp),
+            )
+            Text(
+                text = labelText,
+                style = EbbingTheme.typography.captionR12,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.align(Alignment.BottomEnd),
+            )
+        }
     }
 }
 
