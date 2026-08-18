@@ -426,7 +426,7 @@ private fun QrActionCard(
 
             Text(
                 text = buttonLabel,
-                style = EbbingTheme.typography.bodySSB,
+                style = EbbingTheme.typography.headingSB,
                 color = EbbingTheme.colors.primaryDefault,
             )
 
