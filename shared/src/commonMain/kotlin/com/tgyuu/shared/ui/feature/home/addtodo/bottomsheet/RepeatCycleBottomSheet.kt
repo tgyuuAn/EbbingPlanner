@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import com.tgyuu.shared.designsystem.util.verticalScrollbar
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -95,11 +97,14 @@ fun RepeatCycleBottomSheetContent(
         )
 
         AnimatedVisibility(visible = !showEndDatePicker) {
+            val listState = rememberLazyListState()
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 300.dp)
-                    .padding(top = 12.dp),
+                    .padding(top = 12.dp)
+                    .verticalScrollbar(listState, color = EbbingTheme.colors.light2),
             ) {
                 items(
                     items = repeatCycleList,
