@@ -64,6 +64,7 @@ import ebbingplanner.shared.generated.resources.setting_title
 import ebbingplanner.shared.generated.resources.setting_tag_manage
 import ebbingplanner.shared.generated.resources.setting_repeat_cycle_manage
 import ebbingplanner.shared.generated.resources.setting_sync_with_other_device
+import ebbingplanner.shared.generated.resources.setting_use_on_other_device
 import ebbingplanner.shared.generated.resources.setting_auto_backup
 import ebbingplanner.shared.generated.resources.setting_last_sync_time
 import ebbingplanner.shared.generated.resources.setting_clear_data
@@ -268,7 +269,7 @@ private fun DataBody(
     SectionHeader(text = stringResource(Res.string.setting_data))
 
     SettingRow(
-        title = stringResource(Res.string.setting_sync_with_other_device),
+        title = stringResource(Res.string.setting_use_on_other_device),
         onClick = onSyncClick,
     )
 

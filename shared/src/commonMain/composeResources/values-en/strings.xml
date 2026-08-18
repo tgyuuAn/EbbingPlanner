@@ -465,4 +465,9 @@
     <string name="setting_widget_today_todo">Today\'s to-dos  </string>
     <string name="setting_no_schedule_today">No schedule for today.</string>
     <string name="setting_ebbing_planner_preview">Ebbing Planner preview</string>
+    <string name="home_notification_receive">Receive notifications</string>
+    <string name="setting_use_on_other_device">Use on another device</string>
+    <string name="setting_change_app_theme">Change the app theme</string>
+    <string name="setting_change_widget_theme">Change the widget theme</string>
+    <string name="setting_content_alpha">Content opacity</string>
 </resources>

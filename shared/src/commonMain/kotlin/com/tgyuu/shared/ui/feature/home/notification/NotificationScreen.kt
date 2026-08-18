@@ -47,6 +47,7 @@ import ebbingplanner.shared.generated.resources.setting_alarm_time
 import ebbingplanner.shared.generated.resources.setting_alarm_time_subtitle
 import ebbingplanner.shared.generated.resources.setting_clear
 import ebbingplanner.shared.generated.resources.setting_notification
+import ebbingplanner.shared.generated.resources.home_notification_receive
 import ebbingplanner.shared.generated.resources.home_notification_nudge
 import ebbingplanner.shared.generated.resources.home_notification_header_sub
 import ebbingplanner.shared.generated.resources.setting_notification_setting
@@ -163,7 +164,7 @@ private fun NotificationToggleSection(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            text = stringResource(Res.string.setting_notification),
+            text = stringResource(Res.string.home_notification_receive),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.weight(1f),

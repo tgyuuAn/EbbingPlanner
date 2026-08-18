@@ -465,4 +465,9 @@
     <string name="setting_widget_today_todo">今日のやること  </string>
     <string name="setting_no_schedule_today">本日のスケジュールはありません。</string>
     <string name="setting_ebbing_planner_preview">エビングプランナー プレビュー</string>
+    <string name="home_notification_receive">通知を受け取る</string>
+    <string name="setting_use_on_other_device">他の端末でも使う</string>
+    <string name="setting_change_app_theme">アプリのテーマを変更します</string>
+    <string name="setting_change_widget_theme">ウィジェットのテーマを変更します</string>
+    <string name="setting_content_alpha">内容の透明度</string>
 </resources>
