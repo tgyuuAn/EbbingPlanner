@@ -518,7 +518,9 @@ private fun NotificationBody(
         )
     }
 
-    if (isEnabled) {
+    // Android와 동일: 알림 ON 시 알람시간/메시지 행을 펼침 애니메이션
+    androidx.compose.animation.AnimatedVisibility(visible = isEnabled) {
+        Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -564,6 +566,7 @@ private fun NotificationBody(
                 contentDescription = null,
                 tint = EbbingTheme.colors.dark3,
             )
+        }
         }
     }
 

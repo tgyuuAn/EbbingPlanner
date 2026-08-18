@@ -217,7 +217,9 @@ fun AddTodoScreen(
                             .verticalScroll(rememberScrollState())
                             .padding(20.dp),
                     ) {
+                        androidx.compose.animation.AnimatedVisibility(visible = state.schedules.isNotEmpty()) {
                         ScheduleContent(schedules = state.schedules)
+                    }
                         Spacer(modifier = Modifier.height(60.dp))
                     }
                 }
@@ -245,7 +247,9 @@ fun AddTodoScreen(
                         },
                     )
 
-                    ScheduleContent(schedules = state.schedules)
+                    androidx.compose.animation.AnimatedVisibility(visible = state.schedules.isNotEmpty()) {
+                        ScheduleContent(schedules = state.schedules)
+                    }
 
                     Spacer(modifier = Modifier.height(60.dp))
                 }
