@@ -11,6 +11,7 @@ data class MemoState(
     val memo: String = "",
     val showSaveDialog: Boolean = false,
     val relatedScheduleCount: Int = 0,
+    val isEditEntry: Boolean = false,
 ) : UiState {
     val isSaveEnabled: Boolean
         get() = memo.isNotBlank()

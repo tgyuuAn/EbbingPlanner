@@ -21,7 +21,8 @@ class MemoViewModel(
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-) : BaseViewModel<MemoState, MemoIntent>(MemoState()) {
+    isEditEntry: Boolean = false,
+) : BaseViewModel<MemoState, MemoIntent>(MemoState(isEditEntry = isEditEntry)) {
 
     init {
         loadSchedule()

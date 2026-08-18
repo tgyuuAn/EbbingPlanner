@@ -197,3 +197,5 @@ M24 태그이름 카운터제거+limit20, M25 태그색상행, M28 메모구분�
 - ✅ M27 반복 삭제 다이얼로그: 수동 재구현 → 공용 EbbingDialogDefaultTop(AnnotatedString)+EbbingDialogBottom 슬롯으로 교체(Android 간격 spacedBy8/top40 bottom12, subText bodySM 일치).
 - ⬜ M9 카드 제목/메모 URL 클릭텍스트: URL 파서 + 플랫폼 URL 오프너(expect/actual) 필요한 기능 → 별도 작업으로 보류(스타일만은 무의미).
 - 🔧 M23 색상 시트 선택 애니메이션: 선택 시 색 어둡게(lerp)+체크 페이드(animateColorAsState/AnimatedVisibility). 스크롤바 유틸·원크기(45dp)는 별도 보류(verticalScrollbar 미포팅).
+- ✅ M30 메모 Add/Edit 모드: memo 공백 휴리스틱 → nav 진입 모드(isEditEntry) 플래그로 판정. State/VM/화면/RootContent wrapper 배선(Add=false, Edit=true).
+- 구조적 medium 요약: M14/M23/M27/M30 ✅, M8 iOS 방식 정상, M9 보류(URL 오프너 기능 필요).
