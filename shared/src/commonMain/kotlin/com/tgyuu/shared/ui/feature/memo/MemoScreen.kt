@@ -123,7 +123,6 @@ fun MemoScreen(
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    Spacer(modifier = Modifier.height(24.dp))
                     state.originSchedule?.let { schedule ->
                         PreviewContent(schedule = schedule, memo = state.memo)
                     }

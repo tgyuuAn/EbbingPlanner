@@ -113,7 +113,7 @@ fun EditTagScreen(
                 text = stringResource(Res.string.tag_edit_headline, state.originTag?.name ?: ""),
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
-                modifier = Modifier.padding(top = 12.dp, bottom = 32.dp),
+                modifier = Modifier.padding(bottom = 32.dp),
             )
 
             NameContent(
