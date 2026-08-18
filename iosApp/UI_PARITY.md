@@ -199,3 +199,24 @@ M24 태그이름 카운터제거+limit20, M25 태그색상행, M28 메모구분�
 - 🔧 M23 색상 시트 선택 애니메이션: 선택 시 색 어둡게(lerp)+체크 페이드(animateColorAsState/AnimatedVisibility). 스크롤바 유틸·원크기(45dp)는 별도 보류(verticalScrollbar 미포팅).
 - ✅ M30 메모 Add/Edit 모드: memo 공백 휴리스틱 → nav 진입 모드(isEditEntry) 플래그로 판정. State/VM/화면/RootContent wrapper 배선(Add=false, Edit=true).
 - 구조적 medium 요약: M14/M23/M27/M30 ✅, M8 iOS 방식 정상, M9 보류(URL 오프너 기능 필요).
+
+## LOW 진행/분류 (반복 방지)
+완료(✅): L2 홈 analytics(로그, 앞서 배치), L18 마지막동기화 문구 정렬, L27 태그 저장버튼 실험(앞서 배치),
+L29 태그 헤드라인 top패딩 제거, L35 메모 wide 미리보기 상단 Spacer 제거.
+무해/의도적(스킵, 사유):
+- 색 토큰 미세차(L3 완료카운트, L6 EditDate 설명, L10 반복안내, L19 구분선, L25 sync 로딩, L33 반복 빈상태):
+  프로젝트 토큰 매핑(textDisabled↔dark3, primaryNormal↔primaryDefault 등)상 실색 동일/의도적. 값 다르면 후속.
+- 아이콘 Icon+tint vs Image원본(L5,L14,L23,L24,L34): 대상 벡터가 단색이라 시각 동일(무해).
+- L1 온보딩 이미지 tint/정렬: develop 신규 온보딩 디자인 추정(제품 확인).
+- L7 하드웨어/제스처 백 확인 다이얼로그: iOS 제스처 백 모델 상이(플랫폼).
+- L11 +아이콘 contentDescription: iOS가 오히려 개선(접근성) — 변경 불필요.
+- L12 요일 정렬 키(ordinal vs isoDayNumber): 결과 동일.
+- L15 알림 토글 OS 권한 동기화: iOS 권한 모델 상이(플랫폼).
+- L20 일정옵션 서브타이틀 originalText: iOS title이 순수 String이라 결과 동일.
+- L26 QR 남은시간: 코드에서 %02d 처리(정상).
+- L28 태그삭제 하이라이트 키: 값 동일("삭제").
+- L30 리스트 state 미지정 / L32 반복 리스트 "- " 리터럴: 결과 동일.
+- L31 반복 삭제 타이틀 타이포: M27로 공용 컴포넌트화되어 해소.
+보류(별도 작업 필요):
+- L8/L9/L21 verticalScrollbar: 공용 스크롤바 Modifier 유틸 미포팅 → 이식 필요.
+- L4/L16/L22 등장/펼침 애니메이션: 표준 AnimatedVisibility 이식 대상(조건부 블록 범위 커 개별 리팩터 필요).

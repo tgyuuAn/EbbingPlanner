@@ -22,7 +22,7 @@
     <string name="setting_repeat_cycle_manage">반복 주기 관리</string>
     <string name="setting_sync_with_other_device">다른 기기와 동기화 하기</string>
     <string name="setting_auto_backup">자동 백업</string>
-    <string name="setting_last_sync_time">마지막 동기화 시간 : %1$s</string>
+    <string name="setting_last_sync_time">마지막 동기화: %1$s</string>
     <string name="setting_clear_data">데이터 초기화 하기</string>
     <string name="setting_theme_color_change">테마 색상 변경</string>
     <string name="setting_widget_alpha_change">위젯 알파 변경</string>
