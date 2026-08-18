@@ -3,6 +3,7 @@ package com.tgyuu.shared.ui.feature.tag.addtag
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -179,6 +180,7 @@ private fun NameContent(
                 value = name,
                 onValueChange = onNameChange,
                 hint = stringResource(Res.string.tag_name_hint),
+                limit = 20,
                 modifier = Modifier.weight(1f),
             )
 
@@ -194,15 +196,7 @@ private fun NameContent(
                 )
             }
         }
-
-        Text(
-            text = "${name.length}/20",
-            style = EbbingTheme.typography.bodySR,
-            color = EbbingTheme.colors.dark3,
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(top = 4.dp),
-        )
+        // Android와 동일: 별도 글자수 카운터 없음 (limit=20으로 입력 제한)
     }
 }
 
@@ -212,35 +206,27 @@ private fun ColorContent(
     onColorClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    // Android ColorContent와 동일: 한 행에 라벨(좌) + 색상 원(우), 화살표 없음
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+            .clickable { onColorClick() },
+    ) {
         Text(
             text = stringResource(Res.string.tag_color),
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(bottom = 8.dp),
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Spacer(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onColorClick() }
-                .padding(vertical = 12.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(25.dp)
-                    .clip(CircleShape)
-                    .background(Color(colorValue)),
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_right),
-                contentDescription = null,
-                tint = EbbingTheme.colors.dark3,
-            )
-        }
+                .padding(end = 5.dp)
+                .size(25.dp)
+                .clip(CircleShape)
+                .background(Color(colorValue)),
+        )
     }
 }
