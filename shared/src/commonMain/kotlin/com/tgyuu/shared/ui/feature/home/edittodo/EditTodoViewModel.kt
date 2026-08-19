@@ -37,6 +37,7 @@ class EditTodoViewModel(
     private val notificationScheduler: NotificationScheduler,
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
+    private val onNavigateToAddTag: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
     private val onShowTagBottomSheet: (() -> Unit)? = null,
@@ -59,13 +60,17 @@ class EditTodoViewModel(
                 async { todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId) }
             val todoInfoDeferred = async { todoRepository.loadTodoInfoById(originSchedule.infoId) }
 
-            val originTag = originTagDeferred.await()
+            val originTag = originTagDeferred.await() ?: run {
+                // Android과 동일: 태그를 찾을 수 없으면 뒤로가기(조용한 무동작 방지)
+                onNavigateBack()
+                return@launch
+            }
             val schedulesByDateMap = sameInfoSchedulesDeferred.await()
             val todoInfo = todoInfoDeferred.await()
 
             val unassignedName = getString(Res.string.tag_unassigned)
-            val tagModel = originTag?.toUiModel()
-                ?.let { if (it.id == DefaultTodoTag.id) it.copy(name = unassignedName) else it }
+            val tagModel = originTag.toUiModel()
+                .let { if (it.id == DefaultTodoTag.id) it.copy(name = unassignedName) else it }
 
             setState {
                 copy(
@@ -105,7 +110,7 @@ class EditTodoViewModel(
             is EditTodoIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
             EditTodoIntent.OnTagDropDownClick -> onShowTagBottomSheet?.invoke()
             is EditTodoIntent.OnTagChange -> setState { copy(tag = intent.tag) }
-            EditTodoIntent.OnAddTagClick -> { /* Navigate to add tag */ }
+            EditTodoIntent.OnAddTagClick -> onNavigateToAddTag()
             EditTodoIntent.OnSaveClick -> onSaveClick()
         }
     }
