@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -74,6 +76,7 @@ fun MemoScreen(
     val addHeadlineSuffix = stringResource(Res.string.memo_add_headline_suffix)
     val editHeadlineSuffix = stringResource(Res.string.memo_edit_headline_suffix)
     val isEditMode = state.isEditEntry
+    val scrollState = rememberScrollState()
 
     if (state.showSaveDialog) {
         SaveMemoDialog(
@@ -132,6 +135,7 @@ fun MemoScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(20.dp)
                     .imePadding(),
             ) {

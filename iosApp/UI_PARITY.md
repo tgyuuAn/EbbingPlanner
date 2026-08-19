@@ -284,3 +284,27 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - 🔧(med) **onDelayAll 배치화**: iOS 개별 updateTodo 루프 → Android처럼 `updateTodos(updated)` 배치(원자적·성능). **이번에 반영.** (onDeleteRemaining은 양쪽 forEach라 파리티.)
 - ⚠️(low) 태그삭제 다이얼로그 제목 구성(iOS buildAnnotatedString 강조) — 메시지 동등, 시각 강조차.
 - 참고: 삭제/미루기/메모 액션 Click 로그는 Android도 없음(=파리티). 옵션시트는 iOS도 다이얼로그 전 hide함(스택버그 없음).
+
+## Tag / Memo / RepeatCycle / Sync 동작 패리티 전수조사 (4차)
+
+### Sync (가장 상이하나 상당수 의도적)
+- ✅**의도적**: 오프라인 네트워크 게이팅 차이는 설계 결정. `AutoBackupManager.kt:21` 주석 — "Android NetworkMonitor 게이팅은 iOS에선 syncUpData 실패→pending 재시도로 대체". iOS엔 NetworkMonitor 없음. syncUp/disconnect/generateCode/qr/restore가 오프라인에서도 호출되지만 실패 시 재시도 모델. → **수정 안 함**(플랫폼 적합 설계).
+- ⚠️(med) NetworkBanner(연결/해제 애니메 배너) iOS 없음. 에러 세분화(isNetworkError→전용 문구, raw error.message) iOS는 액션별 단일 문구.
+- ⚠️(med) Restore 진입점: iOS는 AdvancedInfo에 linkedUuid==null일 때 "데이터 복원" 행 노출(SyncScreen.kt:608-634). Android SyncMain엔 해당 UI/인텐트 없음 → 다른 라우트로 진입. nav 그래프 확인 필요.
+- ⚠️(med) SyncMain/다이얼로그/Restore 버튼 Click 애널리틱스 누락.
+
+### Tag
+- 🔧(med) **기본 태그 색상**: iOS `DEFAULT_TAG_COLOR=0xFFFF6B6B`(빨강) → Android처럼 `DefaultTodoTag.color`(0xFFBBE1FA 연파랑)로 변경. **이번 반영.** (Add/Edit 둘 다.)
+- ✅**유지**: EditTag "변경 없음" 가드(iOS는 name/color 변경 시에만 Update 활성) — iOS가 더 엄격/우수. Android는 no-op 저장 허용. iOS 유지.
+- ⚠️(med) Tag Back/Add/Delete/Edit·Save Click 애널리틱스 누락.
+- ⚠️(low) iOS deleteTag에 Android의 방어적 id==1 가드 없음(버튼 도달 불가라 무해). ColorBottomSheet 스와치 40dp/8dp/스크롤바 없음(Android 45/10/있음).
+
+### RepeatCycle
+- ✅**유지(차이 기록)**: Edit 저장버튼, iOS는 `intervals.isNotEmpty() && parsedIntervals.isNotEmpty()`(공백/콤마만이면 비활성·무피드백), Android는 텍스트 있으면 활성+무효 시 스낵바. iOS가 더 엄격하나 무피드백 → 스낵바 호스트 배선 후 Android식 피드백 고려. 현재 유지.
+- ⚠️(med) 3개 화면 Click 애널리틱스 누락. ⚠️(low) 저장 시 clearFocus 미이식. 참고: SaveButtonPosition 실험은 양쪽 하드코딩(if(false)/if(true))이라 무효과.
+
+### Memo (대체로 충실, iOS는 add/edit 단일화)
+- 🔧(med) **compact 레이아웃 스크롤 없음**: Android는 compact 콘텐츠 Column에 `verticalScroll`. iOS는 평 Column이라 키보드/작은화면서 미리보기+60dp Spacer 클리핑 가능 → verticalScroll 추가. **이번 반영.**
+- ⚠️(med) Back/Save·(Add전용)SaveMemoSingle/All Click 애널리틱스 누락.
+- ✅ iOS가 오히려 우수: 저장 실패 스낵바(snack_memo_save_failed 등) Android엔 없음.
+- ⚠️(low) isSaveEnabled: Android isNotEmpty vs iOS isNotBlank(공백만 비활성, 무해). clearFocus 미이식.
