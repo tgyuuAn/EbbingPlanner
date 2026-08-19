@@ -18,6 +18,7 @@ import kotlinx.datetime.LocalDate
 
 @Immutable
 data class AddTodoState(
+    val page: Page = Page.ADD_TODO,
     val selectedDate: LocalDate = LocalDate.now(),
     val title: String = "",
     val isPinned: Boolean = false,
@@ -26,6 +27,7 @@ data class AddTodoState(
     val repeatCycleList: ImmutableList<RepeatCycleUiModel> = persistentListOf(),
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
+    val notificationState: NotificationState = NotificationState(),
     val isLoading: Boolean = false,
 ) : UiState {
     val isSaveEnabled: Boolean = title.isNotEmpty()
@@ -46,6 +48,34 @@ data class AddTodoState(
                 )
             }
         } ?: emptyList()
+
+    // Android AddTodoState.Page와 동일: 저장 후 알림 넛지 페이지로 전환
+    enum class Page {
+        ADD_TODO,
+        NOTIFICATION,
+    }
+}
+
+/**
+ * Android home.graph.addtodo.contract.NotificationState 대응 (알림 넛지 페이지 상태).
+ * defaultMessage/placeholderToken은 VM initNotificationState에서 리소스로 채운다.
+ */
+@Immutable
+data class NotificationState(
+    val notificationEnabled: Boolean = false,
+    val alarmHour: Int = 0,
+    val alarmMinute: Int = 0,
+    val defaultMessage: String = "",
+    val message: String = defaultMessage,
+    val originMessage: String = defaultMessage,
+    val placeholderToken: String = "{할일}",
+    val isShowTimePicker: Boolean = false,
+) {
+    val placeholderCount: Int = Regex.escape(placeholderToken).toRegex().findAll(message).count()
+    val isValidPlaceholder: Boolean = placeholderCount <= 1
+    val isValidLength: Boolean = message.length <= 50
+    val messageLength: Int = message.length
+    val shouldShowResetButton: Boolean = message != defaultMessage
 }
 
 sealed class AddTodoIntent : UiIntent {
@@ -61,4 +91,14 @@ sealed class AddTodoIntent : UiIntent {
     data object OnAddRepeatCycleClick : AddTodoIntent()
     data class OnRestDayChange(val restDay: DayOfWeek) : AddTodoIntent()
     data object OnSaveClick : AddTodoIntent()
+
+    // 알림 넛지 페이지 (Android AddTodoIntent 대응)
+    data object OnNotificationToggleClick : AddTodoIntent()
+    data object OnAlarmTimePickerClick : AddTodoIntent()
+    data object OnAlarmTimePickerDismiss : AddTodoIntent()
+    data class OnAlarmTimeChange(val hour: Int, val minute: Int) : AddTodoIntent()
+    data class OnAlarmMessageChange(val message: String) : AddTodoIntent()
+    data object OnAlarmMessageReset : AddTodoIntent()
+    data object OnNotificationBackClick : AddTodoIntent()
+    data object OnNotificationSaveClick : AddTodoIntent()
 }

@@ -429,16 +429,18 @@ private fun AddTodoScreenWrapper(
     }
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
+    val notificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
     val viewModel = remember(selectedDate) {
         AddTodoViewModel(
             selectedDate = selectedDate,
             todoRepository = todoRepository,
+            configRepository = configRepository,
+            notificationScheduler = notificationScheduler,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             onNavigateToAddTag = { component.navigateToAddTag() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             experimentRepository = experimentRepository,
-            configRepository = configRepository,
         )
     }
     AddTodoScreen(viewModel = viewModel)

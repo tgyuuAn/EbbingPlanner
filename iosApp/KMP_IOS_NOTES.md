@@ -59,6 +59,13 @@
    - low: analytics 로깅, verticalScrollbar 유틸 이식(L8/L9/L21), 등장/펼침 애니메이션(L4/L16/L22), 문구/간격 정렬 완료. 색 토큰 미세차 등은 무해로 기록.
    - 상세 완료/보류(사유)는 UI_PARITY.md의 MEDIUM/LOW 섹션 참조.
 5. **신규 공용 유틸/헬퍼**: colorSchemeFor(테마별 색스킴), verticalScrollbar(Modifier), IntListCodec, UsageOrderStore 등.
+6. **알림 예약 + 넛지 페이지 구현(AddTodo)**: Android home/graph/notification 넛지 페이지 + 알림 스케줄링 iOS 포팅.
+   - `NotificationScheduler`(expect/actual, UNUserNotificationCenter)는 이미 존재했으나 DI 미등록·미사용 → Android/IosModule에 `single { NotificationScheduler(...) }` 등록.
+   - AddTodoContract에 `Page`(ADD_TODO/NOTIFICATION)·`NotificationState`·알림 인텐트 추가(Android AddTodoState 대응).
+   - AddTodoViewModel: `shouldShowNotificationNudge()`(최초 1회 소비형) true면 page=NOTIFICATION, 아니면 즉시 저장. onNotificationSaveClick이 설정 영속 후 saveTodoAndNavigateHome. `scheduleAlarms()`가 저장된 알림 설정(enabled)·시간으로 각 미래 일정에 로컬 알림 등록(id=date.hashCode(), body=문구에 {할일}→제목 치환, 과거는 스킵). 토글 on 시 requestPermission()로 iOS 권한 요청 후 허용 시에만 활성.
+   - 넛지 UI는 addtodo/AddTodoNotificationNudge.kt(독립 파일). 표준 Notification 설정화면과 동일 컴포넌트/리소스 재사용. 토글 off면 상세 접힘(AnimatedVisibility).
+   - **의도적 차이(기록)**: Android saveTodoAndNavigateHome은 무조건 스케줄하지만 iOS는 enabled일 때만 스케줄(권한/사용자 선택 존중). 넛지 토글 기본 off는 Android와 동일. `incrementTodoRegisteredCount`/위젯 넛지 인자는 shared 미구현이라 제외.
+   - 검증: iOS/Android 타깃 컴파일 + 앱 빌드/실행 무크래시 + 임시 라우팅(page=NOTIFICATION)으로 넛지 화면 스크린샷 확인 후 원복.
 
 ## 검증 원칙
 - 변경 후 `./gradlew :shared:compileKotlinIosSimulatorArm64`로 컴파일 확인.
