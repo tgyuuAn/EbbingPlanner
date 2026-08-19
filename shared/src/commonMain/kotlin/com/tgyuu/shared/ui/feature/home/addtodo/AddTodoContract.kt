@@ -28,6 +28,7 @@ data class AddTodoState(
     val repeatCycle: RepeatCycleUiModel? = null,
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
     val notificationState: NotificationState = NotificationState(),
+    val mondayStart: Boolean = false,
     val isLoading: Boolean = false,
 ) : UiState {
     val isSaveEnabled: Boolean = title.isNotEmpty()
