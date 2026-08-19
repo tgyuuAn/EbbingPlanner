@@ -83,6 +83,15 @@ class EditDateViewModel(
         }
     }
 
+    // Android 대응: 반복주기 추가 화면 복귀 시 방금 추가한 주기 자동 선택(recentAddedRepeatCycleId는 읽으면 소비됨).
+    fun loadNewRepeatCycle() {
+        val id = todoRepository.recentAddedRepeatCycleId?.toInt() ?: return
+        safeScope.launch {
+            val cycleModel = todoRepository.loadRepeatCycle(id).toUiModel()
+            setState { copy(repeatCycle = cycleModel) }
+        }
+    }
+
     override suspend fun processIntent(intent: EditDateIntent) {
         when (intent) {
             EditDateIntent.OnBackClick -> onNavigateBack()

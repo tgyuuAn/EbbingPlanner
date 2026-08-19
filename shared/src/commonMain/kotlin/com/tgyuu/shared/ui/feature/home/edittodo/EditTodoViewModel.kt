@@ -107,6 +107,15 @@ class EditTodoViewModel(
         }
     }
 
+    // Android 대응: 태그 추가 화면 복귀 시 방금 추가한 태그 자동 선택(recentAddedTagId는 읽으면 소비됨).
+    fun loadNewTag() {
+        val id = todoRepository.recentAddedTagId?.toInt() ?: return
+        safeScope.launch {
+            val newTag = todoRepository.loadTag(id) ?: return@launch
+            setState { copy(tag = newTag.toUiModel()) }
+        }
+    }
+
     override suspend fun processIntent(intent: EditTodoIntent) {
         when (intent) {
             EditTodoIntent.OnBackClick -> onNavigateBack()
