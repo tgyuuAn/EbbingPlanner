@@ -2,19 +2,26 @@ package com.tgyuu.shared.ui.feature.home.edittodo
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.common.currentInstant
 import com.tgyuu.shared.common.loadTagsByUsage
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.platform.NotificationScheduler
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
 import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.alarm_placeholder_token
 import ebbingplanner.shared.generated.resources.snack_date_has_schedule
 import ebbingplanner.shared.generated.resources.snack_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_update_failed
@@ -24,11 +31,12 @@ import org.jetbrains.compose.resources.getString
 class EditTodoViewModel(
     private val scheduleId: Int,
     private val todoRepository: TodoRepository,
+    private val configRepository: ConfigRepository,
+    private val notificationScheduler: NotificationScheduler,
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-    private val configRepository: ConfigRepository,
     private val onShowTagBottomSheet: (() -> Unit)? = null,
     private val onShowDateBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
@@ -136,11 +144,42 @@ class EditTodoViewModel(
             // 저장 완료 후 부가 기록 실패가 완료 흐름을 막지 않도록 격리
             runCatching { configRepository.recordTagUsage(tag.id) }
 
+            // 날짜가 바뀌었으면 알림 재예약 (Android EditTodoViewModel 대응)
+            runCatching { rescheduleAlarmOnDateChange(originSchedule.date, newSchedule.date, newSchedule.title) }
+
             onShowSnackbar(getString(Res.string.snack_todo_updated))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_todo_update_failed))
         }
+    }
+
+    /**
+     * 일정 날짜 변경 시 기존 날짜의 알림을 취소하고, 알림이 켜져 있으며 새 날짜가 미래면 재등록한다.
+     * Android는 새 알림만 등록(구 알림 미취소)하지만, iOS는 stale 알림 방지를 위해 구 알림도 취소한다.
+     */
+    private suspend fun rescheduleAlarmOnDateChange(oldDate: LocalDate, newDate: LocalDate, title: String) {
+        if (newDate == oldDate) return
+
+        // 기존 날짜 알림 취소 (id = date.hashCode(), AddTodo 예약과 동일 규칙)
+        notificationScheduler.cancelNotification(oldDate.hashCode())
+
+        val enabled = configRepository.getNotificationEnabled().first()
+        if (!enabled) return
+
+        val (hour, minute) = configRepository.getAlarmTime()
+        if (newDate.atTime(hour, minute).toInstant(TimeZone.currentSystemDefault()) <= currentInstant()) return
+
+        val storedMessage = configRepository.getAlarmMessage()
+        val token = getString(Res.string.alarm_placeholder_token)
+        notificationScheduler.scheduleNotification(
+            id = newDate.hashCode(),
+            title = title,
+            message = storedMessage.replace(token, title),
+            hour = hour,
+            minute = minute,
+            date = newDate,
+        )
     }
 
     private fun com.tgyuu.shared.domain.model.TodoTag.toUiModel() = TodoTagUiModel(

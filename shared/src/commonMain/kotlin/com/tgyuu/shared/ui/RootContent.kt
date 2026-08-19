@@ -454,14 +454,16 @@ private fun EditTodoScreenWrapper(
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
+    val notificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
     val viewModel = remember(scheduleId) {
         EditTodoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
+            configRepository = configRepository,
+            notificationScheduler = notificationScheduler,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             experimentRepository = experimentRepository,
-            configRepository = configRepository,
         )
     }
     EditTodoScreen(viewModel = viewModel)
