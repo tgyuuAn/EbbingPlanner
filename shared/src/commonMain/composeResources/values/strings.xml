@@ -132,7 +132,7 @@
     <string name="repeat_edit_headline">나만의 반복 주기를 수정해요</string>
     <string name="repeat_cycle_label">반복 주기</string>
     <string name="repeat_cycle_input_hint">어떤 주기로 일정을 반복할까요?</string>
-    <string name="repeat_cycle_input_guide">\' , \'를 기준으로 숫자를 분리해주세요\n당일을 포함하려면 0을 기입해주세요\n1000 미만의 숫자만 입력하실 수 있습니다.\n ex) 0, 1, 3, 7, 15</string>
+    <string name="repeat_cycle_input_guide">' , '를 기준으로 숫자를 분리해주세요\n당일을 포함하려면 0을 기입해주세요\n1000 미만의 숫자만 입력하실 수 있습니다.\n ex) 0, 1, 3, 7, 15</string>
     <string name="repeat_cycle_preview_label">예상 반복 주기</string>
 
     <!-- 홈 / 일정 -->
@@ -183,11 +183,11 @@
     <string name="schedule_card_date">%1$d월 %2$d일 (%3$s)</string>
     <string name="schedule_empty_message">아직 일정이 없어요.\n새로운 일정을 등록해볼까요?</string>
     <string name="schedule_empty_register_button">일정 등록하러 가기</string>
-    <string name="schedule_tag_edit_title">\'%1$s\' 태그 편집</string>
+    <string name="schedule_tag_edit_title">'%1$s' 태그 편집</string>
     <string name="schedule_tag_name_label">태그 이름</string>
     <string name="schedule_tag_name_hint">태그 이름을 입력하세요</string>
     <string name="schedule_tag_color_label">색상</string>
-    <string name="schedule_tag_delete_label">\'%1$s\' 태그 삭제</string>
+    <string name="schedule_tag_delete_label">'%1$s' 태그 삭제</string>
     <string name="schedule_tag_save_button">저장하기</string>
     <string name="schedule_options_title">편집</string>
     <string name="schedule_options_subtitle">%1$s 일정을 어떻게 할까요?</string>

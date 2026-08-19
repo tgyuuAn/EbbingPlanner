@@ -132,7 +132,7 @@
     <string name="repeat_edit_headline">自分だけの繰り返し周期を編集しましょう</string>
     <string name="repeat_cycle_label">繰り返し周期</string>
     <string name="repeat_cycle_input_hint">どの周期で予定を繰り返しますか？</string>
-    <string name="repeat_cycle_input_guide">\' , \' を基準に数字を区切ってください\n当日を含める場合は 0 を入力してください\n1000 未満の数字のみ入力できます。\n ex) 0, 1, 3, 7, 15</string>
+    <string name="repeat_cycle_input_guide">' , ' を基準に数字を区切ってください\n当日を含める場合は 0 を入力してください\n1000 未満の数字のみ入力できます。\n ex) 0, 1, 3, 7, 15</string>
     <string name="repeat_cycle_preview_label">予想される繰り返し周期</string>
 
     <!-- ホーム / 予定 -->
