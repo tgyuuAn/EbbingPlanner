@@ -92,14 +92,15 @@ fun WidgetScreen(
                     .verticalScroll(scrollState)
                     .padding(20.dp),
             ) {
+                // Android와 동일: 미리보기 먼저 → 컨트롤 → 말미 Spacer(60)
+                WidgetPreviewSection(state = state)
+                Spacer(modifier = Modifier.height(32.dp))
                 WidgetControlSection(
                     state = state,
                     onThemeChange = { viewModel.onIntent(WidgetIntent.OnThemeChange(it)) },
                     onBgAlphaChange = { viewModel.onIntent(WidgetIntent.OnBackgroundAlphaChange(it)) },
                     onTextAlphaChange = { viewModel.onIntent(WidgetIntent.OnTextAlphaChange(it)) },
                 )
-                Spacer(modifier = Modifier.height(32.dp))
-                WidgetPreviewSection(state = state)
                 Spacer(modifier = Modifier.height(60.dp))
             }
         } // else
