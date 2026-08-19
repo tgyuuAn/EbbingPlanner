@@ -220,3 +220,15 @@ L29 태그 헤드라인 top패딩 제거, L35 메모 wide 미리보기 상단 Sp
 보류(별도 작업 필요):
 - ✅ L8/L9/L21 verticalScrollbar: shared designsystem/util/Scrollbar.kt 신설(LazyList/LazyGrid 오버로드) 후 태그/반복/일정색상 시트에 적용.
 - ✅ L22 일정 색상 그리드 선택 애니메이션(animateColorAsState+체크 페이드). ✅ L4 AddTodo 일정카드 등장 애니메이션(AnimatedVisibility), ✅ L16 설정 알림행 펼침 애니메이션(AnimatedVisibility+Column). → 애니메이션 low 전부 반영.
+
+## 문자열 리소스 이스케이프 전수조사 (사용자 지목: 일정추가/편집 Title `""`)
+compose-resources 빌드타임 변환기(`convertXmlValueResources`→`.cvr`)는 Android
+aapt 관례를 미지원 → commonMain composeResources로 복사된 문자열의 이스케이프가
+값에 그대로 저장돼 iOS에 리터럴 노출. `.cvr`(=`string|name|base64(UTF-8)`)
+디코드로 저장 바이트를 직접 검증하며 전수 처리:
+- ✅ 래핑 큰따옴표 `"..."` 77건 제거(values 28/en 25/ja 24/ko 0). 예: `home_add_todo_header_suffix`. 선행 공백/`\n` 보존 확인(cvr 첫 바이트 0x20). commit 6f30781c.
+- ✅ 이스케이프 아포스트로피 `\'` 41건 → `'`(values 6/en 33/ja 2). 예: `schedule_tag_edit_title` = `'%1$s' 태그 편집`. commit a248b2b8.
+- ✅ `\"` 0건(없음), `\n`은 변환기가 정상 처리(건드리지 않음), `%%`·`%02d`는 앞선 작업에서 처리(note #3).
+- ✅ 큰따옴표 strip 시 내부 표시용 따옴표 오손 없음(제거분 전량 값 전체 래핑=공백보존용). XML 4파일 well-formed 재확인.
+- ✅ iOS 빌드/실행 무회귀(온보딩 정상 렌더, 스크린샷). 라우팅 제약으로 AddTodo 화면 직접 캡처 대신 cvr 바이트 검증으로 확정.
+- 규칙: 새 문자열은 aapt 이스케이프(따옴표/백슬래시) 쓰지 말고 순수 텍스트로. 상세 KMP_IOS_NOTES.md 함정 #7.
