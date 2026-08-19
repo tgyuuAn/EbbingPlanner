@@ -319,3 +319,8 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - ✅ **screen_view 애널리틱스**: RootContent activeChild→screen_view 중앙 로깅(전 화면). AddTodo/EditTodo Save Click + 넛지 NotificationNudge View 추가.
 - ⬜ **잔여(의도적 스코프 아웃)**: 화면별 세부 버튼 Click 애널리틱스(Tag/RepeatCycle/Memo/Sync 등 다수) — 서피스 크고 buttonName 정합성 위험으로 별도. AddTodo/EditTodo/Home/Schedule 등 주요 Click·전 화면 screen_view는 완료.
 - ⬜ **복귀 시 신규항목 자동선택(loadNewTag/loadNewRepeatCycle)**: AddTodo 포함 공용 미구현(Decompose child resume 훅 필요) — 별도.
+
+## 잔여 2건 완료 (6차, 2026-08-20)
+- ✅ **화면별 세부 버튼 Click 애널리틱스 전수**: `AnalyticsHelper?.logClick(screenName, buttonName)` 확장 신설. Tag/AddTag/EditTag/RepeatCycle/AddRepeatCycle/EditRepeatCycle/Memo(Add·Edit 모드별 screenName)/SyncMain/Restore/Setting에 Android buttonName·screenName 정확히 일치하도록 배선. Schedule는 기존 완비, Home/AddTodo/EditTodo는 앞서 완료.
+- ✅ **복귀 시 신규 항목 자동 선택**: AddTodo/EditTodo `loadNewTag`, AddTodo/EditDate `loadNewRepeatCycle`. 각 화면 `LaunchedEffect(viewModel)`에서 호출 → 태그/반복주기 추가 후 복귀 시 자동 선택(recentAddedId 소비형).
+- 검증: iOS/Android 컴파일 + 앱 빌드/실행 무크래시.
