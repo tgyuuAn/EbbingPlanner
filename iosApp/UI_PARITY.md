@@ -329,3 +329,19 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - ✅ **콜드스타트 시 미지정 태그 누락**: Android MainViewModel은 시작 시 `addDefaultTag()`로 DB에 미지정(id=1) 시드 → loadTags()가 반환. iOS는 이 호출이 없어 태그 바텀시트에 미지정 안 뜸. RootContent 시작 LaunchedEffect에서 `todoRepository.addDefaultTag()` 호출(insertTag onConflict=IGNORE라 멱등).
 - ✅ **바텀시트 헤더/목록항목 이중 수평패딩**: iOS `EbbingBottomSheetHeader`·`EbbingBottomSheetListItemDefault`가 컴포넌트 내부에 `padding(horizontal=20dp)`를 갖고 있었으나 Android 원본은 없음(호출부 Column이 20dp 제공). iOS는 호출부도 20dp라 헤더/항목이 40dp로 밀림(사용자 지목: 종료일 선택 시트 헤더). 내부 패딩 제거로 통일. 호출부 전수(헤더 17, 목록 9) 20dp 부모 확인, wide 그리드는 Android처럼 항목 modifier +20dp 유지.
 - (진행) 화면/시트/다이얼로그 padding 전수조사 별도 서브에이전트로 수행 중 — 결과 반영 예정.
+
+## 패딩/간격 전수조사 상세 (7차 결과 반영, 2026-08-20)
+서브에이전트 5분할 전수 비교 결과 및 조치.
+### 수정 완료
+- ✅ 바텀시트 헤더/목록 이중패딩 제거(위 참조).
+- ✅ ColorBottomSheet: 바깥 Column horizontal=20, 그리드 spacedBy 8→10·vertical 16→20, 스와치 40→45, 적용버튼 top=12/bottom=10, bottom=32 제거(Android 일치).
+- ✅ AddTag/EditTag: Name↔Color Spacer(24) 제거(56→32).
+- ✅ Memo: MemoContent↔Preview Spacer(24) 제거, 미리보기 라벨 top=32·카드 top=20.
+- ✅ SettingScreen: 우측 chevron start=4dp(전 행).
+- ✅ ThemeScreen/WidgetScreen(compact): 미리보기 먼저로 순서 스왑 + 말미 Spacer(60).
+- ✅ Onboarding: 좌측정렬(Box CenterStart, TextAlign.Start), 상단 Spacer(48) 제거, 페이저 bottom=40·인디케이터 bottom=30·버튼 top=12/bottom=10, 제목 bottom=12.
+### 무해/의도적(미수정, 기록)
+- 표준 알림 설정화면(home/notification/NotificationScreen)의 구분선/미리보기 박스/플레이스홀더 위치/입력 top(8 vs 24)/토글 분배 차이: 이 화면은 iOS 전용 설정화면으로 Android에 1:1 대응 화면이 없음(Android는 설정 내 인라인 바텀시트). 넛지(AddTodoNotificationNudge)는 이미 Android 대응 완료. → 파리티 대상 아님.
+- WidgetNudgeDialog 일러스트 vertical 24 vs 23.5dp: 0.5dp 무해.
+- Widget 스와치 행/미리보기 카드 세부(스와치 40 vs 45, spacedBy 16 vs 4 등): Widget 미리보기는 iOS 재구성본 — 추가 정렬은 후속(구조 차이 큼). 순서 스왑만 반영.
+- 각 화면 isWide(태블릿) 분기: iOS 전용 레이아웃.
