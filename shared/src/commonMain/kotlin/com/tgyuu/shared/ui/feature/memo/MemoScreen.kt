@@ -156,7 +156,7 @@ fun MemoScreen(
                     onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
                     onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
                 )
-                Spacer(modifier = Modifier.height(24.dp))
+                // Android와 동일: 별도 Spacer 없음(PreviewContent 라벨 top=32가 간격 제공)
                 state.originSchedule?.let { schedule ->
                     PreviewContent(schedule = schedule, memo = state.memo)
                 }
@@ -265,11 +265,12 @@ private fun PreviewContent(
     )
 
     Column(modifier = modifier) {
+        // Android MemoContent/PreviewContent와 동일: 라벨 top=32, 카드 top=20
         Text(
             text = stringResource(Res.string.memo_preview_label),
             style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier.padding(top = 32.dp),
         )
 
         TodoListCard(
@@ -277,7 +278,7 @@ private fun PreviewContent(
             todosWithSameInfo = listOf(previewTodo),
             onCheckedChange = {},
             onEditScheduleClick = {},
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
         )
     }
 }

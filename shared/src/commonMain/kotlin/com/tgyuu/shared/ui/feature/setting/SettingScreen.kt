@@ -423,6 +423,7 @@ private fun SettingRow(
             painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = null,
             tint = EbbingTheme.colors.dark3,
+            modifier = Modifier.padding(start = 4.dp),
         )
     }
 }
@@ -565,6 +566,7 @@ private fun NotificationBody(
                 painter = painterResource(Res.drawable.ic_arrow_right),
                 contentDescription = null,
                 tint = EbbingTheme.colors.dark3,
+                modifier = Modifier.padding(start = 4.dp),
             )
         }
         }
@@ -610,6 +612,7 @@ private fun InAppReviewRow(
             painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = null,
             tint = EbbingTheme.colors.dark3,
+            modifier = Modifier.padding(start = 4.dp),
         )
     }
 }

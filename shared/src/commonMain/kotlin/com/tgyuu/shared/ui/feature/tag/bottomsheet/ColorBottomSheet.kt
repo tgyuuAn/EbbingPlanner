@@ -90,8 +90,9 @@ fun ColorBottomSheet(
 ) {
     var selectedColor by remember { mutableStateOf(currentColor) }
 
+    // Android ColorBottomSheet와 동일: 바깥 Column이 horizontal=20 제공, 그리드/버튼은 vertical만.
     Column(
-        modifier = modifier.padding(bottom = 32.dp),
+        modifier = modifier.padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
             title = stringResource(Res.string.tag_color),
@@ -99,11 +100,11 @@ fun ColorBottomSheet(
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(6),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(vertical = 20.dp),
         ) {
             items(TAG_COLORS) { color ->
                 ColorItem(
@@ -122,7 +123,7 @@ fun ColorBottomSheet(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(top = 12.dp, bottom = 10.dp),
         )
     }
 }
@@ -140,7 +141,7 @@ private fun ColorItem(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(40.dp)
+            .size(45.dp)
             .clip(CircleShape)
             .background(animatedColor)
             .clickable { onClick() },
