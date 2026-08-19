@@ -30,6 +30,13 @@
 - CMP 1.11은 iosX64(Intel 시뮬레이터) 미지원 → 타깃/ksp 제거 (iosArm64 + iosSimulatorArm64만).
 - CMP 1.8+부터 material3가 material-icons 전이 의존 안 함 → `material-icons-core` 직접 의존.
 
+### 7. 문자열에 리터럴 큰따옴표 노출 (예: 일정 추가/편집 헤드라인에 `"..."`)
+- **증상**: iOS에서 AddTodo/EditTodo/메모 헤드라인, 삭제 다이얼로그 등에 `"날짜"부터...`처럼 큰따옴표가 문자 그대로 보임.
+- **원인**: Android `res/values`는 aapt가 앞뒤 공백 보존용 래핑 큰따옴표(`"..."`)를 벗겨내지만, **compose-resources의 빌드타임 변환기(`convertXmlValueResources` → `.cvr`)는 이 Android 관례를 미지원**. 큰따옴표를 값의 일부로 그대로 저장. (commonMain composeResources는 aapt를 안 타므로 Android/iOS 공통으로 영향받지만, 원 앱은 androidMain res/values를 써서 티가 안 났고 commonMain으로 복사하며 따옴표째 들어옴.)
+- **해결**: 값 전체를 감싼 `"..."`를 제거. 검증: `.cvr`는 `string|<name>|<base64(UTF-8)>` 포맷이라 base64 디코드로 저장 바이트 확인 가능. 변환기는 앞 공백을 **트리밍하지 않으므로**(따옴표 없이도 선행 공백·`\n` 보존됨) 따옴표만 벗기면 안전. 예: ` 부터\n시작...` → cvr 첫 바이트 `0x20`(공백) 확인.
+  - 재검증 태스크: `./gradlew :shared:convertXmlValueResourcesForCommonMain --rerun-tasks` 후 `shared/build/generated/compose/resourceGenerator/preparedResources/commonMain/.../values/strings.commonMain.cvr` 디코드.
+  - 일괄 제거: `(<string name="[^"]+">)"(.*)"(</string>)` → `\1\2\3` (values 28, en 25, ja 24, ko 0 = 총 77건).
+
 ### 6. 시뮬레이터 UI 시각 검증 방법 (탭 자동화 불가)
 - System Events 접근성 권한 차단 + idb 미설치 → 좌표 탭 불가.
 - **화면 캡처**: `DefaultRootComponent.initialConfiguration`을 임시로 대상 `Configuration`으로 변경 후 빌드→설치→(온보딩 소비 위해 1회 더)재실행→스크린샷. 끝나면 원복.
