@@ -223,9 +223,11 @@ private fun NotificationDetailSection(
     Text(text = stringResource(Res.string.notification_placeholder_desc), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(top = 4.dp, start = 4.dp))
     HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
 
-    // Preview
-    Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
-    Text(text = state.alarmMessage.replace(placeholderToken, stringResource(Res.string.setting_alarm_message_preview_sample)), style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
+    // Preview — Android와 동일: 유효한 플레이스홀더(1개 이하) & 비어있지 않을 때만 표시(2개 이상이면 깨진 미리보기 숨김)
+    if (placeholderCount <= 1 && state.alarmMessage.isNotEmpty()) {
+        Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+        Text(text = state.alarmMessage.replace(placeholderToken, stringResource(Res.string.setting_alarm_message_preview_sample)), style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1, modifier = Modifier.padding(top = 8.dp))
+    }
 }
 
 @Composable
