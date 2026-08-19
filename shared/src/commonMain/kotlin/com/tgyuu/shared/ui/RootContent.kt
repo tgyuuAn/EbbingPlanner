@@ -463,6 +463,7 @@ private fun EditTodoScreenWrapper(
             notificationScheduler = notificationScheduler,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
+            onNavigateToAddTag = { component.navigateToAddTag() },
             experimentRepository = experimentRepository,
         )
     }
@@ -483,6 +484,7 @@ private fun EditDateScreenWrapper(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
+            onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             experimentRepository = experimentRepository,
             configRepository = configRepository,
         )

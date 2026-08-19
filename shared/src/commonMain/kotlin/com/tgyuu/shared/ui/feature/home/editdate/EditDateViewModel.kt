@@ -29,6 +29,7 @@ class EditDateViewModel(
     private val todoRepository: TodoRepository,
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
+    private val onNavigateToAddRepeatCycle: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
     private val configRepository: ConfigRepository,
@@ -86,7 +87,7 @@ class EditDateViewModel(
             is EditDateIntent.OnSelectedDateChange -> setState { copy(selectedDate = intent.selectedDate) }
             EditDateIntent.OnRepeatCycleDropDownClick -> onShowRepeatCycleBottomSheet?.invoke()
             is EditDateIntent.OnRepeatCycleChange -> setState { copy(repeatCycle = intent.repeatCycle) }
-            EditDateIntent.OnAddRepeatCycleClick -> { /* Navigate to add repeat cycle */ }
+            EditDateIntent.OnAddRepeatCycleClick -> onNavigateToAddRepeatCycle()
             is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
             is EditDateIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
             is EditDateIntent.OnSaveClick -> onSaveClick(intent.isDoneSchedules)
