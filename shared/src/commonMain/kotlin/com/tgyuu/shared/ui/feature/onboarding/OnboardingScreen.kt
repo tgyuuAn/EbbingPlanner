@@ -60,17 +60,18 @@ fun OnboardingScreen(
     val pagerState = rememberPagerState(pageCount = { 4 })
     val coroutineScope = rememberCoroutineScope()
 
+    // Android와 동일: 상단 Spacer 없음, 페이저 bottom=40, 인디케이터 bottom=30, 버튼 top=12/bottom=10
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(48.dp))
-
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(bottom = 40.dp),
         ) { page ->
             OnboardingPageContent(page = page)
         }
@@ -78,9 +79,8 @@ fun OnboardingScreen(
         OnboardingIndicator(
             pageCount = 4,
             currentPage = pagerState.currentPage,
+            modifier = Modifier.padding(bottom = 30.dp),
         )
-
-        Spacer(modifier = Modifier.height(32.dp))
 
         EbbingSolidButton(
             label = if (pagerState.currentPage == 3) stringResource(Res.string.onboarding_start) else stringResource(Res.string.onboarding_next),
@@ -93,10 +93,10 @@ fun OnboardingScreen(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, bottom = 10.dp),
         )
-
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -128,36 +128,36 @@ private fun OnboardingPageContent(
         )
     }
 
-    Column(
+    // Android와 동일: Box(CenterStart) + 좌측정렬 텍스트, 이미지만 중앙, 제목 bottom=12
+    Box(
+        contentAlignment = Alignment.CenterStart,
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
     ) {
-        Image(
-            painter = painterResource(imageRes),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(vertical = 66.dp)
-                .size(300.dp),
-        )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Image(
+                painter = painterResource(imageRes),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(vertical = 66.dp)
+                    .size(300.dp)
+                    .align(Alignment.CenterHorizontally),
+            )
 
-        Spacer(modifier = Modifier.height(48.dp))
+            Text(
+                text = title,
+                style = EbbingTheme.typography.headingLSB,
+                color = EbbingTheme.colors.black,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(bottom = 12.dp),
+            )
 
-        Text(
-            text = title,
-            style = EbbingTheme.typography.headingLSB,
-            color = EbbingTheme.colors.black,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = description,
-            style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.dark2,
-            textAlign = TextAlign.Center,
-        )
+            Text(
+                text = description,
+                style = EbbingTheme.typography.bodyMM,
+                color = EbbingTheme.colors.dark2,
+                textAlign = TextAlign.Start,
+            )
+        }
     }
 }
 

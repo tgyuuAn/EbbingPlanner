@@ -100,12 +100,14 @@ fun ThemeScreen(
                 }
             }
         } else {
+            // Android와 동일: 미리보기 먼저 → 선택기 → 말미 Spacer(60)
             Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
                 Text(text = stringResource(Res.string.setting_change_app_theme), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
                 Spacer(modifier = Modifier.height(32.dp))
-                ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
-                Spacer(modifier = Modifier.height(32.dp))
                 ThemePreview(theme = state.selectTheme ?: Theme.NORMAL)
+                Spacer(modifier = Modifier.height(32.dp))
+                ThemeSelector(selectedTheme = state.selectTheme, onThemeSelected = { viewModel.onIntent(ThemeIntent.OnThemeChange(it)) })
+                Spacer(modifier = Modifier.height(60.dp))
             }
         }
 
