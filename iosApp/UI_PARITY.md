@@ -232,3 +232,28 @@ aapt 관례를 미지원 → commonMain composeResources로 복사된 문자열�
 - ✅ 큰따옴표 strip 시 내부 표시용 따옴표 오손 없음(제거분 전량 값 전체 래핑=공백보존용). XML 4파일 well-formed 재확인.
 - ✅ iOS 빌드/실행 무회귀(온보딩 정상 렌더, 스크린샷). 라우팅 제약으로 AddTodo 화면 직접 캡처 대신 cvr 바이트 검증으로 확정.
 - 규칙: 새 문자열은 aapt 이스케이프(따옴표/백슬래시) 쓰지 말고 순수 텍스트로. 상세 KMP_IOS_NOTES.md 함정 #7.
+
+## AddTodo / EditTodo 동작 패리티 전수조사 (사용자 지목 화면, 2차)
+Android 원본(feature/home/graph/addtodo·edittodo) ↔ iOS(shared/ui/feature/home/addtodo·edittodo) 정밀 비교.
+서브에이전트 발견 + 직접 검증. **미구현은 위험도/범위 때문에 기록만; 안전한 것만 즉시 반영.**
+
+### 대형 플랫폼 기능 (기록만 — 사용자 결정 필요, 무단 구현 위험)
+- ⚠️ **알림 예약 미구현(iOS)**: Android AddTodo/EditTodo 저장 시 `alarmScheduler.scheduleDailyExact`로 매일 정시 알림 등록. iOS는 저장 즉시 쓰기만, 리마인더 안 울림. shared에 `NotificationScheduler.ios.kt`는 존재 → 배선 여지 있으나 권한(UNUserNotificationCenter)·엔타이틀먼트·expect/actual 설계 필요한 **기능**이라 무단 진행 부적절. 의도적 포팅 보류로 추정.
+- ⚠️ **알림 넛지 페이지 미구현(iOS)**: Android는 저장 시 `shouldShowNotificationNudge()`면 2번째 페이지(Page.NOTIFICATION: 토글/시간/문구/초기화)로 이동. iOS엔 Page enum·NotificationState·NotificationScreen·인텐트 전부 없음. `shouldShowNotificationNudge()`는 shared에 존재. 위 알림 예약과 함께 다뤄야 함.
+
+### 시스템적 갭 (기록 — 범위 큼)
+- ⚠️ **SCREEN_VIEW/Click 애널리틱스 광범위 누락**: iOS 포트는 화면 진입 `screen_view`를 어디서도 안 남김(RootContent 중앙 로깅 없음). AddTodo/EditTodo의 View/Click 로그도 없음. `AnalyticsHelper`(platform/Analytics.kt)·패턴(ScheduleViewModel.logClick, HomeScreen homeClickEvent) 존재 → 화면별 VM에 analyticsHelper 주입+로깅 필요(교차절단, RootContent 배선 동반). 사용자 "로그 전부" 요청 대상 → 우선순위 높음.
+
+### 소규모 파리티 (개별 처리)
+- ⚠️ **미지정 태그 로컬라이즈 이름 누락**: Android는 기본 태그명을 `R.string.tag_unassigned`("미지정")로 치환(init/initLastSelected/기본선택 3곳). iOS는 DB 원본명 그대로. shared strings에 `tag_unassigned` **없음**(Android core/designsystem res에만) → 4개 로케일 추가 후 적용 필요.
+- ⚠️ **mondayStart(주 시작요일) 미배선**: Android는 `configRepository.getMondayStart()`를 날짜·반복 바텀시트에 `startFromMonday`로 전달. iOS AddTodoState/EditTodoState에 필드 없고 시트에 미전달. shared에 `getMondayStart()` 존재 → 배선 가능.
+- ⚠️ **EditTodo "태그 추가" no-op**: Android `onAddTagClick`은 시트 닫고 AddTag로 이동. iOS `OnAddTagClick`은 빈 스텁. + 복귀 시 `loadNewTag()`로 신규 태그 자동선택도 iOS 없음.
+- ⚠️ **EditTodo null 태그 처리**: Android는 loadTag null이면 뒤로가기. iOS는 tag=null로 화면 유지, 저장 시 조용히 무동작(버튼은 활성). 피드백 필요.
+- ⚠️ **first-todo 위젯 넛지/등록카운트**: Android는 `markFirstTodoAdded()` 결과를 HomeRoute `showWidgetNudge`로 전달 + `incrementTodoRegisteredCount()`. iOS는 결과 무시, 카운트 미증가.
+- 🔧 **저장 시 clearFocus 누락**: Android 저장 onClick은 `focusManager.clearFocus()`로 키보드 닫음. iOS는 인텐트만. → 즉시 반영 예정(격리·안전).
+- ⚠️ **TitleContent 포커스 자동스크롤 누락**: Android는 포커스 시 `animateScrollWhenFocus`로 스크롤. iOS TitleContent는 scrollState 미수용.
+
+### 저위험/무해
+- iOS ScheduleContent 이중 AnimatedVisibility(컴포넌트 내부 가드와 중복) — 애니메이션 미세차(L).
+- 헤드라인 하이라이트 색: Android textPrimary 밑줄(무채움) vs iOS primaryDefault 하이라이트 — 시각 강조차(L).
+- 태블릿 폼 좌우 패딩 40dp(Android) vs 20dp(iOS) (L).
