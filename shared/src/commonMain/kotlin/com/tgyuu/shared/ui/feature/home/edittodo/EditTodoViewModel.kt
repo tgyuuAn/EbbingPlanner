@@ -7,6 +7,8 @@ import com.tgyuu.shared.common.loadTagsByUsage
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.platform.AnalyticsEvent
+import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.platform.NotificationScheduler
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
@@ -35,6 +37,7 @@ class EditTodoViewModel(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val notificationScheduler: NotificationScheduler,
+    private val analyticsHelper: AnalyticsHelper? = null,
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onNavigateToAddTag: () -> Unit = {},
@@ -139,6 +142,16 @@ class EditTodoViewModel(
     }
 
     private suspend fun onSaveClick() {
+        analyticsHelper?.logEvent(
+            AnalyticsEvent(
+                type = AnalyticsEvent.Types.BUTTON_CLICK,
+                properties = mapOf(
+                    AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "EditTodo",
+                    AnalyticsEvent.PropertiesKeys.BUTTON_NAME to "Save",
+                ),
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
             onShowSnackbar(getString(Res.string.snack_required_fields))
             return
