@@ -145,6 +145,13 @@ fun RootContent(
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val webViewPrivacyTitle = stringResource(Res.string.webview_privacy_title)
     val webViewTermsTitle = stringResource(Res.string.webview_terms_title)
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarScope = rememberCoroutineScope()
+    val showSnackbar: (String) -> Unit = remember(snackbarHostState) {
+        { message -> snackbarScope.launch { snackbarHostState.showSnackbar(message) } }
+    }
+
     val scheduleViewModel = remember {
         ScheduleViewModel(
             todoRepository = todoRepository,
@@ -154,7 +161,7 @@ fun RootContent(
             onNavigateToEditDate = { infoId -> component.navigateToEditDate(infoId) },
             onNavigateToMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
             onNavigateToEditMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
-            onShowSnackBar = { /* TODO: snackbar host */ },
+            onShowSnackBar = showSnackbar,
         )
     }
 
@@ -212,12 +219,6 @@ fun RootContent(
     val appTheme by configRepository.getAppTheme()
         .collectAsState(initial = com.tgyuu.shared.domain.model.Theme.NORMAL)
 
-    val snackbarHostState = remember { SnackbarHostState() }
-    val snackbarScope = rememberCoroutineScope()
-    val showSnackbar: (String) -> Unit = remember(snackbarHostState) {
-        { message -> snackbarScope.launch { snackbarHostState.showSnackbar(message) } }
-    }
-
     EbbingTheme(theme = appTheme) {
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -256,13 +257,13 @@ fun RootContent(
                         is RootComponent.Child.Schedule -> ScheduleScreen(viewModel = scheduleViewModel)
                         is RootComponent.Child.Setting -> SettingScreen(viewModel = settingViewModel)
                         is RootComponent.Child.Tag -> TagScreenWrapper(component)
-                        is RootComponent.Child.Memo -> MemoScreenWrapper(component, instance.scheduleId)
+                        is RootComponent.Child.Memo -> MemoScreenWrapper(component, instance.scheduleId, showSnackbar)
                         is RootComponent.Child.RepeatCycle -> RepeatCycleScreenWrapper(component)
                         is RootComponent.Child.Sync -> SyncScreenWrapper(component, showSnackbar)
                         is RootComponent.Child.Onboarding -> OnboardingScreenWrapper(component)
-                        is RootComponent.Child.AddTodo -> AddTodoScreenWrapper(component, instance.selectedDate)
-                        is RootComponent.Child.EditTodo -> EditTodoScreenWrapper(component, instance.scheduleId)
-                        is RootComponent.Child.EditDate -> EditDateScreenWrapper(component, instance.infoId)
+                        is RootComponent.Child.AddTodo -> AddTodoScreenWrapper(component, instance.selectedDate, showSnackbar)
+                        is RootComponent.Child.EditTodo -> EditTodoScreenWrapper(component, instance.scheduleId, showSnackbar)
+                        is RootComponent.Child.EditDate -> EditDateScreenWrapper(component, instance.infoId, showSnackbar)
                         is RootComponent.Child.AddTag -> AddTagScreenWrapper(component)
                         is RootComponent.Child.AddRepeatCycle -> AddRepeatCycleScreenWrapper(component)
                         is RootComponent.Child.EditTag -> EditTagScreenWrapper(component, instance.tagId)
@@ -341,6 +342,7 @@ private fun TagScreenWrapper(component: RootComponent) {
 private fun MemoScreenWrapper(
     component: RootComponent,
     scheduleId: Int,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
@@ -350,6 +352,7 @@ private fun MemoScreenWrapper(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { component.navigateToHome() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
             isEditEntry = false,
         )
@@ -418,6 +421,7 @@ private fun OnboardingScreenWrapper(component: RootComponent) {
 private fun AddTodoScreenWrapper(
     component: RootComponent,
     selectedDateString: String,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val selectedDate = remember(selectedDateString) {
@@ -440,6 +444,7 @@ private fun AddTodoScreenWrapper(
             onNavigateToHome = { date -> component.navigateToHome() },
             onNavigateToAddTag = { component.navigateToAddTag() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
         )
     }
@@ -450,6 +455,7 @@ private fun AddTodoScreenWrapper(
 private fun EditTodoScreenWrapper(
     component: RootComponent,
     scheduleId: Int,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
@@ -464,6 +470,7 @@ private fun EditTodoScreenWrapper(
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             onNavigateToAddTag = { component.navigateToAddTag() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
         )
     }
@@ -474,6 +481,7 @@ private fun EditTodoScreenWrapper(
 private fun EditDateScreenWrapper(
     component: RootComponent,
     infoId: Int,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
@@ -485,6 +493,7 @@ private fun EditDateScreenWrapper(
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
             configRepository = configRepository,
         )
