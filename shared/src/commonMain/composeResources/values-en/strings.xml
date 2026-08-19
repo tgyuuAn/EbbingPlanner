@@ -94,6 +94,7 @@
 
     <!-- Tags -->
     <string name="tag_manage_title">Manage Tags</string>
+    <string name="tag_unassigned">Unassigned</string>
     <string name="tag_add_button">Add</string>
     <string name="tag_empty_message">No tags yet.\nTap the + button in the top right to add one.</string>
     <string name="tag_delete">Delete</string>

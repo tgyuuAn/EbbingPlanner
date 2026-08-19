@@ -94,6 +94,7 @@
 
     <!-- タグ -->
     <string name="tag_manage_title">タグの管理</string>
+    <string name="tag_unassigned">未指定</string>
     <string name="tag_add_button">追加</string>
     <string name="tag_empty_message">登録されたタグがありません。\n右上の＋ボタンを押してタグを追加してみましょう。</string>
     <string name="tag_delete">削除</string>
