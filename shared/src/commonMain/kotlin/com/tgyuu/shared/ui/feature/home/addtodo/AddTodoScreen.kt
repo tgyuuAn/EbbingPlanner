@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import com.tgyuu.shared.designsystem.component.EbbingPartialUnderlineText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -72,6 +73,7 @@ fun AddTodoScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
     var showExitDialog by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
@@ -258,7 +260,10 @@ fun AddTodoScreen(
 
         com.tgyuu.shared.designsystem.component.EbbingSolidButton(
             label = stringResource(Res.string.home_add_todo_button),
-            onClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
+            onClick = {
+                focusManager.clearFocus()
+                viewModel.onIntent(AddTodoIntent.OnSaveClick)
+            },
             enabled = state.isSaveEnabled,
             modifier = Modifier
                 .fillMaxWidth()

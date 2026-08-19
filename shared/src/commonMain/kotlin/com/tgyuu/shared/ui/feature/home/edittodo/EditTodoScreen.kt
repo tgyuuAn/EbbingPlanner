@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingPartialUnderlineText
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
@@ -54,6 +55,7 @@ fun EditTodoScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
 
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberEbbingBottomSheetState()
@@ -170,7 +172,10 @@ fun EditTodoScreen(
 
             EbbingSolidButton(
                 label = stringResource(Res.string.home_edit_todo_button),
-                onClick = { viewModel.onIntent(EditTodoIntent.OnSaveClick) },
+                onClick = {
+                    focusManager.clearFocus()
+                    viewModel.onIntent(EditTodoIntent.OnSaveClick)
+                },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
