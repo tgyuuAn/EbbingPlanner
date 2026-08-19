@@ -257,3 +257,30 @@ Android 원본(feature/home/graph/addtodo·edittodo) ↔ iOS(shared/ui/feature/h
 - iOS ScheduleContent 이중 AnimatedVisibility(컴포넌트 내부 가드와 중복) — 애니메이션 미세차(L).
 - 헤드라인 하이라이트 색: Android textPrimary 밑줄(무채움) vs iOS primaryDefault 하이라이트 — 시각 강조차(L).
 - 태블릿 폼 좌우 패딩 40dp(Android) vs 20dp(iOS) (L).
+
+## EditDate / Notification / Schedule 동작 패리티 전수조사 (3차)
+Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) ↔ iOS(shared) 정밀 비교.
+
+### EditDate
+- ⚠️(high) **스낵바 전부 무동작**: iOS EditDateViewModel `onShowSnackbar` 기본 `{}`이고 RootContent 생성부(477-484)에서 미전달 → no-schedule/missing-tag/date-repeat-changed/update-failed/all-rest-days 스낵바 안 뜸. 근본은 iOS 포트에 스낵바 호스트 미배선(Schedule도 `onShowSnackBar = { /* TODO */ }`)=시스템적. 스낵바 호스트 배선 후 각 VM 연결 필요.
+- ⚠️(high) **"반복주기 직접 추가" no-op**: Android는 AddRepeatCycle로 이동+복귀 시 `loadNewRepeatCycle()`로 신규 선택. iOS `OnAddRepeatCycleClick` 빈 스텁, 미배선. (EditTodo "태그 추가" no-op과 동류.)
+- ⚠️(med) EditDate Save Click 애널리틱스 누락.
+- ⚠️(low) onSaveClick 검증 순서 Android(tag→empty) vs iOS(empty→tag).
+- ⚠️(low/med) imePadding 범위 차 → iOS Save 버튼이 키보드에 가림(외곽 Column 아닌 내부에만). 🔧 clearFocus는 앞서 반영.
+- ⚠️(low/med) mondayStart 시트 미배선(AddTodo/EditTodo와 동일 계열).
+- ⚠️(low) ScheduleCheckContent 등장/퇴장 애니메이션(EbbingVisibleAnimation) 누락.
+
+### Notification (충실한 포팅 아님 — 근본적으로 다른 화면)
+- ⚠️(high) **아키텍처/저장 모델 상이**: Android는 AddTodo 플로우 내 "NotificationNudge" 페이지(하단 Save로 설정+투두 저장 후 홈 이동, Save 시에만 영속). iOS는 독립 설정화면(토글/시간/문구/초기화가 즉시 config에 write, Save 버튼·투두저장 없음). → 알림 예약 미구현(2차 기록)과 함께 재설계 결정 필요.
+- ⚠️(high) **디테일 섹션 항상 표시**: Android는 토글 off면 AnimatedVisibility로 접힘. iOS는 `isNotificationEnabled` 무관하게 항상 렌더.
+- ⚠️(med) 기본값 반전: Android `notificationEnabled=false` vs iOS `isNotificationEnabled=true`(config null 폴백 true).
+- ⚠️(med) 초기화 버튼 항상 표시(Android는 message!=default일 때만).
+- ⚠️(med) **미리보기 항상 렌더(무효 시 깨짐)**: Android는 `isValidPlaceholder && preview.isNotEmpty()`일 때만, placeholder 2+개면 preview="". iOS는 무조건 렌더+토큰 replace → 플레이스홀더 2+개면 깨진 미리보기.
+- ⚠️(med) 문구 길이 입력 캡 불일치: iOS `limit=50` 하드캡인데 VM은 100까지 허용(내부 불일치). Android는 캡 없고 50 초과 시 에러.
+- ⚠️(med) 저장/토글/시간/초기화 Click 애널리틱스 누락.
+- ⚠️(low/med) 미리보기 카드 스타일(Android 라운드 카드+캡션 vs iOS 평문), 섹션 구분(스페이서 vs Divider), 플레이스홀더 설명 볼드 강조 차이.
+
+### Schedule (모아보기) — 충실한 포팅, 실질 갭 1건
+- 🔧(med) **onDelayAll 배치화**: iOS 개별 updateTodo 루프 → Android처럼 `updateTodos(updated)` 배치(원자적·성능). **이번에 반영.** (onDeleteRemaining은 양쪽 forEach라 파리티.)
+- ⚠️(low) 태그삭제 다이얼로그 제목 구성(iOS buildAnnotatedString 강조) — 메시지 동등, 시각 강조차.
+- 참고: 삭제/미루기/메모 액션 Click 로그는 Android도 없음(=파리티). 옵션시트는 iOS도 다이얼로그 전 hide함(스택버그 없음).

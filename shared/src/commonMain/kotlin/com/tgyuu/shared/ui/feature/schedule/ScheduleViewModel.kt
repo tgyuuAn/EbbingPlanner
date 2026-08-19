@@ -231,10 +231,10 @@ class ScheduleViewModel(
         suspendRunCatching {
             val allSchedules = todoRepository.loadSchedulesByTodoInfo(schedule.infoId)
             val toDelay = allSchedules.filter { it.date >= schedule.date }
-            toDelay.forEach { s ->
-                todoRepository.updateTodo(s.copy(date = s.date.plus(1, DateTimeUnit.DAY)))
-            }
-            onShowSnackBar(getString(Res.string.snack_schedules_delayed, toDelay.size))
+            // Android와 동일: 개별 updateTodo 루프 대신 배치 updateTodos로 원자적 갱신
+            val updated = toDelay.map { it.copy(date = it.date.plus(1, DateTimeUnit.DAY)) }
+            todoRepository.updateTodos(updated)
+            onShowSnackBar(getString(Res.string.snack_schedules_delayed, updated.size))
             loadTodoSchedules()
         }
     }
