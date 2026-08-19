@@ -64,13 +64,13 @@
     <string name="sync_no_record">No record</string>
     <string name="sync_no_record_or_network">No record or no network</string>
     <string name="sync_generating">Generating...</string>
-    <string name="sync_device_id_label">This device\'s unique ID :</string>
+    <string name="sync_device_id_label">This device's unique ID :</string>
     <string name="sync_device_last_update_label">This device's last update : </string>
     <string name="sync_server_last_update_label">This ID's last update on server : </string>
     <string name="sync_linked_id_label">Linked ID :</string>
     <string name="sync_section_title">Data sync / Link with other devices</string>
     <string name="sync_do_sync">Sync server with this device</string>
-    <string name="sync_manual_hint">It doesn\'t sync automatically. Tap to sync manually.</string>
+    <string name="sync_manual_hint">It doesn't sync automatically. Tap to sync manually.</string>
     <string name="sync_disconnect_action">Disconnect</string>
     <string name="sync_connect_action">Link with another device</string>
     <string name="sync_guide_1">- Sync is a two-way method that reflects this device's changes to the server and fetches the latest data from the server.\n</string>
@@ -102,14 +102,14 @@
     <string name="tag_delete_confirm_prefix">Delete the %1$s tag</string>
     <string name="tag_delete_confirm_highlight"></string>
     <string name="tag_delete_confirm_suffix">?</string>
-    <string name="tag_delete_confirm_subtext">Deleted tags can\'t be restored, so please choose carefully.</string>
+    <string name="tag_delete_confirm_subtext">Deleted tags can't be restored, so please choose carefully.</string>
     <string name="tag_add_title">Add Tag</string>
     <string name="tag_edit_title">Edit Tag</string>
     <string name="tag_save">Save</string>
     <string name="tag_add_headline">Add a new tag</string>
     <string name="tag_edit_headline">Edit the %1$s tag</string>
     <string name="tag_name_label">Tag Name</string>
-    <string name="tag_name_hint">What\'s the name of the tag?</string>
+    <string name="tag_name_hint">What's the name of the tag?</string>
     <string name="tag_color">Color</string>
     <string name="tag_color_select_title">Select color</string>
     <string name="tag_apply">Apply</string>
@@ -132,7 +132,7 @@
     <string name="repeat_edit_headline">Edit your own repeat cycle</string>
     <string name="repeat_cycle_label">Repeat cycle</string>
     <string name="repeat_cycle_input_hint">How often should the schedule repeat?</string>
-    <string name="repeat_cycle_input_guide">Separate numbers with \' , \'\nEnter 0 to include the same day\nOnly numbers under 1000 are allowed.\n ex) 0, 1, 3, 7, 15</string>
+    <string name="repeat_cycle_input_guide">Separate numbers with ' , '\nEnter 0 to include the same day\nOnly numbers under 1000 are allowed.\n ex) 0, 1, 3, 7, 15</string>
     <string name="repeat_cycle_preview_label">Expected repeat cycle</string>
 
     <!-- Home / Schedule -->
@@ -150,10 +150,10 @@
     <string name="home_rest_day">Rest days</string>
     <string name="home_delete">Delete</string>
     <string name="home_add_todo_title">Add task</string>
-    <string name="home_add_todo_header_suffix">\nLet\'s create a task starting from</string>
+    <string name="home_add_todo_header_suffix">\nLet's create a task starting from</string>
     <string name="home_edit_todo_title">Edit task</string>
-    <string name="home_edit_todo_header_suffix">\nLet\'s switch it to</string>
-    <string name="home_edit_date_header_suffix">\nLet\'s change it to start from</string>
+    <string name="home_edit_todo_header_suffix">\nLet's switch it to</string>
+    <string name="home_edit_date_header_suffix">\nLet's change it to start from</string>
     <string name="home_edit_date_description">- Changing the schedule resets the completion status of existing tasks.\n- You can set the completion status of new tasks in the checkboxes above.\n- Changing the schedule removes any memos attached to existing tasks.</string>
     <string name="home_study_schedule_count">%1$d study tasks</string>
     <string name="home_schedule_date_day">%1$s (%2$s)</string>
@@ -163,7 +163,7 @@
     <string name="home_todo_count_label">%1$s tasks </string>
     <string name="home_empty_schedule">No tasks on %1$d/%2$d.\nTap the + button in the top right to create a new task.</string>
     <string name="home_review_title">Has Ebbing Planner been helpful?</string>
-    <string name="home_review_sub">We\'ll use your review \nto build an even more convenient service.</string>
+    <string name="home_review_sub">We'll use your review \nto build an even more convenient service.</string>
     <string name="home_review_button">Write a review</string>
     <string name="home_select_end_date">Select end date</string>
     <string name="home_daily_repeat_total">Repeat daily for %1$d days</string>
@@ -172,7 +172,7 @@
     <string name="home_end_date_with_year">%1$d/%2$d/%3$d</string>
     <string name="home_daily_repeat_display_name">Daily (until %1$s)</string>
     <string name="home_exit_confirm_title">Your task in progress will be lost!</string>
-    <string name="home_exit_confirm_sub">If you go back now, the task won\'t be saved.\nKeep going and finish writing it.</string>
+    <string name="home_exit_confirm_sub">If you go back now, the task won't be saved.\nKeep going and finish writing it.</string>
     <string name="home_exit_confirm_stop">Stop writing</string>
     <string name="home_exit_confirm_continue">Keep writing</string>
 
@@ -183,11 +183,11 @@
     <string name="schedule_card_date">%1$d/%2$d (%3$s)</string>
     <string name="schedule_empty_message">No schedules yet.\nShall we add a new one?</string>
     <string name="schedule_empty_register_button">Add a schedule</string>
-    <string name="schedule_tag_edit_title">Edit \'%1$s\' tag</string>
+    <string name="schedule_tag_edit_title">Edit '%1$s' tag</string>
     <string name="schedule_tag_name_label">Tag name</string>
     <string name="schedule_tag_name_hint">Enter a tag name</string>
     <string name="schedule_tag_color_label">Color</string>
-    <string name="schedule_tag_delete_label">Delete \'%1$s\' tag</string>
+    <string name="schedule_tag_delete_label">Delete '%1$s' tag</string>
     <string name="schedule_tag_save_button">Save</string>
     <string name="schedule_options_title">Edit</string>
     <string name="schedule_options_subtitle">What would you like to do with the %1$s schedule?</string>
@@ -271,9 +271,9 @@
     <string name="onboarding_page1_title">Learning based on the Ebbinghaus forgetting curve</string>
     <string name="onboarding_page1_desc">We automatically tell you the optimal review timing\nbased on the forgetting curve.</string>
     <string name="onboarding_page2_title">Easy schedule check</string>
-    <string name="onboarding_page2_desc">Easily check and complete today\'s schedule\nfrom the home screen.</string>
+    <string name="onboarding_page2_desc">Easily check and complete today's schedule\nfrom the home screen.</string>
     <string name="onboarding_page3_title">Never miss it with reminders</string>
-    <string name="onboarding_page3_desc">We notify you of today\'s tasks\nat the time you set.</string>
+    <string name="onboarding_page3_desc">We notify you of today's tasks\nat the time you set.</string>
     <string name="onboarding_page4_title">Sync across devices</string>
     <string name="onboarding_page4_desc">Connect with other devices\nto manage schedules together.</string>
 
@@ -286,10 +286,10 @@
     <string name="connect_dialog_desc_highlight_2">be sure to check before linking</string>
     <string name="connect_dialog_desc_3">.</string>
     <string name="connect_dialog_confirm">Link</string>
-    <string name="connect_upload_title">Link using this device\'s data</string>
+    <string name="connect_upload_title">Link using this device's data</string>
     <string name="connect_generate">Generate</string>
     <string name="connect_upload_desc">Generate a code to link using your data.</string>
-    <string name="connect_download_title">Link using another device\'s data</string>
+    <string name="connect_download_title">Link using another device's data</string>
     <string name="connect_connect">Connect</string>
     <string name="connect_download_desc">Enter the link code of the device with the data you want to use.</string>
     <string name="connect_guide_1">1. On the device whose data you want to keep, </string>
@@ -405,10 +405,10 @@
     <string name="sync_device_info_copied">Advanced info copied.</string>
     <string name="sync_new_device_section">Connect a new device</string>
     <string name="sync_generate_qr">Generate QR</string>
-    <string name="sync_generate_qr_desc">Send this device\'s schedule to another device</string>
+    <string name="sync_generate_qr_desc">Send this device's schedule to another device</string>
     <string name="sync_scan_qr">Scan QR</string>
-    <string name="sync_scan_qr_desc">Bring another device\'s schedule to this device</string>
-    <string name="sync_scan_qr_warning">This device\'s schedule will be replaced with the other device\'s schedule.</string>
+    <string name="sync_scan_qr_desc">Bring another device's schedule to this device</string>
+    <string name="sync_scan_qr_warning">This device's schedule will be replaced with the other device's schedule.</string>
     <string name="sync_qr_code_title">Sync QR code</string>
     <string name="sync_remaining_time">Time left: %1$s</string>
     <string name="sync_scan_this_qr">Scan this QR code from another device.</string>
@@ -434,16 +434,16 @@
     <!-- Restore by deviceId -->
     <string name="sync_restore_title">Restore data</string>
     <string name="sync_restore_headline">Restore your backed-up data</string>
-    <string name="sync_restore_description">Enter the deviceId shown on the other device\'s sync screen to bring its backed-up data to this device.</string>
+    <string name="sync_restore_description">Enter the deviceId shown on the other device's sync screen to bring its backed-up data to this device.</string>
     <string name="sync_restore_input_label">deviceId</string>
     <string name="sync_restore_input_hint">e.g. 3f2a8b1c</string>
     <string name="sync_restore_button">Restore</string>
     <string name="sync_restore_done">Restored data from %1$s.</string>
     <string name="sync_restore_not_found">No backup found for that deviceId.</string>
-    <string name="sync_restore_empty_data">That device\'s backup is empty. If it was linked to another device, try that device\'s deviceId instead.</string>
+    <string name="sync_restore_empty_data">That device's backup is empty. If it was linked to another device, try that device's deviceId instead.</string>
     <string name="sync_restore_ambiguous">Multiple devices match. Please check the deviceId again.</string>
-    <string name="sync_restore_self">That\'s this device\'s deviceId. Please enter another device\'s deviceId.</string>
-    <string name="sync_restore_linked">You can\'t restore while linked to another device. Unlink and try again.</string>
+    <string name="sync_restore_self">That's this device's deviceId. Please enter another device's deviceId.</string>
+    <string name="sync_restore_linked">You can't restore while linked to another device. Unlink and try again.</string>
     <string name="sync_restore_failed">Restore failed. Please try again later.</string>
     <string name="sync_restore_confirm_title">Restore data?</string>
     <string name="sync_restore_confirm_desc">All data on this device will be replaced and cannot be undone.</string>
@@ -455,14 +455,14 @@
     <string name="tag_edit_button">Edit tag</string>
     <string name="repeat_register_button">Add repeat cycle</string>
     <string name="repeat_edit_button">Edit repeat cycle</string>
-    <string name="home_notification_nudge">Even on busy days,\nwe\'ll keep track of your review days automatically</string>
-    <string name="home_notification_header_sub">Set a notification and we\'ll remind you of tasks on the next review day.\nYou can change notifications anytime in the Settings tab.</string>
+    <string name="home_notification_nudge">Even on busy days,\nwe'll keep track of your review days automatically</string>
+    <string name="home_notification_header_sub">Set a notification and we'll remind you of tasks on the next review day.\nYou can change notifications anytime in the Settings tab.</string>
     <string name="setting_clear_dialog_title_prefix">Reset </string>
     <string name="setting_clear_dialog_title_highlight">data</string>
     <string name="setting_clear_dialog_title_suffix">?</string>
     <string name="setting_clear_dialog_subtext">Deleted data cannot be recovered.</string>
     <string name="setting_back">Back</string>
-    <string name="setting_widget_today_todo">Today\'s to-dos  </string>
+    <string name="setting_widget_today_todo">Today's to-dos  </string>
     <string name="setting_no_schedule_today">No schedule for today.</string>
     <string name="setting_ebbing_planner_preview">Ebbing Planner preview</string>
     <string name="home_notification_receive">Receive notifications</string>

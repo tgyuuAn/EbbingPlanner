@@ -36,6 +36,8 @@
 - **해결**: 값 전체를 감싼 `"..."`를 제거. 검증: `.cvr`는 `string|<name>|<base64(UTF-8)>` 포맷이라 base64 디코드로 저장 바이트 확인 가능. 변환기는 앞 공백을 **트리밍하지 않으므로**(따옴표 없이도 선행 공백·`\n` 보존됨) 따옴표만 벗기면 안전. 예: ` 부터\n시작...` → cvr 첫 바이트 `0x20`(공백) 확인.
   - 재검증 태스크: `./gradlew :shared:convertXmlValueResourcesForCommonMain --rerun-tasks` 후 `shared/build/generated/compose/resourceGenerator/preparedResources/commonMain/.../values/strings.commonMain.cvr` 디코드.
   - 일괄 제거: `(<string name="[^"]+">)"(.*)"(</string>)` → `\1\2\3` (values 28, en 25, ja 24, ko 0 = 총 77건).
+- **같은 계열 2 — 이스케이프 아포스트로피 `\'`**: 변환기는 `\n`은 개행으로 처리하지만 `\'`/`\"`는 **역슬래시를 그대로 저장**. Android aapt는 비따옴표 문자열에서 `\'`를 요구하지만 CMP 변환기엔 불필요 → iOS에서 `\'스터디\' 태그 편집`처럼 역슬래시가 보임. 해결: `\'`→`'` 치환(values 6, en 33, ja 2, ko 0 = 41건). `\n`은 건드리지 말 것(정상 처리됨). `\"`는 0건이었음.
+- **정리**: CMP 변환기는 `\n`만 처리, `"..."` 래핑·`\'`·`\"`는 미처리. 새 문자열 추가 시 aapt 관례(따옴표/백슬래시 이스케이프) 쓰지 말고 순수 텍스트로.
 
 ### 6. 시뮬레이터 UI 시각 검증 방법 (탭 자동화 불가)
 - System Events 접근성 권한 차단 + idb 미설치 → 좌표 탭 불가.
