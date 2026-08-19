@@ -7,6 +7,8 @@ import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
 import com.tgyuu.shared.domain.model.DefaultTodoTag
 import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.platform.AnalyticsEvent
+import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.platform.NotificationScheduler
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
@@ -37,6 +39,7 @@ class AddTodoViewModel(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val notificationScheduler: NotificationScheduler,
+    private val analyticsHelper: AnalyticsHelper? = null,
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onNavigateToAddTag: () -> Unit = {},
@@ -179,7 +182,21 @@ class AddTodoViewModel(
         setState { copy(restDays = newRestDays.toImmutableSet()) }
     }
 
+    private fun logClick(buttonName: String) {
+        analyticsHelper?.logEvent(
+            AnalyticsEvent(
+                type = AnalyticsEvent.Types.BUTTON_CLICK,
+                properties = mapOf(
+                    AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "AddTodo",
+                    AnalyticsEvent.PropertiesKeys.BUTTON_NAME to buttonName,
+                ),
+            )
+        )
+    }
+
     private suspend fun onSaveClick() {
+        logClick("Save")
+
         if (!currentState.isSaveEnabled) {
             onShowSnackbar(getString(Res.string.snack_required_fields))
             return
@@ -194,6 +211,12 @@ class AddTodoViewModel(
 
         // Android와 동일: 최초 저장 시 알림 넛지 노출 → 넛지 페이지, 아니면 바로 저장
         if (configRepository.shouldShowNotificationNudge()) {
+            analyticsHelper?.logEvent(
+                AnalyticsEvent(
+                    type = AnalyticsEvent.Types.SCREEN_VIEW,
+                    properties = mapOf(AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "NotificationNudge"),
+                )
+            )
             setState { copy(page = AddTodoState.Page.NOTIFICATION) }
         } else {
             saveTodoAndNavigateHome()

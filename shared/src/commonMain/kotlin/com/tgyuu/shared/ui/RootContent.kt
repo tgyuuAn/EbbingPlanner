@@ -38,6 +38,7 @@ import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.navigation.RootComponent
+import com.tgyuu.shared.platform.AnalyticsEvent
 import com.tgyuu.shared.platform.InAppReviewManager
 import com.tgyuu.shared.ui.feature.home.HomeScreen
 import com.tgyuu.shared.ui.feature.home.HomeViewModel
@@ -197,6 +198,18 @@ fun RootContent(
         }
         if (activeChild is RootComponent.Child.Schedule) {
             scheduleViewModel.loadTodoSchedules()
+        }
+    }
+
+    // 화면 진입 시 screen_view 로깅 (Android 화면별 AnalyticsEvent.View 대응, 중앙 집중)
+    LaunchedEffect(activeChild) {
+        screenNameFor(activeChild)?.let { screenName ->
+            analyticsHelper.logEvent(
+                AnalyticsEvent(
+                    type = AnalyticsEvent.Types.SCREEN_VIEW,
+                    properties = mapOf(AnalyticsEvent.PropertiesKeys.SCREEN_NAME to screenName),
+                )
+            )
         }
     }
 
@@ -434,12 +447,14 @@ private fun AddTodoScreenWrapper(
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
     val notificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember(selectedDate) {
         AddTodoViewModel(
             selectedDate = selectedDate,
             todoRepository = todoRepository,
             configRepository = configRepository,
             notificationScheduler = notificationScheduler,
+            analyticsHelper = analyticsHelper,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             onNavigateToAddTag = { component.navigateToAddTag() },
@@ -461,12 +476,14 @@ private fun EditTodoScreenWrapper(
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
     val notificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember(scheduleId) {
         EditTodoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
             configRepository = configRepository,
             notificationScheduler = notificationScheduler,
+            analyticsHelper = analyticsHelper,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
             onNavigateToAddTag = { component.navigateToAddTag() },
@@ -643,4 +660,27 @@ private fun WidgetScreenWrapper(component: RootComponent) {
         )
     }
     com.tgyuu.shared.ui.feature.setting.widget.WidgetScreen(viewModel = viewModel)
+}
+
+/** Android 화면별 screenName 매핑 (AnalyticsEvent.View 대응). 대응 없는 화면은 null 반환해 미로깅. */
+private fun screenNameFor(child: RootComponent.Child?): String? = when (child) {
+    is RootComponent.Child.Home -> "Home"
+    is RootComponent.Child.Schedule -> "Schedule"
+    is RootComponent.Child.Setting -> "Setting"
+    is RootComponent.Child.Tag -> "Tag"
+    is RootComponent.Child.RepeatCycle -> "RepeatCycle"
+    is RootComponent.Child.Sync -> "SyncMain"
+    is RootComponent.Child.AddTodo -> "AddTodo"
+    is RootComponent.Child.EditTodo -> "EditTodo"
+    is RootComponent.Child.EditDate -> "EditDate"
+    is RootComponent.Child.AddTag -> "AddTag"
+    is RootComponent.Child.EditTag -> "EditTag"
+    is RootComponent.Child.AddRepeatCycle -> "AddRepeatCycle"
+    is RootComponent.Child.EditRepeatCycle -> "EditRepeatCycle"
+    is RootComponent.Child.SyncRestore -> "RestoreByDeviceId"
+    is RootComponent.Child.Memo -> "AddMemo"
+    is RootComponent.Child.EditMemo -> "EditMemo"
+    is RootComponent.Child.ThemeChild -> "Theme"
+    is RootComponent.Child.Widget -> "Widget"
+    else -> null // Onboarding/WebView/Notification 등은 Android에 대응 View 없음
 }
