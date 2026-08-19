@@ -115,6 +115,9 @@ fun RootContent(
 
     // Check if first app open → show onboarding
     LaunchedEffect(Unit) {
+        // Android MainViewModel과 동일: 앱 시작 시 기본(미지정) 태그를 시드(insert onConflict=IGNORE라 멱등).
+        // 시드가 없으면 콜드스타트 시 태그 바텀시트에 '미지정'이 안 나타남.
+        runCatching { todoRepository.addDefaultTag() }
         if (configRepository.isFirstAppOpen()) {
             component.navigateToOnboarding()
         }
