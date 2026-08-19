@@ -122,8 +122,7 @@ fun AddTagScreen(
                 onClearClick = { viewModel.onIntent(AddTagIntent.OnNameChange("")) },
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
+            // Android와 동일: 별도 Spacer 없음(ColorContent의 top=32가 간격 제공)
             ColorContent(
                 colorValue = state.colorValue,
                 onColorClick = {
