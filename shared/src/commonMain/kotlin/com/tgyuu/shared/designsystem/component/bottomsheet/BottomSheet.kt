@@ -76,7 +76,9 @@ fun EbbingBottomSheetHeader(
     subTitle: String? = null,
     rightComponent: (@Composable () -> Unit)? = null,
 ) {
-    Column(modifier = modifier.padding(horizontal = 20.dp)) {
+    // Android EbbingBottomSheetHeader와 동일: 내부 수평 패딩 없음(호출부 Column이 20dp 제공).
+    // 기존엔 내부에 20dp가 있어 호출부 20dp와 합쳐져 헤더만 40dp로 밀려 있었음.
+    Column(modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -114,11 +116,12 @@ fun EbbingBottomSheetListItemDefault(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        // Android EbbingBottomSheetListItemDefault와 동일: 내부 수평 패딩 없음(호출부가 20dp 제공).
+        // 기존엔 내부 20dp가 있어 호출부 20dp와 합쳐져 목록 항목만 헤더보다 더 밀려 있었음.
         modifier = modifier
             .fillMaxWidth()
             .height(62.dp)
-            .clickable(enabled = enabled) { onChecked() }
-            .padding(horizontal = 20.dp),
+            .clickable(enabled = enabled) { onChecked() },
     ) {
         if (color != null) {
             Spacer(
