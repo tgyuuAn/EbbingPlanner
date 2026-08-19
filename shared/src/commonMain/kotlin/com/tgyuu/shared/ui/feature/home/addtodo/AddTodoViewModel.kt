@@ -120,6 +120,24 @@ class AddTodoViewModel(
         }
     }
 
+    // Android AddTodoViewModel.loadNewTag/loadNewRepeatCycle 대응:
+    // 태그/반복주기 추가 화면에서 복귀 시 방금 추가한 항목을 자동 선택(recentAddedId는 읽으면 소비됨).
+    fun loadNewTag() {
+        val id = todoRepository.recentAddedTagId?.toInt() ?: return
+        safeScope.launch {
+            val newTag = todoRepository.loadTag(id) ?: return@launch
+            setState { copy(tag = newTag.toUiModel()) }
+        }
+    }
+
+    fun loadNewRepeatCycle() {
+        val id = todoRepository.recentAddedRepeatCycleId?.toInt() ?: return
+        safeScope.launch {
+            val cycleModel = todoRepository.loadRepeatCycle(id).toUiModel()
+            setState { copy(repeatCycle = cycleModel) }
+        }
+    }
+
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
             AddTodoIntent.OnBackClick -> onNavigateBack()

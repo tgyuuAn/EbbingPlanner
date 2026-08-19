@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,9 @@ fun EditTodoScreen(
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
+
+    // Android 대응: 태그 추가 화면 복귀 시 방금 추가한 태그 자동 선택
+    LaunchedEffect(viewModel) { viewModel.loadNewTag() }
 
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberEbbingBottomSheetState()

@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,6 +76,12 @@ fun AddTodoScreen(
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
     var showExitDialog by remember { mutableStateOf(false) }
+
+    // Android 대응: 태그/반복주기 추가 화면에서 복귀 시 방금 추가한 항목 자동 선택
+    LaunchedEffect(viewModel) {
+        viewModel.loadNewTag()
+        viewModel.loadNewRepeatCycle()
+    }
 
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberEbbingBottomSheetState()
