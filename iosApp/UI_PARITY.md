@@ -308,3 +308,14 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - ⚠️(med) Back/Save·(Add전용)SaveMemoSingle/All Click 애널리틱스 누락.
 - ✅ iOS가 오히려 우수: 저장 실패 스낵바(snack_memo_save_failed 등) Android엔 없음.
 - ⚠️(low) isSaveEnabled: Android isNotEmpty vs iOS isNotBlank(공백만 비활성, 무해). clearFocus 미이식.
+
+## 잔여 백로그 일괄 처리 (5차, 2026-08-20)
+사용자 "남은것들 계속 다 해" 지시로 백로그 대부분 반영.
+- ✅ **EditTodo 날짜변경 알림 재예약**: 저장 시 날짜 바뀌면 구 알림(id=date.hashCode()) 취소 후 enabled·미래면 재등록.
+- ✅ **EditTodo/EditDate 추가 네비 배선**: OnAddTagClick→AddTag, OnAddRepeatCycleClick→AddRepeatCycle(빈 스텁 해소). EditTodo null 태그면 뒤로가기.
+- ✅ **mondayStart 배선**: AddTodo/EditTodo/EditDate에 getMondayStart() 구독 + 날짜/반복 시트에 startFromMonday 전달.
+- ✅ **미지정 태그 로케일**: tag_unassigned(ko/en/ja) 추가 + AddTodo/EditTodo 적용.
+- ✅ **스낵바 호스트 배선**: 기존 미배선(TODO no-op)이던 Schedule/EditDate/AddTodo/EditTodo/Memo에 showSnackbar 전달 → 저장/검증/삭제 스낵바 실제 노출.
+- ✅ **screen_view 애널리틱스**: RootContent activeChild→screen_view 중앙 로깅(전 화면). AddTodo/EditTodo Save Click + 넛지 NotificationNudge View 추가.
+- ⬜ **잔여(의도적 스코프 아웃)**: 화면별 세부 버튼 Click 애널리틱스(Tag/RepeatCycle/Memo/Sync 등 다수) — 서피스 크고 buttonName 정합성 위험으로 별도. AddTodo/EditTodo/Home/Schedule 등 주요 Click·전 화면 screen_view는 완료.
+- ⬜ **복귀 시 신규항목 자동선택(loadNewTag/loadNewRepeatCycle)**: AddTodo 포함 공용 미구현(Decompose child resume 훅 필요) — 별도.
