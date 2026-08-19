@@ -50,6 +50,9 @@ class AddTodoViewModel(
     init {
         loadInitialData()
         initNotificationState()
+        safeScope.launch {
+            configRepository.getMondayStart().collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     // Android initNotificationState 대응: 저장된 알림 시간/문구/기본 문구/플레이스홀더 토큰 로드

@@ -46,6 +46,9 @@ class EditTodoViewModel(
 
     init {
         loadScheduleData()
+        safeScope.launch {
+            configRepository.getMondayStart().collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     private fun loadScheduleData() {

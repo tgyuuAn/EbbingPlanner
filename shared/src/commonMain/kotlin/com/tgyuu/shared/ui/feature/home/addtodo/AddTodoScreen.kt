@@ -94,6 +94,7 @@ fun AddTodoScreen(
                 {
                     SelectedDateBottomSheetContent(
                         originSelectedDate = state.selectedDate,
+                        startFromMonday = state.mondayStart,
                         onDateSelected = { date ->
                             viewModel.onIntent(AddTodoIntent.OnSelectedDateChange(date))
                             scope.launch {
@@ -132,6 +133,7 @@ fun AddTodoScreen(
                         repeatCycleList = state.repeatCycleList,
                         selectedRepeatCycle = state.repeatCycle,
                         selectedDate = state.selectedDate,
+                        startFromMonday = state.mondayStart,
                         onRepeatCycleSelected = { repeatCycle ->
                             viewModel.onIntent(AddTodoIntent.OnRepeatCycleChange(repeatCycle))
                             scope.launch {

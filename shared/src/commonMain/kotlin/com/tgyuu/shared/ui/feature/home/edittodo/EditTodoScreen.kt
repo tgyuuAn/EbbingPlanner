@@ -75,6 +75,7 @@ fun EditTodoScreen(
                     SelectedDateBottomSheetContent(
                         originSelectedDate = state.selectedDate,
                         schedulesByDateMap = state.schedulesByDateMap,
+                        startFromMonday = state.mondayStart,
                         onDateSelected = { date ->
                             viewModel.onIntent(EditTodoIntent.OnSelectedDateChange(date))
                             scope.launch {

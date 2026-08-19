@@ -41,6 +41,9 @@ class EditDateViewModel(
 
     init {
         loadInitialData()
+        safeScope.launch {
+            configRepository.getMondayStart().collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     private fun loadInitialData() {

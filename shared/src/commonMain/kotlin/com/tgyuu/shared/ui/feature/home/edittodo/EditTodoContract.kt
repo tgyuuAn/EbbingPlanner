@@ -26,6 +26,7 @@ data class EditTodoState(
     val tag: TodoTagUiModel? = null,
     val tagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
+    val mondayStart: Boolean = false,
     val isLoading: Boolean = false,
 ) : UiState {
     val isSaveEnabled: Boolean = title.isNotEmpty()

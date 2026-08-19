@@ -95,6 +95,7 @@ fun EditDateScreen(
                 {
                     SelectedDateBottomSheetContent(
                         originSelectedDate = state.selectedDate,
+                        startFromMonday = state.mondayStart,
                         onDateSelected = { date ->
                             viewModel.onIntent(EditDateIntent.OnSelectedDateChange(date))
                             scope.launch {
@@ -111,6 +112,7 @@ fun EditDateScreen(
                         repeatCycleList = state.repeatCycleList,
                         selectedRepeatCycle = state.repeatCycle,
                         selectedDate = state.selectedDate,
+                        startFromMonday = state.mondayStart,
                         onRepeatCycleSelected = { repeatCycle ->
                             viewModel.onIntent(EditDateIntent.OnRepeatCycleChange(repeatCycle))
                             scope.launch {
