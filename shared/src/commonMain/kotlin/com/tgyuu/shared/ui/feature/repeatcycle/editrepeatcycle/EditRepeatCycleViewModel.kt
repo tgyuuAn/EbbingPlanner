@@ -6,6 +6,8 @@ import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.RepeatCycle
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.parsingIntervals
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.snack_repeat_invalid
@@ -20,6 +22,7 @@ class EditRepeatCycleViewModel(
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
+    private val analyticsHelper: AnalyticsHelper? = null,
 ) : BaseViewModel<EditRepeatCycleState, EditRepeatCycleIntent>(EditRepeatCycleState()) {
 
     init {
@@ -45,7 +48,10 @@ class EditRepeatCycleViewModel(
 
     override suspend fun processIntent(intent: EditRepeatCycleIntent) {
         when (intent) {
-            EditRepeatCycleIntent.OnBackClick -> onNavigateBack()
+            EditRepeatCycleIntent.OnBackClick -> {
+                analyticsHelper.logClick("EditRepeatCycle", "Back")
+                onNavigateBack()
+            }
             is EditRepeatCycleIntent.OnIntervalsChange -> onIntervalsChange(intent.intervals)
             EditRepeatCycleIntent.OnUpdateClick -> onUpdateClick()
         }
@@ -59,6 +65,7 @@ class EditRepeatCycleViewModel(
     }
 
     private suspend fun onUpdateClick() {
+        analyticsHelper.logClick("EditRepeatCycle", "Save")
         val origin = currentState.originRepeatCycle ?: return
         if (!currentState.isSaveEnabled) return
 

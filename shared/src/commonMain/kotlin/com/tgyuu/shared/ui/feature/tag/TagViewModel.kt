@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.model.TodoTag
 import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -13,6 +15,7 @@ class TagViewModel(
     private val onNavigateBack: () -> Unit,
     private val onNavigateToAddTag: () -> Unit,
     private val onNavigateToEditTag: (Int) -> Unit,
+    private val analyticsHelper: AnalyticsHelper? = null,
 ) : BaseViewModel<TagState, TagIntent>(TagState()) {
 
     init {
@@ -21,10 +24,22 @@ class TagViewModel(
 
     override suspend fun processIntent(intent: TagIntent) {
         when (intent) {
-            TagIntent.OnBackClick -> onNavigateBack()
-            TagIntent.OnAddClick -> onNavigateToAddTag()
-            is TagIntent.OnEditClick -> onNavigateToEditTag(intent.tag.id)
-            is TagIntent.OnDeleteClick -> deleteTag(intent.tag)
+            TagIntent.OnBackClick -> {
+                analyticsHelper.logClick("Tag", "Back")
+                onNavigateBack()
+            }
+            TagIntent.OnAddClick -> {
+                analyticsHelper.logClick("Tag", "AddTag")
+                onNavigateToAddTag()
+            }
+            is TagIntent.OnEditClick -> {
+                analyticsHelper.logClick("Tag", "EditTag")
+                onNavigateToEditTag(intent.tag.id)
+            }
+            is TagIntent.OnDeleteClick -> {
+                analyticsHelper.logClick("Tag", "DeleteTag")
+                deleteTag(intent.tag)
+            }
         }
     }
 

@@ -188,6 +188,7 @@ fun RootContent(
                 }
                 component.navigateToWebView(title, url)
             },
+            analyticsHelper = analyticsHelper,
         )
     }
 
@@ -340,12 +341,14 @@ private fun EbbingBottomNavigationBar(
 @Composable
 private fun TagScreenWrapper(component: RootComponent) {
     val todoRepository = koinInject<TodoRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember {
         TagViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToAddTag = { component.navigateToAddTag() },
             onNavigateToEditTag = { tagId -> component.navigateToEditTag(tagId) },
+            analyticsHelper = analyticsHelper,
         )
     }
     TagScreen(viewModel = viewModel)
@@ -359,6 +362,7 @@ private fun MemoScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember(scheduleId) {
         MemoViewModel(
             scheduleId = scheduleId,
@@ -367,6 +371,7 @@ private fun MemoScreenWrapper(
             onNavigateToHome = { component.navigateToHome() },
             onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
+            analyticsHelper = analyticsHelper,
             isEditEntry = false,
         )
     }
@@ -376,12 +381,14 @@ private fun MemoScreenWrapper(
 @Composable
 private fun RepeatCycleScreenWrapper(component: RootComponent) {
     val todoRepository = koinInject<TodoRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember {
         RepeatCycleViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             onNavigateToEditRepeatCycle = { id -> component.navigateToEditRepeatCycle(id) },
+            analyticsHelper = analyticsHelper,
         )
     }
     RepeatCycleScreen(viewModel = viewModel)
@@ -393,12 +400,14 @@ private fun SyncScreenWrapper(
     onShowSnackbar: (String) -> Unit,
 ) {
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember {
         SyncViewModel(
             syncRepository = syncRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToRestore = { component.navigateToSyncRestore() },
             onShowSnackbar = onShowSnackbar,
+            analyticsHelper = analyticsHelper,
         )
     }
     SyncScreen(viewModel = viewModel)
@@ -410,11 +419,13 @@ private fun RestoreScreenWrapper(
     onShowSnackbar: (String) -> Unit,
 ) {
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember {
         com.tgyuu.shared.ui.feature.sync.restore.RestoreViewModel(
             syncRepository = syncRepository,
             onNavigateBack = { component.onBack() },
             onShowSnackbar = onShowSnackbar,
+            analyticsHelper = analyticsHelper,
         )
     }
     com.tgyuu.shared.ui.feature.sync.restore.RestoreScreen(viewModel = viewModel)
@@ -522,11 +533,13 @@ private fun EditDateScreenWrapper(
 private fun AddTagScreenWrapper(component: RootComponent) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember {
         AddTagViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             experimentRepository = experimentRepository,
+            analyticsHelper = analyticsHelper,
         )
     }
     AddTagScreen(viewModel = viewModel)
@@ -536,11 +549,13 @@ private fun AddTagScreenWrapper(component: RootComponent) {
 private fun AddRepeatCycleScreenWrapper(component: RootComponent) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember {
         AddRepeatCycleViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             experimentRepository = experimentRepository,
+            analyticsHelper = analyticsHelper,
         )
     }
     AddRepeatCycleScreen(viewModel = viewModel)
@@ -553,12 +568,14 @@ private fun EditTagScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember(tagId) {
         EditTagViewModel(
             tagId = tagId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             experimentRepository = experimentRepository,
+            analyticsHelper = analyticsHelper,
         )
     }
     EditTagScreen(viewModel = viewModel)
@@ -571,12 +588,14 @@ private fun EditRepeatCycleScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember(repeatCycleId) {
         EditRepeatCycleViewModel(
             repeatCycleId = repeatCycleId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             experimentRepository = experimentRepository,
+            analyticsHelper = analyticsHelper,
         )
     }
     EditRepeatCycleScreen(viewModel = viewModel)
@@ -589,6 +608,7 @@ private fun EditMemoScreenWrapper(
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember(scheduleId) {
         MemoViewModel(
             scheduleId = scheduleId,
@@ -596,6 +616,7 @@ private fun EditMemoScreenWrapper(
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { component.navigateToHome() },
             experimentRepository = experimentRepository,
+            analyticsHelper = analyticsHelper,
             isEditEntry = true,
         )
     }

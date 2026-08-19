@@ -1,6 +1,7 @@
 package com.tgyuu.shared.ui.feature.sync
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.platform.logClick
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.common.suspendRunCatching
 import com.tgyuu.shared.domain.model.Timer
@@ -38,6 +39,7 @@ class SyncViewModel(
     private val onNavigateBack: () -> Unit,
     private val onNavigateToRestore: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
+    private val analyticsHelper: com.tgyuu.shared.platform.AnalyticsHelper? = null,
     private val timer: Timer = Timer(),
 ) : BaseViewModel<SyncState, SyncIntent>(SyncState()) {
     private var timerJob: Job? = null
@@ -168,22 +170,38 @@ class SyncViewModel(
 
     override suspend fun processIntent(intent: SyncIntent) {
         when (intent) {
-            SyncIntent.OnBackClick -> onBackClick()
-            SyncIntent.OnSyncUpClick -> syncUpData()
+            SyncIntent.OnBackClick -> {
+                analyticsHelper.logClick("SyncMain", "Back")
+                onBackClick()
+            }
+            SyncIntent.OnSyncUpClick -> {
+                analyticsHelper.logClick("SyncMain", "Sync")
+                syncUpData()
+            }
             SyncIntent.OnSyncUpDisabledClick -> onShowSnackbar(getString(Res.string.sync_already_latest))
-            SyncIntent.OnDisconnectClick -> disconnectAnother()
+            SyncIntent.OnDisconnectClick -> {
+                analyticsHelper.logClick("SyncMain", "Disconnect")
+                disconnectAnother()
+            }
             SyncIntent.OnRestoreClick -> onNavigateToRestore()
             SyncIntent.OnDeviceInfoCopied -> onShowSnackbar(getString(Res.string.sync_device_info_copied))
             // QR 연동
-            SyncIntent.OnGenerateQrClick -> onGenerateQrClick()
+            SyncIntent.OnGenerateQrClick -> {
+                analyticsHelper.logClick("SyncMain", "GenerateCode")
+                onGenerateQrClick()
+            }
             SyncIntent.OnDismissQrSheet -> setState { copy(isQrSheetVisible = false) }
             SyncIntent.OnScanQrClick -> {
+                analyticsHelper.logClick("SyncMain", "ScanQr")
                 isProcessingQr = false
                 setState { copy(isScanning = true) }
             }
 
             SyncIntent.OnDismissScan -> setState { copy(isScanning = false) }
-            is SyncIntent.OnQrDetected -> handleQrDetected(intent.rawValue)
+            is SyncIntent.OnQrDetected -> {
+                analyticsHelper.logClick("SyncMain", "QrDetected")
+                handleQrDetected(intent.rawValue)
+            }
         }
     }
 

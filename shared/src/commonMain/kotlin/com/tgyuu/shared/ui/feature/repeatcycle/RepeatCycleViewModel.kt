@@ -13,6 +13,8 @@ import ebbingplanner.shared.generated.resources.snack_repeat_deleted
 import ebbingplanner.shared.generated.resources.snack_repeat_load_failed
 import org.jetbrains.compose.resources.getString
 import com.tgyuu.shared.designsystem.model.toDisplayName
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
 
 class RepeatCycleViewModel(
     private val todoRepository: TodoRepository,
@@ -20,6 +22,7 @@ class RepeatCycleViewModel(
     private val onNavigateToAddRepeatCycle: () -> Unit,
     private val onNavigateToEditRepeatCycle: (Int) -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
+    private val analyticsHelper: AnalyticsHelper? = null,
 ) : BaseViewModel<RepeatCycleState, RepeatCycleIntent>(RepeatCycleState()) {
 
     init {
@@ -28,10 +31,22 @@ class RepeatCycleViewModel(
 
     override suspend fun processIntent(intent: RepeatCycleIntent) {
         when (intent) {
-            RepeatCycleIntent.OnBackClick -> onNavigateBack()
-            RepeatCycleIntent.OnAddClick -> onNavigateToAddRepeatCycle()
-            is RepeatCycleIntent.OnEditClick -> onNavigateToEditRepeatCycle(intent.repeatCycle.id)
-            is RepeatCycleIntent.OnDeleteClick -> deleteRepeatCycle(intent.repeatCycle)
+            RepeatCycleIntent.OnBackClick -> {
+                analyticsHelper.logClick("RepeatCycle", "Back")
+                onNavigateBack()
+            }
+            RepeatCycleIntent.OnAddClick -> {
+                analyticsHelper.logClick("RepeatCycle", "AddRepeatCycle")
+                onNavigateToAddRepeatCycle()
+            }
+            is RepeatCycleIntent.OnEditClick -> {
+                analyticsHelper.logClick("RepeatCycle", "EditRepeatCycle")
+                onNavigateToEditRepeatCycle(intent.repeatCycle.id)
+            }
+            is RepeatCycleIntent.OnDeleteClick -> {
+                analyticsHelper.logClick("RepeatCycle", "DeleteRepeatCycle")
+                deleteRepeatCycle(intent.repeatCycle)
+            }
         }
     }
 

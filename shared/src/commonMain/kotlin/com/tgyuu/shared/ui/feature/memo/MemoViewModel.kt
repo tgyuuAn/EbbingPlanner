@@ -3,6 +3,8 @@ package com.tgyuu.shared.ui.feature.memo
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import ebbingplanner.shared.generated.resources.Res
@@ -21,8 +23,11 @@ class MemoViewModel(
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
+    private val analyticsHelper: AnalyticsHelper? = null,
     isEditEntry: Boolean = false,
 ) : BaseViewModel<MemoState, MemoIntent>(MemoState(isEditEntry = isEditEntry)) {
+
+    private val screenName = if (isEditEntry) "EditMemo" else "AddMemo"
 
     init {
         loadSchedule()
@@ -51,12 +56,24 @@ class MemoViewModel(
 
     override suspend fun processIntent(intent: MemoIntent) {
         when (intent) {
-            MemoIntent.OnBackClick -> onNavigateBack()
+            MemoIntent.OnBackClick -> {
+                analyticsHelper.logClick(screenName, "Back")
+                onNavigateBack()
+            }
             is MemoIntent.OnMemoChange -> onMemoChange(intent.memo)
-            MemoIntent.OnSaveClick -> onSaveClick()
+            MemoIntent.OnSaveClick -> {
+                analyticsHelper.logClick(screenName, "Save")
+                onSaveClick()
+            }
             MemoIntent.OnDismissSaveDialog -> setState { copy(showSaveDialog = false) }
-            MemoIntent.OnSaveToAllRelatedClick -> saveMemoToAllRelated()
-            MemoIntent.OnSaveToSingleClick -> saveMemoToSingle()
+            MemoIntent.OnSaveToAllRelatedClick -> {
+                analyticsHelper.logClick(screenName, "SaveMemoAll")
+                saveMemoToAllRelated()
+            }
+            MemoIntent.OnSaveToSingleClick -> {
+                analyticsHelper.logClick(screenName, "SaveMemoSingle")
+                saveMemoToSingle()
+            }
         }
     }
 

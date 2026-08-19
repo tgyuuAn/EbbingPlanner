@@ -2,6 +2,7 @@ package com.tgyuu.shared.ui.feature.setting
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.platform.logClick
 import com.tgyuu.shared.common.appVersionName
 import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.domain.repository.ConfigRepository
@@ -38,9 +39,11 @@ class SettingViewModel(
     private val onOpenUrl: (String) -> Unit = {},
     private val onRequestInAppReview: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
+    private val analyticsHelper: com.tgyuu.shared.platform.AnalyticsHelper? = null,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
 
     companion object {
+        private const val SCREEN_NAME = "Setting"
         private const val INQUIRY_URL = "https://open.kakao.com/o/sdZLoCHh"
     }
 
@@ -95,32 +98,77 @@ class SettingViewModel(
 
     override suspend fun processIntent(intent: SettingIntent) {
         when (intent) {
-            SettingIntent.OnBackClick -> onNavigateBack()
-            SettingIntent.OnTagManageClick -> onNavigateToTag()
-            SettingIntent.OnRepeatCycleManageClick -> onNavigateToRepeatCycle()
-            SettingIntent.OnSyncClick -> onNavigateToSync()
-            SettingIntent.OnRestoreByDeviceIdClick -> onNavigateToRestore()
-            SettingIntent.OnClearDataClick -> { /* Show dialog from UI */ }
+            SettingIntent.OnBackClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "Back")
+                onNavigateBack()
+            }
+            SettingIntent.OnTagManageClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "ManageTag")
+                onNavigateToTag()
+            }
+            SettingIntent.OnRepeatCycleManageClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "ManageRepeatCycle")
+                onNavigateToRepeatCycle()
+            }
+            SettingIntent.OnSyncClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "SyncData")
+                onNavigateToSync()
+            }
+            SettingIntent.OnRestoreByDeviceIdClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "RestoreByDeviceId")
+                onNavigateToRestore()
+            }
+            SettingIntent.OnClearDataClick -> analyticsHelper.logClick(SCREEN_NAME, "ClearData")
             SettingIntent.OnClearDataConfirm -> clearData()
-            SettingIntent.OnThemeClick -> onNavigateToTheme()
+            SettingIntent.OnThemeClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "EditAppTheme")
+                onNavigateToTheme()
+            }
             SettingIntent.OnNotificationClick -> onNavigateToNotification()
-            is SettingIntent.OnNotificationToggle -> toggleNotification(intent.enabled)
-            is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
-            SettingIntent.OnAlarmMessageOpen -> openAlarmMessageSheet()
+            is SettingIntent.OnNotificationToggle -> {
+                analyticsHelper.logClick(SCREEN_NAME, "NotificationNudge_Toggle")
+                toggleNotification(intent.enabled)
+            }
+            is SettingIntent.OnUpdateAlarmTime -> {
+                analyticsHelper.logClick(SCREEN_NAME, "NotificationNudge_Time")
+                updateAlarmTime(intent.hour, intent.minute)
+            }
+            SettingIntent.OnAlarmMessageOpen -> {
+                analyticsHelper.logClick(SCREEN_NAME, "NotificationMessage")
+                openAlarmMessageSheet()
+            }
             is SettingIntent.OnAlarmMessageChange -> changeAlarmMessage(intent.message)
             SettingIntent.OnAlarmMessageReset -> resetAlarmMessage()
             SettingIntent.OnApplyAlarmMessage -> applyAlarmMessage()
-            SettingIntent.OnInAppReviewClick -> onRequestInAppReview()
+            SettingIntent.OnInAppReviewClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "InAppReview")
+                onRequestInAppReview()
+            }
             // 문서 URL은 로케일별 공개 게시(notion.site) 링크로 분기
-            SettingIntent.OnPrivacyPolicyClick ->
+            SettingIntent.OnPrivacyPolicyClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "PrivacyAndPolicy")
                 onOpenUrl(getString(Res.string.setting_privacy_policy_url))
-            SettingIntent.OnTermsOfUseClick ->
+            }
+            SettingIntent.OnTermsOfUseClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "TermsOfUse")
                 onOpenUrl(getString(Res.string.setting_term_url))
-            SettingIntent.OnWidgetClick -> onNavigateToWidget()
-            is SettingIntent.OnUpdateStartDay -> updateStartDay(intent.mondayStart)
-            SettingIntent.OnAutoBackupToggleClick -> onAutoBackupToggleClick()
-            SettingIntent.OnNoticeClick ->
+            }
+            SettingIntent.OnWidgetClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "EditWidgetTheme")
+                onNavigateToWidget()
+            }
+            is SettingIntent.OnUpdateStartDay -> {
+                analyticsHelper.logClick(SCREEN_NAME, "ApplyStartDay")
+                updateStartDay(intent.mondayStart)
+            }
+            SettingIntent.OnAutoBackupToggleClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "AutoBackup_Toggle")
+                onAutoBackupToggleClick()
+            }
+            SettingIntent.OnNoticeClick -> {
+                analyticsHelper.logClick(SCREEN_NAME, "Notice")
                 onOpenUrl(getString(Res.string.setting_announcement_url))
+            }
             SettingIntent.OnInquiryClick -> onOpenUrl(INQUIRY_URL)
         }
     }

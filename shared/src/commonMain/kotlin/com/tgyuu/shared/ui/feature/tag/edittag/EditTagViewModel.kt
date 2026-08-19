@@ -5,6 +5,8 @@ import com.tgyuu.shared.domain.model.Experiment
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.TodoTag
 import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.snack_tag_load_failed
@@ -20,6 +22,7 @@ class EditTagViewModel(
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
     private val onShowColorBottomSheet: (() -> Unit)? = null,
+    private val analyticsHelper: AnalyticsHelper? = null,
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
 
     init {
@@ -68,6 +71,7 @@ class EditTagViewModel(
     }
 
     private suspend fun onUpdateClick() {
+        analyticsHelper.logClick("EditTag", "Save")
         val originTag = currentState.originTag ?: return
         if (!currentState.isSaveEnabled) return
 
