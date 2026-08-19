@@ -324,3 +324,8 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - ✅ **화면별 세부 버튼 Click 애널리틱스 전수**: `AnalyticsHelper?.logClick(screenName, buttonName)` 확장 신설. Tag/AddTag/EditTag/RepeatCycle/AddRepeatCycle/EditRepeatCycle/Memo(Add·Edit 모드별 screenName)/SyncMain/Restore/Setting에 Android buttonName·screenName 정확히 일치하도록 배선. Schedule는 기존 완비, Home/AddTodo/EditTodo는 앞서 완료.
 - ✅ **복귀 시 신규 항목 자동 선택**: AddTodo/EditTodo `loadNewTag`, AddTodo/EditDate `loadNewRepeatCycle`. 각 화면 `LaunchedEffect(viewModel)`에서 호출 → 태그/반복주기 추가 후 복귀 시 자동 선택(recentAddedId 소비형).
 - 검증: iOS/Android 컴파일 + 앱 빌드/실행 무크래시.
+
+## 콜드스타트/패딩 전수조사 (7차, 2026-08-20)
+- ✅ **콜드스타트 시 미지정 태그 누락**: Android MainViewModel은 시작 시 `addDefaultTag()`로 DB에 미지정(id=1) 시드 → loadTags()가 반환. iOS는 이 호출이 없어 태그 바텀시트에 미지정 안 뜸. RootContent 시작 LaunchedEffect에서 `todoRepository.addDefaultTag()` 호출(insertTag onConflict=IGNORE라 멱등).
+- ✅ **바텀시트 헤더/목록항목 이중 수평패딩**: iOS `EbbingBottomSheetHeader`·`EbbingBottomSheetListItemDefault`가 컴포넌트 내부에 `padding(horizontal=20dp)`를 갖고 있었으나 Android 원본은 없음(호출부 Column이 20dp 제공). iOS는 호출부도 20dp라 헤더/항목이 40dp로 밀림(사용자 지목: 종료일 선택 시트 헤더). 내부 패딩 제거로 통일. 호출부 전수(헤더 17, 목록 9) 20dp 부모 확인, wide 그리드는 Android처럼 항목 modifier +20dp 유지.
+- (진행) 화면/시트/다이얼로그 padding 전수조사 별도 서브에이전트로 수행 중 — 결과 반영 예정.
