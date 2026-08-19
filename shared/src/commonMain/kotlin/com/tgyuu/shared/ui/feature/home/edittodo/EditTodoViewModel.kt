@@ -20,8 +20,10 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
+import com.tgyuu.shared.domain.model.DefaultTodoTag
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.alarm_placeholder_token
+import ebbingplanner.shared.generated.resources.tag_unassigned
 import ebbingplanner.shared.generated.resources.snack_date_has_schedule
 import ebbingplanner.shared.generated.resources.snack_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_update_failed
@@ -61,6 +63,10 @@ class EditTodoViewModel(
             val schedulesByDateMap = sameInfoSchedulesDeferred.await()
             val todoInfo = todoInfoDeferred.await()
 
+            val unassignedName = getString(Res.string.tag_unassigned)
+            val tagModel = originTag?.toUiModel()
+                ?.let { if (it.id == DefaultTodoTag.id) it.copy(name = unassignedName) else it }
+
             setState {
                 copy(
                     originSchedule = originSchedule,
@@ -71,7 +77,7 @@ class EditTodoViewModel(
                     selectedDate = originSchedule.date,
                     title = originSchedule.title,
                     isPinned = originSchedule.isPinned,
-                    tag = originTag?.toUiModel(),
+                    tag = tagModel,
                     restDays = todoInfo.restDays.toImmutableSet(),
                 )
             }
@@ -80,8 +86,11 @@ class EditTodoViewModel(
     }
 
     private suspend fun loadTags() {
+        val unassignedName = getString(Res.string.tag_unassigned)
         val models = todoRepository.loadTagsByUsage(configRepository)
-            .map { it.toUiModel() }.toImmutableList()
+            .map { it.toUiModel() }
+            .map { if (it.id == DefaultTodoTag.id) it.copy(name = unassignedName) else it }
+            .toImmutableList()
         setState {
             copy(tagList = models)
         }

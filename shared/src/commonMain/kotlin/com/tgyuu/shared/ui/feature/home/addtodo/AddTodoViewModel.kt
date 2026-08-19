@@ -21,6 +21,7 @@ import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.alarm_placeholder_token
+import ebbingplanner.shared.generated.resources.tag_unassigned
 import ebbingplanner.shared.generated.resources.snack_all_rest_days
 import ebbingplanner.shared.generated.resources.snack_no_schedule_check_cycle
 import ebbingplanner.shared.generated.resources.snack_required_fields
@@ -90,10 +91,15 @@ class AddTodoViewModel(
             val selectedCycle = cycleOrder.firstNotNullOfOrNull { id -> allRepeatCycles.find { it.id == id } }
                 ?: DefaultRepeatCycles.first()
 
-            val tagModel = selectedTag.toUiModel()
+            // Android와 동일: 기본(미지정) 태그는 로컬라이즈된 이름으로 표시
+            val unassignedName = getString(Res.string.tag_unassigned)
+            fun TodoTagUiModel.localizedIfDefault() =
+                if (id == DefaultTodoTag.id) copy(name = unassignedName) else this
+
+            val tagModel = selectedTag.toUiModel().localizedIfDefault()
             val cycleModel = selectedCycle.toUiModel()
             val tagList = tags.sortedByUsageOrder(tagOrder) { it.id }
-                .map { it.toUiModel() }.toImmutableList()
+                .map { it.toUiModel().localizedIfDefault() }.toImmutableList()
             val cycleList = allRepeatCycles.sortedByUsageOrder(cycleOrder) { it.id }
                 .map { it.toUiModel() }.toImmutableList()
 

@@ -94,6 +94,7 @@
 
     <!-- 태그 -->
     <string name="tag_manage_title">태그 관리</string>
+    <string name="tag_unassigned">미지정</string>
     <string name="tag_add_button">추가</string>
     <string name="tag_empty_message">등록된 태그가 없어요.\n우측 상단 + 버튼을 눌러 태그를 추가해보세요.</string>
     <string name="tag_delete">삭제</string>
