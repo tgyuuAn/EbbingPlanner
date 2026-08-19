@@ -163,6 +163,23 @@ fun AddTodoScreen(
         )
     }
 
+    // Android와 동일: 저장 시 최초 1회 알림 넛지 페이지로 전환
+    if (state.page == AddTodoState.Page.NOTIFICATION) {
+        NotificationNudgeContent(
+            state = state.notificationState,
+            modifier = modifier,
+            onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
+            onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
+            onToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
+            onTimePickerClick = { viewModel.onIntent(AddTodoIntent.OnAlarmTimePickerClick) },
+            onTimePickerDismiss = { viewModel.onIntent(AddTodoIntent.OnAlarmTimePickerDismiss) },
+            onTimeChange = { hour, minute -> viewModel.onIntent(AddTodoIntent.OnAlarmTimeChange(hour, minute)) },
+            onMessageChange = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageChange(it)) },
+            onResetClick = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageReset) },
+        )
+        return
+    }
+
     // 저장 버튼까지 포함하는 최상위 Column에 imePadding을 적용해 키보드에 버튼이 가리지 않게 함 (Android 동일)
     Column(
         modifier = modifier

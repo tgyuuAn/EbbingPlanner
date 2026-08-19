@@ -237,9 +237,9 @@ aapt 관례를 미지원 → commonMain composeResources로 복사된 문자열�
 Android 원본(feature/home/graph/addtodo·edittodo) ↔ iOS(shared/ui/feature/home/addtodo·edittodo) 정밀 비교.
 서브에이전트 발견 + 직접 검증. **미구현은 위험도/범위 때문에 기록만; 안전한 것만 즉시 반영.**
 
-### 대형 플랫폼 기능 (기록만 — 사용자 결정 필요, 무단 구현 위험)
-- ⚠️ **알림 예약 미구현(iOS)**: Android AddTodo/EditTodo 저장 시 `alarmScheduler.scheduleDailyExact`로 매일 정시 알림 등록. iOS는 저장 즉시 쓰기만, 리마인더 안 울림. shared에 `NotificationScheduler.ios.kt`는 존재 → 배선 여지 있으나 권한(UNUserNotificationCenter)·엔타이틀먼트·expect/actual 설계 필요한 **기능**이라 무단 진행 부적절. 의도적 포팅 보류로 추정.
-- ⚠️ **알림 넛지 페이지 미구현(iOS)**: Android는 저장 시 `shouldShowNotificationNudge()`면 2번째 페이지(Page.NOTIFICATION: 토글/시간/문구/초기화)로 이동. iOS엔 Page enum·NotificationState·NotificationScreen·인텐트 전부 없음. `shouldShowNotificationNudge()`는 shared에 존재. 위 알림 예약과 함께 다뤄야 함.
+### 대형 플랫폼 기능 (✅ 2026-08-20 구현 완료)
+- ✅ **알림 예약 구현(iOS)**: AddTodo 저장 시 저장된 알림 설정(enabled)·시간으로 각 미래 일정에 `NotificationScheduler`(UNUserNotificationCenter) 로컬 알림 등록. id=date.hashCode(), body=문구 {할일}→제목 치환, 과거 스킵. NotificationScheduler를 Koin DI(Android/IosModule)에 등록. **의도적 차이**: Android는 무조건 스케줄하지만 iOS는 enabled일 때만(권한·사용자 선택 존중). EditTodo 날짜변경 재예약은 별도(미포함).
+- ✅ **알림 넛지 페이지 구현(iOS)**: `shouldShowNotificationNudge()`(최초 1회 소비형) true면 AddTodo가 Page.NOTIFICATION으로 전환. AddTodoContract에 Page/NotificationState/알림 인텐트, VM에 initNotificationState·onNotificationSaveClick·scheduleAlarms, UI는 addtodo/AddTodoNotificationNudge.kt. 토글 기본 off(Android 동일), 토글 on 시 iOS 권한 요청, off면 상세 접힘. 임시 라우팅 스크린샷으로 렌더 검증. 상세 KMP_IOS_NOTES.md 함정/로그 #6.
 
 ### 시스템적 갭 (기록 — 범위 큼)
 - ⚠️ **SCREEN_VIEW/Click 애널리틱스 광범위 누락**: iOS 포트는 화면 진입 `screen_view`를 어디서도 안 남김(RootContent 중앙 로깅 없음). AddTodo/EditTodo의 View/Click 로그도 없음. `AnalyticsHelper`(platform/Analytics.kt)·패턴(ScheduleViewModel.logClick, HomeScreen homeClickEvent) 존재 → 화면별 VM에 analyticsHelper 주입+로깅 필요(교차절단, RootContent 배선 동반). 사용자 "로그 전부" 요청 대상 → 우선순위 높음.

@@ -7,39 +7,73 @@ import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
 import com.tgyuu.shared.domain.model.DefaultTodoTag
 import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.platform.NotificationScheduler
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
 import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.alarm_placeholder_token
 import ebbingplanner.shared.generated.resources.snack_all_rest_days
 import ebbingplanner.shared.generated.resources.snack_no_schedule_check_cycle
 import ebbingplanner.shared.generated.resources.snack_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_add_failed
 import ebbingplanner.shared.generated.resources.snack_todo_added
 import org.jetbrains.compose.resources.getString
+import com.tgyuu.shared.common.currentInstant
 import com.tgyuu.shared.common.sortedByUsageOrder
 import com.tgyuu.shared.designsystem.model.toDisplayName
 
 class AddTodoViewModel(
     private val selectedDate: LocalDate,
     private val todoRepository: TodoRepository,
+    private val configRepository: ConfigRepository,
+    private val notificationScheduler: NotificationScheduler,
     private val onNavigateBack: () -> Unit,
     private val onNavigateToHome: (LocalDate) -> Unit = {},
     private val onNavigateToAddTag: () -> Unit = {},
     private val onNavigateToAddRepeatCycle: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-    private val configRepository: ConfigRepository,
     private val onShowTagBottomSheet: (() -> Unit)? = null,
     private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState(selectedDate = selectedDate)) {
 
     init {
         loadInitialData()
+        initNotificationState()
+    }
+
+    // Android initNotificationState 대응: 저장된 알림 시간/문구/기본 문구/플레이스홀더 토큰 로드
+    private fun initNotificationState() {
+        safeScope.launch {
+            val (hour, minute) = configRepository.getAlarmTime()
+            val defaultMessage = ConfigRepository.DEFAULT_ALARM_MESSAGE
+            val placeholderToken = getString(Res.string.alarm_placeholder_token)
+            val storedMessage = configRepository.getAlarmMessage()
+            val message = storedMessage.ifBlank { defaultMessage }
+
+            // Android initNotificationState와 동일: 토글은 기본 off로 시작(넛지에서 opt-in)
+            setState {
+                copy(
+                    notificationState = notificationState.copy(
+                        alarmHour = hour,
+                        alarmMinute = minute,
+                        defaultMessage = defaultMessage,
+                        message = message,
+                        originMessage = message,
+                        placeholderToken = placeholderToken,
+                    )
+                )
+            }
+        }
     }
 
     private fun loadInitialData() {
@@ -88,6 +122,31 @@ class AddTodoViewModel(
             AddTodoIntent.OnAddRepeatCycleClick -> onNavigateToAddRepeatCycle()
             is AddTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
             AddTodoIntent.OnSaveClick -> onSaveClick()
+
+            AddTodoIntent.OnNotificationToggleClick -> onNotificationToggleClick()
+            AddTodoIntent.OnAlarmTimePickerClick -> setState {
+                copy(notificationState = notificationState.copy(isShowTimePicker = true))
+            }
+            AddTodoIntent.OnAlarmTimePickerDismiss -> setState {
+                copy(notificationState = notificationState.copy(isShowTimePicker = false))
+            }
+            is AddTodoIntent.OnAlarmTimeChange -> setState {
+                copy(
+                    notificationState = notificationState.copy(
+                        alarmHour = intent.hour,
+                        alarmMinute = intent.minute,
+                        isShowTimePicker = false,
+                    )
+                )
+            }
+            is AddTodoIntent.OnAlarmMessageChange -> setState {
+                copy(notificationState = notificationState.copy(message = intent.message))
+            }
+            AddTodoIntent.OnAlarmMessageReset -> setState {
+                copy(notificationState = notificationState.copy(message = notificationState.defaultMessage))
+            }
+            AddTodoIntent.OnNotificationBackClick -> setState { copy(page = AddTodoState.Page.ADD_TODO) }
+            AddTodoIntent.OnNotificationSaveClick -> onNotificationSaveClick()
         }
     }
 
@@ -117,14 +176,55 @@ class AddTodoViewModel(
             return
         }
 
-        val tag = currentState.tag ?: return
+        if (currentState.tag == null) return
 
+        if (currentState.schedules.isEmpty()) {
+            onShowSnackbar(getString(Res.string.snack_no_schedule_check_cycle))
+            return
+        }
+
+        // Android와 동일: 최초 저장 시 알림 넛지 노출 → 넛지 페이지, 아니면 바로 저장
+        if (configRepository.shouldShowNotificationNudge()) {
+            setState { copy(page = AddTodoState.Page.NOTIFICATION) }
+        } else {
+            saveTodoAndNavigateHome()
+        }
+    }
+
+    private fun onNotificationToggleClick() {
+        val desiredOn = !currentState.notificationState.notificationEnabled
+        if (desiredOn) {
+            // iOS: 스케줄 등록 전 알림 권한이 필요하므로 켤 때 권한을 요청하고 허용 시에만 활성화
+            safeScope.launch {
+                val granted = notificationScheduler.requestPermission()
+                setState {
+                    copy(notificationState = notificationState.copy(notificationEnabled = granted))
+                }
+            }
+        } else {
+            setState { copy(notificationState = notificationState.copy(notificationEnabled = false)) }
+        }
+    }
+
+    private suspend fun onNotificationSaveClick() {
+        val notificationState = currentState.notificationState
+
+        configRepository.setNotificationEnabled(notificationState.notificationEnabled)
+        if (notificationState.notificationEnabled) {
+            configRepository.updateAlarmTime(
+                notificationState.alarmHour.toString(),
+                notificationState.alarmMinute.toString(),
+            )
+            configRepository.updateAlarmMessage(notificationState.message)
+        }
+
+        saveTodoAndNavigateHome()
+    }
+
+    private suspend fun saveTodoAndNavigateHome() {
+        val tag = currentState.tag ?: return
         try {
             val schedules = currentState.schedules
-            if (schedules.isEmpty()) {
-                onShowSnackbar(getString(Res.string.snack_no_schedule_check_cycle))
-                return
-            }
             todoRepository.addTodo(
                 title = currentState.title,
                 dates = schedules,
@@ -140,10 +240,42 @@ class AddTodoViewModel(
             }
             runCatching { configRepository.markFirstTodoAdded() }
 
+            // 알림 예약: 저장된 설정이 켜져 있으면 각 일정 날짜에 로컬 알림 등록
+            runCatching { scheduleAlarms(currentState.title, schedules) }
+
             onShowSnackbar(getString(Res.string.snack_todo_added))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_todo_add_failed, e.message ?: ""))
+        }
+    }
+
+    /**
+     * 저장된 알림 설정이 켜져 있으면 각 미래 일정 날짜에 알림 시각으로 로컬 알림을 등록한다.
+     * id는 Android AlarmScheduler와 동일하게 날짜 해시(date.hashCode())를 사용해 취소 정합성을 맞춘다.
+     */
+    private suspend fun scheduleAlarms(title: String, schedules: List<LocalDate>) {
+        val enabled = configRepository.getNotificationEnabled().first()
+        if (!enabled) return
+
+        val (hour, minute) = configRepository.getAlarmTime()
+        val storedMessage = configRepository.getAlarmMessage()
+        val token = getString(Res.string.alarm_placeholder_token)
+        val body = storedMessage.replace(token, title)
+
+        val zone = TimeZone.currentSystemDefault()
+        val now = currentInstant()
+        schedules.forEach { date ->
+            // 과거 시각은 발화되지 않으므로 건너뛴다 (iOS 캘린더 트리거도 과거는 무시)
+            if (date.atTime(hour, minute).toInstant(zone) <= now) return@forEach
+            notificationScheduler.scheduleNotification(
+                id = date.hashCode(),
+                title = title,
+                message = body,
+                hour = hour,
+                minute = minute,
+                date = date,
+            )
         }
     }
 

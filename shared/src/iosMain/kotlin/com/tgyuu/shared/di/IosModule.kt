@@ -32,6 +32,7 @@ fun iosModule(supabaseUrl: String, supabaseKey: String) = module {
     single<EbbingDatabase> { createEbbingDatabase() }
     single { Settings() }
     single { InAppReviewManager() }
+    single { com.tgyuu.shared.platform.NotificationScheduler() }
 
     if (supabaseUrl.isNotBlank() && supabaseKey.isNotBlank()) {
         single<SupabaseClient> {
