@@ -4,6 +4,8 @@ import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.common.suspendRunCatching
 import com.tgyuu.shared.domain.model.sync.RestoreResult
 import com.tgyuu.shared.domain.repository.SyncRepository
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.sync_restore_ambiguous
 import ebbingplanner.shared.generated.resources.sync_restore_done
@@ -18,13 +20,20 @@ class RestoreViewModel(
     private val syncRepository: SyncRepository,
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
+    private val analyticsHelper: AnalyticsHelper? = null,
 ) : BaseViewModel<RestoreState, RestoreIntent>(RestoreState()) {
 
     override suspend fun processIntent(intent: RestoreIntent) {
         when (intent) {
-            RestoreIntent.OnBackClick -> onBackClick()
+            RestoreIntent.OnBackClick -> {
+                analyticsHelper.logClick("RestoreByDeviceId", "Back")
+                onBackClick()
+            }
             is RestoreIntent.OnDeviceIdChange -> setState { copy(deviceId = intent.deviceId) }
-            RestoreIntent.OnRestoreClick -> onRestoreClick()
+            RestoreIntent.OnRestoreClick -> {
+                analyticsHelper.logClick("RestoreByDeviceId", "Restore")
+                onRestoreClick()
+            }
         }
     }
 

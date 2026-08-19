@@ -22,6 +22,19 @@ interface AnalyticsHelper {
     fun setUserId(userId: String?)
 }
 
+/** Android AnalyticsEvent.Click(screenName, buttonName) 대응 단축 확장 (nullable-safe). */
+fun AnalyticsHelper?.logClick(screenName: String, buttonName: String) {
+    this?.logEvent(
+        AnalyticsEvent(
+            type = AnalyticsEvent.Types.BUTTON_CLICK,
+            properties = mapOf(
+                AnalyticsEvent.PropertiesKeys.SCREEN_NAME to screenName,
+                AnalyticsEvent.PropertiesKeys.BUTTON_NAME to buttonName,
+            ),
+        )
+    )
+}
+
 class NoOpAnalyticsHelper : AnalyticsHelper {
     override fun logEvent(event: AnalyticsEvent) {}
     override fun setUserId(userId: String?) {}
