@@ -132,9 +132,11 @@ fun MemoScreen(
                 }
             }
         } else {
+            // .weight(1f)로 남은 높이만 차지해 하단 저장 버튼이 항상 보이도록(fillMaxSize면 버튼이 밀려남)
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .verticalScroll(scrollState)
                     .padding(20.dp)
                     .imePadding(),
