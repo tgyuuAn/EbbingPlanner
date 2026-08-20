@@ -265,7 +265,7 @@ private fun ScheduleCard(
                     Text(
                         text = idx.toString(),
                         style = EbbingTheme.typography.captionR12,
-                        color = EbbingTheme.colors.dark3,
+                        color = EbbingTheme.colors.dark2,
                     )
                 }
 
@@ -283,7 +283,7 @@ private fun ScheduleCard(
             Text(
                 text = schedule.toRelativeDayLabel(),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark3,
+                color = EbbingTheme.colors.dark2,
             )
         }
 
