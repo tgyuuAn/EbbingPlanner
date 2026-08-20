@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.card_round_count
@@ -170,7 +171,7 @@ fun TodoListCard(
                         }
                     }
 
-                    AnimatedVisibility(todo.memo.isNotEmpty()) {
+                    EbbingVisibleAnimation(visible = todo.memo.isNotEmpty()) {
                         var memoExpanded by remember(todo.id) { mutableStateOf(false) }
                         var memoOverflow by remember(todo.id) { mutableStateOf(false) }
 

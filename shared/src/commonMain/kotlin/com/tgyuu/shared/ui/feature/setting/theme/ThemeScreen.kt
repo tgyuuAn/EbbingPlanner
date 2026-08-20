@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import ebbingplanner.shared.generated.resources.ic_check
 import com.tgyuu.shared.designsystem.foundation.colorSchemeFor
 import androidx.compose.material3.Icon
@@ -150,11 +151,7 @@ private fun ThemeSelector(
                         .background(circleColor),
                 )
 
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = isSelected,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
+                EbbingVisibleAnimation(visible = isSelected) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_check),
                         contentDescription = null,

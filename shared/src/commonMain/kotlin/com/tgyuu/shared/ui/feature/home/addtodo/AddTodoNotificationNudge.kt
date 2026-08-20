@@ -210,8 +210,9 @@ private fun NudgeDetailSection(
         ) {
             Text(
                 text = stringResource(Res.string.setting_alarm_time),
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                // Android home_alarm_time: heading18B(Bold 18) / textSub
+                style = EbbingTheme.typography.headingSSB,
+                color = EbbingTheme.colors.dark2,
                 modifier = Modifier.padding(end = 8.dp),
             )
             Text(
@@ -220,7 +221,8 @@ private fun NudgeDetailSection(
                         append(alarmTimeText(state.alarmHour, state.alarmMinute))
                     }
                 },
-                style = EbbingTheme.typography.headingMSB,
+                // Android: body18M(Medium 18) / primaryNormal — iOS headingSM = Medium 18/22
+                style = EbbingTheme.typography.headingSM,
                 color = EbbingTheme.colors.primaryDefault,
                 modifier = Modifier.clickable { onTimeClick() },
             )

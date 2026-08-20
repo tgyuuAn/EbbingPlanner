@@ -1,6 +1,7 @@
 package com.tgyuu.shared.ui.feature.home.addtodo
 
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -245,7 +246,7 @@ fun AddTodoScreen(
                             .verticalScroll(rememberScrollState())
                             .padding(20.dp),
                     ) {
-                        androidx.compose.animation.AnimatedVisibility(visible = state.schedules.isNotEmpty()) {
+                        EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
                         ScheduleContent(schedules = state.schedules)
                     }
                         Spacer(modifier = Modifier.height(60.dp))
@@ -275,7 +276,7 @@ fun AddTodoScreen(
                         },
                     )
 
-                    androidx.compose.animation.AnimatedVisibility(visible = state.schedules.isNotEmpty()) {
+                    EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
                         ScheduleContent(schedules = state.schedules)
                     }
 

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import com.tgyuu.shared.designsystem.foundation.LocalColors
 import com.tgyuu.shared.designsystem.foundation.colorSchemeFor
 import com.tgyuu.shared.domain.model.Theme
@@ -241,7 +242,7 @@ private fun ThemeSwatch(
                 .background(colorSchemeFor(theme, false).primaryDefault)
                 .clickable { onClick() },
         )
-        AnimatedVisibility(visible = selected, enter = fadeIn(), exit = fadeOut()) {
+        EbbingVisibleAnimation(visible = selected) {
             Image(
                 painter = painterResource(Res.drawable.ic_check),
                 contentDescription = null,

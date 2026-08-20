@@ -50,6 +50,7 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomShee
 import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.shared.designsystem.component.picker.EbbingPicker
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.setting_calendar
 import ebbingplanner.shared.generated.resources.setting_data
@@ -520,7 +521,7 @@ private fun NotificationBody(
     }
 
     // Android와 동일: 알림 ON 시 알람시간/메시지 행을 펼침 애니메이션
-    androidx.compose.animation.AnimatedVisibility(visible = isEnabled) {
+    EbbingVisibleAnimation(visible = isEnabled) {
         Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,

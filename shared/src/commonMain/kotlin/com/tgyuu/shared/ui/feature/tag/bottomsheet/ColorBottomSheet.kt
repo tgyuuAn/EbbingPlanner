@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.tag_manage_title
 import ebbingplanner.shared.generated.resources.tag_add_button
@@ -155,11 +156,7 @@ private fun ColorItem(
                 .clickable { onClick() },
         )
 
-        AnimatedVisibility(
-            visible = isSelected,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
+        EbbingVisibleAnimation(visible = isSelected) {
             Icon(
                 painter = painterResource(Res.drawable.ic_check),
                 contentDescription = null,
