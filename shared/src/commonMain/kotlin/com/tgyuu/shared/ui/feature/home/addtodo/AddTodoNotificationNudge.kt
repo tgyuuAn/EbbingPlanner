@@ -63,7 +63,7 @@ import ebbingplanner.shared.generated.resources.setting_alarm_message_preview_sa
 import ebbingplanner.shared.generated.resources.setting_alarm_time
 import ebbingplanner.shared.generated.resources.setting_alarm_time_subtitle
 import ebbingplanner.shared.generated.resources.setting_clear
-import ebbingplanner.shared.generated.resources.setting_notification
+import ebbingplanner.shared.generated.resources.home_notification_title
 import ebbingplanner.shared.generated.resources.setting_preview
 import org.jetbrains.compose.resources.stringResource
 
@@ -102,7 +102,7 @@ internal fun NotificationNudgeContent(
             .imePadding(),
     ) {
         EbbingSubTopBar(
-            title = stringResource(Res.string.setting_notification),
+            title = stringResource(Res.string.home_notification_title),
             onNavigationClick = onBackClick,
             rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
