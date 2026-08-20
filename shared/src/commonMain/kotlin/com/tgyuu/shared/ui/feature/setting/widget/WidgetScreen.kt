@@ -42,7 +42,6 @@ import ebbingplanner.shared.generated.resources.setting_background_alpha
 import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.widget_preview_sample
 import ebbingplanner.shared.generated.resources.setting_widget_theme_change
-import ebbingplanner.shared.generated.resources.widget_text_alpha
 import ebbingplanner.shared.generated.resources.setting_content_alpha
 import ebbingplanner.shared.generated.resources.setting_change_widget_theme
 import ebbingplanner.shared.generated.resources.widget_theme

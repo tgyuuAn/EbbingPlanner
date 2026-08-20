@@ -25,7 +25,7 @@
     <string name="setting_last_sync_time">Last sync: %1$s</string>
     <string name="setting_clear_data">Reset data</string>
     <string name="setting_theme_color_change">Change app theme</string>
-    <string name="setting_widget_alpha_change">Change widget opacity</string>
+    <string name="setting_widget_alpha_change">Change widget theme / opacity</string>
     <string name="setting_announcement">Announcements</string>
     <string name="setting_privacy_policy">Privacy Policy</string>
     <string name="setting_term">Terms of Service</string>
@@ -64,7 +64,7 @@
     <string name="sync_no_record">No record</string>
     <string name="sync_no_record_or_network">No record or no network</string>
     <string name="sync_generating">Generating...</string>
-    <string name="sync_device_id_label">This device's unique ID :</string>
+    <string name="sync_device_id_label">This device's unique ID:</string>
     <string name="sync_device_last_update_label">This device's last update : </string>
     <string name="sync_server_last_update_label">This ID's last update on server : </string>
     <string name="sync_linked_id_label">Linked ID :</string>
