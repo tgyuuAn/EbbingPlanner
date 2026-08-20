@@ -133,7 +133,9 @@ fun HomeScreen(
                         dialogType = type
                         isShowDialog = true
                     },
-                    scope = this,
+                    // 안정적인 rememberCoroutineScope 전달 (launch 블록의 임시 scope는
+                    // show() 직후 완료돼 시트 항목 onClick의 scope.launch가 no-op이 됨 → 클릭 먹통)
+                    scope = scope,
                 )
             }
         }
