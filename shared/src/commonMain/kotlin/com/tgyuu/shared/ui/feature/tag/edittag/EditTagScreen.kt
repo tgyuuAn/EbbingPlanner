@@ -80,7 +80,7 @@ fun EditTagScreen(
     )
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().imePadding(),
     ) {
         EbbingSubTopBar(
             title = stringResource(Res.string.tag_edit_title),
@@ -105,9 +105,9 @@ fun EditTagScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-                .imePadding(),
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(20.dp),
         ) {
             Text(
                 text = stringResource(Res.string.tag_edit_headline, state.originTag?.name ?: ""),
