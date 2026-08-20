@@ -28,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
@@ -137,6 +139,9 @@ private fun OnboardingPageContent(
             Image(
                 painter = painterResource(imageRes),
                 contentDescription = null,
+                // Android와 동일: 온보딩 일러스트를 primary 색으로 틴트 + Inside 스케일
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.primaryDefault),
+                contentScale = ContentScale.Inside,
                 modifier = Modifier
                     .padding(vertical = 66.dp)
                     .size(300.dp)
@@ -154,7 +159,7 @@ private fun OnboardingPageContent(
             Text(
                 text = description,
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.dark3,
                 textAlign = TextAlign.Start,
             )
         }
@@ -182,7 +187,7 @@ private fun OnboardingIndicator(
                     )
                     .clip(CircleShape)
                     .background(
-                        if (isSelected) EbbingTheme.colors.dark2
+                        if (isSelected) EbbingTheme.colors.dark3
                         else EbbingTheme.colors.light1
                     ),
             )
