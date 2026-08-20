@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -102,9 +103,11 @@ fun ColorBottomSheet(
             columns = GridCells.Fixed(6),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
+            // Android와 동일: 최대 228dp(약 4줄)로 높이 제한 → 나머지는 스크롤(드래그)로 노출
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(vertical = 20.dp)
+                .heightIn(max = 228.dp),
         ) {
             items(TAG_COLORS) { color ->
                 ColorItem(
