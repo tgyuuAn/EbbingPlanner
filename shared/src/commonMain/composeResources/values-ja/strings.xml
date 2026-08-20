@@ -25,7 +25,7 @@
     <string name="setting_last_sync_time">最終同期: %1$s</string>
     <string name="setting_clear_data">データを初期化する</string>
     <string name="setting_theme_color_change">アプリのテーマを変更</string>
-    <string name="setting_widget_alpha_change">ウィジェットの透明度を変更</string>
+    <string name="setting_widget_alpha_change">ウィジェットのテーマ・透明度を変更</string>
     <string name="setting_announcement">お知らせ</string>
     <string name="setting_privacy_policy">プライバシーポリシー</string>
     <string name="setting_term">利用規約</string>
