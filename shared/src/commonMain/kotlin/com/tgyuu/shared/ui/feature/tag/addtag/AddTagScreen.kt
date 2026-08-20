@@ -80,7 +80,7 @@ fun AddTagScreen(
     )
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().imePadding(),
     ) {
         EbbingSubTopBar(
             title = stringResource(Res.string.tag_add_title),
@@ -105,9 +105,9 @@ fun AddTagScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-                .imePadding(),
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(20.dp),
         ) {
             Text(
                 text = stringResource(Res.string.tag_add_headline),
