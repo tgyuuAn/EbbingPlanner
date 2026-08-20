@@ -345,3 +345,15 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - WidgetNudgeDialog 일러스트 vertical 24 vs 23.5dp: 0.5dp 무해.
 - Widget 스와치 행/미리보기 카드 세부(스와치 40 vs 45, spacedBy 16 vs 4 등): Widget 미리보기는 iOS 재구성본 — 추가 정렬은 후속(구조 차이 큼). 순서 스왑만 반영.
 - 각 화면 isWide(태블릿) 분기: iOS 전용 레이아웃.
+
+## 문자열 '내용' 파리티 전수조사 (8차, 2026-08-20)
+사용자 지적("위젯 알파 변경" 등)으로, 이전 이스케이프-전용 전수조사와 별개로
+**텍스트 내용**을 Android 동일 키와 대조(스크립트: iOS values vs core/feature/app res).
+- 공용 키 293개 대조(공백·%% 정규화). 실질 불일치 4건 발견·수정:
+  - setting_widget_alpha_change "위젯 알파 변경"→"위젯 테마 / 투명도 변경"(ko/en/ja)
+  - setting_app_review(ko) "앱 리뷰 남기기"→"앱 리뷰 작성"
+  - setting_theme_color_change(ko) "테마 색상 변경"→"앱 테마 변경"
+  - sync_device_id_label(en) "ID :"→"ID:"
+- en 1건(위 sync)/ja 0건. 나머지 공백차 22건은 Android 래핑따옴표 vs iOS 순수공백의 표기차일 뿐 렌더 동일(오탐).
+- schedule_tag_count_completion `%2$d%`(iOS) vs `%2$d%%`(AND)는 CMP 포매터 특성상 의도적(동일 렌더).
+- 교훈: "전수조사=이스케이프"가 아니라 텍스트 내용까지 봐야 함. 키-값 스크립트 대조가 확실.
