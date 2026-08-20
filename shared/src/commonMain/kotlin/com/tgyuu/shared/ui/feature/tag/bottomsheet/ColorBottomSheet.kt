@@ -138,14 +138,20 @@ private fun ColorItem(
     // Android와 동일: 선택 시 색을 어둡게(lerp) 애니메이션 + 체크 아이콘 페이드
     val targetColor = if (isSelected) lerp(Color(color), Color.Black, 0.2f) else Color(color)
     val animatedColor by animateColorAsState(targetColor)
+    // 그리드 셀 폭이 45dp와 달라도 정확한 원(45x45)이 되도록 바깥 Box(fillMaxWidth)에
+    // 45dp 색상 원을 가운데 배치(리플도 원에 한정). 체크는 형제로 오버레이.
     Box(
+        modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(45.dp)
-            .clip(CircleShape)
-            .background(animatedColor)
-            .clickable { onClick() },
     ) {
+        Box(
+            modifier = Modifier
+                .size(45.dp)
+                .clip(CircleShape)
+                .background(animatedColor)
+                .clickable { onClick() },
+        )
+
         AnimatedVisibility(
             visible = isSelected,
             enter = fadeIn(),
