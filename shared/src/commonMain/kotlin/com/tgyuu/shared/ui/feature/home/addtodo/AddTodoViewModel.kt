@@ -46,8 +46,6 @@ class AddTodoViewModel(
     private val onNavigateToAddRepeatCycle: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-    private val onShowTagBottomSheet: (() -> Unit)? = null,
-    private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState(selectedDate = selectedDate)) {
 
     init {
@@ -144,10 +142,8 @@ class AddTodoViewModel(
             is AddTodoIntent.OnSelectedDateChange -> setState { copy(selectedDate = intent.selectedDate) }
             is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
             is AddTodoIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
-            AddTodoIntent.OnTagDropDownClick -> onShowTagBottomSheet?.invoke()
             is AddTodoIntent.OnTagChange -> setState { copy(tag = intent.tag) }
             AddTodoIntent.OnAddTagClick -> onNavigateToAddTag()
-            AddTodoIntent.OnRepeatCycleDropDownClick -> onShowRepeatCycleBottomSheet?.invoke()
             is AddTodoIntent.OnRepeatCycleChange -> setState { copy(repeatCycle = intent.repeatCycle) }
             AddTodoIntent.OnAddRepeatCycleClick -> onNavigateToAddRepeatCycle()
             is AddTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)

@@ -43,8 +43,6 @@ class EditTodoViewModel(
     private val onNavigateToAddTag: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-    private val onShowTagBottomSheet: (() -> Unit)? = null,
-    private val onShowDateBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditTodoState, EditTodoIntent>(EditTodoState()) {
 
     init {
@@ -119,11 +117,9 @@ class EditTodoViewModel(
     override suspend fun processIntent(intent: EditTodoIntent) {
         when (intent) {
             EditTodoIntent.OnBackClick -> onNavigateBack()
-            EditTodoIntent.OnSelectedDateDropDownClick -> onShowDateBottomSheet?.invoke()
             is EditTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is EditTodoIntent.OnTitleChange -> onTitleChange(intent.title)
             is EditTodoIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
-            EditTodoIntent.OnTagDropDownClick -> onShowTagBottomSheet?.invoke()
             is EditTodoIntent.OnTagChange -> setState { copy(tag = intent.tag) }
             EditTodoIntent.OnAddTagClick -> onNavigateToAddTag()
             EditTodoIntent.OnSaveClick -> onSaveClick()

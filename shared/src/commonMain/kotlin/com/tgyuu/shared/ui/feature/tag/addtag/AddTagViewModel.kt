@@ -18,7 +18,6 @@ class AddTagViewModel(
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-    private val onShowColorBottomSheet: (() -> Unit)? = null,
     private val analyticsHelper: AnalyticsHelper? = null,
 ) : BaseViewModel<AddTagState, AddTagIntent>(AddTagState()) {
 
@@ -30,7 +29,6 @@ class AddTagViewModel(
         when (intent) {
             AddTagIntent.OnBackClick -> onNavigateBack()
             is AddTagIntent.OnNameChange -> onNameChange(intent.name)
-            AddTagIntent.OnColorDropDownClick -> onShowColorBottomSheet?.invoke()
             is AddTagIntent.OnColorChange -> onColorChange(intent.color)
             AddTagIntent.OnSaveClick -> onSaveClick()
         }

@@ -21,7 +21,6 @@ class EditTagViewModel(
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
-    private val onShowColorBottomSheet: (() -> Unit)? = null,
     private val analyticsHelper: AnalyticsHelper? = null,
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
 
@@ -54,7 +53,6 @@ class EditTagViewModel(
         when (intent) {
             EditTagIntent.OnBackClick -> onNavigateBack()
             is EditTagIntent.OnNameChange -> onNameChange(intent.name)
-            EditTagIntent.OnColorDropDownClick -> onShowColorBottomSheet?.invoke()
             is EditTagIntent.OnColorChange -> onColorChange(intent.color)
             EditTagIntent.OnUpdateClick -> onUpdateClick()
         }

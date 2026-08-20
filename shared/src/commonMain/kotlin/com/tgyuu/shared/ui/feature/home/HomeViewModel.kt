@@ -41,7 +41,6 @@ class HomeViewModel(
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
 
     // Callbacks for UI events that need to show dialogs/bottomsheets
-    var onShowSortTypeBottomSheet: (() -> Unit)? = null
     var onShowEditOptionsBottomSheet: ((TodoScheduleUiModel) -> Unit)? = null
 
     // Cached schedules for faster updates
@@ -140,9 +139,6 @@ class HomeViewModel(
                 onShowEditOptionsBottomSheet?.invoke(intent.schedule)
             }
 
-            HomeIntent.OnSortTypeClick -> {
-                onShowSortTypeBottomSheet?.invoke()
-            }
             is HomeIntent.OnUpdateSortType -> onUpdateSortType(intent.sortType)
 
             is HomeIntent.OnDeleteSingleClick -> onDeleteSingleSchedule(intent.schedule)

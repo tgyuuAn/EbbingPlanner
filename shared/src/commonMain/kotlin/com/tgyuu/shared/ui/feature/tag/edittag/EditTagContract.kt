@@ -27,7 +27,6 @@ data class EditTagState(
 sealed class EditTagIntent : UiIntent {
     data object OnBackClick : EditTagIntent()
     data class OnNameChange(val name: String) : EditTagIntent()
-    data object OnColorDropDownClick : EditTagIntent()
     data class OnColorChange(val color: Int) : EditTagIntent()
     data object OnUpdateClick : EditTagIntent()
 }
