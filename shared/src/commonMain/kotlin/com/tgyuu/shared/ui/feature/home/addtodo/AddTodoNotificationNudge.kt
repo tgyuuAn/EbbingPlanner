@@ -28,6 +28,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
@@ -102,36 +108,40 @@ internal fun NotificationNudgeContent(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
+        // Android NotificationScreen과 동일: 세로 패딩만, 각 자식이 horizontal=20(구분선은 풀폭)
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(scrollState)
-                .padding(20.dp),
+                .padding(vertical = 20.dp),
         ) {
             // Header
             Text(
                 text = stringResource(Res.string.home_notification_nudge),
                 style = EbbingTheme.typography.headingLSB,
                 color = EbbingTheme.colors.black,
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
             Text(
                 text = stringResource(Res.string.home_notification_header_sub),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.dark3,
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.padding(top = 12.dp).padding(horizontal = 20.dp),
             )
-            Spacer(modifier = Modifier.height(32.dp))
 
-            // Toggle
+            // Toggle — Android와 동일: 라벨 + end=8 + 토글 (좌측 그룹, weight 아님)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 32.dp)
+                    .padding(horizontal = 20.dp),
             ) {
                 Text(
                     text = stringResource(Res.string.home_notification_receive),
                     style = EbbingTheme.typography.bodyMSB,
                     color = EbbingTheme.colors.black,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.padding(end = 8.dp),
                 )
                 EbbingToggle(
                     checked = state.notificationEnabled,
@@ -152,8 +162,6 @@ internal fun NotificationNudgeContent(
                     onResetClick = onResetClick,
                 )
             }
-
-            Spacer(modifier = Modifier.height(60.dp))
         }
 
         EbbingSolidButton(
@@ -177,55 +185,115 @@ private fun NudgeDetailSection(
     onMessageChange: (String) -> Unit,
     onResetClick: () -> Unit,
 ) {
+    val placeholderToken = state.placeholderToken
+    val placeholderDesc = stringResource(Res.string.notification_placeholder_desc)
+    val previewSample = stringResource(Res.string.setting_alarm_message_preview_sample)
+    val previewMessage = when {
+        state.placeholderCount == 1 -> state.message.replace(placeholderToken, previewSample)
+        state.placeholderCount == 0 -> state.message
+        else -> ""
+    }
     Column {
-        HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
-
-        // Alarm time
-        Text(text = stringResource(Res.string.setting_alarm_time), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
-        Text(
-            text = alarmTimeText(state.alarmHour, state.alarmMinute),
-            style = EbbingTheme.typography.headingMSB,
-            color = EbbingTheme.colors.primaryDefault,
-            modifier = Modifier.padding(top = 8.dp).clickable { onTimeClick() },
+        // 6dp 채움 구분바 (Android NotificationScreen: fillTextfield, vertical=28, 풀폭)
+        Spacer(
+            modifier = Modifier
+                .padding(vertical = 28.dp)
+                .fillMaxWidth()
+                .height(6.dp)
+                .background(EbbingTheme.colors.light2),
         )
-        HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
 
-        // Alarm message
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(Res.string.setting_alarm_message), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.weight(1f))
-            if (state.shouldShowResetButton) {
-                Text(text = stringResource(Res.string.setting_clear), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.clickable { onResetClick() })
-            }
-        }
-        EbbingTextInputDefault(
-            value = state.message,
-            hint = stringResource(Res.string.setting_alarm_message_hint),
-            onValueChange = onMessageChange,
-            limit = 50,
-            modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-        )
-        val errorText = when {
-            state.placeholderCount > 1 -> stringResource(Res.string.setting_alarm_message_error_placeholder)
-            !state.isValidLength -> stringResource(Res.string.setting_alarm_message_error_length)
-            else -> ""
-        }
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Text(text = errorText, style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.error, modifier = Modifier.weight(1f))
-            Text(text = stringResource(Res.string.setting_alarm_message_length, state.messageLength), style = EbbingTheme.typography.captionR12, color = if (state.isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error)
-        }
-        Text(text = stringResource(Res.string.notification_placeholder_desc), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(top = 4.dp, start = 4.dp))
-        HorizontalDivider(color = EbbingTheme.colors.light2, modifier = Modifier.padding(vertical = 16.dp))
-
-        // Preview (플레이스홀더 1개 이하 & 비어있지 않을 때만)
-        if (state.isValidPlaceholder && state.message.isNotEmpty()) {
-            Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black)
+        // 알림 시간
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 40.dp),
+        ) {
             Text(
-                text = state.message.replace(state.placeholderToken, stringResource(Res.string.setting_alarm_message_preview_sample)),
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark1,
-                modifier = Modifier.padding(top = 8.dp),
+                text = stringResource(Res.string.setting_alarm_time),
+                style = EbbingTheme.typography.bodyMSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.padding(end = 8.dp),
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(alarmTimeText(state.alarmHour, state.alarmMinute))
+                    }
+                },
+                style = EbbingTheme.typography.headingMSB,
+                color = EbbingTheme.colors.primaryDefault,
+                modifier = Modifier.clickable { onTimeClick() },
             )
         }
+
+        // 알림 메시지
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+            Text(
+                text = stringResource(Res.string.setting_alarm_message),
+                style = EbbingTheme.typography.bodyMSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.padding(bottom = 6.dp),
+            )
+            // 플레이스홀더 안내: 토큰 볼드 강조, 입력창 위에 위치 (Android 동일)
+            Text(
+                text = buildAnnotatedString {
+                    if (placeholderDesc.startsWith(placeholderToken)) {
+                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault, fontWeight = FontWeight.Bold)) {
+                            append(placeholderToken)
+                        }
+                        append(placeholderDesc.removePrefix(placeholderToken))
+                    } else {
+                        append(placeholderDesc)
+                    }
+                },
+                style = EbbingTheme.typography.bodySM,
+                color = EbbingTheme.colors.dark3,
+                modifier = Modifier.padding(bottom = 16.dp),
+            )
+            EbbingTextInputDefault(
+                value = state.message,
+                hint = stringResource(Res.string.setting_alarm_message_hint),
+                onValueChange = onMessageChange,
+                limit = 50,
+                modifier = Modifier.padding(top = 24.dp).fillMaxWidth(),
+            )
+            val errorText = when {
+                state.placeholderCount > 1 -> stringResource(Res.string.setting_alarm_message_error_placeholder)
+                !state.isValidLength -> stringResource(Res.string.setting_alarm_message_error_length)
+                else -> ""
+            }
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+                Text(text = errorText, style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.error, modifier = Modifier.weight(1f))
+                Text(text = stringResource(Res.string.setting_alarm_message_length, state.messageLength), style = EbbingTheme.typography.captionR12, color = if (state.isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 미리보기 카드 (라운드 배경) — 유효 플레이스홀더 & 비어있지 않을 때만
+            if (state.isValidPlaceholder && previewMessage.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(EbbingTheme.colors.light3, RoundedCornerShape(16.dp))
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                ) {
+                    Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(bottom = 4.dp))
+                    Text(text = previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1)
+                }
+            }
+
+            // 초기화 링크 — 하단, 기본값과 다를 때만 (Android ResetButton 위치)
+            if (state.shouldShowResetButton) {
+                Text(
+                    text = stringResource(Res.string.setting_clear),
+                    style = EbbingTheme.typography.bodySM,
+                    color = EbbingTheme.colors.dark3,
+                    modifier = Modifier.padding(top = 20.dp).clickable { onResetClick() },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(60.dp))
     }
 }
 
