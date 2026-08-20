@@ -46,6 +46,7 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomS
 import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import com.tgyuu.shared.ui.feature.home.addtodo.bottomsheet.RepeatCycleBottomSheetContent
 import com.tgyuu.shared.ui.feature.home.addtodo.bottomsheet.SelectedDateBottomSheetContent
 import com.tgyuu.shared.ui.feature.home.addtodo.component.PinnedContent
@@ -287,36 +288,37 @@ private fun ScheduleCheckContent(
     onCheckSchedule: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (schedules.isEmpty()) return
-
-    val shape = RoundedCornerShape(12.dp)
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp)
-            .clip(shape)
-            .border(width = 1.dp, color = EbbingTheme.colors.light2, shape = shape)
-            .background(EbbingTheme.colors.background)
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 8.dp),
-    ) {
-        Text(
-            text = stringResource(Res.string.home_study_schedule_count, schedules.size),
-            style = EbbingTheme.typography.headingMB,
-            color = EbbingTheme.colors.black,
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-        )
-
-        schedules.forEachIndexed { idx, item ->
-            ScheduleCheckCard(
-                idx = idx + 1,
-                isChecked = isDoneSchedules.getOrElse(idx) { false },
-                colorValue = colorValue,
-                schedule = item,
-                showDivider = idx < schedules.lastIndex,
-                onCheckSchedule = { onCheckSchedule(idx) },
-                modifier = Modifier.fillMaxWidth(),
+    // Android ScheduleCheckContent과 동일: fadeIn + slideInVertically 등장 연출
+    EbbingVisibleAnimation(visible = schedules.isNotEmpty()) {
+        val shape = RoundedCornerShape(12.dp)
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 32.dp)
+                .clip(shape)
+                .border(width = 1.dp, color = EbbingTheme.colors.light2, shape = shape)
+                .background(EbbingTheme.colors.background)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.home_study_schedule_count, schedules.size),
+                style = EbbingTheme.typography.bodyMSB,
+                color = EbbingTheme.colors.black,
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
             )
+
+            schedules.forEachIndexed { idx, item ->
+                ScheduleCheckCard(
+                    idx = idx + 1,
+                    isChecked = isDoneSchedules.getOrElse(idx) { false },
+                    colorValue = colorValue,
+                    schedule = item,
+                    showDivider = idx < schedules.lastIndex,
+                    onCheckSchedule = { onCheckSchedule(idx) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 }

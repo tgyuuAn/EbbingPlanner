@@ -220,7 +220,7 @@ fun ScheduleContent(
     ) {
         Text(
             text = stringResource(Res.string.home_study_schedule_count, schedules.size),
-            style = EbbingTheme.typography.headingMB,
+            style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
         )

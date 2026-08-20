@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import com.tgyuu.shared.ui.feature.tag.bottomsheet.TAG_COLORS
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
@@ -169,11 +170,7 @@ fun TagEditBottomSheet(
                                 }
                         )
 
-                        androidx.compose.animation.AnimatedVisibility(
-                            visible = isSelected,
-                            enter = androidx.compose.animation.fadeIn(),
-                            exit = androidx.compose.animation.fadeOut(),
-                        ) {
+                        EbbingVisibleAnimation(visible = isSelected) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_check),
                                 contentDescription = null,
