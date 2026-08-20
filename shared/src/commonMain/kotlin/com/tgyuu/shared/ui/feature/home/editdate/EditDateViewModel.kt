@@ -33,8 +33,6 @@ class EditDateViewModel(
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
     private val configRepository: ConfigRepository,
-    private val onShowDateBottomSheet: (() -> Unit)? = null,
-    private val onShowRepeatCycleBottomSheet: (() -> Unit)? = null,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
 
     private var originSchedules: List<TodoSchedule> = emptyList()
@@ -95,9 +93,7 @@ class EditDateViewModel(
     override suspend fun processIntent(intent: EditDateIntent) {
         when (intent) {
             EditDateIntent.OnBackClick -> onNavigateBack()
-            EditDateIntent.OnSelectedDateDropDownClick -> onShowDateBottomSheet?.invoke()
             is EditDateIntent.OnSelectedDateChange -> setState { copy(selectedDate = intent.selectedDate) }
-            EditDateIntent.OnRepeatCycleDropDownClick -> onShowRepeatCycleBottomSheet?.invoke()
             is EditDateIntent.OnRepeatCycleChange -> setState { copy(repeatCycle = intent.repeatCycle) }
             EditDateIntent.OnAddRepeatCycleClick -> onNavigateToAddRepeatCycle()
             is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)

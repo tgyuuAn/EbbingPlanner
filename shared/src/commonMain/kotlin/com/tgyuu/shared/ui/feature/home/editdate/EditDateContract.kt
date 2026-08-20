@@ -48,9 +48,7 @@ data class EditDateState(
 
 sealed class EditDateIntent : UiIntent {
     data object OnBackClick : EditDateIntent()
-    data object OnSelectedDateDropDownClick : EditDateIntent()
     data class OnSelectedDateChange(val selectedDate: LocalDate) : EditDateIntent()
-    data object OnRepeatCycleDropDownClick : EditDateIntent()
     data class OnRepeatCycleChange(val repeatCycle: RepeatCycleUiModel) : EditDateIntent()
     data object OnAddRepeatCycleClick : EditDateIntent()
     data class OnRestDayChange(val restDay: DayOfWeek) : EditDateIntent()

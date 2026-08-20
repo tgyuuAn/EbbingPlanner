@@ -25,7 +25,6 @@ data class AddTagState(
 sealed class AddTagIntent : UiIntent {
     data object OnBackClick : AddTagIntent()
     data class OnNameChange(val name: String) : AddTagIntent()
-    data object OnColorDropDownClick : AddTagIntent()
     data class OnColorChange(val color: Int) : AddTagIntent()
     data object OnSaveClick : AddTagIntent()
 }

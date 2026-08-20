@@ -34,11 +34,9 @@ data class EditTodoState(
 
 sealed class EditTodoIntent : UiIntent {
     data object OnBackClick : EditTodoIntent()
-    data object OnSelectedDateDropDownClick : EditTodoIntent()
     data class OnSelectedDateChange(val selectedDate: LocalDate) : EditTodoIntent()
     data class OnTitleChange(val title: String) : EditTodoIntent()
     data class OnPinnedChange(val isPinned: Boolean) : EditTodoIntent()
-    data object OnTagDropDownClick : EditTodoIntent()
     data class OnTagChange(val tag: TodoTagUiModel) : EditTodoIntent()
     data object OnAddTagClick : EditTodoIntent()
     data object OnSaveClick : EditTodoIntent()

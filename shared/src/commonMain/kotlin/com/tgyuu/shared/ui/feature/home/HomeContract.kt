@@ -49,7 +49,6 @@ sealed class HomeIntent : UiIntent {
     data class OnEditScheduleClick(val schedule: TodoScheduleUiModel) : HomeIntent()
 
     // Sort
-    data object OnSortTypeClick : HomeIntent()
     data class OnUpdateSortType(val sortType: SortType) : HomeIntent()
 
     // Delete
