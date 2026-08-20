@@ -457,6 +457,7 @@
     <string name="repeat_register_button">Add repeat cycle</string>
     <string name="repeat_edit_button">Edit repeat cycle</string>
     <string name="home_notification_nudge">Even on busy days,\nwe'll keep track of your review days automatically</string>
+    <string name="home_notification_title">Notification settings</string>
     <string name="home_notification_header_sub">Set a notification and we'll remind you of tasks on the next review day.\nYou can change notifications anytime in the Settings tab.</string>
     <string name="setting_clear_dialog_title_prefix">Reset </string>
     <string name="setting_clear_dialog_title_highlight">data</string>
