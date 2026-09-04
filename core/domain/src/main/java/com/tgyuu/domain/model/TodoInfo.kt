@@ -1,6 +1,6 @@
 package com.tgyuu.domain.model
 
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 data class TodoInfo(
     val id: Int,

@@ -4,7 +4,7 @@ import com.tgyuu.common.base.UiState
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.repeatcycle.util.parsingIntervals
 import com.tgyuu.repeatcycle.util.toPreviewIntervals
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 data class AddRepeatCycleState(
     val intervals: String = "",

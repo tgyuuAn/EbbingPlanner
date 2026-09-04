@@ -4,23 +4,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * 재부팅 시 AlarmManager 에 등록된 알람이 모두 사라지므로,
  * BOOT_COMPLETED 수신 시 저장된 미래 일정들의 알람을 재등록한다.
  * 앱 업데이트(MY_PACKAGE_REPLACED) 시에도 동일하게 재등록한다.
  */
-@AndroidEntryPoint
-class BootCompletedReceiver : BroadcastReceiver() {
-    @Inject
-    lateinit var alarmRescheduler: AlarmRescheduler
+class BootCompletedReceiver : BroadcastReceiver(), KoinComponent {
+    private val alarmRescheduler: AlarmRescheduler by inject()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

@@ -3,7 +3,6 @@ import java.util.Properties
 plugins {
     id("ebbing.android.library")
     id("ebbing.android.compose")
-    id("ebbing.android.hilt")
 }
 
 android {
@@ -26,4 +25,6 @@ android {
 
 dependencies {
     implementation(libs.amplitude.analytics)
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.koin.android)
 }

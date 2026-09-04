@@ -6,9 +6,8 @@ import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import javax.inject.Inject
 
-class LocalSyncTransactionDataSourceImpl @Inject constructor(
+class LocalSyncTransactionDataSourceImpl constructor(
     private val syncDao: SyncDao,
 ) : LocalSyncTransactionDataSource {
     override suspend fun replaceAllData(

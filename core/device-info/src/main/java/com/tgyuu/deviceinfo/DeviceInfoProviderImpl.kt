@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -16,12 +15,9 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class DeviceInfoProviderImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+class DeviceInfoProviderImpl(
+    private val context: Context,
 ) : DeviceInfoProvider {
 
     override suspend fun getDeviceName(): String {

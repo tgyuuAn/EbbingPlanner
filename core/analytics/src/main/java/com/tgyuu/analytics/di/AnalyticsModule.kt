@@ -1,58 +1,36 @@
 package com.tgyuu.analytics.di
 
-import android.content.Context
 import com.amplitude.android.Amplitude
 import com.amplitude.android.Configuration
 import com.tgyuu.analytics.AmplitudeAnalyticsHelper
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.BuildConfig
 import com.tgyuu.analytics.DebugAnalyticsHelper
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Qualifier
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AnalyticsModule {
-
-    @Provides
-    @Singleton
-    fun providesAmplitude(@ApplicationContext context: Context): Amplitude = Amplitude(
-        Configuration(
-            apiKey = BuildConfig.AMPLITUDE_API_KEY,
-            context = context,
-            flushQueueSize = 30,
-            flushIntervalMillis = 30000,
+val analyticsModule = module {
+    single {
+        Amplitude(
+            Configuration(
+                apiKey = BuildConfig.AMPLITUDE_API_KEY,
+                context = androidContext(),
+                flushQueueSize = 30,
+                flushIntervalMillis = 30000,
+            )
         )
-    )
+    }
 
-    @Provides
-    @Singleton
-    @Debug
-    fun provideDebugAnalyticsHelper(): AnalyticsHelper = DebugAnalyticsHelper()
+    single<AnalyticsHelper>(named("debug")) { DebugAnalyticsHelper() }
 
-    @Provides
-    @Singleton
-    @Release
-    fun provideReleaseAnalyticsHelper(amplitude: Amplitude): AnalyticsHelper =
-        AmplitudeAnalyticsHelper(amplitude)
+    single<AnalyticsHelper>(named("release")) { AmplitudeAnalyticsHelper(get()) }
 
-    @Provides
-    @Singleton
-    fun provideAnalyticsHelper(
-        @Debug debugHelper: AnalyticsHelper,
-        @Release releaseHelper: AnalyticsHelper
-    ): AnalyticsHelper = if (BuildConfig.DEBUG) debugHelper else releaseHelper
+    single<AnalyticsHelper> {
+        if (BuildConfig.DEBUG) {
+            get(named("debug"))
+        } else {
+            get(named("release"))
+        }
+    }
 }
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class Debug
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class Release

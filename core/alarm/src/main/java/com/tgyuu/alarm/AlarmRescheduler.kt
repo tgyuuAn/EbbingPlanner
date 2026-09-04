@@ -1,23 +1,23 @@
 package com.tgyuu.alarm
 
 import android.util.Log
+import com.tgyuu.common.now
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import java.time.LocalDate
-import java.time.ZoneId
-import javax.inject.Inject
-import javax.inject.Singleton
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 /**
  * 저장된 미래 일정들의 알람을 일괄 재등록한다.
  * 재부팅(BootCompletedReceiver) / 앱 시작(AlarmInitializer) 시점에 호출되어,
  * 시스템이 알람을 비운 경우(재부팅, 절전, 강제종료 등)에도 알림이 누락되지 않도록 한다.
  */
-@Singleton
-class AlarmRescheduler @Inject constructor(
+class AlarmRescheduler(
     private val alarmScheduler: AlarmScheduler,
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
@@ -39,10 +39,15 @@ class AlarmRescheduler @Inject constructor(
             .distinct()
             .forEach { date ->
                 runCatching {
-                    val triggerAtMillis = date.atTime(hour, minute)
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
-                        .toEpochMilli()
+                    val triggerAtMillis = LocalDateTime(
+                        year = date.year,
+                        monthNumber = date.monthNumber,
+                        dayOfMonth = date.dayOfMonth,
+                        hour = hour,
+                        minute = minute,
+                        second = 0,
+                        nanosecond = 0,
+                    ).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
 
                     if (triggerAtMillis <= now) return@forEach
 

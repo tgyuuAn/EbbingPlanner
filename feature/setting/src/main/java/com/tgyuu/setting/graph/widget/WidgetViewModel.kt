@@ -15,13 +15,10 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.setting.graph.widget.contract.WidgetIntent
 import com.tgyuu.setting.graph.widget.contract.WidgetState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class WidgetViewModel @Inject constructor(
+class WidgetViewModel(
     private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
@@ -41,12 +38,7 @@ class WidgetViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: WidgetIntent) {
         when (intent) {
-            WidgetIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Widget", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            WidgetIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             WidgetIntent.OnSaveClick -> saveWidgetConfigure()
             is WidgetIntent.OnBackgroundAlphaChange -> setBackgroundAlpha(intent.alpha)
             is WidgetIntent.OnTextAlphaChange -> setTextAlpha(intent.alpha)
@@ -104,13 +96,9 @@ class WidgetViewModel @Inject constructor(
             )
         )
 
-        currentState.selectedBackgroundAlpha ?: return@launch
-        currentState.selectedTextAlpha ?: return@launch
-        currentState.selectedTheme ?: return@launch
-
-        val newBackgroundAlpha = currentState.selectedBackgroundAlpha!!
-        val newTextAlpha = currentState.selectedTextAlpha!!
-        val newTheme = currentState.selectedTheme!!
+        val newBackgroundAlpha = currentState.selectedBackgroundAlpha ?: return@launch
+        val newTextAlpha = currentState.selectedTextAlpha ?: return@launch
+        val newTheme = currentState.selectedTheme ?: return@launch
 
         suspendRunCatching {
             val backgroundAlphaJob =

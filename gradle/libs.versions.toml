@@ -49,6 +49,8 @@ kotlinxSerializationJson = "1.8.0"
 kotlinxCoroutine = "1.10.1"
 # https://github.com/Kotlin/kotlinx.collections.immutable
 kotlinxCollectionsImmutable = "0.4.0"
+# https://github.com/Kotlin/kotlinx-datetime
+kotlinxDatetime = "0.7.1"
 # https://github.com/google/gson
 gson = "2.12.1"
 
@@ -82,14 +84,38 @@ metricsPerformance = "1.0.0-beta02"
 # https://amplitude.com/docs/sdks/analytics/android
 amplitude = "1.21.3"
 
+## Ktor
+ktor = "3.1.3"
+
+## Supabase (supabase-kt, KMP)
+supabase = "3.1.4"
+
 ## Accompanist
 # https://github.com/google/accompanist
 accompanist = "0.37.0"
+roomKtx = "2.8.4"
 
 ## Play Core
 # https://developer.android.com/reference/com/google/android/play/core/release-notes
 playCore = "2.0.2"
 playAppUpdate = "2.1.0"
+
+## Koin (KMP DI)
+# https://insert-koin.io/
+koin = "4.0.0"
+koinComposeMultiplatform = "4.0.0"
+
+## Compose Multiplatform
+# https://github.com/JetBrains/compose-multiplatform
+composeMultiplatform = "1.11.1"
+
+## Decompose (KMP Navigation)
+# https://github.com/arkivanov/Decompose
+decompose = "3.5.0"
+
+## KMP Lifecycle ViewModel
+# https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-viewmodel.html
+lifecycleViewModelKmp = "2.8.0"
 
 ## ML Kit
 # https://developers.google.com/ml-kit/vision/barcode-scanning/android
@@ -102,11 +128,6 @@ camerax = "1.4.2"
 ## QRose (QR code generation)
 # https://github.com/alexzhirkevich/qrose
 qrose = "1.0.1"
-
-## Supabase
-# https://github.com/supabase-community/supabase-kt
-supabase = "3.1.4"
-ktor = "3.1.3"
 
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -155,6 +176,8 @@ coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutine" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
@@ -188,18 +211,51 @@ firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" 
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx" }
 
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
+
 amplitude-analytics = { module = "com.amplitude:analytics-android", version.ref = "amplitude" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playCore" }
 play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "playAppUpdate" }
 
+# Koin
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinComposeMultiplatform" }
+koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koinComposeMultiplatform" }
+
+# Room KMP
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.5.0" }
+
+# Decompose (KMP Navigation)
+decompose = { group = "com.arkivanov.decompose", name = "decompose", version.ref = "decompose" }
+decompose-compose = { group = "com.arkivanov.decompose", name = "extensions-compose", version.ref = "decompose" }
+
+# KMP Lifecycle ViewModel
+lifecycle-viewmodel-kmp = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleViewModelKmp" }
+lifecycle-viewmodel-compose-kmp = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelKmp" }
+
+# Koin Compose Multiplatform
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinComposeMultiplatform" }
+koin-compose-viewmodel-kmp = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koinComposeMultiplatform" }
+
+# QR (scan + generate)
 mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitBarcode" }
 camerax-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
 camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camerax-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 qrose = { group = "io.github.alexzhirkevich", name = "qrose", version.ref = "qrose" }
+# CMP 1.8+부터 material3가 material-icons를 더 이상 전이 의존하지 않아 마지막 배포 버전(1.7.3)을 직접 참조
+compose-material-icons-core = { group = "org.jetbrains.compose.material", name = "material-icons-core", version = "1.7.3" }
 
-supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 
 [bundles]
@@ -207,7 +263,10 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+# 버전 명시 없음: build-logic 클래스패스의 AGP 버전을 그대로 사용 (버전 지정 시 already-on-classpath 충돌)
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
@@ -218,3 +277,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }

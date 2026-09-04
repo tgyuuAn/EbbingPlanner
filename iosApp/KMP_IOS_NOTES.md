@@ -1,0 +1,73 @@
+# KMP / iOS 작업 기록 & 재발 함정 노트
+
+`feature/KMP` 브랜치(Compose Multiplatform 기반 iOS 포팅) 작업 로그와, 반복해서
+마주친 에러·원인·해결을 남긴다. **새 작업/에러가 생기면 여기에 계속 추가할 것.**
+
+---
+
+## 재발 함정 (에러 → 원인 → 해결)
+
+### 1. 소스 수정이 iOS 빌드에 반영 안 됨 (stale framework)
+- **증상**: shared 코드를 고쳐도 앱에 반영 안 됨. `strings shared.framework`에 방금 넣은 문자열이 없음.
+- **원인**: `gradle.properties`의 `org.gradle.configuration-cache=true`가 iOS 프레임워크 링크 태스크 산출물을 stale하게 복원. Xcode의 gradle 호출에도 동일 영향.
+- **해결**: iOS 반복 작업 중에는 `configuration-cache=false`로 임시 전환, 작업 종료 후 `true`로 원복. 의심될 땐 `--no-configuration-cache`로 링크 강제.
+
+### 2. 앱 실행 즉시 크래시 (첫 컴포지션에서 예외, "Error was captured in composition")
+- **원인**: `shared`가 정적 프레임워크(`isStatic=true`)라 compose 리소스가 앱 번들에 포함되지 않음 → `stringResource`/`painterResource`가 런타임에 리소스를 못 찾아 예외.
+- **해결**: Xcode "Build Shared Framework" 빌드 단계에 `./gradlew :shared:syncComposeResourcesForIos` 추가 (`iosApp/project.yml` + `EbbingPlanner.xcodeproj/project.pbxproj` 둘 다). 리소스가 앱 번들의 `compose-resources/composeResources/ebbingplanner.shared.generated.resources/...`로 복사됨.
+
+### 3. 문자열에 포맷 지시자가 리터럴로 노출 (예: "오후 6시 %3$02d분", "50%%")
+- **원인**: CMP(비-Android) `stringResource` 포매터가 `%02d`(폭/0채움)와 `%%`(퍼센트 이스케이프)를 미지원. `%1$s`/`%2$d` 같은 단순 positional만 치환.
+- **해결**: 0채움은 Kotlin `padStart(2,'0')` 후 `%s`로 전달. `%%`는 리소스에서 `%`로 교체.
+
+### 4. kotlinx-datetime 0.6 → 0.7 마이그레이션
+- `Clock`/`Instant` → `kotlin.time`로 이동.
+- `DayOfWeek`가 java.time typealias 아님: 정렬은 `isoDayNumber`, 로케일 표시명은 `java.time.DayOfWeek.of(isoDayNumber).getDisplayName(...)` (core.common `getDisplayName` 확장 사용).
+- `LocalDate.toEpochDays()`가 Long 반환 → `daysUntil` 사용 권장.
+
+### 5. AGP 9 + KMP
+- shared 모듈은 `com.android.library` → `com.android.kotlin.multiplatform.library` 플러그인(버전 미지정, build-logic 클래스패스 AGP 사용).
+- CMP 1.11은 iosX64(Intel 시뮬레이터) 미지원 → 타깃/ksp 제거 (iosArm64 + iosSimulatorArm64만).
+- CMP 1.8+부터 material3가 material-icons 전이 의존 안 함 → `material-icons-core` 직접 의존.
+
+### 7. 문자열에 리터럴 큰따옴표 노출 (예: 일정 추가/편집 헤드라인에 `"..."`)
+- **증상**: iOS에서 AddTodo/EditTodo/메모 헤드라인, 삭제 다이얼로그 등에 `"날짜"부터...`처럼 큰따옴표가 문자 그대로 보임.
+- **원인**: Android `res/values`는 aapt가 앞뒤 공백 보존용 래핑 큰따옴표(`"..."`)를 벗겨내지만, **compose-resources의 빌드타임 변환기(`convertXmlValueResources` → `.cvr`)는 이 Android 관례를 미지원**. 큰따옴표를 값의 일부로 그대로 저장. (commonMain composeResources는 aapt를 안 타므로 Android/iOS 공통으로 영향받지만, 원 앱은 androidMain res/values를 써서 티가 안 났고 commonMain으로 복사하며 따옴표째 들어옴.)
+- **해결**: 값 전체를 감싼 `"..."`를 제거. 검증: `.cvr`는 `string|<name>|<base64(UTF-8)>` 포맷이라 base64 디코드로 저장 바이트 확인 가능. 변환기는 앞 공백을 **트리밍하지 않으므로**(따옴표 없이도 선행 공백·`\n` 보존됨) 따옴표만 벗기면 안전. 예: ` 부터\n시작...` → cvr 첫 바이트 `0x20`(공백) 확인.
+  - 재검증 태스크: `./gradlew :shared:convertXmlValueResourcesForCommonMain --rerun-tasks` 후 `shared/build/generated/compose/resourceGenerator/preparedResources/commonMain/.../values/strings.commonMain.cvr` 디코드.
+  - 일괄 제거: `(<string name="[^"]+">)"(.*)"(</string>)` → `\1\2\3` (values 28, en 25, ja 24, ko 0 = 총 77건).
+- **같은 계열 2 — 이스케이프 아포스트로피 `\'`**: 변환기는 `\n`은 개행으로 처리하지만 `\'`/`\"`는 **역슬래시를 그대로 저장**. Android aapt는 비따옴표 문자열에서 `\'`를 요구하지만 CMP 변환기엔 불필요 → iOS에서 `\'스터디\' 태그 편집`처럼 역슬래시가 보임. 해결: `\'`→`'` 치환(values 6, en 33, ja 2, ko 0 = 41건). `\n`은 건드리지 말 것(정상 처리됨). `\"`는 0건이었음.
+- **정리**: CMP 변환기는 `\n`만 처리, `"..."` 래핑·`\'`·`\"`는 미처리. 새 문자열 추가 시 aapt 관례(따옴표/백슬래시 이스케이프) 쓰지 말고 순수 텍스트로.
+
+### 6. 시뮬레이터 UI 시각 검증 방법 (탭 자동화 불가)
+- System Events 접근성 권한 차단 + idb 미설치 → 좌표 탭 불가.
+- **화면 캡처**: `DefaultRootComponent.initialConfiguration`을 임시로 대상 `Configuration`으로 변경 후 빌드→설치→(온보딩 소비 위해 1회 더)재실행→스크린샷. 끝나면 원복.
+  - 단, `Configuration.Theme`는 Home으로 폴백돼 라우팅 안 됨(원인 미규명). `Configuration.Setting`, `Configuration.Widget`은 정상.
+- 헬퍼 스크립트: `/tmp/run_ios.sh <out.png>` (config-cache off일 때만 신뢰 가능).
+- 크래시 원인 추적: 초기엔 CMP가 컴포지션 예외를 잡아 stderr에 요약만 남김. `xcrun simctl launch --console`, 크래시 리포트(`~/Library/Logs/DiagnosticReports/EbbingPlanner*.ips`)의 faulting thread 백트레이스로 예외 지점 특정.
+
+---
+
+## 작업 로그 요약 (feature/KMP)
+
+1. **develop 최신화**: origin/develop 병합(충돌 1건: app/build.gradle.kts) + AGP9/Kotlin2.3/Gradle9.6 마이그레이션 반영.
+2. **iOS 실행 크래시 해결**: syncComposeResourcesForIos 추가 (위 함정 #2).
+3. **cleanup 13건**: 중복 코덱/Saver/헬퍼 통합, expect/actual 축소, nullable configRepository 필수화, RootContent FQN 정리 등.
+4. **UI 패리티 (Android↔iOS) high 26/26**: 워크플로로 91건 발견 → high 전량 수정. 상세·체크리스트는 `UI_PARITY.md`, 원본 발견 목록은 `UI_PARITY_FINDINGS.json`.
+   - 주요: 알림시간 %02d, 정렬 라벨, AddTodo 자동포커스+키보드 imePadding, 날짜시트 패딩, 태그 색상 팔레트, 완료율 %%, 알림 헤더/카운터, 설정 섹션순서·초기화 다이얼로그·데이터 복원 행, 테마/위젯 제목·미리보기 카드·저장 버튼, WidgetNudge/notice/plus 드로어블 포팅, sync 타이포, 메모 미리보기 공용 카드.
+   - medium: 라벨/레이아웃/타이포/로그 다수 반영 + 구조적(M14 테마선택기, M23/L22 색상 애니메이션, M27 반복삭제 다이얼로그 공용화, M30 메모 진입모드) 완료. 나머지는 플랫폼/의도적 차이로 기록.
+   - low: analytics 로깅, verticalScrollbar 유틸 이식(L8/L9/L21), 등장/펼침 애니메이션(L4/L16/L22), 문구/간격 정렬 완료. 색 토큰 미세차 등은 무해로 기록.
+   - 상세 완료/보류(사유)는 UI_PARITY.md의 MEDIUM/LOW 섹션 참조.
+5. **신규 공용 유틸/헬퍼**: colorSchemeFor(테마별 색스킴), verticalScrollbar(Modifier), IntListCodec, UsageOrderStore 등.
+6. **알림 예약 + 넛지 페이지 구현(AddTodo)**: Android home/graph/notification 넛지 페이지 + 알림 스케줄링 iOS 포팅.
+   - `NotificationScheduler`(expect/actual, UNUserNotificationCenter)는 이미 존재했으나 DI 미등록·미사용 → Android/IosModule에 `single { NotificationScheduler(...) }` 등록.
+   - AddTodoContract에 `Page`(ADD_TODO/NOTIFICATION)·`NotificationState`·알림 인텐트 추가(Android AddTodoState 대응).
+   - AddTodoViewModel: `shouldShowNotificationNudge()`(최초 1회 소비형) true면 page=NOTIFICATION, 아니면 즉시 저장. onNotificationSaveClick이 설정 영속 후 saveTodoAndNavigateHome. `scheduleAlarms()`가 저장된 알림 설정(enabled)·시간으로 각 미래 일정에 로컬 알림 등록(id=date.hashCode(), body=문구에 {할일}→제목 치환, 과거는 스킵). 토글 on 시 requestPermission()로 iOS 권한 요청 후 허용 시에만 활성.
+   - 넛지 UI는 addtodo/AddTodoNotificationNudge.kt(독립 파일). 표준 Notification 설정화면과 동일 컴포넌트/리소스 재사용. 토글 off면 상세 접힘(AnimatedVisibility).
+   - **의도적 차이(기록)**: Android saveTodoAndNavigateHome은 무조건 스케줄하지만 iOS는 enabled일 때만 스케줄(권한/사용자 선택 존중). 넛지 토글 기본 off는 Android와 동일. `incrementTodoRegisteredCount`/위젯 넛지 인자는 shared 미구현이라 제외.
+   - 검증: iOS/Android 타깃 컴파일 + 앱 빌드/실행 무크래시 + 임시 라우팅(page=NOTIFICATION)으로 넛지 화면 스크린샷 확인 후 원복.
+
+## 검증 원칙
+- 변경 후 `./gradlew :shared:compileKotlinIosSimulatorArm64`로 컴파일 확인.
+- 가능하면 시뮬레이터 시각 검증(위 #6). 라우팅 불가 화면은 컴파일+Android 구조 미러+검증된 빌딩블록 근거로 수용하되 노트에 명시.
+- 진단용 임시 변경(초기 라우트, config-cache)은 커밋 전 반드시 원복.

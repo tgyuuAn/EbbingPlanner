@@ -31,17 +31,18 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.TagGraph
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZoneId
-import javax.inject.Inject
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toInstant
+import kotlin.time.ExperimentalTime
 
-@HiltViewModel
-class AddTodoViewModel @Inject constructor(
+@OptIn(ExperimentalTime::class)
+class AddTodoViewModel(
     private val todoRepository: TodoRepository,
     private val configRepository: ConfigRepository,
     private val eventBus: EventBus,
@@ -163,12 +164,12 @@ class AddTodoViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
-            AddTodoIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "Back")
+            AddTodoIntent.OnBackClick -> navigationBus.navigate(
+                NavigationEvent.To(
+                    route = HomeRoute(currentState.selectedDate.toFormattedString()),
+                    popUpTo = true,
                 )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            )
 
             is AddTodoIntent.OnSelectedDataChangeClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
@@ -224,7 +225,7 @@ class AddTodoViewModel @Inject constructor(
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-        eventBus.awaitBottomSheetHidden()
+
         setState { copy(repeatCycle = repeatCycle) }
     }
 
@@ -255,6 +256,7 @@ class AddTodoViewModel @Inject constructor(
         navigationBus.navigate(NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute))
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(
@@ -295,11 +297,18 @@ class AddTodoViewModel @Inject constructor(
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->
             try {
-                val triggerAtMillis = schedule
-                    .atTime(LocalTime.of(hour, minute))
-                    .atZone(ZoneId.systemDefault())
-                    .toInstant()
-                    .toEpochMilli()
+                val triggerAtMillis = schedule.run {
+                    val dateTime = LocalDateTime(
+                        year = this.year,
+                        monthNumber = this.monthNumber,
+                        dayOfMonth = this.dayOfMonth,
+                        hour = hour,
+                        minute = minute,
+                        second = 0,
+                        nanosecond = 0
+                    )
+                    dateTime.toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+                }
 
                 if (triggerAtMillis <= System.currentTimeMillis()) return@forEach
 
@@ -328,13 +337,6 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onNotificationToggleClick() {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "NotificationNudge_Toggle",
-            )
-        )
-
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -345,13 +347,6 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onAlarmTimeChange(hour: Int, minute: Int) {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "NotificationNudge_Toggle",
-            )
-        )
-
         setState {
             copy(
                 notificationState = notificationState.copy(
@@ -397,13 +392,6 @@ class AddTodoViewModel @Inject constructor(
             configRepository.updateAlarmMessage(notificationState.message)
         }
 
-        analyticsHelper.logEvent(
-            AnalyticsEvent.Click(
-                screenName = "NotificationNudge",
-                buttonName = "SaveNotification",
-            )
-        )
         saveTodoAndNavigateHome()
     }
-
 }

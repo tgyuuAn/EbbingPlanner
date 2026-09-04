@@ -12,9 +12,8 @@ import com.tgyuu.network.source.ConfigDataSource
 import com.tgyuu.network.source.NotificationLogDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
-class ConfigRepositoryImpl @Inject constructor(
+class ConfigRepositoryImpl constructor(
     private val localUserConfigDataSource: LocalUserConfigDataSource,
     private val configDataSource: ConfigDataSource,
     private val notificationLogDataSource: NotificationLogDataSource,

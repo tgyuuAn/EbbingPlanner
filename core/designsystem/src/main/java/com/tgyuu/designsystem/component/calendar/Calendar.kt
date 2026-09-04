@@ -13,9 +13,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 private const val CALENDAR_PAGE_COUNT = 12_001 // ±500년(월), ±115년(주)
 
@@ -47,19 +50,22 @@ fun EbbingCalendar(
     )
     val weekOffset = weekPagerState.currentPage - weekInitialPage
 
-    // 월간 페이저 스크롤 → 현재 표시 날짜 업데이트
+    // 월간 페이저 스크롤 -> 현재 표시 날짜 업데이트
     LaunchedEffect(monthPagerState.currentPage) {
         if (!showWeekOnly) {
-            calendarState.currentDisplayDate =
-                calendarState.originSelectedDate.plusMonths(monthOffset.toLong())
+            calendarState.currentDisplayDate = calendarState.originSelectedDate.plus(
+                value = monthOffset.toLong(),
+                unit = DateTimeUnit.MONTH,
+            )
         }
     }
 
-    // 주간 페이저 스크롤 → 현재 표시 날짜 업데이트
+    // 주간 페이저 스크롤 -> 현재 표시 날짜 업데이트
     LaunchedEffect(weekPagerState.currentPage) {
         if (showWeekOnly) {
             val originWeekStart = getWeekStart(calendarState.originSelectedDate, startFromMonday)
-            calendarState.currentDisplayDate = originWeekStart.plusWeeks(weekOffset.toLong())
+            calendarState.currentDisplayDate =
+                originWeekStart.plus(weekOffset * 7, DateTimeUnit.DAY)
         }
     }
 
@@ -138,7 +144,7 @@ fun EbbingCalendar(
             ) { pageIndex ->
                 val pageOffset = pageIndex - weekInitialPage
                 val weekStart = getWeekStart(calendarState.originSelectedDate, startFromMonday)
-                    .plusWeeks(pageOffset.toLong())
+                    .plus(pageOffset * 7, DateTimeUnit.DAY)
                 WeekCalendarBody(
                     weekReferenceDate = weekStart,
                     selectedDate = calendarState.selectedDate,

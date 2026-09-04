@@ -8,7 +8,9 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EbbingEvent.ShowSnackBar
 import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.dashboard.contract.ScheduleIntent
 import com.tgyuu.dashboard.contract.ScheduleState
@@ -27,17 +29,15 @@ import com.tgyuu.navigation.HomeGraph.EditTodoRoute
 import com.tgyuu.navigation.MemoGraph
 import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent.To
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentHashSet
 import kotlinx.coroutines.coroutineScope
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import javax.inject.Inject
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
-@HiltViewModel
-class ScheduleViewModel @Inject constructor(
+class ScheduleViewModel(
     private val todoRepository: TodoRepository,
     private val analyticsHelper: AnalyticsHelper,
     private val navigationBus: NavigationBus,
@@ -167,7 +167,7 @@ class ScheduleViewModel @Inject constructor(
         analyticsHelper.logEvent(
             AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddSchedule")
         )
-        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val today = LocalDate.now().toFormattedString()
         navigationBus.navigate(To(AddTodoRoute(today)))
     }
 
@@ -253,7 +253,7 @@ class ScheduleViewModel @Inject constructor(
     private suspend fun onDeleteRemaining(schedule: TodoScheduleUiModel) {
         suspendRunCatching {
             val allSchedules = todoRepository.loadSchedulesByTodoInfo(schedule.infoId)
-            val toDelete = allSchedules.filter { !it.date.isBefore(schedule.date) }
+            val toDelete = allSchedules.filter { it.date >= schedule.date }
             toDelete.forEach { todoRepository.deleteTodo(it) }
             eventBus.sendEvent(HideBottomSheet)
             eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_remaining_deleted)))
@@ -264,7 +264,9 @@ class ScheduleViewModel @Inject constructor(
     private suspend fun onDelaySingle(schedule: TodoScheduleUiModel) {
         suspendRunCatching {
             val domainSchedule = schedule.toDomainModel()
-            todoRepository.updateTodo(domainSchedule.copy(date = domainSchedule.date.plusDays(1)))
+            todoRepository.updateTodo(
+                domainSchedule.copy(date = domainSchedule.date.plus(1, DateTimeUnit.DAY))
+            )
             eventBus.sendEvent(HideBottomSheet)
             eventBus.sendEvent(ShowSnackBar(resourceProvider.getString(R.string.schedule_snackbar_delayed_single)))
             loadTodoSchedules()
@@ -274,8 +276,8 @@ class ScheduleViewModel @Inject constructor(
     private suspend fun onDelayAll(schedule: TodoScheduleUiModel) {
         suspendRunCatching {
             val allSchedules = todoRepository.loadSchedulesByTodoInfo(schedule.infoId)
-            val toDelay = allSchedules.filter { !it.date.isBefore(schedule.date) }
-            val updated = toDelay.map { it.copy(date = it.date.plusDays(1)) }
+            val toDelay = allSchedules.filter { it.date >= schedule.date }
+            val updated = toDelay.map { it.copy(date = it.date.plus(1, DateTimeUnit.DAY)) }
             todoRepository.updateTodos(updated)
             eventBus.sendEvent(HideBottomSheet)
             eventBus.sendEvent(
