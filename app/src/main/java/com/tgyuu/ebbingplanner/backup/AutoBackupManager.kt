@@ -13,11 +13,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.ZonedDateTime
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class AutoBackupManager @Inject constructor(
+class AutoBackupManager(
     private val syncRepository: SyncRepository,
     private val configRepository: ConfigRepository,
     private val networkMonitor: NetworkMonitor,

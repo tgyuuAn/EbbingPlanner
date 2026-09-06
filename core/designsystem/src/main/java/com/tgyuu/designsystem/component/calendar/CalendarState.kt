@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.setValue
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.LocalDate
 
 class CalendarState(val originSelectedDate: LocalDate = LocalDate.now()) {
     var currentDisplayDate by mutableStateOf(originSelectedDate)
@@ -18,9 +19,9 @@ class CalendarState(val originSelectedDate: LocalDate = LocalDate.now()) {
 
     companion object {
         val Saver: Saver<CalendarState, *> = listSaver(
-            save = { listOf(it.originSelectedDate) },
+            save = { listOf(it.originSelectedDate.toString()) },
             restore = {
-                CalendarState(originSelectedDate = it[0])
+                CalendarState(originSelectedDate = LocalDate.parse(it[0]))
             }
         )
     }

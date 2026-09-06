@@ -33,9 +33,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.now
 import com.tgyuu.common.util.EbbingPageTransitionAnimation
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -60,12 +61,13 @@ import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleContent
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun AddTodoRoute(
-    viewModel: AddTodoViewModel = hiltViewModel()
+    viewModel: AddTodoViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var repeatCycleSheetKey by remember { mutableIntStateOf(0) }
@@ -380,7 +382,7 @@ private fun TodoMainFormContent(
 ) {
     val monthDayText = stringResource(
         R.string.home_month_day,
-        state.selectedDate.monthValue,
+        state.selectedDate.monthNumber,
         state.selectedDate.dayOfMonth,
     )
     val addTodoHeaderSuffix = stringResource(R.string.home_add_todo_header_suffix)

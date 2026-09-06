@@ -23,8 +23,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -39,7 +39,7 @@ import com.tgyuu.memo.ui.PreviewContent
 import com.tgyuu.memo.ui.dialog.SaveMemoDialog
 
 @Composable
-internal fun AddMemoRoute(viewModel: AddMemoViewModel = hiltViewModel()) {
+internal fun AddMemoRoute(viewModel: AddMemoViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     if (state.showSaveDialog) {

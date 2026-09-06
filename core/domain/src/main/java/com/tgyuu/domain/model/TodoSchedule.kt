@@ -1,6 +1,6 @@
 package com.tgyuu.domain.model
 
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 data class TodoSchedule(
     val id: Int,

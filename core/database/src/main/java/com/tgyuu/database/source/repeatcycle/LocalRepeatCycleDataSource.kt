@@ -3,7 +3,7 @@ package com.tgyuu.database.source.repeatcycle
 import com.tgyuu.database.model.RepeatCycleEntity
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 interface LocalRepeatCycleDataSource {
     suspend fun insertRepeatCycle(intervals: List<Int>): Long

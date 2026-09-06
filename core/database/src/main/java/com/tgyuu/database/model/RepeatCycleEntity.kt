@@ -2,9 +2,10 @@ package com.tgyuu.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.tgyuu.common.now
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 @Entity(tableName = "repeat_cycle")
 data class RepeatCycleEntity(

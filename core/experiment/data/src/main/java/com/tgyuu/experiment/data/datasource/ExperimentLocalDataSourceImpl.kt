@@ -4,12 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.tgyuu.experiment.data.di.Experiment
 import kotlinx.coroutines.flow.first
-import javax.inject.Inject
 
-class ExperimentLocalDataSourceImpl @Inject constructor(
-    @Experiment private val dataStore: DataStore<Preferences>,
+class ExperimentLocalDataSourceImpl(
+    private val dataStore: DataStore<Preferences>,
 ) : ExperimentLocalDataSource {
 
     override suspend fun getAssignment(experimentKey: String): String? {

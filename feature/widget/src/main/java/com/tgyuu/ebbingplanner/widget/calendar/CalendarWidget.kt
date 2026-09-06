@@ -65,7 +65,8 @@ import com.tgyuu.ebbingplanner.widget.util.SelectDateAction.Companion.SELECTED_D
 import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
 import com.tgyuu.ebbingplanner.widget.util.selectedDateKey
 import com.tgyuu.ebbingplanner.widget.util.widgetSourceKey
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.LocalDate
 
 class CalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -179,7 +180,7 @@ private fun CalendarWidgetHeader(
                     contentDescription = context.getString(
                         com.tgyuu.designsystem.R.string.widget_year_month,
                         today.year,
-                        today.monthValue,
+                        today.monthNumber,
                     ),
                     colorFilter = ColorFilter.tint(LocalEbbingWidgetColors.current.textOnBackground),
                 )
@@ -189,7 +190,7 @@ private fun CalendarWidgetHeader(
                     text = context.getString(
                         com.tgyuu.designsystem.R.string.widget_year_month,
                         today.year,
-                        today.monthValue,
+                        today.monthNumber,
                     ),
                     style = EbbingWidgetTypography.heading16B.copy(
                         color = LocalEbbingWidgetColors.current.textOnBackground,
@@ -415,7 +416,7 @@ private fun ColumnScope.SelectedDateTodoList(
                     } else {
                         context.getString(
                             com.tgyuu.designsystem.R.string.widget_month_day_todo,
-                            selectedDate.monthValue,
+                            selectedDate.monthNumber,
                             selectedDate.dayOfMonth,
                         )
                     },
@@ -429,7 +430,7 @@ private fun ColumnScope.SelectedDateTodoList(
                     } else {
                         context.getString(
                             com.tgyuu.designsystem.R.string.widget_month_day_todo_spaced,
-                            selectedDate.monthValue,
+                            selectedDate.monthNumber,
                             selectedDate.dayOfMonth,
                         )
                     },
