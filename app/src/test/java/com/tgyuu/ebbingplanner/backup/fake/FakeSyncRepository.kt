@@ -35,8 +35,6 @@ class FakeSyncRepository : SyncRepository {
     override suspend fun getConnectCodeExpiration(): ZonedDateTime? = null
     override suspend fun connectAnother(connectCode: String): ConnectResult =
         ConnectResult.InvalidOrExpired
-    override suspend fun restoreByDeviceId(deviceIdPrefix: String): RestoreResult =
-        RestoreResult.NotFound
     override suspend fun disconnectAnother() {}
     override suspend fun pollConnectedPeer(): ConnectedPeer? = null
     override suspend fun getStoredPeer(): ConnectedPeer? = null
