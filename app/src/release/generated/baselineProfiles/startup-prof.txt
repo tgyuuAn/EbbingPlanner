@@ -476,6 +476,7 @@ SPLandroidx/collection/MutableScatterMap;-><init>(I)V
 SPLandroidx/collection/MutableScatterMap;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLandroidx/collection/MutableScatterMap;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterMap;->clear()V
+SPLandroidx/collection/MutableScatterMap;->dropDeletes$collection()V
 SPLandroidx/collection/MutableScatterMap;->findFirstAvailableSlot(I)I
 HSPLandroidx/collection/MutableScatterMap;->findInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterMap;->initializeGrowth()V
@@ -493,6 +494,7 @@ SPLandroidx/collection/MutableScatterSet;->addAll(Landroidx/collection/ScatterSe
 SPLandroidx/collection/MutableScatterSet;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterSet;->asMutableSet()Ljava/util/Set;
 SPLandroidx/collection/MutableScatterSet;->clear()V
+SPLandroidx/collection/MutableScatterSet;->dropDeletes$collection()V
 HSPLandroidx/collection/MutableScatterSet;->findAbsoluteInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterSet;->findFirstAvailableSlot(I)I
 SPLandroidx/collection/MutableScatterSet;->initializeGrowth()V
@@ -2893,6 +2895,7 @@ Landroidx/compose/foundation/lazy/LazyListState$remeasurementModifier$1;
 SPLandroidx/compose/foundation/lazy/LazyListState$remeasurementModifier$1;-><init>(Landroidx/compose/foundation/lazy/LazyListState;)V
 Landroidx/compose/foundation/lazy/LazyListState$scroll$1;
 SPLandroidx/compose/foundation/lazy/LazyListState$scroll$1;-><init>(Landroidx/compose/foundation/lazy/LazyListState;Lkotlin/coroutines/Continuation;)V
+SPLandroidx/compose/foundation/lazy/LazyListState$scroll$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/compose/foundation/lazy/LazyListState$scrollableState$1;
 SPLandroidx/compose/foundation/lazy/LazyListState$scrollableState$1;-><init>(Landroidx/compose/foundation/lazy/LazyListState;)V
 Landroidx/compose/foundation/lazy/LazyListStateKt;
@@ -2927,6 +2930,7 @@ SPLandroidx/compose/foundation/lazy/layout/AwaitFirstLayoutModifier;->onGlobally
 SPLandroidx/compose/foundation/lazy/layout/AwaitFirstLayoutModifier;->waitForFirstLayout(Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 Landroidx/compose/foundation/lazy/layout/AwaitFirstLayoutModifier$waitForFirstLayout$1;
 SPLandroidx/compose/foundation/lazy/layout/AwaitFirstLayoutModifier$waitForFirstLayout$1;-><init>(Landroidx/compose/foundation/lazy/layout/AwaitFirstLayoutModifier;Lkotlin/coroutines/Continuation;)V
+SPLandroidx/compose/foundation/lazy/layout/AwaitFirstLayoutModifier$waitForFirstLayout$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/compose/foundation/lazy/layout/DefaultLazyKey;
 SPLandroidx/compose/foundation/lazy/layout/DefaultLazyKey;-><clinit>()V
 SPLandroidx/compose/foundation/lazy/layout/DefaultLazyKey;-><init>(I)V
@@ -4883,7 +4887,7 @@ SPLandroidx/compose/runtime/ComposerImpl;->updateNodeCountOverrides(II)V
 SPLandroidx/compose/runtime/ComposerImpl;->updateProviderMapGroup(Landroidx/compose/runtime/PersistentCompositionLocalMap;Landroidx/compose/runtime/PersistentCompositionLocalMap;)Landroidx/compose/runtime/PersistentCompositionLocalMap;
 SPLandroidx/compose/runtime/ComposerImpl;->updateRememberedValue(Ljava/lang/Object;)V
 SPLandroidx/compose/runtime/ComposerImpl;->updateSlot(Ljava/lang/Object;)V
-SPLandroidx/compose/runtime/ComposerImpl;->updateValue(Ljava/lang/Object;)V
+HSPLandroidx/compose/runtime/ComposerImpl;->updateValue(Ljava/lang/Object;)V
 SPLandroidx/compose/runtime/ComposerImpl;->updatedNodeCount(I)I
 SPLandroidx/compose/runtime/ComposerImpl;->useNode()V
 SPLandroidx/compose/runtime/ComposerImpl;->validateNodeExpected()V
@@ -9425,7 +9429,7 @@ SPLandroidx/compose/ui/node/LayoutNode;->getForceUseOldLayers()Z
 SPLandroidx/compose/ui/node/LayoutNode;->getHasFixedInnerContentConstraints$ui_release()Z
 SPLandroidx/compose/ui/node/LayoutNode;->getHeight()I
 HSPLandroidx/compose/ui/node/LayoutNode;->getInnerCoordinator$ui_release()Landroidx/compose/ui/node/NodeCoordinator;
-SPLandroidx/compose/ui/node/LayoutNode;->getInnerLayerCoordinator$ui_release()Landroidx/compose/ui/node/NodeCoordinator;
+HSPLandroidx/compose/ui/node/LayoutNode;->getInnerLayerCoordinator$ui_release()Landroidx/compose/ui/node/NodeCoordinator;
 SPLandroidx/compose/ui/node/LayoutNode;->getIntrinsicsUsageByParent$ui_release()Landroidx/compose/ui/node/LayoutNode$UsageByParent;
 SPLandroidx/compose/ui/node/LayoutNode;->getLastSize-YbymL2g$ui_release()J
 SPLandroidx/compose/ui/node/LayoutNode;->getLayoutDelegate$ui_release()Landroidx/compose/ui/node/LayoutNodeLayoutDelegate;
@@ -9711,7 +9715,7 @@ SPLandroidx/compose/ui/node/MeasurePassDelegate;->notifyChildrenUsingCoordinates
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->onBeforeLayoutChildren()V
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->onNodeDetached()V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->onNodePlaced$ui_release()V
-SPLandroidx/compose/ui/node/MeasurePassDelegate;->performMeasure-BRTryo0$ui_release(J)V
+HSPLandroidx/compose/ui/node/MeasurePassDelegate;->performMeasure-BRTryo0$ui_release(J)V
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->placeAt-f8xVGno(JFLkotlin/jvm/functions/Function1;)V
 HSPLandroidx/compose/ui/node/MeasurePassDelegate;->placeOuterCoordinator-MLgxB_4(JFLkotlin/jvm/functions/Function1;Landroidx/compose/ui/graphics/layer/GraphicsLayer;)V
 SPLandroidx/compose/ui/node/MeasurePassDelegate;->placeSelf-MLgxB_4(JFLkotlin/jvm/functions/Function1;Landroidx/compose/ui/graphics/layer/GraphicsLayer;)V
@@ -13121,7 +13125,6 @@ Landroidx/datastore/core/DataStoreImpl$incrementCollector$2$1$1;
 SPLandroidx/datastore/core/DataStoreImpl$incrementCollector$2$1$1;-><init>(Landroidx/datastore/core/DataStoreImpl;)V
 Landroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;
 SPLandroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;-><init>(Landroidx/datastore/core/DataStoreImpl;Lkotlin/coroutines/Continuation;)V
-SPLandroidx/datastore/core/DataStoreImpl$readAndInitOrPropagateAndThrowFailure$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/datastore/core/DataStoreImpl$readDataAndUpdateCache$1;
 SPLandroidx/datastore/core/DataStoreImpl$readDataAndUpdateCache$1;-><init>(Landroidx/datastore/core/DataStoreImpl;Lkotlin/coroutines/Continuation;)V
 Landroidx/datastore/core/DataStoreImpl$readDataOrHandleCorruption$1;
@@ -13198,7 +13201,6 @@ SPLandroidx/datastore/core/RunOnce;->awaitComplete(Lkotlin/coroutines/Continuati
 SPLandroidx/datastore/core/RunOnce;->runIfNeeded(Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 Landroidx/datastore/core/RunOnce$runIfNeeded$1;
 SPLandroidx/datastore/core/RunOnce$runIfNeeded$1;-><init>(Landroidx/datastore/core/RunOnce;Lkotlin/coroutines/Continuation;)V
-SPLandroidx/datastore/core/RunOnce$runIfNeeded$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Landroidx/datastore/core/SimpleActor;
 SPLandroidx/datastore/core/SimpleActor;-><init>(Lkotlinx/coroutines/CoroutineScope;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;)V
 SPLandroidx/datastore/core/SimpleActor;->access$getConsumeMessage$p(Landroidx/datastore/core/SimpleActor;)Lkotlin/jvm/functions/Function2;
@@ -17600,6 +17602,7 @@ Lcom/google/android/datatransport/cct/internal/NetworkConnectionInfo;
 Lcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;
 SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;-><clinit>()V
 SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;-><init>(Ljava/lang/String;II)V
+SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;->forNumber(I)Lcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;
 SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;->getValue()I
 Lcom/google/android/datatransport/runtime/AutoValue_EventInternal;
 SPLcom/google/android/datatransport/runtime/AutoValue_EventInternal;-><init>(Ljava/lang/String;Ljava/lang/Integer;Lcom/google/android/datatransport/runtime/EncodedPayload;JJLjava/util/Map;Ljava/lang/Integer;Ljava/lang/String;[B[B)V
@@ -23610,6 +23613,7 @@ SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->getConf
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->getStringFromCache(Lcom/google/firebase/remoteconfig/internal/ConfigCacheClient;Ljava/lang/String;)Ljava/lang/String;
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->getValue(Ljava/lang/String;)Lcom/google/firebase/remoteconfig/FirebaseRemoteConfigValue;
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->lambda$callListeners$0(Lcom/google/android/gms/common/util/BiConsumer;Ljava/lang/String;Lcom/google/firebase/remoteconfig/internal/ConfigContainer;)V
+SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler;->logParameterValueDoesNotExist(Ljava/lang/String;Ljava/lang/String;)V
 Lcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler$$ExternalSyntheticLambda0;
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler$$ExternalSyntheticLambda0;-><init>(Lcom/google/android/gms/common/util/BiConsumer;Ljava/lang/String;Lcom/google/firebase/remoteconfig/internal/ConfigContainer;)V
 SPLcom/google/firebase/remoteconfig/internal/ConfigGetParameterHandler$$ExternalSyntheticLambda0;->run()V
@@ -24067,7 +24071,6 @@ SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$Dependency;->ge
 SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$Dependency;->setSubscriber(Lcom/google/firebase/sessions/api/SessionSubscriber;)V
 Lcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;
 SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;-><init>(Lcom/google/firebase/sessions/api/FirebaseSessionsDependencies;Lkotlin/coroutines/Continuation;)V
-SPLcom/google/firebase/sessions/api/FirebaseSessionsDependencies$getRegisteredSubscribers$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lcom/google/firebase/sessions/api/SessionSubscriber;
 Lcom/google/firebase/sessions/api/SessionSubscriber$Name;
 SPLcom/google/firebase/sessions/api/SessionSubscriber$Name;->$values()[Lcom/google/firebase/sessions/api/SessionSubscriber$Name;
@@ -30520,7 +30523,7 @@ HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->toByteString()
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;->write([BII)V
 Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;-><init>(Ljava/io/InputStream;)V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->checkLastTagWas(I)V
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->checkLastTagWas(I)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->decodeZigZag64(J)J
 SPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->getBytesUntilLimit()I
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;->isAtEnd()Z
@@ -30685,7 +30688,7 @@ SPLkotlin/reflect/jvm/internal/impl/protobuf/RopeByteString;-><clinit>()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/RopeByteString;->concatenate(Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;)Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;-><init>(I)V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;-><init>(ILkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$1;)V
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;-><init>(ILkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$1;)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->access$200(Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->access$400(Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;)Ljava/util/List;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->access$600(Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;)Ljava/util/Map;
@@ -30699,7 +30702,7 @@ HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->getNumArrayEntrie
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->getOverflowEntries()Ljava/lang/Iterable;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->isImmutable()Z
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->makeImmutable()V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->newFieldMap(I)Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->newFieldMap(I)Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;->put(Ljava/lang/Comparable;Ljava/lang/Object;)Ljava/lang/Object;
 Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$1;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$1;-><init>(I)V
@@ -32538,7 +32541,6 @@ SPLkotlinx/coroutines/channels/BufferedChannel;->getSendSegment$volatile$FU()Lja
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersAndCloseStatus$volatile$FU()Ljava/util/concurrent/atomic/AtomicLongFieldUpdater;
 SPLkotlinx/coroutines/channels/BufferedChannel;->getSendersCounter$kotlinx_coroutines_core()J
 SPLkotlinx/coroutines/channels/BufferedChannel;->get_closeCause$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
-SPLkotlinx/coroutines/channels/BufferedChannel;->hasElements$kotlinx_coroutines_core()Z
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts$default(Lkotlinx/coroutines/channels/BufferedChannel;JILjava/lang/Object;)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->incCompletedExpandBufferAttempts(J)V
 SPLkotlinx/coroutines/channels/BufferedChannel;->invokeCloseHandler()V
@@ -32585,7 +32587,6 @@ SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNext
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->hasNextOnNoWaiterSuspend(Lkotlinx/coroutines/channels/ChannelSegment;IJLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->invokeOnCancellation(Lkotlinx/coroutines/internal/Segment;I)V
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->next()Ljava/lang/Object;
-SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->onClosedHasNext()Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNext(Ljava/lang/Object;)Z
 SPLkotlinx/coroutines/channels/BufferedChannel$BufferedChannelIterator;->tryResumeHasNextOnClosedChannel()V
 Lkotlinx/coroutines/channels/BufferedChannel$SendBroadcast;
@@ -32903,7 +32904,6 @@ SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$$inlined$collectWhile$1;
 SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$$inlined$collectWhile$1;->emit(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 Lkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$1;
 SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$1;-><init>(Lkotlin/coroutines/Continuation;)V
-SPLkotlinx/coroutines/flow/FlowKt__ReduceKt$firstOrNull$1;->invokeSuspend(Ljava/lang/Object;)Ljava/lang/Object;
 Lkotlinx/coroutines/flow/FlowKt__ShareKt;
 SPLkotlinx/coroutines/flow/FlowKt__ShareKt;->asSharedFlow(Lkotlinx/coroutines/flow/MutableSharedFlow;)Lkotlinx/coroutines/flow/SharedFlow;
 SPLkotlinx/coroutines/flow/FlowKt__ShareKt;->asStateFlow(Lkotlinx/coroutines/flow/MutableStateFlow;)Lkotlinx/coroutines/flow/StateFlow;
@@ -33262,7 +33262,7 @@ SPLkotlinx/coroutines/internal/ContextScope;->getCoroutineContext()Lkotlin/corou
 Lkotlinx/coroutines/internal/DispatchedContinuation;
 SPLkotlinx/coroutines/internal/DispatchedContinuation;-><clinit>()V
 SPLkotlinx/coroutines/internal/DispatchedContinuation;-><init>(Lkotlinx/coroutines/CoroutineDispatcher;Lkotlin/coroutines/Continuation;)V
-SPLkotlinx/coroutines/internal/DispatchedContinuation;->awaitReusability$kotlinx_coroutines_core()V
+HSPLkotlinx/coroutines/internal/DispatchedContinuation;->awaitReusability$kotlinx_coroutines_core()V
 SPLkotlinx/coroutines/internal/DispatchedContinuation;->claimReusableCancellableContinuation$kotlinx_coroutines_core()Lkotlinx/coroutines/CancellableContinuationImpl;
 SPLkotlinx/coroutines/internal/DispatchedContinuation;->dispatchYield$kotlinx_coroutines_core(Lkotlin/coroutines/CoroutineContext;Ljava/lang/Object;)V
 SPLkotlinx/coroutines/internal/DispatchedContinuation;->getContext()Lkotlin/coroutines/CoroutineContext;
@@ -34048,7 +34048,6 @@ SPLokio/FileHandle$FileHandleSink;->write(Lokio/Buffer;J)V
 Lokio/FileMetadata;
 SPLokio/FileMetadata;-><init>(ZZLokio/Path;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/Map;)V
 SPLokio/FileMetadata;-><init>(ZZLokio/Path;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Long;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-SPLokio/FileMetadata;->isDirectory()Z
 Lokio/FileSystem;
 SPLokio/FileSystem;-><clinit>()V
 SPLokio/FileSystem;-><init>()V
