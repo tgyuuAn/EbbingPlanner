@@ -11,10 +11,9 @@ import com.tgyuu.alarm.NotificationHelper
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.ebbingplanner.MainActivity
-import java.time.LocalDate
-import javax.inject.Inject
+import kotlinx.datetime.LocalDate
 
-class NotificationHelperImpl @Inject constructor(
+class NotificationHelperImpl constructor(
     private val configRepository: ConfigRepository,
 ) : NotificationHelper() {
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)

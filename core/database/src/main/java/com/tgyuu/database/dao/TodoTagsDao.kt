@@ -6,9 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.tgyuu.common.now
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface TodoTagsDao {

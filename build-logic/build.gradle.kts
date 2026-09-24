@@ -7,17 +7,9 @@ dependencies {
     implementation(libs.android.gradlePlugin)
     implementation(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.compiler.gradle.plugin)
+
+    // Compose Multiplatform
+    implementation("org.jetbrains.compose:compose-gradle-plugin:1.7.0")
 }
 
-gradlePlugin {
-    plugins {
-        register("androidHilt") {
-            id = "ebbing.android.hilt"
-            implementationClass = "com.tgyuu.build.logic.HiltAndroidPlugin"
-        }
-        register("kotlinHilt") {
-            id = "ebbing.kotlin.hilt"
-            implementationClass = "com.tgyuu.build.logic.HiltKotlinPlugin"
-        }
-    }
-}
+// Hilt plugins removed - migrating to Koin

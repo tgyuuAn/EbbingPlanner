@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="common_cancel">Cancel</string>
+
+    <!-- Time (AM/PM) -->
+    <string name="ds_am">AM</string>
+    <string name="ds_pm">PM</string>
+
+    <!-- Settings section headers -->
+    <string name="setting_notification">Notifications</string>
+    <string name="setting_calendar">Calendar</string>
+    <string name="setting_tag_repeat_cycle">Tags / Repeat cycle</string>
+    <string name="setting_data">Data</string>
+    <string name="setting_theme">Theme</string>
+    <string name="setting_guidance">Guide</string>
+    <string name="setting_inquiry">Inquiry</string>
+
+    <!-- Settings screen -->
+    <string name="setting_title">Settings</string>
+    <string name="setting_tag_manage">Manage tags</string>
+    <string name="setting_repeat_cycle_manage">Manage repeat cycle</string>
+    <string name="setting_sync_with_other_device">Sync with other devices</string>
+    <string name="setting_auto_backup">Auto backup</string>
+    <string name="setting_last_sync_time">Last sync: %1$s</string>
+    <string name="setting_clear_data">Reset data</string>
+    <string name="setting_theme_color_change">Change app theme</string>
+    <string name="setting_widget_alpha_change">Change widget theme / opacity</string>
+    <string name="setting_announcement">Announcements</string>
+    <string name="setting_privacy_policy">Privacy Policy</string>
+    <string name="setting_term">Terms of Service</string>
+    <!-- 문서 URL 로케일 분기 -->
+    <string name="setting_announcement_url">https://mousy-banjo-f6d.notion.site/Notice-0ce18348ef114015af88ddaab2131de6?source=copy_link</string>
+    <string name="setting_privacy_policy_url">https://mousy-banjo-f6d.notion.site/Privacy-Policy-7e36be7e6229490a93c5499568b1cae8?source=copy_link</string>
+    <string name="setting_term_url">https://mousy-banjo-f6d.notion.site/Terms-of-Service-970ee20d02884e08b936894e35f5d563?source=copy_link</string>
+    <string name="setting_version">Current version %1$s</string>
+    <string name="setting_calendar_start_day">First day of week</string>
+    <string name="setting_monday">Monday</string>
+    <string name="setting_sunday">Sunday</string>
+    <string name="setting_notification_setting">Notification settings</string>
+    <string name="setting_alarm_time">Notification time</string>
+    <string name="setting_alarm_message">Notification message</string>
+    <string name="setting_contact_us">Contact us</string>
+    <string name="setting_app_review">Write a review</string>
+    <string name="setting_clear_data_dialog_title">Reset data</string>
+    <string name="setting_clear_data_dialog_message">All data will be deleted.\nDo you want to continue?</string>
+    <string name="setting_clear">Reset</string>
+    <string name="setting_apply">Apply</string>
+    <string name="setting_apply_action">Apply</string>
+    <string name="setting_alarm_time_title">Alarm time</string>
+    <string name="setting_alarm_time_subtitle">When should we send reminders for upcoming schedules?</string>
+    <string name="setting_alarm_message_setting">Notification message settings</string>
+    <string name="alarm_placeholder_token">{task}</string>
+    <string name="setting_alarm_message_placeholder_guide"> is automatically replaced with the to-do title (up to once)</string>
+    <string name="setting_alarm_message_hint">Enter a notification message</string>
+    <string name="setting_preview">Preview</string>
+    <string name="setting_restore_default">Restore default</string>
+
+    <!-- Sync screen -->
+    <string name="sync_screen_title">Sync</string>
+    <string name="sync_back">Back</string>
+    <string name="sync_sync">Sync</string>
+    <string name="sync_disconnect">Disconnect</string>
+    <string name="sync_no_record">No record</string>
+    <string name="sync_no_record_or_network">No record or no network</string>
+    <string name="sync_generating">Generating...</string>
+    <string name="sync_device_id_label">This device's unique ID:</string>
+    <string name="sync_device_last_update_label">This device's last update : </string>
+    <string name="sync_server_last_update_label">This ID's last update on server : </string>
+    <string name="sync_linked_id_label">Linked ID :</string>
+    <string name="sync_section_title">Data sync / Link with other devices</string>
+    <string name="sync_do_sync">Sync server with this device</string>
+    <string name="sync_manual_hint">It doesn't sync automatically. Tap to sync manually.</string>
+    <string name="sync_disconnect_action">Disconnect</string>
+    <string name="sync_connect_action">Link with another device</string>
+    <string name="sync_guide_1">- Sync is a two-way method that reflects this device's changes to the server and fetches the latest data from the server.\n</string>
+    <string name="sync_guide_highlight_1">Edited data</string>
+    <string name="sync_guide_2"> must go through this process to be shared with other devices.\n</string>
+    <string name="sync_guide_3">- During sync, if there are edits made on different devices, </string>
+    <string name="sync_guide_highlight_2">the most recently edited data is applied</string>
+    <string name="sync_guide_4">.\n</string>
+    <string name="sync_guide_5">- Before syncing, be sure to back up important data or check the latest state.</string>
+    <string name="sync_confirm_sync_title">Sync your data?</string>
+    <string name="sync_confirm_sync_desc_1">If data was edited on different devices, </string>
+    <string name="sync_confirm_sync_desc_highlight_1">the most recently updated version</string>
+    <string name="sync_confirm_sync_desc_2"> will be applied.\nFor important data, </string>
+    <string name="sync_confirm_sync_desc_highlight_2">be sure to review it before syncing</string>
+    <string name="sync_confirm_sync_desc_3">.</string>
+    <string name="sync_confirm_disconnect_title">Disconnect this device?</string>
+    <string name="sync_confirm_disconnect_desc">Your saved data will be kept.\n You can reconnect anytime.</string>
+
+    <!-- Common -->
+    <string name="common_clear">Clear</string>
+
+    <!-- Tags -->
+    <string name="tag_manage_title">Manage Tags</string>
+    <string name="tag_unassigned">Unassigned</string>
+    <string name="tag_add_button">Add</string>
+    <string name="tag_empty_message">No tags yet.\nTap the + button in the top right to add one.</string>
+    <string name="tag_delete">Delete</string>
+    <string name="tag_edit">Edit</string>
+    <string name="tag_back">Back</string>
+    <string name="tag_delete_confirm_prefix">Delete the %1$s tag</string>
+    <string name="tag_delete_confirm_highlight"></string>
+    <string name="tag_delete_confirm_suffix">?</string>
+    <string name="tag_delete_confirm_subtext">Deleted tags can't be restored, so please choose carefully.</string>
+    <string name="tag_add_title">Add Tag</string>
+    <string name="tag_edit_title">Edit Tag</string>
+    <string name="tag_save">Save</string>
+    <string name="tag_add_headline">Add a new tag</string>
+    <string name="tag_edit_headline">Edit the %1$s tag</string>
+    <string name="tag_name_label">Tag Name</string>
+    <string name="tag_name_hint">What's the name of the tag?</string>
+    <string name="tag_color">Color</string>
+    <string name="tag_color_select_title">Select color</string>
+    <string name="tag_apply">Apply</string>
+
+    <!-- Repeat cycle -->
+    <string name="repeat_manage_title">Manage repeat cycles</string>
+    <string name="repeat_add_button">Add</string>
+    <string name="repeat_empty_message">No repeat cycles yet.\nTap the + button in the top right to add one.</string>
+    <string name="repeat_delete">Delete</string>
+    <string name="repeat_edit">Edit</string>
+    <string name="repeat_dialog_back">Back</string>
+    <string name="repeat_delete_dialog_prefix">Delete the selected repeat </string>
+    <string name="repeat_delete_dialog_highlight">cycle</string>
+    <string name="repeat_delete_dialog_suffix">?</string>
+    <string name="repeat_delete_dialog_sub_text">A deleted repeat cycle cannot be restored, so please choose carefully.</string>
+    <string name="repeat_add_title">Add repeat cycle</string>
+    <string name="repeat_edit_title">Edit repeat cycle</string>
+    <string name="repeat_save">Save</string>
+    <string name="repeat_add_headline">Add your own repeat cycle</string>
+    <string name="repeat_edit_headline">Edit your own repeat cycle</string>
+    <string name="repeat_cycle_label">Repeat cycle</string>
+    <string name="repeat_cycle_input_hint">How often should the schedule repeat?</string>
+    <string name="repeat_cycle_input_guide">Separate numbers with ' , '\nEnter 0 to include the same day\nOnly numbers under 1000 are allowed.\n ex) 0, 1, 3, 7, 15</string>
+    <string name="repeat_cycle_preview_label">Expected repeat cycle</string>
+
+    <!-- Home / Schedule -->
+    <string name="home_save">Save</string>
+    <string name="home_apply">Apply</string>
+    <string name="home_month_day">%1$d/%2$d</string>
+    <string name="home_today">Today</string>
+    <string name="home_tag">Tag</string>
+    <string name="home_title">Title</string>
+    <string name="home_title_hint">What would you like to study?</string>
+    <string name="home_priority">Priority</string>
+    <string name="home_priority_hint">How important is this task?</string>
+    <string name="home_list_date">%1$d/%2$d %3$s</string>
+    <string name="home_repeat_cycle">Repeat cycle</string>
+    <string name="home_rest_day">Rest days</string>
+    <string name="home_delete">Delete</string>
+    <string name="home_add_todo_title">Add task</string>
+    <string name="home_add_todo_header_suffix">\nLet's create a task starting from</string>
+    <string name="home_edit_todo_title">Edit task</string>
+    <string name="home_edit_todo_header_suffix">\nLet's switch it to</string>
+    <string name="home_edit_date_header_suffix">\nLet's change it to start from</string>
+    <string name="home_edit_date_description">- Changing the schedule resets the completion status of existing tasks.\n- You can set the completion status of new tasks in the checkboxes above.\n- Changing the schedule removes any memos attached to existing tasks.</string>
+    <string name="home_study_schedule_count">%1$d study tasks</string>
+    <string name="home_schedule_date_day">%1$s (%2$s)</string>
+    <string name="home_pin_to_top">Always pin this schedule to the top</string>
+    <string name="home_add_todo_button">Add task</string>
+    <string name="home_edit_todo_button">Edit task</string>
+    <string name="home_todo_count_label">%1$s tasks </string>
+    <string name="home_empty_schedule">No tasks on %1$d/%2$d.\nTap the + button in the top right to create a new task.</string>
+    <string name="home_review_title">Has Ebbing Planner been helpful?</string>
+    <string name="home_review_sub">We'll use your review \nto build an even more convenient service.</string>
+    <string name="home_review_button">Write a review</string>
+    <string name="home_select_end_date">Select end date</string>
+    <string name="home_daily_repeat_total">Repeat daily for %1$d days</string>
+    <string name="home_daily_repeat_prompt">Until when should it repeat, starting from %1$d/%2$d?</string>
+    <string name="home_daily_repeat_max">You can set up to %1$d days</string>
+    <string name="home_end_date_with_year">%1$d/%2$d/%3$d</string>
+    <string name="home_daily_repeat_display_name">Daily (until %1$s)</string>
+    <string name="home_exit_confirm_title">Your task in progress will be lost!</string>
+    <string name="home_exit_confirm_sub">If you go back now, the task won't be saved.\nKeep going and finish writing it.</string>
+    <string name="home_exit_confirm_stop">Stop writing</string>
+    <string name="home_exit_confirm_continue">Keep writing</string>
+
+    <!-- All Schedules -->
+    <string name="schedule_top_bar_title">All Schedules</string>
+    <string name="schedule_tag_count_completion">%1$d schedules, %2$d% completed</string>
+    <string name="schedule_collapse">Collapse</string>
+    <string name="schedule_card_date">%1$d/%2$d (%3$s)</string>
+    <string name="schedule_empty_message">No schedules yet.\nShall we add a new one?</string>
+    <string name="schedule_empty_register_button">Add a schedule</string>
+    <string name="schedule_tag_edit_title">Edit '%1$s' tag</string>
+    <string name="schedule_tag_name_label">Tag name</string>
+    <string name="schedule_tag_name_hint">Enter a tag name</string>
+    <string name="schedule_tag_color_label">Color</string>
+    <string name="schedule_tag_delete_label">Delete '%1$s' tag</string>
+    <string name="schedule_tag_save_button">Save</string>
+    <string name="schedule_options_title">Edit</string>
+    <string name="schedule_options_subtitle">What would you like to do with the %1$s schedule?</string>
+    <string name="schedule_option_edit">Edit</string>
+    <string name="schedule_option_delete">Delete</string>
+    <string name="schedule_option_delay_tomorrow">Postpone to tomorrow</string>
+    <string name="schedule_option_add_memo">Add memo</string>
+    <string name="schedule_option_edit_memo">Edit memo</string>
+    <string name="schedule_option_delete_memo">Delete memo</string>
+    <string name="schedule_update_title">Edit method</string>
+    <string name="schedule_update_info">Edit schedule details</string>
+    <string name="schedule_update_repeat_cycle">Reset repeat cycle for linked schedules</string>
+    <string name="schedule_delete_title">Delete method</string>
+    <string name="schedule_delete_single">Delete only this schedule</string>
+    <string name="schedule_delete_remaining">Delete all following linked schedules</string>
+    <string name="schedule_delay_title">Postpone method</string>
+    <string name="schedule_delay_single">Postpone only this schedule</string>
+    <string name="schedule_delay_all">Postpone all following schedules</string>
+    <string name="home_back">Back</string>
+    <string name="home_go_back">Go back</string>
+    <string name="home_delay_button">Postpone</string>
+    <string name="home_sort_order">Sort order</string>
+    <string name="home_delete_confirm_suffix">?</string>
+    <string name="home_delete_single_confirm_prefix">Delete the %1$s task</string>
+    <string name="home_delete_single_sub">Deleted tasks cannot be restored, so please choose carefully.</string>
+    <string name="home_delete_remaining_confirm_prefix">Delete all tasks linked to %1$s from %2$d/%3$d onward</string>
+    <string name="home_delete_remaining_sub">Deleted tasks cannot be restored, so please choose carefully.</string>
+    <string name="home_delete_memo_confirm_prefix">Delete the memo of the %1$s task</string>
+    <string name="home_delete_memo_sub">Deleted memos cannot be restored, so please choose carefully.</string>
+    <string name="home_delay_single_confirm_title">Postpone the %1$s task by one day?</string>
+    <string name="home_delay_all_confirm_title">Postpone every %1$s task\nby one day?</string>
+    <string name="home_delay_revert_notice">Postponed tasks can be reverted from Edit.</string>
+    <string name="home_exclude_rest_days">Excluding rest days (%1$s)</string>
+    <string name="home_delay_date_part">%1$d/%2$d(%3$s)</string>
+    <string name="home_delay_date_transition">%1$s → %2$s</string>
+    <string name="home_widget_nudge_label">First task registered!</string>
+    <string name="home_widget_nudge_title">Check your tasks easily\nwith the Ebbing Planner widget too</string>
+
+    <!-- Widget / Theme / Calendar -->
+    <string name="widget_setting_title">Widget settings</string>
+    <string name="widget_theme">Widget theme</string>
+    <string name="widget_text_alpha">Text opacity</string>
+    <string name="widget_preview_sample">Widget preview</string>
+    <string name="setting_background_alpha">Background opacity</string>
+    <string name="setting_light">Light</string>
+    <string name="setting_dark">Dark</string>
+    <string name="theme_select_headline">Choose a theme color.</string>
+    <string name="calendar_go_today">Go to today</string>
+    <string name="calendar_year_month">%1$d-%2$d</string>
+    <string name="calendar_today">Today</string>
+    <string name="calendar_view_month">Month</string>
+    <string name="calendar_view_week">Week</string>
+    <string name="calendar_cd_controller">Calendar controller</string>
+    <string name="calendar_cd_header">Calendar header</string>
+    <string name="calendar_cd_body">Calendar body</string>
+    <string name="calendar_cd_week_body">Weekly calendar body</string>
+    <string name="card_round_count">Round %1$d</string>
+
+    <!-- Note -->
+    <string name="memo_label">Note</string>
+    <string name="memo_input_hint">What note would you like to leave?</string>
+    <string name="memo_preview_label">Preview</string>
+    <string name="memo_save">Save</string>
+    <string name="memo_add_title">Add note</string>
+    <string name="memo_edit_title">Edit note</string>
+    <string name="memo_add_headline_suffix"> schedule\nAdd a note</string>
+    <string name="memo_edit_headline_suffix"> schedule\nEdit the note</string>
+    <string name="memo_save_scope_title">Choose where to save the note</string>
+    <string name="memo_save_scope_subtext">You can save it to just one schedule\nor to all related schedules</string>
+    <string name="memo_save_scope_single">Selected schedule only</string>
+    <string name="memo_save_scope_all">All related (%1$d)</string>
+    <string name="memo_add_button">Add note</string>
+    <string name="memo_edit_button">Edit note</string>
+
+    <!-- Notification -->
+    <string name="notification_placeholder_desc">Using {task} automatically replaces it with the schedule name</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Get started</string>
+    <string name="onboarding_page1_title">Learning based on the Ebbinghaus forgetting curve</string>
+    <string name="onboarding_page1_desc">We automatically tell you the optimal review timing\nbased on the forgetting curve.</string>
+    <string name="onboarding_page2_title">Easy schedule check</string>
+    <string name="onboarding_page2_desc">Easily check and complete today's schedule\nfrom the home screen.</string>
+    <string name="onboarding_page3_title">Never miss it with reminders</string>
+    <string name="onboarding_page3_desc">We notify you of today's tasks\nat the time you set.</string>
+    <string name="onboarding_page4_title">Sync across devices</string>
+    <string name="onboarding_page4_desc">Connect with other devices\nto manage schedules together.</string>
+
+    <!-- Device linking -->
+    <string name="connect_title">Link with another device</string>
+    <string name="connect_dialog_title">Link with this ID?</string>
+    <string name="connect_dialog_desc_1">The data on this device </string>
+    <string name="connect_dialog_desc_highlight_1">will all be replaced with the uploaded data</string>
+    <string name="connect_dialog_desc_2">.\nFor important data, </string>
+    <string name="connect_dialog_desc_highlight_2">be sure to check before linking</string>
+    <string name="connect_dialog_desc_3">.</string>
+    <string name="connect_dialog_confirm">Link</string>
+    <string name="connect_upload_title">Link using this device's data</string>
+    <string name="connect_generate">Generate</string>
+    <string name="connect_upload_desc">Generate a code to link using your data.</string>
+    <string name="connect_download_title">Link using another device's data</string>
+    <string name="connect_connect">Connect</string>
+    <string name="connect_download_desc">Enter the link code of the device with the data you want to use.</string>
+    <string name="connect_guide_1">1. On the device whose data you want to keep, </string>
+    <string name="connect_guide_highlight_1">generate a link code</string>
+    <string name="connect_guide_2">.\n2. The generated code is </string>
+    <string name="connect_guide_highlight_2">valid for 10 minutes</string>
+    <string name="connect_guide_3">.\n3. Enter the code on the other device to complete linking.\n4. On the device entering the code, </string>
+    <string name="connect_guide_highlight_3">the existing data will be overwritten, </string>
+    <string name="connect_guide_4">so please choose carefully.</string>
+
+    <!-- 스낵바 / Snackbar -->
+    <string name="snack_required_fields">Please fill in the required fields</string>
+    <string name="snack_schedule_deleted">The schedule has been deleted.</string>
+    <string name="snack_remaining_deleted">All following linked schedules have been deleted.</string>
+    <string name="snack_delayed_single">The schedule has been postponed to the next day.</string>
+    <string name="snack_no_schedule_to_delay">There are no schedules to postpone.</string>
+    <string name="snack_schedules_delayed">%1$d schedules have been postponed.</string>
+    <string name="snack_memo_removed">The memo has been removed</string>
+    <string name="snack_date_has_schedule">There is already a schedule on that date.</string>
+    <string name="snack_todo_updated">The schedule has been updated</string>
+    <string name="snack_todo_update_failed">Failed to update the schedule</string>
+    <string name="snack_alarm_time_changed">The notification time has been changed</string>
+    <string name="snack_alarm_message_reset">Reset to the default message</string>
+    <string name="snack_no_schedule_to_save">There are no schedules to save</string>
+    <string name="snack_loading_schedule_info">Loading schedule info. Please try again shortly</string>
+    <string name="snack_date_repeat_changed">Changed the date and repeat cycle of the schedule</string>
+    <string name="snack_no_schedule_check_cycle">No schedules. Please check the repeat cycle.</string>
+    <string name="snack_todo_added">A new schedule has been added</string>
+    <string name="snack_todo_add_failed">Failed to add the schedule: %1$s</string>
+    <string name="snack_repeat_load_failed">Failed to load repeat cycles</string>
+    <string name="snack_repeat_deleted">The repeat cycle has been deleted</string>
+    <string name="snack_repeat_delete_failed">Failed to delete the repeat cycle</string>
+    <string name="snack_repeat_invalid">The repeat cycle is not valid.</string>
+    <string name="snack_repeat_updated">The repeat cycle has been updated</string>
+    <string name="snack_repeat_update_failed">Failed to update the repeat cycle</string>
+    <string name="snack_repeat_added">The repeat cycle has been added</string>
+    <string name="snack_repeat_add_failed">Failed to add the repeat cycle</string>
+    <string name="snack_tag_updated">The tag has been updated</string>
+    <string name="snack_tag_deleted">The tag has been deleted</string>
+    <string name="snack_schedule_load_failed">Failed to load the schedule</string>
+    <string name="snack_memo_updated">The memo has been updated</string>
+    <string name="snack_memo_added">The memo has been added</string>
+    <string name="snack_memo_updated_all">Note updated for %1$d schedules including the current one</string>
+    <string name="snack_memo_added_all">Note added to %1$d schedules including the current one</string>
+    <string name="snack_memo_save_failed">Failed to save the memo</string>
+    <string name="snack_sync_done">Sync complete</string>
+    <string name="snack_sync_failed">Sync failed</string>
+    <string name="snack_disconnect_done">Disconnected</string>
+    <string name="snack_disconnect_failed">Failed to disconnect</string>
+    <string name="snack_code_empty">The link code cannot be empty.</string>
+    <string name="snack_code_generated">The link code has been generated.</string>
+    <string name="snack_code_invalid_or_network">Invalid code or unstable network.</string>
+    <string name="snack_code_expired">The code was not generated or has expired.</string>
+    <string name="snack_cannot_link_self">You cannot link with yourself.</string>
+    <string name="snack_link_success">Linking succeeded.</string>
+    <string name="snack_code_invalid_or_network2">The code was not generated or the network is unstable.</string>
+    <string name="snack_data_cleared">Saved data has been reset</string>
+    <string name="snack_data_clear_failed">Failed to reset data</string>
+    <string name="snack_alarm_message_changed">The notification message has been changed</string>
+    <string name="snack_widget_saved">Widget settings have been saved</string>
+    <string name="snack_widget_save_failed">Failed to save widget settings</string>
+    <string name="snack_theme_changed">The theme has been changed</string>
+    <string name="snack_theme_change_failed">Failed to change the theme</string>
+    <string name="snack_tag_name_exists">This tag name already exists</string>
+    <string name="snack_tag_add_failed">Failed to add the tag</string>
+    <string name="snack_tag_added">A new tag has been added</string>
+    <string name="snack_tag_load_failed">Failed to load the tag</string>
+    <string name="snack_tag_update_failed">Failed to update the tag</string>
+    <string name="snack_todo_update_failed2">Failed to update the schedule</string>
+    <string name="snack_all_rest_days">You cannot rest on every day of the week</string>
+
+    <!-- Model/Weekday/Nav -->
+    <string name="day_sun">Sun</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="sort_created">By created</string>
+    <string name="sort_by_tag">By tag</string>
+    <string name="repeat_display_daily">Daily</string>
+    <string name="repeat_display_daily_days">Daily (%1$d days)</string>
+    <string name="repeat_display_error">Please enter a valid format.</string>
+    <string name="repeat_interval_same_day_only">Same day only</string>
+    <string name="repeat_interval_same_day">Same day</string>
+    <string name="repeat_interval_day">Day %1$d</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_schedule">Schedules</string>
+    <string name="nav_setting">Settings</string>
+    <string name="date_today">Today</string>
+    <string name="date_days_after">In %1$d days</string>
+    <string name="date_days_before">%1$d days ago</string>
+    <string name="webview_privacy_title">Privacy Policy</string>
+    <string name="webview_terms_title">Terms of Service</string>
+
+    <!-- Notification settings format -->
+    <string name="alarm_time_format">%1$s %2$d:%3$s</string>
+    <string name="setting_alarm_message_error_placeholder">{task} can be used at most once</string>
+    <string name="setting_alarm_message_error_length">You can enter up to 50 characters</string>
+    <string name="setting_alarm_message_length">%1$d / 50</string>
+    <string name="setting_alarm_message_preview_sample">English word review</string>
+
+    <!-- Sync main (QR redesign) -->
+    <string name="sync_title">Use on Other Devices</string>
+    <string name="sync_cancel">Cancel</string>
+    <string name="sync_allow">Allow</string>
+    <string name="sync_connected_device">Connected device</string>
+    <string name="sync_unknown_device">Unknown device</string>
+    <string name="sync_last_sync">Last sync</string>
+    <string name="sync_advanced_info">Advanced info</string>
+    <string name="sync_copy_device_info">Copy advanced info</string>
+    <string name="sync_device_info_copied">Advanced info copied.</string>
+    <string name="sync_new_device_section">Connect a new device</string>
+    <string name="sync_generate_qr">Generate QR</string>
+    <string name="sync_generate_qr_desc">Send this device's schedule to another device</string>
+    <string name="sync_scan_qr">Scan QR</string>
+    <string name="sync_scan_qr_desc">Bring another device's schedule to this device</string>
+    <string name="sync_scan_qr_warning">This device's schedule will be replaced with the other device's schedule.</string>
+    <string name="sync_qr_code_title">Sync QR code</string>
+    <string name="sync_remaining_time">Time left: %1$s</string>
+    <string name="sync_scan_this_qr">Scan this QR code from another device.</string>
+    <string name="sync_camera_permission_title">Camera permission required</string>
+    <string name="sync_camera_permission_rationale">Camera permission is required to scan QR codes.</string>
+    <string name="sync_camera_permission_rationale_settings">To scan QR codes, please allow camera permission in Settings.</string>
+    <string name="sync_go_settings">Go to Settings</string>
+    <string name="sync_network_check">Please check your network connection.</string>
+    <string name="sync_synced">Data has been synced.</string>
+    <string name="sync_sync_failed">Sync failed.</string>
+    <string name="sync_disconnect_success">Disconnected successfully.</string>
+    <string name="sync_disconnect_failed">Failed to disconnect.</string>
+    <string name="sync_generate_failed">Failed to generate QR code. Please try again.</string>
+    <string name="sync_connect_success">Connected successfully.</string>
+    <string name="sync_connect_failed">Failed to connect. Please try again.</string>
+    <string name="sync_code_invalid_or_expired">The code is invalid or has expired.</string>
+    <string name="sync_already_linked_self">You are already connected to another device. Please disconnect first and try again.</string>
+    <string name="sync_code_already_taken">This code is already linked to another device.</string>
+    <string name="sync_already_latest">Your data is already up to date.</string>
+    <string name="sync_peer_connected">Connected to %1$s.</string>
+    <string name="sync_peer_disconnected">The other device disconnected.</string>
+
+    <!-- Restore by deviceId -->
+    <string name="sync_restore_title">Restore data</string>
+    <string name="sync_restore_headline">Restore your backed-up data</string>
+    <string name="sync_restore_description">Enter the deviceId shown on the other device's sync screen to bring its backed-up data to this device.</string>
+    <string name="sync_restore_input_label">deviceId</string>
+    <string name="sync_restore_input_hint">e.g. 3f2a8b1c</string>
+    <string name="sync_restore_button">Restore</string>
+    <string name="sync_restore_done">Restored data from %1$s.</string>
+    <string name="sync_restore_not_found">No backup found for that deviceId.</string>
+    <string name="sync_restore_empty_data">That device's backup is empty. If it was linked to another device, try that device's deviceId instead.</string>
+    <string name="sync_restore_ambiguous">Multiple devices match. Please check the deviceId again.</string>
+    <string name="sync_restore_self">That's this device's deviceId. Please enter another device's deviceId.</string>
+    <string name="sync_restore_linked">You can't restore while linked to another device. Unlink and try again.</string>
+    <string name="sync_restore_failed">Restore failed. Please try again later.</string>
+    <string name="sync_restore_confirm_title">Restore data?</string>
+    <string name="sync_restore_confirm_desc">All data on this device will be replaced and cannot be undone.</string>
+    <string name="sync_restore_confirm_cancel">Go back</string>
+    <string name="sort_latest">Latest</string>
+    <string name="setting_theme_change">Change theme</string>
+    <string name="setting_widget_theme_change">Change widget theme</string>
+    <string name="tag_register_button">Add tag</string>
+    <string name="tag_edit_button">Edit tag</string>
+    <string name="repeat_register_button">Add repeat cycle</string>
+    <string name="repeat_edit_button">Edit repeat cycle</string>
+    <string name="home_notification_nudge">Even on busy days,\nwe'll keep track of your review days automatically</string>
+    <string name="home_notification_title">Notification settings</string>
+    <string name="home_notification_header_sub">Set a notification and we'll remind you of tasks on the next review day.\nYou can change notifications anytime in the Settings tab.</string>
+    <string name="setting_clear_dialog_title_prefix">Reset </string>
+    <string name="setting_clear_dialog_title_highlight">data</string>
+    <string name="setting_clear_dialog_title_suffix">?</string>
+    <string name="setting_clear_dialog_subtext">Deleted data cannot be recovered.</string>
+    <string name="setting_back">Back</string>
+    <string name="setting_widget_today_todo">Today's to-dos  </string>
+    <string name="setting_no_schedule_today">No schedule for today.</string>
+    <string name="setting_ebbing_planner_preview">Ebbing Planner preview</string>
+    <string name="home_notification_receive">Receive notifications</string>
+    <string name="setting_use_on_other_device">Use on another device</string>
+    <string name="setting_change_app_theme">Change the app theme</string>
+    <string name="setting_change_widget_theme">Change the widget theme</string>
+    <string name="setting_content_alpha">Content opacity</string>
+</resources>

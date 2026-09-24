@@ -10,9 +10,9 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TodoRepositoryImplTest {
@@ -42,7 +42,7 @@ class TodoRepositoryImplTest {
 
     @Test
     fun `태그 삭제 시 해당 태그를 최근 사용 이력에서 제거한다`() = runTest {
-        val tag = TodoTag(id = 5, name = "T", color = 0, createdAt = LocalDate.now())
+        val tag = TodoTag(id = 5, name = "T", color = 0, createdAt = LocalDate(2026, 1, 1))
 
         repository.deleteTag(tag)
 
