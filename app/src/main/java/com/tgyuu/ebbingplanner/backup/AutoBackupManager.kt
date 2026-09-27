@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.backup
 
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.ErrorRepository
 import com.tgyuu.domain.repository.FeatureFlag
 import com.tgyuu.domain.repository.FeatureFlagRepository
 import com.tgyuu.domain.repository.SyncRepository
@@ -19,6 +20,7 @@ class AutoBackupManager(
     private val configRepository: ConfigRepository,
     private val networkMonitor: NetworkMonitor,
     private val featureFlagRepository: FeatureFlagRepository,
+    private val errorRepository: ErrorRepository,
 ) {
     private var backupJob: Job? = null
     private var backupPending: Boolean = false
@@ -64,6 +66,7 @@ class AutoBackupManager(
                 backupPending = false
             }.onFailure {
                 backupPending = true
+                errorRepository.logError(it)
             }
         }
     }
