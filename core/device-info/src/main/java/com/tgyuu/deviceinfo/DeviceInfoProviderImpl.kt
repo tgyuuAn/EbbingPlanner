@@ -24,6 +24,13 @@ class DeviceInfoProviderImpl @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : DeviceInfoProvider {
 
+    override fun getDeviceType(): DeviceType =
+        if (context.resources.configuration.smallestScreenWidthDp >= TABLET_MIN_WIDTH_DP) {
+            DeviceType.TABLET
+        } else {
+            DeviceType.PHONE
+        }
+
     override suspend fun getDeviceName(): String {
         val cached = context.dataStore.data
             .map { it[MARKET_NAME] }
@@ -108,6 +115,7 @@ class DeviceInfoProviderImpl @Inject constructor(
         private const val CSV_URL =
             "https://storage.googleapis.com/play_public/supported_devices.csv"
         private const val TIMEOUT_MS = 5_000
+        private const val TABLET_MIN_WIDTH_DP = 600
 
         private val Context.dataStore: DataStore<Preferences>
                 by preferencesDataStore(name = "device_info_prefs")

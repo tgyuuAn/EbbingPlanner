@@ -7,6 +7,7 @@ import com.tgyuu.analytics.AmplitudeAnalyticsHelper
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.BuildConfig
 import com.tgyuu.analytics.DebugAnalyticsHelper
+import com.tgyuu.deviceinfo.DeviceInfoProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,13 +34,17 @@ object AnalyticsModule {
     @Provides
     @Singleton
     @Debug
-    fun provideDebugAnalyticsHelper(): AnalyticsHelper = DebugAnalyticsHelper()
+    fun provideDebugAnalyticsHelper(
+        deviceInfoProvider: DeviceInfoProvider,
+    ): AnalyticsHelper = DebugAnalyticsHelper(deviceInfoProvider)
 
     @Provides
     @Singleton
     @Release
-    fun provideReleaseAnalyticsHelper(amplitude: Amplitude): AnalyticsHelper =
-        AmplitudeAnalyticsHelper(amplitude)
+    fun provideReleaseAnalyticsHelper(
+        amplitude: Amplitude,
+        deviceInfoProvider: DeviceInfoProvider,
+    ): AnalyticsHelper = AmplitudeAnalyticsHelper(amplitude, deviceInfoProvider)
 
     @Provides
     @Singleton

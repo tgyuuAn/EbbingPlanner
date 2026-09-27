@@ -25,5 +25,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.deviceInfo)
+
     implementation(libs.amplitude.analytics)
 }
