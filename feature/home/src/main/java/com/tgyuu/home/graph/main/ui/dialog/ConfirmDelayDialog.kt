@@ -26,8 +26,10 @@ import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
-import java.time.DayOfWeek
-import java.time.LocalDate
+import com.tgyuu.common.getDisplayName
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -51,13 +53,13 @@ internal fun ConfirmDelayDialog(
     val dateText = if (displayedExpectedDate != null) {
         val fromText = stringResource(
             R.string.home_delay_date_part,
-            schedule.date.monthValue,
+            schedule.date.monthNumber,
             schedule.date.dayOfMonth,
             schedule.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN),
         )
         val toText = stringResource(
             R.string.home_delay_date_part,
-            displayedExpectedDate.monthValue,
+            displayedExpectedDate.monthNumber,
             displayedExpectedDate.dayOfMonth,
             displayedExpectedDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN),
         )
@@ -67,7 +69,7 @@ internal fun ConfirmDelayDialog(
     }
 
     val restDaysText = if (restDays.isNotEmpty()) {
-        val dayNames = restDays.sortedBy { it.value }
+        val dayNames = restDays.sortedBy { it.isoDayNumber }
             .joinToString(", ") { it.getDisplayName(TextStyle.SHORT, Locale.KOREAN) }
         stringResource(R.string.home_exclude_rest_days, dayNames)
     } else {

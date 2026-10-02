@@ -1,4 +1,3 @@
-import com.tgyuu.build.logic.configureHiltAndroid
 import com.tgyuu.build.logic.libs
 
 plugins {
@@ -12,8 +11,6 @@ android {
     }
 }
 
-configureHiltAndroid()
-
 dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:domain"))
@@ -26,6 +23,8 @@ dependencies {
     implementation(libs.findLibrary("androidx.lifecycle.viewModelCompose").get())
     implementation(libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
     implementation(libs.findLibrary("androidx.adaptive").get())
+    implementation(libs.findLibrary("koin.android").get())
+    implementation(libs.findLibrary("koin.androidx.compose").get())
     androidTestImplementation(libs.findLibrary("androidx.compose.ui.test").get())
     debugImplementation(libs.findLibrary("androidx.compose.ui.test.manifest").get())
 }

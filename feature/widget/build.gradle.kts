@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)
+    implementation(projects.core.common)
     implementation(projects.core.analytics)
 
     implementation(libs.androidx.glance.appwidget)
@@ -17,4 +18,6 @@ dependencies {
     implementation(libs.androidx.glance.appwidget.preview)
     implementation(libs.androidx.glance.preview)
     implementation(libs.gson)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.koin.android)
 }

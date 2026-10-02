@@ -1,9 +1,8 @@
 package com.tgyuu.network.source.error
 
 import android.util.Log
-import javax.inject.Inject
 
-class DebugErrorDataSourceImpl @Inject constructor() : ErrorDataSource {
+class DebugErrorDataSourceImpl constructor() : ErrorDataSource {
     private var userId: String = ""
 
     override suspend fun logError(exception: Throwable) {

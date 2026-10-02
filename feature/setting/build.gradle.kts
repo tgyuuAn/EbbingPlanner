@@ -31,4 +31,5 @@ dependencies {
     implementation(projects.core.inAppUpdate)
 
     implementation(libs.accompanist.permission)
+    implementation(libs.kotlinx.datetime)
 }

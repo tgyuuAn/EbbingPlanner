@@ -1,6 +1,6 @@
 package com.tgyuu.domain.model.sync
 
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 
 data class RepeatCycleForSync(
     val id: Int,

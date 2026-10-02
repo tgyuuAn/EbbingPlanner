@@ -1,5 +1,6 @@
 package com.tgyuu.home.fake
 
+import kotlinx.datetime.toLocalDateTime
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
@@ -7,8 +8,9 @@ import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import java.time.DayOfWeek
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 
 class FakeTodoRepository : TodoRepository {
     private val schedules = mutableListOf<TodoSchedule>()
@@ -149,7 +151,7 @@ class FakeTodoRepository : TodoRepository {
         infoId: Int,
         title: String,
         tagId: Int,
-        dates: List<LocalDate>,
+        dates: List<kotlinx.datetime.LocalDate>,
         isDoneSchedules: List<Boolean>,
         isPinned: Boolean,
         restDays: Set<DayOfWeek>,
@@ -168,8 +170,10 @@ class FakeTodoRepository : TodoRepository {
                     memo = "",
                     isPinned = isPinned,
                     isDone = isDone,
-                    createdAt = LocalDate.now(),
-                    infoCreatedAt = LocalDate.now(),
+                    createdAt = kotlin.time.Clock.System.now()
+                        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
+                    infoCreatedAt = kotlin.time.Clock.System.now()
+                        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
                 )
             )
         }

@@ -4,9 +4,8 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
 
-class NotificationLogDataSource @Inject constructor(
+class NotificationLogDataSource(
     private val supabase: SupabaseClient,
 ) {
     suspend fun logNotificationConfig(

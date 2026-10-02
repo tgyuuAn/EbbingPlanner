@@ -1,0 +1,927 @@
+{
+  "summary": "Android↔iOS(shared) 화면·바텀시트·다이얼로그 전수 대조 → 구체 수정안 목록",
+  "agentCount": 12,
+  "logs": [
+    "12개 그룹 병렬 대조 시작",
+    "총 93건 수집",
+    "중복 제거 후 91건 (high 26 / med 30 / low 35)"
+  ],
+  "result": [
+    {
+      "surface": "알림 설정 화면 - 메시지 글자수 카운터/에러",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/notification/NotificationScreen.kt",
+      "ios_line": 176,
+      "severity": "high",
+      "issue": "Android는 메시지 입력 영역 하단에 '글자수 카운터(%1$d / 50자)'와 에러 메시지(플레이스홀더 2회 이상, 50자 초과)를 항상 표시한다(Android NotificationScreen.kt 569-641, home_alarm_length_text/home_alarm_placeholder_error/home_alarm_length_error). iOS는 이 카운터와 에러 텍스트를 전혀 렌더링하지 않는다. 게다가 iOS 입력창은 limit=100으로 걸려 있어 50자 초과 입력이 그대로 되고, 사용자는 초과/오류 피드백을 받지 못한다. setting_alarm_message_length(%1$d / 50), setting_alarm_message_error_length, setting_alarm_message_error_placeholder 리소스가 정의만 되고 미사용.",
+      "suggested_fix": "NotificationDetailSection 입력창 하단에 Row로 (에러메시지 weight(1f)) + (stringResource(setting_alarm_message_length, message.length)) 를 추가하고, 에러 조건(placeholder>1, length>50)을 계산해 statusError 색으로 표시. 입력 limit을 100→50으로 맞추거나(디자인 결정) 최소한 카운터/에러를 노출.",
+      "android_ref": "feature/home/.../notification/NotificationScreen.kt:569-641, AddTodoState.kt:74-80",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "알림 설정 화면 - 헤더(넛지) 섹션 누락",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/notification/NotificationScreen.kt",
+      "ios_line": 73,
+      "severity": "high",
+      "issue": "Android 화면 상단에는 큰 제목 '바쁜 날에도 복습일을 자동으로 챙겨드릴게요'(home_notification_nudge, heading24B)와 서브텍스트 '알림을 설정하면...'(home_notification_header_sub)로 이루어진 NotificationHeader 블록이 있다(NotificationScreen.kt:432-448). iOS에는 이 헤더 블록 자체가 없고 바로 토글 섹션으로 시작한다. 사용자에게 보이는 안내 문구가 통째로 결손.",
+      "suggested_fix": "NotificationScreen 상단(토글 위)에 heading 스타일 제목 + 서브 텍스트 2개를 추가. 대응 리소스가 iOS에 없으면 home_notification_nudge/home_notification_header_sub에 해당하는 문자열을 composeResources에 추가.",
+      "android_ref": "feature/home/.../notification/NotificationScreen.kt:170,432-448",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "홈 메인 - 리스트 헤더 정렬 토글",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/designsystem/model/SortTypeExt.kt",
+      "ios_line": 12,
+      "severity": "high",
+      "issue": "정렬 토글의 첫 번째(생성순/최신순) 라벨 문자열이 Android와 다르다. Android는 SortType.CREATED를 sort_latest(\"최신순\")로 표시하는데(feature 홈 헤더가 displayName() 사용, SortTypeExt.kt:16-17 → sort_latest), iOS는 sort_created(\"생성순\")로 표시한다. 사용자 눈에 보이는 토글 라벨이 \"최신순\"(Android) vs \"생성순\"(iOS)으로 불일치. 또한 iOS 리소스에는 sort_latest 키 자체가 존재하지 않는다(grep 결과 없음).",
+      "suggested_fix": "iOS SortTypeExt.kt에서 CREATED 라벨을 Android와 동일하게 맞춘다. `SortType.CREATED -> stringResource(Res.string.sort_created)` 를 `sort_latest`로 변경하고, values*/strings.xml에 sort_latest(\"최신순\"/\"Latest\"/\"最新順\") 키를 추가한다. (혹은 Android가 실제로 \"생성순\"을 의도한 것이라면 Android displayName()을 sort_created로 통일)",
+      "android_ref": "core/designsystem/.../model/SortTypeExt.kt:16-17 (sort_latest), feature/home/.../ui/EbbingTodoList.kt:164",
+      "group": "home-main"
+    },
+    {
+      "surface": "할일 추가(AddTodo) / 할일 수정(EditTodo) 화면",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/component/AddTodoComponents.kt",
+      "ios_line": 53,
+      "severity": "high",
+      "issue": "제목 입력 필드가 iOS에서 진입 시 자동 포커스/키보드 자동 노출이 안 된다. Android의 TitleContent(feature/home/.../ui/Title.kt:34-38)는 FocusRequester + LaunchedEffect(Unit){ focusRequester.requestFocus() }로 화면 진입 즉시 키보드를 띄우고, animateScrollWhenFocus로 포커스 시 스크롤까지 보정한다. iOS TitleContent에는 FocusRequester/requestFocus/animateScrollWhenFocus가 전부 빠져 있어, 사용자가 제목 칸을 직접 탭해야만 입력이 시작된다. 이는 addtodo/edittodo 두 화면 모두에서 첫 입력 경험이 달라지는 눈에 띄는 차이다.",
+      "suggested_fix": "iOS TitleContent에 remember{ FocusRequester() } + LaunchedEffect(Unit){ focusRequester.requestFocus() }를 추가하고 EbbingTextInputDefault modifier에 .focusRequester(focusRequester)를 부여해 Android처럼 진입 시 키보드가 자동으로 열리도록 한다(가능하면 포커스 스크롤 보정도 이식).",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/ui/Title.kt:33-73",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "할일 추가(AddTodo) 화면 - 저장 버튼",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/AddTodoScreen.kt",
+      "ios_line": 249,
+      "severity": "high",
+      "issue": "제목 입력으로 키보드가 올라오면 하단 저장 버튼('추가하기')이 키보드에 가려진다. Android AddTodoScreenPhone은 imePadding()을 버튼까지 포함하는 최상위 Column(AddTodoScreen.kt:246-249)에 적용해 버튼이 키보드 위로 밀려 올라간다. iOS는 imePadding()을 BoxWithConstraints 내부 스크롤 Column(229·223라인)에만 걸었고, EbbingSolidButton은 imePadding이 없는 바깥 Column(160)의 직속 자식이라 키보드에 덮인다.",
+      "suggested_fix": "iOS 최상위 Column(라인160 modifier = modifier.fillMaxSize())에 .imePadding()을 추가하고, 내부 스크롤 Column의 중복 imePadding은 제거해 Android와 동일하게 저장 버튼이 키보드 위로 올라오게 한다.",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/addtodo/AddTodoScreen.kt:245-291",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "할일 수정(EditTodo) 화면 - 저장 버튼",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/edittodo/EditTodoScreen.kt",
+      "ios_line": 171,
+      "severity": "high",
+      "issue": "Phone(!isWide) 레이아웃에서 imePadding()이 스크롤 Column(라인132)에만 적용되고 EbbingSolidButton('수정하기')은 imePadding 없는 바깥 Column(라인115-118)의 자식이라 키보드가 올라오면 저장 버튼이 가려진다. Android EditTodoScreen(COMPACT 분기, EditTodoScreen.kt:112-116)은 imePadding을 버튼까지 포함하는 최상위 Column에 적용한다.",
+      "suggested_fix": "Phone 분기에서 imePadding을 버튼을 포함하는 최상위 Column(라인115-118)로 옮긴다. 즉 Column(...).then(if(isWide) Modifier else Modifier.imePadding())을 최상위에 두고, 내부 스크롤 Column의 imePadding은 태블릿 전용으로만 유지한다.",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/edittodo/EditTodoScreen.kt:111-184",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "SelectedDateBottomSheet (일정 날짜 선택 시트)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/bottomsheet/SelectedDateBottomSheet.kt",
+      "ios_line": 23,
+      "android_ref": "feature/home/.../graph/ui/bottomsheet/SelectedDateBottomSheet.kt:26,38",
+      "severity": "high",
+      "issue": "iOS SelectedDateBottomSheetContent은 startFromMonday 파라미터 자체가 없고 EbbingCalendar에 전달하지 않는다. iOS EbbingCalendar는 startFromMonday(기본 false)를 지원하므로, 사용자가 '월요일 시작' 설정을 켜도 이 시트의 캘린더는 항상 일요일 시작으로 표시된다. Android는 startFromMonday를 받아 캘린더에 넘긴다(라인 26,38).",
+      "suggested_fix": "함수 시그니처에 startFromMonday: Boolean = false 추가하고 EbbingCalendar(... startFromMonday = startFromMonday ...)로 전달. 호출부(시트 표시부)에서도 사용자 설정값을 넘기도록 수정.",
+      "group": "home-bottomsheets"
+    },
+    {
+      "surface": "SelectedDateBottomSheet (일정 날짜 선택 시트)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/bottomsheet/SelectedDateBottomSheet.kt",
+      "ios_line": 40,
+      "android_ref": "feature/home/.../graph/ui/bottomsheet/SelectedDateBottomSheet.kt:41-43",
+      "severity": "high",
+      "issue": "iOS는 EbbingCalendar에 horizontal=20.dp 패딩이 빠져 있다(padding(top=20, bottom=8)만 있음). Android는 padding(horizontal=20.dp).padding(top=20,bottom=8)로 좌우 20dp를 준다. 그 결과 iOS에서는 캘린더만 화면 가장자리에 붙고, 바로 아래 '적용하기' 버튼은 horizontal=20.dp가 있어(라인 50) 캘린더와 버튼의 좌우 정렬이 어긋나 보인다.",
+      "suggested_fix": "EbbingCalendar modifier를 Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 20.dp, bottom = 8.dp)로 변경해 버튼과 좌우 정렬을 맞춘다.",
+      "group": "home-bottomsheets"
+    },
+    {
+      "surface": "WidgetNudgeDialog (위젯 넛지 다이얼로그)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/dialog/WidgetNudgeDialog.kt",
+      "ios_line": 74,
+      "severity": "high",
+      "issue": "Android는 하단 영역에 위젯 미리보기 일러스트(ic_widget_nudge, 220x152dp 이미지)를 표시하는데, iOS는 이미지 대신 영어 리터럴 'Widget Preview' 텍스트를 플레이스홀더로 그대로 노출한다. 사용자에게 미완성/깨진 화면으로 보이며, 로케일 하드코딩(영어) 문제도 있다. iOS 리소스에 ic_widget_nudge 드로어블 자체가 없음(find 결과 없음).",
+      "suggested_fix": "ic_widget_nudge.xml을 shared/src/commonMain/composeResources/drawable로 포팅한 뒤, Box 내부의 Text(\"Widget Preview\")를 Image(painter = painterResource(Res.drawable.ic_widget_nudge), contentScale = ContentScale.FillBounds, modifier = Modifier.size(220.dp, 152.dp))로 교체. 배경 padding도 Android처럼 vertical=23.5.dp로 맞추기(현재 24.dp).",
+      "android_ref": "feature/home/.../main/ui/dialog/WidgetNudgeDialog.kt:75-82 (ic_widget_nudge 이미지)",
+      "surface_note": "",
+      "group": "home-dialogs"
+    },
+    {
+      "surface": "ConfirmDelayAllDialog (이후 일정 모두 미루기 확인)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/dialog/ConfirmDelayAllDialog.kt",
+      "ios_line": 109,
+      "severity": "high",
+      "issue": "미루기 버튼 콜백 인자가 Android와 다르다. Android는 onRightButtonClick = { onDelayClick(false) } 로 체크박스 상태와 무관하게 항상 false(쉬는 요일 포함 안 함) 전달. iOS는 onDelayClick(!excludeRestDays) 로 체크박스에 따라 값이 바뀐다. 결과적으로 '쉬는 요일 제외' 체크를 해제했을 때 iOS는 쉬는 요일을 포함해 미루지만 Android는 포함하지 않아, 실제 미뤄지는 결과 날짜가 플랫폼 간 달라진다.",
+      "suggested_fix": "Android 동작에 맞춰 onRightButtonClick = { onDelayClick(!excludeRestDays) } 를 { onDelayClick(false) } 로 변경. (단 ConfirmDelay 단건은 양쪽 모두 !excludeRestDays 이므로 DelayAll만 수정. 만약 iOS 동작이 의도된 개선이라면 Android도 함께 맞춰야 하나, 원본 기준 iOS를 Android에 일치시킬 것.)",
+      "android_ref": "feature/home/.../main/ui/dialog/ConfirmDelayAllDialog.kt:109 (onDelayClick(false))",
+      "surface_note": "",
+      "group": "home-dialogs"
+    },
+    {
+      "surface": "ConfirmExitDialog (작성 이탈 확인, AddTodo)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/AddTodoScreen.kt",
+      "ios_line": 315,
+      "severity": "high",
+      "issue": "Android는 EbbingDialogIconTop 을 써서 상단에 ic_notice 아이콘 + 타이틀 + 서브텍스트(모두 중앙정렬 규격)를 표시하는데, iOS 인라인 구현은 아이콘이 전혀 없고 타이틀도 textAlign이 지정되지 않아 좌측 정렬로 렌더된다(서브텍스트만 Center). iOS 디자인시스템에 EbbingDialogIconTop / ic_notice 자체가 없어 아이콘이 통째로 누락됨.",
+      "suggested_fix": "iOS designsystem에 EbbingDialogIconTop과 ic_notice 아이콘을 포팅해 사용하거나, 최소한 현재 인라인 Text 타이틀에 textAlign = TextAlign.Center를 추가하고 상단에 notice 아이콘 Image를 배치해 Android와 시각적으로 일치시킬 것.",
+      "android_ref": "feature/home/.../graph/ui/dialog/ConfirmExitDialog.kt:20-25 (EbbingDialogIconTop, ic_notice)",
+      "surface_note": "",
+      "group": "home-dialogs"
+    },
+    {
+      "surface": "설정 메인 - 데이터 섹션 (DataBody)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 255,
+      "severity": "high",
+      "issue": "Android DataBody에는 '데이터 복원'(sync_restore_title) 항목이 존재해 기기 ID 기반 복원 화면으로 진입하는 행이 있는데(SettingScreen.kt:744-763, onRestoreByDeviceIdClick), iOS DataBody에는 이 행이 통째로 누락됨. iOS SettingContract에는 OnRestoreByDeviceIdClick 인텐트 자체가 없음. 결과적으로 iOS 사용자는 '데이터 복원' 진입 경로가 사라짐. shared/composeResources에 sync_restore_* 문자열은 이미 존재(strings.xml:435~)하므로 화면만 빠진 상태.",
+      "suggested_fix": "iOS DataBody에서 '다른 기기와 동기화' 행과 '데이터 초기화' 행 사이에 SettingRow(title = sync_restore_title, onClick = onRestoreByDeviceIdClick)를 추가하고, SettingContract에 OnRestoreByDeviceIdClick 인텐트 + 복원 화면 네비게이션을 구현. (복원 화면 미포팅이 의도라면 severity 재검토 필요하나 문자열은 이미 준비돼 있음)",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:744-763 (sync_restore_title 행 + onRestoreByDeviceIdClick)",
+      "group": "setting"
+    },
+    {
+      "surface": "설정 메인 - 섹션 배치 순서",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 217,
+      "severity": "high",
+      "issue": "폰(compact) 레이아웃에서 섹션 순서가 Android와 다름. Android PhoneSettingScreen 순서: 알림 → 캘린더 → 태그/반복 → 테마 → 문의 → 안내 → 데이터 → 리뷰 → 업데이트(SettingScreen.kt:278-328). iOS 순서: 알림 → 캘린더 → 태그/반복 → 데이터 → 테마 → 문의 → 안내 → 리뷰 → 버전(SettingScreen.kt:218-227). '데이터' 섹션이 Android에서는 하단(안내 뒤)인데 iOS에서는 상단(태그/반복 바로 뒤)으로 올라와 사용자 눈에 보이는 순서가 어긋남.",
+      "suggested_fix": "iOS Column 내 호출 순서를 Android와 동일하게 변경: CalendarBody → TagRepeatCycleBody → ThemeBody → InquiryBody → AnnouncementBody → DataBody → InAppReviewRow 순으로 재배열. 태블릿 분기(isWide)도 Android TabletSettingScreen과 좌/우 컬럼 구성 대조해 정렬.",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:278-328 (Phone 섹션 순서)",
+      "group": "setting"
+    },
+    {
+      "surface": "데이터 초기화 다이얼로그 (ClearDataDialog / ConfirmClearDialog)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 602,
+      "severity": "high",
+      "issue": "다이얼로그 문구/구성이 완전히 다름. Android ConfirmClearDialog는 제목을 prefix+highlight+suffix로 조합('데이터를 ' + 붉은색 '초기화' + ' 하시겠습니까?', setting_clear_dialog_title_prefix/highlight/suffix)하고 subtext는 '삭제한 데이터는 되돌릴 수 없습니다.'(setting_clear_dialog_subtext), 좌측 버튼은 '뒤로'(setting_back). iOS ClearDataDialog는 단일 제목 setting_clear_data_dialog_title('데이터 초기화') + 메시지 setting_clear_data_dialog_message('모든 데이터가 삭제됩니다.\\n계속하시겠습니까?')를 쓰고 좌측 버튼은 '취소'(common_cancel). 강조색(statusError) 하이라이트도 없음. 사용자가 보는 문구/색/버튼 라벨이 모두 불일치.",
+      "suggested_fix": "iOS ClearDataDialog를 Android와 일치시키기: 제목을 buildAnnotatedString으로 prefix('데이터를 ') + error색 '초기화' + suffix(' 하시겠습니까?')로 조합, 메시지를 setting_clear_dialog_subtext로 교체, 좌측 버튼 라벨을 common_cancel→setting_back로 변경. 관련 문자열 키(setting_clear_dialog_title_prefix/highlight/suffix, setting_clear_dialog_subtext, setting_back)를 shared/composeResources에 추가.",
+      "android_ref": "feature/setting/.../ui/dialog/ConfirmDelayDialog.kt(ConfirmClearDialog):19-45 및 core/designsystem strings.xml:314-319",
+      "group": "setting"
+    },
+    {
+      "surface": "테마 변경 화면 (ThemeScreen) - 상단바 타이틀",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/theme/ThemeScreen.kt",
+      "ios_line": 56,
+      "severity": "high",
+      "issue": "상단바 타이틀이 Android는 setting_theme_change(\"테마 변경\")인데 iOS는 setting_theme(\"테마\")를 사용한다. 사용자에게 보이는 화면 제목이 다르다.",
+      "suggested_fix": "stringResource(Res.string.setting_theme) 를 stringResource(Res.string.setting_theme_change) 로 교체. shared strings.xml에 setting_theme_change(\"테마 변경\") 키가 없으므로 추가 필요.",
+      "android_ref": "ThemeScreen.kt:135,195 (EbbingSubTopBar title = setting_theme_change) / strings.xml:283",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "테마 변경 화면 - 미리보기 카드(PreviewBody)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/theme/ThemeScreen.kt",
+      "ios_line": 150,
+      "severity": "high",
+      "issue": "Android 미리보기는 실제 TodoListCard(에빙 플래너 미리보기 샘플 할일 3개, 라이트/다크 각각 세로로 쌓인 카드, 좌하단 '라이트/다크' 라벨)로 렌더한다. iOS는 단순히 배경색만 채운 120dp 높이 Box 2개(라이트/다크 라벨만 중앙 표시)로 대체되어 실제 위젯/카드 미리보기가 사라졌다. setting_ebbing_planner_preview 문자열/TodoListCard 미사용.",
+      "suggested_fix": "Android PreviewBody/ThemePreviewCard와 동일하게 TodoListCard 기반 미리보기(샘플 할일 3개, setting_ebbing_planner_preview 사용)로 구현하거나, 최소한 실제 테마 색상이 반영된 카드 컴포넌트를 노출. 색상 스킴(normal/forest/sunset/marine/lilac Light/Dark ColorScheme)을 CompositionLocalProvider로 적용.",
+      "android_ref": "ThemeScreen.kt:297-392 (PreviewBody, ThemePreviewCard, TodoListCard, setting_ebbing_planner_preview)",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "위젯 테마 변경 화면 (WidgetScreen) - 상단바 타이틀",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/widget/WidgetScreen.kt",
+      "ios_line": 60,
+      "severity": "high",
+      "issue": "Android 상단바 타이틀은 setting_widget_theme_change(\"위젯 테마 변경\")인데 iOS는 widget_setting_title(\"위젯 설정\")을 사용한다. 화면 제목이 다르게 표시된다.",
+      "suggested_fix": "widget_setting_title 대신 setting_widget_theme_change(\"위젯 테마 변경\")를 사용하도록 변경(shared strings.xml에 키 추가 필요).",
+      "android_ref": "WidgetScreen.kt:148,222 / strings.xml:293",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "위젯 테마 변경 화면 - 저장 버튼 라벨/위치",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/widget/WidgetScreen.kt",
+      "ios_line": 65,
+      "severity": "high",
+      "issue": "Android는 하단 full-width EbbingSolidButton에 라벨 setting_apply(\"적용\")를 쓴다. iOS는 기본(CONTROL) 상태에서 상단바 텍스트 링크로 home_save(\"저장\")를 노출한다. 위치(상단 vs 하단)와 라벨(\"저장\" vs \"적용\")이 모두 다르다. remote config 미구현 시 항상 CONTROL이므로 실사용자에게 보이는 UI가 어긋난다.",
+      "suggested_fix": "라벨을 setting_apply(\"적용\")로 통일하고, CONTROL일 때도 Android처럼 하단 EbbingSolidButton을 노출하도록 분기 수정(isTreatment 기본 true 또는 항상 하단 버튼).",
+      "android_ref": "WidgetScreen.kt:193-204,283-294 (EbbingSolidButton, setting_apply)",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "위젯 테마 변경 화면 - 미리보기 카드(WidgetCard)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/widget/WidgetScreen.kt",
+      "ios_line": 174,
+      "severity": "high",
+      "issue": "Android 미리보기는 실제 위젯 모양(라이트/다크 2개 카드, 상단 '오늘 할 일  0 /0' 배지+plus 아이콘, 하단 setting_no_schedule_today('금일 스케줄이 없어요.'), 배경/텍스트 alpha가 각 요소에 반영, 좌하단 라이트/다크 라벨)을 렌더한다. iOS는 배경색만 채운 단일 120dp Box에 widget_preview_sample(\"위젯 미리보기\") 텍스트 한 줄만 표시하고, 다크모드 카드/오늘 할 일 배지/plus 아이콘/스케줄 없음 문구가 모두 누락됐다. textAlpha는 텍스트에만 적용되고 '오늘 할 일 0/0' 구조가 사라져 실제 위젯 미리보기 기능이 없다.",
+      "suggested_fix": "Android WidgetCard와 동일하게 라이트/다크 두 미리보기 카드를 만들고, 상단 '오늘 할 일  0 /0'(setting_widget_today_todo + primaryDeep 색 '0' span) 배지와 ic_plus 아이콘, 하단 setting_no_schedule_today 문구를 backgroundAlpha/textAlpha 반영해 렌더. 관련 문자열/아이콘을 shared로 포팅.",
+      "android_ref": "WidgetScreen.kt:412-536 (PreviewBody, WidgetCard, setting_widget_today_todo, setting_no_schedule_today, ic_plus)",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "일정 화면 - 태그 카드 완료율 텍스트 (TagCard)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/schedule/ScheduleScreen.kt",
+      "ios_line": 351,
+      "severity": "high",
+      "issue": "태그 헤더의 '완료율' 문구가 schedule_tag_count_completion 리소스를 쓰는데, 이 문자열이 세 로케일 모두 '완료율 %2$d%%'처럼 %% (퍼센트 이스케이프)를 포함한다. CMP(비-Android)의 stringResource 포매터는 positional 인자(%1$d, %2$d)만 치환하고 %%는 그대로 남긴다(Compose 1.7.0 기준 replaceWithArgs 정규식 %(\\d)\\$[ds] 확인). 따라서 iOS에서는 '완료율 50%%' 처럼 퍼센트가 두 개(%%)로 리터럴 노출된다. Android는 android res 포매터가 %%를 %로 정상 처리하므로 '완료율 50%'로 보인다 → 사용자 눈에 보이는 명확한 깨짐.",
+      "android_ref": "feature/schedule/.../dashboard/ScheduleScreen.kt:422-427 + core/designsystem/src/main/res/values/strings.xml:225 (%1$d개의 일정, 완료율 %2$d%%)",
+      "suggested_fix": "리소스 문자열에서 %%를 단일 %로 바꾼다. values/strings.xml, values-en, values-ja 모두 수정: 예) '완료율 %2$d%%' → '완료율 %2$d%', 'completed %2$d%%' → '%2$d%% completed'를 '%2$d% completed'로. (shared/composeResources 쪽만 수정, Android res는 그대로 유지). 또는 코드에서 리소스 대신 \"${scheduleCount}개의 일정, 완료율 ${(rate*100).roundToInt()}%\" 처럼 문자열 템플릿으로 직접 조립.",
+      "group": "schedule"
+    },
+    {
+      "surface": "동기화 메인 - QR 카드 / 연동기기 / 마지막동기화 (description·기기명·날짜 등 주요 강조 텍스트)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/sync/SyncScreen.kt",
+      "ios_line": 393,
+      "severity": "high",
+      "issue": "Android가 heading16SB(16sp SemiBold)를 쓰는 강조 텍스트들을 iOS는 전부 headingSSB(18sp Bold)로 매핑했다. 폰트 크기(16→18sp)와 굵기(SemiBold→Bold)가 모두 달라 사용자 눈에 바로 보이는 크기/굵기 불일치가 발생한다. QrActionCard.description(L393), ConnectedDeviceSection 이모지박스 텍스트(L487)·기기명(L493), LastSyncSection 날짜(L543), AdvancedInfoSection 복원 타이틀(L623) 등 다수 지점에 반복된다.",
+      "suggested_fix": "iOS Type.kt에는 16sp SemiBold인 bodyMSB(16sp/SemiBold)가 이미 있으므로, 해당 지점들의 headingSSB → bodyMSB 로 교체. (예: QrActionCard description style = EbbingTheme.typography.headingSSB → bodyMSB, 기기명·날짜도 동일)",
+      "android_ref": "feature/sync/.../SyncMainScreen.kt:349,443,449,499 (heading16SB=16sp SemiBold, Type.kt:72)",
+      "group": "sync+restore"
+    },
+    {
+      "surface": "색상 선택 바텀시트 (ColorBottomSheet)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/bottomsheet/ColorBottomSheet.kt",
+      "ios_line": 59,
+      "severity": "high",
+      "issue": "iOS의 색상 팔레트(TAG_COLORS, 라인 59-78)가 Android 원본(core/designsystem/.../ColorOptions.kt)과 완전히 다르다. Android는 순색 계열(빨강 0xFFFF0000, 주황 0xFFFF7F00, 노랑 0xFFFFFF00 ...)을 쓰는 반면, iOS는 Material 팔레트(0xFFB71C1C, 0xFFE65100, 0xFFF9A825 ...)를 하드코딩했다. 사용자가 태그에 지정할 수 있는 색상 자체가 달라지고, 기존에 Android에서 저장된 태그 색상이 iOS 팔레트 그리드에서는 '선택됨(체크)' 표시가 안 될 수 있다.",
+      "suggested_fix": "iOS TAG_COLORS 리스트를 Android ColorOptions.kt와 동일한 36개 색상값(0xFFFF0000, 0xFFFF4C4C, ... 0xFFF0E5FF)으로 교체한다. 공용 소스로 관리하는 것이 이상적.",
+      "android_ref": "core/designsystem/src/main/java/com/tgyuu/designsystem/foundation/ColorOptions.kt:3-22",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "태그 추가/수정 화면 저장 버튼 (AddTagScreen/EditTagScreen)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/addtag/AddTagScreen.kt",
+      "ios_line": 147,
+      "severity": "high",
+      "issue": "하단 저장 버튼 라벨이 Android와 다르다. Android AddTag는 tag_register_button(\"태그 등록하기\"), EditTag는 tag_edit_button(\"태그 수정하기\")을 사용하지만, iOS는 둘 다 tag_save(\"저장\")를 쓴다. 또한 tag_register_button/tag_edit_button 리소스 키 자체가 iOS strings.xml에 존재하지 않는다(포팅 누락). 사용자 눈에 보이는 버튼 문구가 바뀐다.",
+      "suggested_fix": "iOS strings.xml에 tag_register_button(\"태그 등록하기\"), tag_edit_button(\"태그 수정하기\")을 추가하고, AddTagScreen 하단 버튼 라벨을 Res.string.tag_register_button, EditTagScreen 하단 버튼은 Res.string.tag_edit_button으로 교체한다. 단, isTreatment 실험 분기의 topbar 저장 텍스트(짧은 \"저장\")는 tag_save 유지가 맞을 수 있으니 위치별로 구분.",
+      "android_ref": "AddTagScreen.kt:111 (tag_register_button), EditTagScreen.kt:111 (tag_edit_button)",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "반복 주기 추가/수정 화면 (하단 등록 버튼)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/repeatcycle/addrepeatcycle/AddRepeatCycleScreen.kt",
+      "ios_line": 125,
+      "severity": "high",
+      "issue": "하단 저장 버튼 라벨이 Android와 다르다. Android 추가 화면은 하단 버튼에 repeat_register_button(\"반복 주기 등록하기\"), 수정 화면은 repeat_edit_button(\"반복 주기 수정하기\")를 표시하는데, iOS는 두 화면 모두 repeat_save(\"저장\")를 표시한다. iOS composeResources/values/strings.xml 에는 repeat_register_button / repeat_edit_button 키 자체가 존재하지 않아 포팅 시 누락되었다.",
+      "suggested_fix": "iOS strings.xml(및 values-en/ja/ko)에 repeat_register_button(\"반복 주기 등록하기\"), repeat_edit_button(\"반복 주기 수정하기\")를 추가하고, Add 화면 하단 버튼 라벨을 stringResource(Res.string.repeat_save)→repeat_register_button, Edit 화면(EditRepeatCycleScreen.kt:136)은 repeat_edit_button 으로 교체.",
+      "android_ref": "AddRepeatCycleScreen.kt:93 (repeat_register_button), EditRepeatCycleScreen.kt:93 (repeat_edit_button), core/designsystem/.../values/strings.xml:449-450",
+      "group": "repeatcycle-flow"
+    },
+    {
+      "surface": "메모 추가/수정 화면 - 미리보기(Preview) 카드",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/memo/MemoScreen.kt",
+      "ios_line": 265,
+      "severity": "high",
+      "issue": "iOS는 MemoScreen 안에 자체 private TodoListCard(265~343줄)를 새로 그려 미리보기를 표시한다. Android 원본(MemoContent.kt PreviewContent 112줄)은 홈/투두 리스트와 동일한 공용 디자인시스템 컴포넌트 designsystem/component/Card.kt의 TodoListCard를 그대로 재사용한다. 두 카드는 완전히 다른 룩이다. Android 카드(shared Card.kt에도 존재): (1) 왼쪽 둥근모서리 컬러 바 + 아웃라인 path, (2) 상단=name(과목), 하단=title 순서, (3) 회차 텍스트(card_round_count)와 진행 점(dots), (4) isPinned 핀 아이콘, (5) 우상단 3-dots 수정 아이콘, (6) 메모를 light3 배경의 펼침 가능한 행(확장 chevron)으로 표시. 반면 iOS 자체 카드는: 얇은 VerticalDivider, title 위/ name 아래 순서, 회차/점/핀/3-dots 전부 없음, 메모를 'M' 원형 배지 + 텍스트로 표시. 사용자가 보는 미리보기가 실제 저장 후 리스트 카드와 전혀 달라 '미리보기' 목적이 깨진다.",
+      "suggested_fix": "iOS도 공용 shared/designsystem/component/Card.kt의 TodoListCard(todo, todosWithSameInfo, onCheckedChange, onEditScheduleClick)를 사용하도록 변경. Android PreviewContent처럼 TodoScheduleUiModel(memo=ClickableText.from(memo))를 만들어 넘기고, MemoScreen.kt의 private TodoListCard/PreviewContent를 공용 컴포넌트 호출로 교체.",
+      "android_ref": "feature/memo/.../ui/MemoContent.kt:96-121 (공용 TodoListCard 사용), core/designsystem/.../component/Card.kt = shared Card.kt:50",
+      "group": "memo"
+    },
+    {
+      "surface": "메모 추가/수정 화면 - 미리보기 카드 내 메모 표시",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/memo/MemoScreen.kt",
+      "ios_line": 320,
+      "severity": "high",
+      "issue": "iOS 자체 카드는 메모를 light1 원형 안 'M' 글자 배지 + dark3 텍스트로 표시한다(320~340줄). Android/공용 카드에는 이런 'M' 배지가 존재하지 않으며, 메모는 light3 배경의 라운드 행에 bodySM으로 표시되고 오버플로 시 펼침(KeyboardArrowDown/Up) chevron이 붙는다(공용 Card.kt:173-212). 'M' 배지는 iOS에만 있는 임의 UI로 실제 카드와 불일치.",
+      "suggested_fix": "공용 TodoListCard로 교체(위 항목)하면 자동 해결. 부득이 자체 구현 유지 시, 'M' 배지 제거하고 공용 카드의 메모 행(light3 배경 라운드 4dp, bodySM subColor, 오버플로 펼침 chevron) 스펙과 일치시킬 것.",
+      "android_ref": "shared Card.kt:173-212 (메모 행에 M 배지 없음)",
+      "group": "memo"
+    },
+    {
+      "surface": "알림 설정 화면 - 알림 시간 표시 포맷",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/notification/NotificationScreen.kt",
+      "ios_line": 164,
+      "severity": "medium",
+      "issue": "Android는 알림 시간을 24시간 '18:30' 형태(formattedAlarmTime, padStart 0채움, 밑줄 데코레이션)로 primaryNormal 색에 밑줄 있는 클릭 텍스트로 표시한다. iOS는 alarmTimeText로 '오후 6시 30분' 형태(12시간+오전/오후)로 표시하며 밑줄 데코레이션이 없다. 표기 체계 자체가 달라 사용자 눈에 시간 표현이 불일치.",
+      "suggested_fix": "제품 의도가 12시간제라면 low로 볼 수 있으나, 최소한 클릭 가능 시간 텍스트에 TextDecoration.Underline(Android와 동일한 어포던스)을 적용할지 결정. 24시간제 통일이 목표라면 formattedAlarmTime 방식으로 맞춤.",
+      "android_ref": "feature/home/.../notification/NotificationScreen.kt:541-558, AddTodoState.kt:67-72",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "알림 설정 화면 - 알림 받기 토글 라벨/권한 처리",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/notification/NotificationScreen.kt",
+      "ios_line": 140,
+      "severity": "medium",
+      "issue": "Android 토글 섹션 라벨은 '알림 받기'(home_notification_receive, heading18B)인데 iOS는 '알림'(setting_notification)으로 다른 문구를 쓴다. 또한 Android는 토글 ON 시 POST_NOTIFICATIONS 권한 요청/설정 이동 로직을 수행하지만 iOS엔 없다(권한은 플랫폼 차이로 의도적 가능). 라벨 문구 불일치는 사용자 눈에 보이는 차이.",
+      "suggested_fix": "라벨을 Android의 '알림 받기'에 대응하는 문자열로 맞추거나 제품 결정. 권한 처리 차이는 iOS 네이티브 권한 흐름으로 대체되는 의도적 차이일 수 있으므로 별도 처리.",
+      "android_ref": "feature/home/.../notification/NotificationScreen.kt:463-468",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "알림 설정 화면 - 플레이스홀더 안내 문구 렌더링",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/notification/NotificationScreen.kt",
+      "ios_line": 183,
+      "severity": "medium",
+      "issue": "Android는 '{할일}' 토큰을 primaryNormal+Bold로 강조한 뒤 뒤에 '은 할 일 제목으로 자동 변환됩니다 (최대 1번)'을 붙이는 AnnotatedString을 쓴다(NotificationScreen.kt:595-612, home_alarm_placeholder_desc). iOS는 notification_placeholder_desc('{할일}을 사용하면 일정 이름으로 자동 대체됩니다') 단일 문자열을 강조 없이 dark3로 렌더링한다. 강조 스타일과 문구가 모두 다르고, '(최대 1번)' 제한 안내가 빠져 있다.",
+      "suggested_fix": "토큰만 강조하는 AnnotatedString으로 재구성하거나 최소한 '(최대 1번)' 제한 안내를 포함한 문구로 리소스 정렬.",
+      "android_ref": "feature/home/.../notification/NotificationScreen.kt:595-612",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "알림 설정 화면 - 미리보기 표시 조건/스타일",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/notification/NotificationScreen.kt",
+      "ios_line": 187,
+      "severity": "medium",
+      "issue": "Android 미리보기는 fillNormal 배경 + RoundedCornerShape(16dp) 카드 안에 '미리보기' 캡션과 본문을 넣고, isValidPlaceholder && previewMessage.isNotEmpty() 조건일 때만 노출한다(MessagePreview 656-678). iOS는 카드 배경 없이 '미리보기' 라벨 + 본문을 그냥 나열하며, 플레이스홀더가 2개 이상이어도(유효성 무시) 항상 표시된다. 카드 UI가 사라지고, 잘못된 입력에서도 미리보기가 노출됨.",
+      "suggested_fix": "미리보기를 fillNormal 배경 라운드 카드로 감싸고, placeholderCount<=1 && preview.isNotEmpty() 조건에서만 노출하도록 분기 추가.",
+      "android_ref": "feature/home/.../notification/NotificationScreen.kt:645-678",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "알림 설정 화면 - 하단 저장(일정 등록) 버튼 누락",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/notification/NotificationScreen.kt",
+      "ios_line": 124,
+      "severity": "medium",
+      "issue": "Android는 화면 하단에 고정된 EbbingSolidButton('일정 등록하기', home_add_todo_button)이 있어 저장/등록 액션을 수행한다(NotificationScreen.kt:220-237). iOS 알림 화면에는 하단 고정 버튼이 없고 스크롤 영역 끝에 Spacer(60dp)만 있다. 진입 맥락(설정 탭 vs 일정 등록 플로우)이 달라 의도적일 수 있으나, 등록 플로우로 진입 시 다음 단계 버튼이 없어 사용자가 진행 불가.",
+      "suggested_fix": "이 화면이 일정 등록 넛지 플로우로도 쓰인다면 하단 고정 CTA 버튼을 추가. 설정 탭 전용이라면 severity low(의도적 차이). 진입 경로 확인 필요.",
+      "android_ref": "feature/home/.../notification/NotificationScreen.kt:220-237,374-391",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "온보딩 화면 - 페이지 문구 내용 전면 상이",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/onboarding/OnboardingScreen.kt",
+      "ios_line": 108,
+      "severity": "medium",
+      "issue": "Android 온보딩 4페이지 문구는 망각률/복습/맞춤알림/시작 서사(onboarding_1~4_title/description)인데, iOS는 완전히 다른 문구 세트(에빙하우스 곡선 학습 / 간편한 일정 체크 / 알림으로 놓치지 않게 / 여러 기기에서 동기화, onboarding_page1~4)를 사용한다. 특히 iOS 4페이지는 '여러 기기에서 동기화'로 Android엔 없는 기능(멀티기기 동기화)을 광고한다. develop 신규 UX 포팅(commit 173973ed)일 수 있으나, 본 레포 Android 원본과는 표시 문구가 1:1로 불일치.",
+      "suggested_fix": "제품이 iOS/develop 신규 카피를 정본으로 채택했는지 확인. 그렇지 않다면 Android onboarding_1~4 문구에 맞춰 정렬. develop 의도 포팅이면 severity low로 조정.",
+      "android_ref": "core/designsystem/.../values/strings.xml:21-28",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "홈 메인 - 캘린더 컨트롤러 동기화(Sync) 버튼",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/designsystem/component/calendar/EbbingCalendar.kt",
+      "ios_line": 323,
+      "severity": "medium",
+      "issue": "'오늘' 상태일 때 노출되는 동기화 버튼 아이콘이 다르다. Android는 ic_link 드로어블(painterResource(R.drawable.ic_link))을 tint textOnBackground로 표시하는데, iOS는 EbbingSyncIcon(코드로 그린 벡터)를 표시한다. 아이콘 모양/디테일이 사용자 눈에 달라 보일 수 있다.",
+      "suggested_fix": "iOS SyncButton도 Android와 동일한 ic_link 리소스를 painterResource로 사용하도록 변경하거나, 두 플랫폼이 동일한 아이콘 에셋을 공유하도록 통일. contentDescription도 Android는 ds_cd_sync(\"데이터 동기화\") vs iOS sync_sync(\"동기화\")로 달라 접근성 라벨도 맞출 것.",
+      "android_ref": "core/designsystem/.../calendar/CalendarController.kt:116-129 (ic_link, ds_cd_sync)",
+      "group": "home-main"
+    },
+    {
+      "surface": "홈 메인 - 리스트 헤더(날짜/카운트) 영역 스크롤로 월↔주 전환",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/component/EbbingTodoList.kt",
+      "ios_line": 83,
+      "severity": "medium",
+      "issue": "월/주 캘린더 전환 제스처 연결 지점이 다르다. Android는 calendarNestedScroll을 TodoHeader에 nestedScroll+scrollable로 항상 부착(EbbingTodoList.kt:94-104)하지만, iOS는 헤더에 전혀 부착하지 않고 TodoPage의 LazyColumn에만 nestedScroll을 건다(EbbingTodoList.kt:183). 그 결과 (1) 헤더 영역을 드래그해도 주간 전환이 되지 않고, (2) 일정이 없어 LazyColumn이 렌더링되지 않는 empty 상태(else 분기의 Text)에서는 nestedScroll 연결이 사라져 위로 당겨 월↔주 전환이 불가능하다. Android는 헤더가 항상 존재하므로 empty 상태에서도 전환 가능.",
+      "suggested_fix": "iOS도 Android처럼 TodoHeader에 calendarNestedScroll을 nestedScroll + scrollable(rememberScrollableState{0f}) 조합으로 부착하도록 EbbingTodoList의 TodoHeader에 modifier 파라미터를 넘겨 처리. 최소한 empty 상태 Text에도 nestedScroll(calendarNestedScroll)을 부착해 empty 상태에서 월↔주 전환이 되게 한다.",
+      "android_ref": "feature/home/.../ui/EbbingTodoList.kt:88-105 (TodoHeader에 nestedScroll+scrollable)",
+      "group": "home-main"
+    },
+    {
+      "surface": "홈 메인 - 카드(제목/메모 링크)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/designsystem/component/Card.kt",
+      "ios_line": 125,
+      "severity": "medium",
+      "issue": "할일 카드의 제목과 메모가 Android에서는 EbbingClickableText(URL 등 링크를 인식해 클릭 가능한 어노테이션 텍스트, Card.kt:126-133, 193-201)로 렌더링되지만 iOS에서는 일반 Text로 렌더링된다(제목 Card.kt:125, 메모 Card.kt:192). iOS에서는 제목/메모 안의 링크가 클릭되지 않고 링크 하이라이트 스타일도 사라진다.",
+      "suggested_fix": "iOS Card.kt의 제목/메모 Text를 클릭 가능한 텍스트(EbbingClickableText 대응 컴포넌트/링크 파서)로 교체하여 URL 클릭 및 스타일을 Android와 맞춘다. 링크 기능이 iOS 미구현이라면 최소한 링크 텍스트 스타일이라도 통일.",
+      "android_ref": "core/designsystem/.../component/Card.kt:126-133,193-201 (EbbingClickableText)",
+      "group": "home-main"
+    },
+    {
+      "surface": "나가기 확인 다이얼로그(ConfirmExitDialog) - AddTodo",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/AddTodoScreen.kt",
+      "ios_line": 305,
+      "severity": "medium",
+      "issue": "다이얼로그 상단 아이콘이 누락됐다. Android ConfirmExitDialog(ui/dialog/ConfirmExitDialog.kt:20-25)는 EbbingDialogIconTop으로 ic_notice 아이콘 + 제목 + 서브텍스트를 함께 표시한다. iOS는 EbbingDialog 안에 Text(제목)/Text(서브)만 직접 배치하고 상단 알림 아이콘이 없어, 같은 다이얼로그인데 시각적으로 다르게 보인다.",
+      "suggested_fix": "iOS ConfirmExitDialog에도 상단에 알림 아이콘(예: Res.drawable.ic_notice)을 painterResource로 추가하거나, 공용 EbbingDialogIconTop에 해당하는 컴포넌트를 사용해 아이콘+제목+서브텍스트 구성을 Android와 맞춘다.",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/ui/dialog/ConfirmExitDialog.kt:18-36",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "설정 메인 - 데이터 섹션 첫 행(동기화)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 266,
+      "severity": "medium",
+      "issue": "동기화 진입 행의 표시 문자열이 다름. Android는 setting_use_on_other_device('다른 기기에서도 사용하기')를 사용(SettingScreen.kt:697)하는데 iOS는 setting_sync_with_other_device('다른 기기와 동기화 하기')를 사용. 사용자가 보는 라벨 텍스트가 불일치.",
+      "suggested_fix": "iOS SettingScreen의 setting_sync_with_other_device를 Android와 동일한 setting_use_on_other_device('다른 기기에서도 사용하기')로 교체(해당 키를 shared/composeResources에 추가). 반대로 Android를 iOS 문구로 통일하는 것이 제품 결정이면 그대로 두되 두 플랫폼 문구를 반드시 일치시킬 것.",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:697 (setting_use_on_other_device) / core designsystem strings.xml:280",
+      "group": "setting"
+    },
+    {
+      "surface": "설정 메인 - 하단 버전/업데이트 행 (UpdateBody vs VersionRow)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 358,
+      "severity": "medium",
+      "issue": "버전 문자열 표시가 다름. Android setting_version은 '현재 버전 정보 %1$s'(core strings.xml:15)이고 UpdateBody가 version에 이미 'v'를 붙여 넣음(SettingScreen.kt:1021, 1029). iOS도 setting_version이 '현재 버전 정보 %1$s'(shared strings.xml:36)인데 VersionRow에서 'v$version'을 넘김(SettingScreen.kt:370) → 결과는 유사('현재 버전 정보 v1.1.0'). 그러나 iOS에는 업데이트 진입 화살표(isShowUpdateButton일 때 ic_arrow_right + onUpdateClick)가 없음. 원격 업데이트 판단(UpdateInfo)이 iOS 미구현이면 의도적 차이 가능하나, 업데이트 필요 사용자에게 진입 경로가 사라지는 결손.",
+      "suggested_fix": "원격 config/업데이트 미구현이 의도라면 low로 유지(의도적 차이 가능). 만약 인앱 업데이트 흐름을 iOS에도 넣을 계획이면 VersionRow를 Row(SpaceBetween)로 바꾸고 업데이트 필요 시 ic_arrow_right + onUpdateClick 추가.",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:1013-1046 (UpdateBody, 화살표+onUpdateClick)",
+      "group": "setting"
+    },
+    {
+      "surface": "테마 변경 화면 - 본문 헤드라인 문구",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/theme/ThemeScreen.kt",
+      "ios_line": 79,
+      "severity": "medium",
+      "issue": "Android 본문 상단 헤드라인은 setting_change_app_theme(\"앱 테마를 변경해요\", heading24B)인데 iOS는 theme_select_headline(\"테마 색상을 선택해요.\")을 사용한다. 문구/톤이 다르다.",
+      "suggested_fix": "theme_select_headline 대신 setting_change_app_theme(\"앱 테마를 변경해요\")를 사용하도록 변경(shared에 키 추가 필요). 필요하면 'setting_theme' 소제목/미리보기 구조도 Android처럼 맞춤.",
+      "android_ref": "ThemeScreen.kt:148,212 / strings.xml:286",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "테마 선택기(ThemeSelector) - 선택 표시/색상",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/theme/ThemeScreen.kt",
+      "ios_line": 127,
+      "severity": "medium",
+      "issue": "Android는 원 색상을 다크모드 여부에 따라 primaryNormalColor로 표시하고 선택 시 ic_check 아이콘(20dp, textOnPrimary tint)을 오버레이한다. iOS는 원 색상을 항상 theme.lightBg로만 표시하고 선택 표시를 유니코드 체크문자(✓)로 대체했다. 다크모드에서 색상이 다르게 보이고 체크 표식 모양/정렬이 다르다.",
+      "suggested_fix": "선택 표시를 ic_check drawable(shared 리소스로 포팅)로 교체하고, 원 색상을 시스템 다크모드에 따라 primaryNormal(다크/라이트 스킴)로 표시하도록 맞춤. 최소한 체크 아이콘을 이미지로 통일.",
+      "android_ref": "ThemeScreen.kt:274-291 (primaryNormalColor, ic_check)",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "위젯 테마 변경 화면 - 본문 헤드라인 문구 누락",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/widget/WidgetScreen.kt",
+      "ios_line": 134,
+      "severity": "medium",
+      "issue": "Android는 본문 최상단에 setting_change_widget_theme(\"위젯 테마를 변경해요\", heading24B) 헤드라인이 있으나 iOS에는 이 헤드라인 문구가 아예 없다. iOS는 바로 widget_theme(\"위젯 테마\") 소제목부터 시작한다.",
+      "suggested_fix": "WidgetControlSection 상단에 setting_change_widget_theme(\"위젯 테마를 변경해요\") 헤드라인 Text 추가(shared 키 추가 필요).",
+      "android_ref": "WidgetScreen.kt:160-164,241-245 / strings.xml:294",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "위젯 테마 변경 화면 - 내용 투명도 라벨",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/widget/WidgetScreen.kt",
+      "ios_line": 163,
+      "severity": "medium",
+      "issue": "Android 두 번째 슬라이더 라벨은 setting_content_alpha(\"내용 투명도\")인데 iOS는 widget_text_alpha(\"텍스트 투명도\")를 사용한다. 라벨 문구가 다르다.",
+      "suggested_fix": "widget_text_alpha 대신 setting_content_alpha(\"내용 투명도\")를 사용(shared 키 추가 필요). 슬라이더도 Android는 HorizontalBackgroundSlider/HorizontalTextSlider 커스텀 컴포넌트인데 iOS는 기본 material3 Slider라 트랙/썸 모양이 다르므로 커스텀 슬라이더 포팅 권장.",
+      "android_ref": "WidgetScreen.kt:382 (setting_content_alpha) / strings.xml:296, WidgetScreen.kt:365,395 (Horizontal*Slider)",
+      "group": "theme+widget"
+    },
+    {
+      "surface": "일정 옵션 바텀시트 항목 (BottomSheetOptionItem)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/schedule/bottomsheet/ScheduleBottomSheets.kt",
+      "ios_line": 325,
+      "severity": "medium",
+      "issue": "옵션 항목 Box의 contentAlignment이 iOS는 Alignment.CenterStart, Android는 Alignment.TopStart 로 다르다. 62dp 고정 높이 안에서 iOS는 텍스트가 세로 중앙, Android는 상단에 배치되어 편집/삭제/내일로 미루기 등 모든 옵션 항목의 텍스트 세로 정렬이 눈에 띄게 다르다. (편집/삭제/미루기/메모 시트 모두 이 컴포넌트를 공유하므로 전 시트에 영향)",
+      "android_ref": "feature/schedule/.../ui/bottomsheet/ScheduleOptionsBottomSheet.kt:362 (Alignment.TopStart)",
+      "suggested_fix": "둘 중 원본(Android)에 맞추려면 iOS의 contentAlignment = Alignment.CenterStart 를 Alignment.TopStart 로 변경. (디자인 의도가 중앙정렬이면 Android를 CenterStart로 맞추되, 포팅 1:1 원칙상 iOS를 Android에 맞추는 것을 권장)",
+      "group": "schedule"
+    },
+    {
+      "surface": "태그 삭제 확인 다이얼로그 (DeleteTagDialog)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/schedule/ScheduleScreen.kt",
+      "ios_line": 662,
+      "severity": "medium",
+      "issue": "다이얼로그 문구 구성이 Android와 다르다. Android는 schedule_delete_tag_dialog_title('%1$s 태그를 삭제하시겠습니까?')/schedule_delete_tag_dialog_subtext('...현재 연결된 모든 일정에서 함께 삭제되며...')를 쓰고 하이라이트 span이 없다. iOS는 tag_delete_confirm_prefix/highlight('삭제')/suffix + tag_delete_confirm_subtext('삭제한 태그는 되돌릴 수 없으니...')를 써서 문장/서브텍스트 내용과 강조 색상이 서로 다르다. 사용자에게 보이는 다이얼로그 본문/부가설명 텍스트가 실제로 불일치한다.",
+      "android_ref": "feature/schedule/.../dashboard/ScheduleScreen.kt:748-778 + core/designsystem res schedule_delete_tag_dialog_title/_subtext",
+      "suggested_fix": "의도적 통일(다른 화면 태그 삭제와 문구 공유) 가능성이 있으나, 포팅 1:1이 목표라면 iOS DeleteTagDialog를 Android와 동일하게 schedule_delete_tag_dialog_title/_subtext 기반(하이라이트 없음)으로 맞추거나, 반대로 Android를 iOS 문구로 통일. 최소한 subText 내용('연결된 모든 일정에서 함께 삭제' 안내)이 iOS에서 빠지므로 정보 손실 여부를 확인해 보완.",
+      "group": "schedule"
+    },
+    {
+      "surface": "동기화 메인 - QR 카드 버튼 라벨 (QR 생성/스캔)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/sync/SyncScreen.kt",
+      "ios_line": 429,
+      "severity": "medium",
+      "issue": "Android 버튼 라벨은 heading14B(14sp Bold), iOS는 bodySSB(14sp SemiBold)로 굵기가 Bold→SemiBold로 약해졌다. 버튼 텍스트가 원본보다 얇게 보인다.",
+      "suggested_fix": "iOS Type.kt의 headingSB(14sp Bold, 'heading14B 대응' 주석 존재)로 교체: style = EbbingTheme.typography.bodySSB → headingSB",
+      "android_ref": "feature/sync/.../SyncMainScreen.kt:385 (heading14B), shared Type.kt:43 headingSB",
+      "group": "sync+restore"
+    },
+    {
+      "surface": "동기화 메인 - 데이터 복원 진입 항목",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/sync/SyncScreen.kt",
+      "ios_line": 607,
+      "severity": "medium",
+      "issue": "iOS는 AdvancedInfoSection 안(linkedUuid==null일 때)에 '데이터 복원' 진입 Row를 인라인으로 추가했는데, Android 원본 SyncMainScreen.AdvancedInfoSection(L518-560)에는 이 복원 진입 항목 자체가 없다. 즉 두 플랫폼의 '동기화 메인' 화면 구성이 달라 iOS에만 복원 진입점이 노출된다. Android는 별도 경로로 RestoreByDeviceIdRoute에 진입하는 구조다.",
+      "suggested_fix": "의도적 차이 가능(iOS에서 복원 진입 동선을 메인에 통합). 다만 Android와 UI 일관성이 필요하면 Android에도 동일 항목을 추가하거나, iOS 진입점 위치/문구를 Android 디자인과 재확인 필요. 최소한 linkedUuid==null 조건이 Android 정책과 일치하는지 확인.",
+      "android_ref": "feature/sync/.../SyncMainScreen.kt:518-560 (복원 항목 없음), SyncNavigation.kt:17",
+      "group": "sync+restore"
+    },
+    {
+      "surface": "카메라 권한 다이얼로그",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/sync/SyncScreen.kt",
+      "ios_line": 145,
+      "severity": "medium",
+      "issue": "분기 조건 의미가 다르다. Android는 shouldShowRationale(재요청 가능 상태)일 때 '설정 이동/rationale_settings' 문구를 보여주지만, iOS는 permissionStatus==DENIED(영구 거부)일 때 설정 문구를 보여준다. Android의 shouldShowRationale는 iOS의 DENIED와 반대 의미에 가까워, 특정 권한 상태에서 잘못된 문구(설정 이동 vs 허용)와 잘못된 버튼 라벨이 노출될 수 있다.",
+      "suggested_fix": "iOS getCameraPermissionStatus의 상태 정의를 확인해 '영구 거부(설정으로 보내야 함)' 케이스에만 rationale_settings/go_settings가 나오도록 매핑 재검토. Android shouldShowRationale==true는 '아직 설정 이동 불필요' 케이스이므로 조건 의미가 뒤집히지 않았는지 검증.",
+      "android_ref": "feature/sync/.../ui/dialog/CameraPermissionDialog.kt:20,30 + SyncMainScreen.kt:92-103",
+      "group": "sync+restore"
+    },
+    {
+      "surface": "색상 선택 바텀시트 헤더 (ColorBottomSheet)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/bottomsheet/ColorBottomSheet.kt",
+      "ios_line": 93,
+      "severity": "medium",
+      "issue": "바텀시트 헤더 타이틀이 다르다. Android는 tag_color(\"색상\")를 헤더에 사용(ColorBottomSheet.kt:55)하지만, iOS는 tag_color_select_title(\"색상 선택\")을 사용한다. 사용자에게 보이는 시트 제목 문구가 불일치.",
+      "suggested_fix": "의도된 개선이 아니라면 iOS 헤더를 stringResource(Res.string.tag_color)로 변경해 Android와 동일하게 \"색상\"으로 맞춘다.",
+      "android_ref": "feature/tag/.../ui/bottomsheet/ColorBottomSheet.kt:55",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "색상 선택 바텀시트 - 선택 표시/애니메이션 (ColorBottomSheet)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/bottomsheet/ColorBottomSheet.kt",
+      "ios_line": 133,
+      "severity": "medium",
+      "issue": "선택 상태 표현 방식이 다르다. Android는 선택 시 색상을 어둡게 lerp(baseColor, Black, 0.2f) 처리하고 EbbingVisibleAnimation으로 체크 아이콘을 페이드 인하며, 원 크기 45dp/간격 10dp, 최대높이 228dp + 스크롤바를 둔다. iOS는 선택 시 검정 2dp 테두리(border)를 그리고 원 크기 40dp/간격 8dp에 스크롤바·높이 제한이 없다. 밝은 색(노랑 등) 위 흰색 체크 가시성 및 전체 그리드 외형이 눈에 띄게 달라진다.",
+      "suggested_fix": "Android와 동일하게 선택 시 색상 어둡게 처리 + 체크 페이드 애니메이션 방식으로 맞추거나(권장), 최소한 원 크기 45dp/가로 간격 10dp/heightIn(max=228dp)/verticalScrollbar를 반영한다.",
+      "android_ref": "feature/tag/.../ui/bottomsheet/ColorBottomSheet.kt:57-100",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "태그 추가/수정 화면 - 이름 입력 필드 (NameContent)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/addtag/AddTagScreen.kt",
+      "ios_line": 198,
+      "severity": "medium",
+      "issue": "iOS는 이름 입력 아래에 \"${name.length}/20\" 글자수 카운터 Text를 추가로 그린다(라인 198-205). Android AddTag/EditTag의 NameContent에는 이런 카운터가 없고, 대신 EbbingTextInputDefault의 limit=20 파라미터로 입력 길이를 제한한다. iOS EbbingTextInputDefault 호출에는 limit 인자도 없어(라인 178-183) 20자 초과 입력이 실제로 막히는지 불확실하며, 화면에 없던 카운터가 노출된다.",
+      "suggested_fix": "Android와 UI를 맞추려면 카운터 Text를 제거하고 EbbingTextInputDefault에 limit=20을 전달한다. 카운터가 의도된 개선이라면 최소한 limit=20 입력 제한이 동작하는지 확인.",
+      "android_ref": "AddTagScreen.kt:140-162 (limit=20, 카운터 없음)",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "태그 추가/수정 화면 - 색상 행 우측 요소 (ColorContent)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/addtag/AddTagScreen.kt",
+      "ios_line": 239,
+      "severity": "medium",
+      "issue": "색상 선택 행의 구성이 다르다. Android는 왼쪽에 \"색상\" 라벨 Text, 오른쪽에 현재 색상 원(25dp)만 배치(Arrangement.SpaceBetween)한다. iOS는 라벨을 위쪽 별도 Text로 올리고, 행 안에는 왼쪽에 색상 원(25dp) + 우측에 화살표 아이콘(ic_arrow_right)을 둔다. 라벨 위치와 화살표 아이콘 유무가 눈에 보이게 다르다.",
+      "suggested_fix": "Android와 맞추려면 화살표 아이콘을 제거하고 라벨을 행 왼쪽, 색상 원을 행 오른쪽에 SpaceBetween으로 배치한다. 화살표가 의도된 개선이면 low로 낮춰도 됨.",
+      "android_ref": "AddTagScreen.kt:171-192 / EditTagScreen.kt:171-192",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "반복 주기 추가/수정 화면 (전체 저장 UX)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/repeatcycle/addrepeatcycle/AddRepeatCycleScreen.kt",
+      "ios_line": 74,
+      "severity": "medium",
+      "issue": "iOS는 A/B 실험(SaveButtonPosition, isTreatment) 분기가 있어 control(비-treatment) 그룹에서는 하단 버튼이 사라지고 상단 우측에 \"저장\" 텍스트 버튼만 노출된다. Android는 실험 분기 없이 항상 하단 풀폭 EbbingSolidButton만 존재한다(상단 우측 rightComponent={} 비어있음). control 그룹 사용자는 Android와 완전히 다른 저장 위치/형태를 보게 된다.",
+      "suggested_fix": "remote config 실험 미적용이 iOS의 의도라면 low로 볼 수 있으나, Android와의 1:1 일치를 원하면 isTreatment 분기를 제거하고 항상 하단 SolidButton 경로만 사용하도록 통일. (의도적 차이 가능 - 실험 기능)",
+      "android_ref": "AddRepeatCycleScreen.kt:64,92-103 (rightComponent 비어있음, 하단 버튼 상시 노출)",
+      "group": "repeatcycle-flow"
+    },
+    {
+      "surface": "반복 주기 삭제 다이얼로그",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/repeatcycle/RepeatCycleScreen.kt",
+      "ios_line": 219,
+      "severity": "medium",
+      "issue": "삭제 다이얼로그가 공용 EbbingDialogDefaultTop 컴포넌트를 쓰지 않고 iOS에서 수동 재구현되어 타이틀-서브텍스트 간격/타이포가 원본과 다르다. Android(DeleteDialog.kt→EbbingDialogDefaultTop AnnotatedString 오버로드)는 title/subText 를 verticalArrangement spacedBy(8.dp), 컬럼 padding top=40/bottom=12, subText 스타일 body14M로 배치한다. iOS는 title에 padding(top=40), subText에 padding(top=16,bottom=24) + 스타일 bodyMM 로 직접 배치하여 간격이 8dp→16dp, 하단 24dp로 벌어지고 서브텍스트 타이포 크기도 달라진다.",
+      "suggested_fix": "iOS DeleteRepeatCycleDialog를 EbbingDialog(dialogTop, dialogBottom) 오버로드 + EbbingDialogDefaultTop(title=annotated, subText) 조합으로 교체하여 Android와 동일 간격/타이포를 재사용. 또는 최소한 서브텍스트 스타일을 bodySM, padding을 spacedBy(8.dp)/top40/bottom12에 맞춰 조정.",
+      "android_ref": "DeleteDialog.kt:23-45 + Dialog.kt(core):84-107 (EbbingDialogDefaultTop AnnotatedString 오버로드)",
+      "group": "repeatcycle-flow"
+    },
+    {
+      "surface": "메모 추가/수정 화면 - 헤더 하단 구분선",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/memo/MemoScreen.kt",
+      "ios_line": 95,
+      "severity": "medium",
+      "issue": "iOS는 EbbingSubTopBar 바로 아래에 HorizontalDivider(light2, 1dp)를 추가한다(95~98줄). Android AddMemoScreen/EditMemoScreen에는 이 구분선이 없다(AddMemoScreen.kt:76-83, topbar 뒤 바로 Column). 양쪽 EbbingSubTopBar 컴포넌트 자체에도 내장 divider가 없음을 확인했으므로, iOS에만 헤더 밑에 가로줄이 하나 더 보이는 시각 차이.",
+      "suggested_fix": "Android와 일치시키려면 MemoScreen.kt 95-98줄 HorizontalDivider 제거. (의도적으로 추가한 것이면 Android에도 동일 divider를 넣어 양쪽 통일.)",
+      "android_ref": "feature/memo/.../addmemo/AddMemoScreen.kt:76-83 (divider 없음)",
+      "group": "memo"
+    },
+    {
+      "surface": "메모 추가/수정 화면 - 헤드라인과 메모 라벨 사이 간격",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/memo/MemoScreen.kt",
+      "ios_line": 214,
+      "severity": "medium",
+      "issue": "Android는 '메모' 라벨과 '미리보기' 라벨에 각각 padding(top = 32.dp)를 주어 헤드라인/섹션 간 상단 여백을 확보한다(MemoContent.kt:56, 93). iOS의 MemoContent 라벨(214줄)과 PreviewContent 라벨(251줄)에는 top 패딩이 없고, MemoContent 앞에는 스페이서도 없다. 그래서 iOS에서는 '메모' 입력 라벨이 헤드라인 바로 밑에 붙어 여백이 부족하고, 미리보기 앞에는 24dp 스페이서(159줄)만 있어 Android의 32dp와도 불일치.",
+      "suggested_fix": "iOS MemoContent 라벨(215줄 Text)에 Modifier.padding(top = 32.dp) 추가하거나 헤드라인과 MemoContent 사이에 Spacer(32.dp) 추가. PreviewContent 앞 간격도 24dp→32dp로 맞춰 Android(top=32.dp)와 통일.",
+      "android_ref": "feature/memo/.../ui/MemoContent.kt:56, 93 (top=32.dp)",
+      "group": "memo"
+    },
+    {
+      "surface": "메모 추가/수정 화면 - 저장 버튼/타이틀 모드 판정",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/memo/MemoScreen.kt",
+      "ios_line": 74,
+      "severity": "medium",
+      "issue": "Android는 Add/Edit가 별도 화면(별도 네비게이션)이라 타이틀/버튼이 진입 경로로 고정된다(AddMemoScreen=memo_add_*, EditMemoScreen=memo_edit_*). iOS는 통합 화면에서 isEditMode = !originSchedule?.memo.isNullOrEmpty()로 판정(74줄)하여 타이틀(89줄)과 버튼(168줄)을 결정한다. 결과적으로 '기존 메모가 비어있는 일정을 수정 진입'하면 iOS는 '메모 추가/등록하기'로 표기되어 Edit 진입인데 Add UI가 뜬다. 반대로 add 흐름이라도 originSchedule.memo가 차 있으면 Edit로 표기될 수 있어 진입 의도와 어긋날 수 있다.",
+      "suggested_fix": "MemoViewModel/State에 명시적 진입 모드 플래그(isEditEntry 등)를 두고 타이틀·버튼·헤드라인 suffix를 그 플래그로 결정하도록 변경. 통합이 의도라면 최소한 '수정 진입'을 상태로 전달받아 memo 공백 여부와 분리.",
+      "android_ref": "feature/memo/.../addmemo/AddMemoScreen.kt:77,115 vs editmemo/EditMemoScreen.kt:77,115 (경로로 고정)",
+      "group": "memo"
+    },
+    {
+      "surface": "온보딩 화면 - 이미지 tint 및 텍스트 정렬/색상 토큰",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/onboarding/OnboardingScreen.kt",
+      "ios_line": 136,
+      "severity": "low",
+      "issue": "Android 온보딩 이미지는 ColorFilter.tint(primaryNormal)로 단색 틴트 처리되고, 제목/설명이 TextAlign.Start(좌측 정렬), 이미지도 CenterStart 박스에 좌측 기준 배치된다. iOS는 이미지 tint 없이 원본 색으로 그리고, 제목/설명을 TextAlign.Center(중앙 정렬), 전체를 verticalArrangement.Center로 중앙 배치한다. 이미지 색감과 정렬 방식이 눈에 띄게 다르다.",
+      "suggested_fix": "디자인 정본이 Android라면 Image에 colorFilter=ColorFilter.tint(primary) 추가, Text textAlign을 Start로, 컬럼 정렬을 좌측 기준으로 맞춤. iOS/develop 신규 디자인이 정본이면 의도적 차이로 low 유지.",
+      "android_ref": "feature/onboarding/.../OnboardingScreen.kt:145-169",
+      "group": "onboarding+notification"
+    },
+    {
+      "surface": "홈 메인 - '오늘로 이동' 등 클릭 분석 로깅",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/HomeScreen.kt",
+      "ios_line": 399,
+      "severity": "low",
+      "issue": "Android는 캘린더 onGotoTodayClick(ReturnToToday), onViewToggle(SwitchToWeekly/Monthly) 시 AnalyticsEvent.Click 로깅을 수행하는데(HomeScreen.kt:368-384) iOS PhoneHomeScreen은 onGotoTodayClick 콜백 자체를 EbbingCalendar에 넘기지 않고(디폴트 {}), onViewToggle에서도 분석 로깅이 없다. 사용자 눈에 보이는 UI 결손은 아니나 지표 누락. 의도적 차이 가능(analytics 미포팅).",
+      "suggested_fix": "analytics를 iOS에 포팅했다면 onGotoTodayClick/onViewToggle에 동일 이벤트 로깅 추가. 미포팅이 의도라면 그대로 두되 분석 파이프라인 정비 시 함께 반영.",
+      "android_ref": "feature/home/.../HomeScreen.kt:368-384",
+      "group": "home-main"
+    },
+    {
+      "surface": "홈 메인 - 리스트 헤더 완료 카운트 색상",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/component/EbbingTodoList.kt",
+      "ios_line": 131,
+      "severity": "low",
+      "issue": "완료 개수(completedCount) 강조 색상을 Android는 textPrimary, iOS는 primaryDefault 토큰으로 지정한다. Android 테마상 textPrimary와 primaryNormal(iOS primaryDefault 대응)은 동일 값(예: Bluescale600)이라 실제 색은 일치할 가능성이 높으나, 토큰 의미가 달라 향후 테마 변경 시 어긋날 수 있다. 현재 사용자 눈에는 동일해 보임(의도적/무해 가능).",
+      "suggested_fix": "완료 카운트 강조 토큰을 두 플랫폼에서 동일 의미(textPrimary=primary 계열)로 명시적으로 통일. 값이 같음을 확인했으면 변경 불필요, 주석으로 매핑을 명시.",
+      "android_ref": "feature/home/.../ui/EbbingTodoList.kt:146 (textPrimary), core/designsystem/.../foundation/Color.kt (textPrimary==primaryNormal)",
+      "group": "home-main"
+    },
+    {
+      "surface": "학습 일정 카드(ScheduleContent) - AddTodo",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/component/AddTodoComponents.kt",
+      "ios_line": 197,
+      "severity": "low",
+      "issue": "일정 목록 등장 애니메이션이 없다. Android ScheduleContent(ui/Schedule.kt:36)는 EbbingVisibleAnimation(schedules.isNotEmpty())으로 반복주기/날짜 변경에 따라 일정 카드가 부드럽게 나타난다. iOS는 if(schedules.isEmpty()) return 으로 즉시 나타났다 사라진다. 사용자가 반복주기를 바꿀 때마다 애니메이션 없이 툭 나타나는 차이가 보인다.",
+      "suggested_fix": "iOS ScheduleContent를 AnimatedVisibility(또는 공용 EbbingVisibleAnimation 대응 컴포넌트)로 감싸 schedules.isNotEmpty() 조건으로 나타남/사라짐 애니메이션을 이식한다.",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/ui/Schedule.kt:36-64",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "제목 입력 필드 지우기 아이콘 - AddTodo/EditTodo",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/component/AddTodoComponents.kt",
+      "ios_line": 73,
+      "severity": "low",
+      "issue": "지우기(x) 아이콘 렌더링 방식이 다르다. Android(ui/Title.kt:55-62)는 Image(painterResource(ic_delete_circle))로 아이콘 원본 색상을 그대로 표시한다. iOS는 Icon(...tint = EbbingTheme.colors.dark3)로 단색 tint를 씌워, 원본이 다색 아이콘이라면 색이 달라 보일 수 있다.",
+      "suggested_fix": "iOS도 Image(painter = painterResource(Res.drawable.ic_delete_circle), contentDescription = ...)로 바꿔 tint 없이 원본 색을 유지하거나, 아이콘이 단색이면 Android와 동일한 색값으로 tint를 맞춘다.",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/ui/Title.kt:53-64",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "일정 변경 설명문(DescriptionBody) - EditDate",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/editdate/EditDateScreen.kt",
+      "ios_line": 401,
+      "severity": "low",
+      "issue": "설명 텍스트 색상 토큰이 다르다. Android DescriptionBody(EditDateScreen.kt:359)는 textDisabled(Greyscale500, 더 흐린 비활성 회색)를 쓰는데, iOS는 dark3를 쓴다. iOS에서 dark3는 일정 카드의 상대일 라벨(textSub 대응)과 동일 색이라, Android처럼 '흐린 안내문' 느낌 대신 본문과 비슷한 톤으로 보인다.",
+      "suggested_fix": "iOS DescriptionBody의 color를 Android textDisabled에 대응하는 더 흐린 회색 토큰(예: EbbingTheme.colors.light/disabled 계열)으로 교체해 안내문의 흐린 톤을 맞춘다.",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/editdate/EditDateScreen.kt:353-362",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "할일 추가(AddTodo) 화면 - 하드웨어 백/제스처 뒤로가기",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/AddTodoScreen.kt",
+      "ios_line": 160,
+      "severity": "low",
+      "issue": "Android AddTodoScreen은 BackHandler(enabled = state.isModified)로 수정 중일 때 시스템 뒤로가기에도 ConfirmExitDialog를 띄운다(AddTodoScreen.kt:180-182). iOS에는 시스템/제스처 뒤로가기 후킹이 없어 상단 탑바 화살표로만 확인 다이얼로그가 뜬다. 의도적 차이 가능(iOS는 스와이프 백 처리 방식이 다름)이나, 편집 중 데이터 유실 보호가 탑바 경로에만 적용되는 불일치.",
+      "suggested_fix": "iOS에서 스와이프-백/네비게이션 pop 시에도 state.isModified면 ConfirmExitDialog를 거치도록 네비게이션 계층에서 인터셉트하거나, 플랫폼 제약이면 의도적 차이로 문서화한다.",
+      "android_ref": "feature/home/src/main/java/com/tgyuu/home/graph/addtodo/AddTodoScreen.kt:180-192",
+      "group": "addtodo-edittodo-editdate"
+    },
+    {
+      "surface": "TagBottomSheet (태그 선택 시트)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/bottomsheet/TagBottomSheet.kt",
+      "ios_line": 62,
+      "android_ref": "feature/home/.../graph/ui/bottomsheet/TagBottomSheet.kt:62-70,40",
+      "severity": "low",
+      "issue": "iOS 태그 LazyColumn에는 verticalScrollbar(스크롤 인디케이터)가 없다. Android는 rememberLazyListState + verticalScrollbar(color=fillDisabled)로 스크롤 막대를 표시한다. 태그가 많아 최대 300dp를 넘겨 스크롤될 때 iOS에는 스크롤 위치 표시가 없다. (iOS 공용 유틸에 verticalScrollbar 미구현 → 의도적 차이 가능)",
+      "suggested_fix": "shared에 verticalScrollbar 유틸을 포팅하거나, 미구현이면 low로 남긴다. 포팅 시 LazyColumn(state=listState, ... .verticalScrollbar(state=listState, color=EbbingTheme.colors.fillDisabled))로 Android와 동일하게 처리.",
+      "group": "home-bottomsheets"
+    },
+    {
+      "surface": "RepeatCycleBottomSheet (반복 주기 시트)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/bottomsheet/RepeatCycleBottomSheet.kt",
+      "ios_line": 98,
+      "android_ref": "feature/home/.../graph/ui/bottomsheet/RepeatCycleBottomSheet.kt:92-101",
+      "severity": "low",
+      "issue": "iOS 반복 주기 리스트 LazyColumn에도 verticalScrollbar가 없다. Android는 listState + verticalScrollbar를 사용한다. 주기 항목이 300dp를 넘겨 스크롤될 때 스크롤 인디케이터가 보이지 않는다. (verticalScrollbar 미구현으로 인한 차이 가능)",
+      "suggested_fix": "verticalScrollbar 유틸 포팅 후 Android와 동일하게 적용하거나 미구현이면 low로 유지.",
+      "group": "home-bottomsheets"
+    },
+    {
+      "surface": "RepeatCycleBottomSheet (반복 주기 - 매일 반복 안내문)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/bottomsheet/RepeatCycleBottomSheet.kt",
+      "ios_line": 129,
+      "android_ref": "feature/home/.../graph/ui/bottomsheet/RepeatCycleBottomSheet.kt:132 (textDisabled)",
+      "severity": "low",
+      "issue": "'~부터 언제까지 반복할까요?' 안내문 색상이 iOS는 light1(#CBD1D9), Android는 textDisabled(#8994A8)로 iOS 쪽이 더 옅다. 앱 전반의 textDisabled→light1 토큰 매핑 관례를 따른 것으로 보이나, Android 대비 안내문이 눈에 띄게 연하게 보인다. (전역 토큰 매핑 규칙에 따른 의도적 차이 가능)",
+      "suggested_fix": "그레이 계열 disabled 텍스트에 대응하는 별도 토큰이 shared에 있으면 그것으로 교체해 Android(#8994A8)와 명도를 맞춘다. 전역 규칙이면 low로 유지.",
+      "group": "home-bottomsheets"
+    },
+    {
+      "surface": "TagBottomSheet / RepeatCycleBottomSheet (우상단 추가(+) 아이콘)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/addtodo/bottomsheet/TagBottomSheet.kt",
+      "ios_line": 53,
+      "android_ref": "feature/home/.../graph/ui/bottomsheet/TagBottomSheet.kt:52 (contentDescription = null)",
+      "severity": "low",
+      "issue": "차이는 iOS가 오히려 개선된 방향이다. iOS는 + 아이콘에 contentDescription을 tag_add_title/repeat_add_title로 채웠고 Android는 null이다. 사용자 눈에 보이는 UI 깨짐은 아니며 접근성 라벨만 다르다.",
+      "suggested_fix": "수정 불필요. 필요 시 Android에도 동일 contentDescription을 추가해 접근성 일관화(선택).",
+      "group": "home-bottomsheets"
+    },
+    {
+      "surface": "ConfirmDelayDialog / ConfirmDelayAllDialog - 요일 라벨 정렬",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/dialog/ConfirmDelayDialog.kt",
+      "ios_line": 68,
+      "severity": "low",
+      "issue": "쉬는 요일 정렬 키가 다르다. Android는 sortedBy { it.isoDayNumber }(월=1..일=7), iOS는 sortedBy { it.ordinal }(kotlinx DayOfWeek ordinal, MONDAY=0..SUNDAY=6). 결과 순서는 월~일로 동일하지만, 만약 요일 표기/enum 매핑이 다르면 순서가 어긋날 여지가 있다. 현재 kotlinx-datetime 기준으로는 결과 동일.",
+      "suggested_fix": "기능상 결과는 동일하므로 필수 수정 아님. 일관성을 위해 iOS도 isoDayNumber 기반 정렬 헬퍼를 쓰면 안전(의도적 차이 가능).",
+      "android_ref": "ConfirmDelayAllDialog.kt:43 (sortedBy isoDayNumber)",
+      "surface_note": "",
+      "group": "home-dialogs"
+    },
+    {
+      "surface": "InAppReviewDialog (리뷰 요청)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/HomeScreen.kt",
+      "ios_line": 111,
+      "severity": "low",
+      "issue": "버튼 패딩이 다르다. Android InAppReviewDialog는 EbbingSolidButton에 fillMaxWidth + padding(bottom=20.dp)만 적용. iOS 인라인 구현은 padding(horizontal=20.dp, vertical=16.dp)를 적용해 좌우 여백과 상/하 여백이 달라 버튼 폭·위치가 미세하게 다르게 보인다. 문자열/이벤트는 일치.",
+      "suggested_fix": "Android와 맞추려면 modifier를 fillMaxWidth().padding(bottom = 20.dp)로 변경(좌우는 EbbingDialog 내부 패딩에 위임). 다만 iOS EbbingDialog 내부 패딩 규격이 다를 수 있으니 실제 렌더 확인 후 조정.",
+      "android_ref": "feature/home/.../main/ui/dialog/InAppReviewDialog.kt:44-46 (fillMaxWidth, bottom=20.dp)",
+      "surface_note": "",
+      "group": "home-dialogs"
+    },
+    {
+      "surface": "WidgetNudgeDialog - 닫기 아이콘 컴포넌트 종류",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/home/dialog/WidgetNudgeDialog.kt",
+      "ios_line": 36,
+      "severity": "low",
+      "issue": "닫기 아이콘 구현이 다르다. Android는 Image(painterResource(ic_close))로 원본 벡터를 그대로(틴트 없이) 표시. iOS는 Icon(painterResource(ic_close), tint = dark2)로 틴트를 강제 적용한다. ic_close 벡터가 다색/고정색인 경우 iOS에서 색이 dark2로 덮여 원본과 다르게 보일 수 있다.",
+      "suggested_fix": "ic_close가 단색 아이콘이면 무방하나, Android가 틴트 없이 원본색을 쓰므로 iOS도 Image로 바꾸거나 tint 색을 Android 원본색과 일치시켜 확인. (경미)",
+      "android_ref": "feature/home/.../main/ui/dialog/WidgetNudgeDialog.kt:40-48 (Image, 틴트 없음)",
+      "surface_note": "",
+      "group": "home-dialogs"
+    },
+    {
+      "surface": "설정 메인 - 알림 토글 권한 처리 (NotificationBody)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 480,
+      "severity": "low",
+      "issue": "Android NotificationBody는 POST_NOTIFICATIONS 런타임 권한 상태(permissionState)와 notificationEnabled를 AND로 계산해 토글 on 여부(isOn)를 정하고, 권한 미허용 시 설정 화면 이동/권한 요청을 수행(SettingScreen.kt:444-490). iOS는 순수 state.isNotificationEnabled만으로 토글을 표시(SettingScreen.kt:503-506)해 OS 권한과의 동기화 로직이 없음. iOS/Android 권한 모델 차이로 의도적 차이 가능하나, iOS에서 시스템 알림 권한이 꺼져 있어도 토글이 켜진 것처럼 보일 수 있음.",
+      "suggested_fix": "플랫폼 권한 차이로 의도적 차이 가능(low). iOS에서도 실제 알림 권한 상태를 반영하려면 expect/actual로 권한 상태를 조회해 토글 표시 및 토글 시 권한 요청/설정 이동을 처리.",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:443-490 (permissionState, isOn, handlePermission)",
+      "group": "setting"
+    },
+    {
+      "surface": "설정 메인 - 화면 진입 애니메이션",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 509,
+      "severity": "low",
+      "issue": "Android는 알림 ON 시 '알람 시간'/'알림 메시지' 행을 EbbingVisibleAnimation으로 펼침 애니메이션 처리(SettingScreen.kt:492-547). iOS는 단순 if(isEnabled) 조건 렌더링(SettingScreen.kt:509-556)이라 등장/퇴장 애니메이션 없이 즉시 나타났다 사라짐. 기능은 동일하나 전환 모션 차이가 눈에 보임.",
+      "suggested_fix": "iOS에서 AnimatedVisibility(visible = isEnabled)로 감싸 Android의 펼침/접힘 모션과 유사하게 처리. 모션 미포팅이 의도면 low 유지.",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:492-547 (EbbingVisibleAnimation)",
+      "group": "setting"
+    },
+    {
+      "surface": "설정 메인 - 화살표 아이콘 접근성/컴포넌트",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 410,
+      "severity": "low",
+      "issue": "Android는 각 행 화살표를 Image(painter=ic_arrow_right, contentDescription=setting_detail_content('상세 내용')) + padding(start=4dp)로 그림(예: SettingScreen.kt:541-545). iOS는 Icon(painter=ic_arrow_right, contentDescription=null, tint=dark3)로 그림(SettingScreen.kt:410-414 등). iOS는 tint를 dark3로 강제 적용(Android Image는 원본 색 유지)해 화살표 색이 달라질 수 있고, contentDescription이 null이라 접근성 라벨이 빠짐. start=4dp 패딩도 없음.",
+      "suggested_fix": "아이콘 자체가 단색이면 tint 차이는 무시 가능(low). 접근성을 맞추려면 contentDescription에 setting_detail_content 상응 문자열 지정, 필요 시 Modifier.padding(start=4dp) 추가. tint 미적용이 디자인 의도인지 확인.",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:541-545, 635-639 (Image + contentDescription + padding)",
+      "group": "setting"
+    },
+    {
+      "surface": "설정 메인 - 마지막 동기화 시간 문구",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 295,
+      "severity": "low",
+      "issue": "자동백업 활성 시 표시되는 마지막 동기화 문구가 미세하게 다름. Android setting_last_sync_time='마지막 동기화: %1$s'(core strings.xml:19), iOS='마지막 동기화 시간 : %1$s'(shared strings.xml:25). 둘 다 %1$s라 치환 자체는 정상이나 표시 문구('마지막 동기화:' vs '마지막 동기화 시간 :')가 불일치.",
+      "suggested_fix": "두 플랫폼 문구를 통일. 제품 기준 문구로 shared/values 및 core/values 중 한쪽을 맞춰 수정(예: iOS를 '마지막 동기화: %1$s'로).",
+      "android_ref": "core/designsystem strings.xml:19 (setting_last_sync_time)",
+      "group": "setting"
+    },
+    {
+      "surface": "설정 메인 - 상단 구분선 색상 토큰",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/setting/SettingScreen.kt",
+      "ios_line": 194,
+      "severity": "low",
+      "issue": "탑바 아래 얇은 구분선 색이 다름. Android는 EbbingTheme.colors.fillNormal(SettingScreen.kt:267), iOS는 EbbingTheme.colors.light2(SettingScreen.kt:194). 섹션 사이 두꺼운 구분선도 Android strokeSecondary vs iOS light2로 토큰이 다름. 두 토큰의 실제 색이 다르면 구분선 색 불일치로 보일 수 있음.",
+      "suggested_fix": "디자인시스템 토큰 매핑표에서 fillNormal↔light2, strokeSecondary↔light2가 동일 색인지 확인. 다르면 iOS를 Android 대응 토큰(fillNormal/strokeSecondary에 매핑되는 색)으로 교체.",
+      "android_ref": "feature/setting/.../main/SettingScreen.kt:267(fillNormal), 554(strokeSecondary)",
+      "group": "setting"
+    },
+    {
+      "surface": "일정 옵션 바텀시트 - 서브타이틀 (ScheduleOptionsBottomSheet)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/schedule/bottomsheet/ScheduleBottomSheets.kt",
+      "ios_line": 225,
+      "severity": "low",
+      "issue": "서브타이틀 인자로 iOS는 selectedSchedule.title(String)을, Android는 selectedSchedule.title.originalText 를 넘긴다. iOS 모델의 title 타입이 String(순수 텍스트), Android는 ClickableText라서 코드상 차이일 뿐 표시 결과 텍스트는 동일할 가능성이 높다. 다만 Android의 originalText가 마크업 제거 전 원문을 의미한다면 iOS에서 클릭 하이라이트/치환이 적용된 텍스트가 노출될 위험이 있어 확인 필요.",
+      "android_ref": "feature/schedule/.../ui/bottomsheet/ScheduleOptionsBottomSheet.kt:218-221 (selectedSchedule.title.originalText)",
+      "suggested_fix": "iOS TodoScheduleUiModel.title(String)이 Android의 title.originalText와 동일한 순수 원문인지 매퍼(TodoScheduleMapper)에서 확인. 다르면 iOS 모델에 originalText 대응 필드를 두어 서브타이틀/메모 표시에 사용.",
+      "group": "schedule"
+    },
+    {
+      "surface": "태그 편집 바텀시트 - 색상 그리드 스크롤바 (TagEditBottomSheet)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/schedule/bottomsheet/ScheduleBottomSheets.kt",
+      "ios_line": 134,
+      "severity": "low",
+      "issue": "Android는 색상 선택 LazyVerticalGrid에 rememberLazyGridState + verticalScrollbar(커스텀 스크롤바)를 적용해 스크롤 인디케이터가 보인다. iOS는 listState/verticalScrollbar가 없어 색상 팔레트(최대 228dp 높이)에서 스크롤 시 스크롤바가 표시되지 않는다. 시각적 인디케이터 결손.",
+      "android_ref": "feature/schedule/.../ui/bottomsheet/ScheduleOptionsBottomSheet.kt:61,115-127 (rememberLazyGridState + verticalScrollbar)",
+      "suggested_fix": "iOS 공용 디자인시스템에 verticalScrollbar 유틸이 있으면 LazyVerticalGrid에 rememberLazyGridState와 함께 적용. 없으면 severity low로 의도적 차이(미구현)로 두되 추후 이식.",
+      "group": "schedule"
+    },
+    {
+      "surface": "태그 편집 바텀시트 - 색상 선택 애니메이션 (TagEditBottomSheet)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/schedule/bottomsheet/ScheduleBottomSheets.kt",
+      "ios_line": 145,
+      "severity": "low",
+      "issue": "Android는 선택 색상 변경 시 ebbingAnimateColorAsState로 색상이 부드럽게 전환되고 체크 아이콘도 EbbingVisibleAnimation으로 페이드/스케일 등장한다. iOS는 displayColor를 즉시 lerp 값으로 계산(애니메이션 없음)하고 체크 아이콘도 조건부 즉시 표시라 전환이 뚝뚝 끊긴다. 미세하지만 사용자 눈에 보이는 모션 차이.",
+      "android_ref": "feature/schedule/.../ui/bottomsheet/ScheduleOptionsBottomSheet.kt:131-138,155-162 (ebbingAnimateColorAsState + EbbingVisibleAnimation)",
+      "suggested_fix": "iOS에도 animateColorAsState 및 아이콘 등장 애니메이션(AnimatedVisibility) 적용. 공용 유틸(ebbingAnimateColorAsState/EbbingVisibleAnimation) 이식 여부 확인 후 반영. 의도적 간소화면 low 유지.",
+      "group": "schedule"
+    },
+    {
+      "surface": "일정 화면 - 3dots/화살표 아이콘 렌더링 방식 (TagCard/ScheduleCard)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/schedule/ScheduleScreen.kt",
+      "ios_line": 359,
+      "severity": "low",
+      "issue": "Android는 Image + ColorFilter.tint(또는 tint 없음)로 아이콘을 그리는데, 특히 3dots 아이콘의 경우 Android TagCard(line435)는 tint 없이 원본 색으로 그린다. iOS는 Icon + tint(EbbingTheme.colors.black/dark3)로 항상 틴트를 강제한다. 3dots 아이콘이 원래 여러 색/특정 색을 가진 에셋이라면 iOS에서 단색으로 덧칠되어 색이 달라질 수 있다.",
+      "android_ref": "feature/schedule/.../dashboard/ScheduleScreen.kt:434-443 (Image, ColorFilter 없음)",
+      "suggested_fix": "ic_3dots 에셋이 단색 벡터면 무시 가능(low). 만약 원본 색을 유지해야 하는 에셋이면 iOS에서 Icon 대신 painterResource를 Image로 그리거나 tint를 제거해 Android와 색을 맞춘다.",
+      "group": "schedule"
+    },
+    {
+      "surface": "동기화 메인 - 연동 기기 닫기(X) / 복사 아이콘 색상",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/sync/SyncScreen.kt",
+      "ios_line": 505,
+      "severity": "low",
+      "issue": "Android는 Image + ColorFilter.tint(textSub)로 아이콘을 그리고, iOS는 Icon + tint(dark2)로 그린다. 토큰 매핑(textSub→dark2)은 타당하나, Android는 Image라 원본 아이콘 다색이 유지될 수 있고 iOS Icon은 단색 tint를 강제한다. 아이콘이 단색 벡터라면 시각 차이는 없지만 다색 에셋이면 색이 달라질 수 있다.",
+      "suggested_fix": "ic_close/ic_copy/ic_arrow_right가 단색 벡터인지 확인. 단색이면 문제없음(low). 다색이면 iOS도 Image+tint 없이 렌더하도록 조정.",
+      "android_ref": "feature/sync/.../SyncMainScreen.kt:461-468,551-558 (Image+ColorFilter.tint)",
+      "group": "sync+restore"
+    },
+    {
+      "surface": "동기화 메인 - 로딩 인디케이터 색상 토큰",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/sync/SyncScreen.kt",
+      "ios_line": 243,
+      "severity": "low",
+      "issue": "Android는 primaryNormal, iOS는 primaryDefault 토큰을 사용한다. 두 토큰이 동일 색이면 무해하나 값이 다르면 로딩/타이머/버튼 강조색이 미세하게 달라진다(SyncScreen 전반 primaryNormal→primaryDefault 매핑).",
+      "suggested_fix": "primaryNormal(Android)과 primaryDefault(iOS)의 실제 색상값이 동일한지 Color 정의에서 확인. 다르면 매핑 테이블을 통일.",
+      "android_ref": "feature/sync/.../SyncMainScreen.kt:237 primaryNormal vs iOS primaryDefault",
+      "group": "sync+restore"
+    },
+    {
+      "surface": "QR 코드 바텀시트 - 남은시간 표시",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/sync/SyncScreen.kt",
+      "ios_line": 689,
+      "severity": "low",
+      "issue": "sync_remaining_time=\"남은 시간: %1$s\" 는 %1$s(문자열 인자) 사용으로 CMP stringResource에서 정상 치환된다. 다만 시간 포맷 자체는 Android가 String.format(\"%02d:%02d\")로 만들고 iOS는 padStart(2,'0')로 만든다 — 결과 문자열은 동일(예 05:03)하나 iOS는 remainingTimeInSec를 coerceAtLeast(0)으로 음수 방지까지 한다. 표시상 문제 없음.",
+      "suggested_fix": "수정 불요(정상). 참고: 포맷 지시자 %02d를 리소스가 아닌 코드에서 처리하므로 CMP 리터럴 노출 리스크 없음.",
+      "android_ref": "SyncMainState.kt:26-30 vs SyncContract.kt:32-38, 리소스 sync_remaining_time %1$s",
+      "group": "sync+restore"
+    },
+    {
+      "surface": "태그 추가/수정 화면 - 저장 버튼 위치 실험 분기 (isTreatment)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/addtag/AddTagScreen.kt",
+      "ios_line": 88,
+      "severity": "low",
+      "issue": "iOS는 saveButtonPositionVariant 실험(isTreatment)에 따라 CONTROL이면 상단 탑바에 \"저장\" 텍스트 버튼, TREATMENT면 하단 EbbingSolidButton을 노출하는 A/B 분기가 추가됐다(AddTagContract.kt:12-14, 화면 라인 88·145). Android 원본은 이런 실험 분기 없이 항상 하단 버튼만 있고 탑바 rightComponent는 비어있다. 의도적 차이(실험 도입)일 가능성이 높으나, CONTROL 경로에서는 하단 버튼이 사라지므로 Android와 레이아웃이 달라짐을 인지 필요.",
+      "suggested_fix": "실험이 의도된 것이면 유지. 단 CONTROL 경로의 상단 저장 버튼 라벨/색상(headingSSB, primaryDefault/dark3)이 디자인 의도와 맞는지 확인. 의도적 차이 가능.",
+      "android_ref": "AddTagScreen.kt:84 (rightComponent 비어있음), 110-121 (항상 하단 버튼)",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "태그 관리 화면 삭제 다이얼로그 (DeleteTagDialog)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/TagScreen.kt",
+      "ios_line": 206,
+      "severity": "low",
+      "issue": "삭제 확인 문구의 하이라이트 부분 리소스 키가 다르다. Android DeleteDialog는 하이라이트에 tag_delete(\"삭제\")를 재사용하지만(DeleteDialog.kt:22), iOS는 별도 키 tag_delete_confirm_highlight(\"삭제\")를 만들어 쓴다. 현재 값은 둘 다 \"삭제\"라 표시 결과는 동일하나, 키가 이원화되어 향후 번역 불일치 위험이 있다. Android는 다이얼로그를 별도 파일로 분리한 반면 iOS는 TagScreen 내부 인라인으로 구현(기능은 동등).",
+      "suggested_fix": "표시상 문제는 없음. 유지보수를 위해 iOS도 tag_delete를 하이라이트에 재사용하거나, 최소한 tag_delete_confirm_highlight 값이 tag_delete와 항상 동일하게 유지되도록 관리.",
+      "android_ref": "feature/tag/.../main/ui/dialog/DeleteDialog.kt:22",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "태그 추가/수정 화면 - 헤드라인 타이포/패딩 (headline)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/addtag/AddTagScreen.kt",
+      "ios_line": 111,
+      "severity": "low",
+      "issue": "헤드라인 Text의 상단 패딩이 다르다. iOS는 padding(top=12, bottom=32)을 주지만(라인 115), Android는 헤드라인에 별도 top 패딩이 없고 NameContent의 라벨에 top=32dp를 준다. 타이포 토큰도 Android heading24B ↔ iOS headingLSB로 매핑되어 있어 실제 크기 일치 여부 확인 필요. 미세한 수직 간격 차이가 발생.",
+      "suggested_fix": "Android 원본의 간격(헤드라인 top 패딩 없음, 이름 라벨 top 32dp)과 맞추고, headingLSB가 heading24B와 동일 스펙인지 디자인시스템 매핑을 확인.",
+      "android_ref": "AddTagScreen.kt:93-97 (top 패딩 없음), 137 (라벨 top=32dp)",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "태그 관리 화면 - 리스트 상태 관리 (TagScreen)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/tag/TagScreen.kt",
+      "ios_line": 150,
+      "severity": "low",
+      "issue": "iOS는 LazyColumn/LazyVerticalGrid에 rememberLazyListState/rememberLazyGridState를 지정하지 않는다. Android는 listState/gridListState를 명시(TagScreen.kt:87-88, 143·164)한다. 스크롤 위치 보존이나 향후 스크롤 제어에 차이가 날 수 있으나 현재 표시상 즉각적 깨짐은 아님. 또한 태블릿 판정이 Android는 WindowWidthSizeClass.COMPACT 기준, iOS는 maxWidth > TABLET_BREAKPOINT 기준으로 다르다(임계값 검증 필요).",
+      "suggested_fix": "필요 시 iOS에도 state를 부여해 스크롤 상태를 보존. TABLET_BREAKPOINT 값이 Compact 경계(약 600dp)와 동등한지 확인.",
+      "android_ref": "feature/tag/.../main/TagScreen.kt:87-88,141-164",
+      "group": "tag-flow"
+    },
+    {
+      "surface": "반복 주기 삭제 다이얼로그 (타이틀 타이포)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/repeatcycle/RepeatCycleScreen.kt",
+      "ios_line": 213,
+      "severity": "low",
+      "issue": "iOS 수동 다이얼로그 타이틀이 headingMSB 를 사용. 공용 EbbingDialogDefaultTop(iOS)도 headingMSB 를 쓰므로 토큰 자체는 일치하나, Android core의 EbbingDialogDefaultTop은 heading20B 를 쓴다. 이는 designsystem 토큰 매핑(heading20B↔headingMSB)이 프로젝트 전반에서 일관되면 문제 없음. 서브텍스트만 실제로 어긋남(위 항목).",
+      "suggested_fix": "heading20B↔headingMSB 매핑이 포팅 규약이면 유지. 다만 서브텍스트는 bodyMM(iOS) vs body14M(Android)로 어긋나므로 bodySM 로 교체 권장.",
+      "android_ref": "Dialog.kt(core):97 heading20B, 104 body14M",
+      "group": "repeatcycle-flow"
+    },
+    {
+      "surface": "반복 주기 관리 메인 화면 (선택 시 하단 삭제/수정 버튼)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/repeatcycle/RepeatCycleScreen.kt",
+      "ios_line": 177,
+      "severity": "low",
+      "issue": "하단 삭제/수정 버튼 및 목록 아이템 접두사(\"- \") 처리는 Android와 일치. Android COMPACT 목록은 repeat_cycle_list_item(\"- %1$s\") 리소스로, iOS는 문자열 리터럴 \"- ${displayName}\" 로 동일 결과를 낸다. 결과는 같지만 iOS는 repeat_cycle_list_item 리소스 키를 사용하지 않고 하드코딩했다(로케일/포맷 일원화 관점 경미).",
+      "suggested_fix": "동작 동일하므로 필수 아님. 일관성을 원하면 iOS strings.xml에 repeat_cycle_list_item(\"- %1$s\")을 추가하고 stringResource로 치환. (%1$s 는 CMP에서 정상 치환됨)",
+      "android_ref": "RepeatCycleScreen.kt(android):151 repeat_cycle_list_item, core strings.xml:370",
+      "group": "repeatcycle-flow"
+    },
+    {
+      "surface": "반복 주기 관리 메인 화면 (빈 상태 텍스트 색)",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/repeatcycle/RepeatCycleScreen.kt",
+      "ios_line": 126,
+      "severity": "low",
+      "issue": "빈 상태 안내문 색상이 iOS=dark3, Android=textDisabled. 라이트 테마에서 textDisabled=Greyscale500, iOS dark3 도 동일 계열로 매핑되어 있으면 문제 없음. 프로젝트 색 토큰 매핑 규약(textDisabled↔dark3)이 일관적이므로 의도적 차이로 판단.",
+      "suggested_fix": "색 토큰 매핑이 규약대로면 유지. 실제 렌더 색이 다르면 dark3 대신 textDisabled 대응 토큰으로 조정.",
+      "android_ref": "RepeatCycleScreen.kt(android):135 textDisabled",
+      "group": "repeatcycle-flow"
+    },
+    {
+      "surface": "메모 추가/수정 화면 - 입력 지우기(clear) 아이콘 색상",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/memo/MemoScreen.kt",
+      "ios_line": 228,
+      "severity": "low",
+      "issue": "Android는 clear 아이콘을 Image(painter)로 tint 없이 원본색(#CBD1D9 밝은 회색)으로 렌더한다(MemoContent.kt:67-74). iOS는 Icon(painter, tint = dark3)로 렌더(228~236줄)하는데 dark3=#909599(더 진한 회색)라서 지우기 버튼 색이 Android보다 어둡게 보인다. ic_delete_circle는 단일 path 아이콘이라 깨지진 않지만 색 톤이 다르다.",
+      "suggested_fix": "tint를 제거하고 원본색을 쓰거나(tint = Color.Unspecified) tint = EbbingTheme.colors.light1/원본 #CBD1D9에 해당하는 토큰으로 맞춰 Android와 동일 톤으로.",
+      "android_ref": "feature/memo/.../ui/MemoContent.kt:67-74 (Image, tint 없음)",
+      "group": "memo"
+    },
+    {
+      "surface": "메모 추가/수정 화면 - 태블릿(wide) 레이아웃 미리보기 정렬",
+      "ios_file": "shared/src/commonMain/kotlin/com/tgyuu/shared/ui/feature/memo/MemoScreen.kt",
+      "ios_line": 128,
+      "severity": "low",
+      "issue": "iOS wide 레이아웃은 오른쪽 미리보기 컬럼 상단에 Spacer(height = 24.dp)를 넣어(129줄) 미리보기 카드를 헤드라인 높이만큼 억지로 내린다. Android wide 레이아웃(AddMemoScreen.kt:169-179)은 오른쪽 컬럼에 이런 스페이서가 없고 PreviewContent 자체의 라벨 top=32dp로 정렬한다. 태블릿에서 좌우 컬럼 상단 정렬이 미세하게 어긋날 수 있음.",
+      "suggested_fix": "wide 레이아웃 우측 컬럼의 24dp 스페이서를 제거하고 Android처럼 PreviewContent 라벨 top 패딩(32dp)으로 정렬을 맞추거나, 좌우 컬럼 헤더 baseline을 동일 규칙으로 통일.",
+      "android_ref": "feature/memo/.../addmemo/AddMemoScreen.kt:169-179 (우측 컬럼 상단 스페이서 없음)",
+      "group": "memo"
+    }
+  ]
+}

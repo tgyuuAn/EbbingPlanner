@@ -5,86 +5,55 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.createSupabaseClient
-import io.github.jan.supabase.postgrest.Postgrest
 import com.tgyuu.network.BuildConfig
+import com.tgyuu.network.source.ConfigDataSource
+import com.tgyuu.network.source.FeatureFlagDataSource
+import com.tgyuu.network.source.NotificationLogDataSource
 import com.tgyuu.network.source.SupabaseSyncDataSource
 import com.tgyuu.network.source.SyncRemoteDataSource
 import com.tgyuu.network.source.error.DebugErrorDataSourceImpl
 import com.tgyuu.network.source.error.ErrorDataSource
 import com.tgyuu.network.source.error.ErrorDataSourceImpl
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
 import kotlinx.serialization.json.Json
-import javax.inject.Qualifier
-import javax.inject.Singleton
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object NetworkProvidesModule {
-
-    @Singleton
-    @Provides
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true
+val networkModule = module {
+    single<Json> {
+        Json { ignoreUnknownKeys = true }
     }
 
-    @Singleton
-    @Provides
-    fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig = Firebase.remoteConfig.apply {
-        val configSettings = remoteConfigSettings { minimumFetchIntervalInSeconds = 3600 }
-        setConfigSettingsAsync(configSettings)
+    single<FirebaseRemoteConfig> {
+        Firebase.remoteConfig.apply {
+            val configSettings = remoteConfigSettings { minimumFetchIntervalInSeconds = 3600 }
+            setConfigSettingsAsync(configSettings)
+        }
     }
 
-    @Singleton
-    @Provides
-    fun provideSupabaseClient(): SupabaseClient = createSupabaseClient(
-        supabaseUrl = BuildConfig.SUPABASE_URL,
-        supabaseKey = BuildConfig.SUPABASE_ANON_KEY,
-    ) {
-        install(Postgrest)
+    single<SupabaseClient> {
+        createSupabaseClient(
+            supabaseUrl = BuildConfig.SUPABASE_URL,
+            supabaseKey = BuildConfig.SUPABASE_ANON_KEY,
+        ) {
+            install(Postgrest)
+        }
     }
 
-    @Singleton
-    @Provides
-    fun provideSyncRemoteDataSource(
-        supabaseDataSource: SupabaseSyncDataSource,
-    ): SyncRemoteDataSource = supabaseDataSource
+    single<FirebaseCrashlytics> { FirebaseCrashlytics.getInstance() }
 
-    @Singleton
-    @Provides
-    fun provideFirebaseCrashlytics(): FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
+    single { SupabaseSyncDataSource(get()) } bind SyncRemoteDataSource::class
+    single { ConfigDataSource(get(), get()) }
+    single { FeatureFlagDataSource(get()) }
+    single { NotificationLogDataSource(get()) }
 
-    @Provides
-    @Singleton
-    @Debug
-    fun provideDebugErrorDataSource(debugErrorDataSourceImpl: DebugErrorDataSourceImpl): ErrorDataSource =
-        debugErrorDataSourceImpl
+    single<ErrorDataSource>(named("debug")) { DebugErrorDataSourceImpl() }
+    single<ErrorDataSource>(named("release")) { ErrorDataSourceImpl(get()) }
 
-    @Provides
-    @Singleton
-    @Release
-    fun provideReleaseErrorDataSource(errorDataSourceImpl: ErrorDataSourceImpl): ErrorDataSource =
-        errorDataSourceImpl
-
-    @Provides
-    @Singleton
-    fun provideErrorDataSource(
-        @Debug debugErrorDataSource: ErrorDataSource,
-        @Release releaseErrorDataSource: ErrorDataSource,
-    ): ErrorDataSource {
-        return if (BuildConfig.DEBUG) debugErrorDataSource
-        else releaseErrorDataSource
+    single<ErrorDataSource> {
+        if (BuildConfig.DEBUG) get(named("debug")) else get(named("release"))
     }
 }
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class Debug
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class Release

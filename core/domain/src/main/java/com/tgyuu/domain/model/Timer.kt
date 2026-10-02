@@ -3,9 +3,8 @@ package com.tgyuu.domain.model
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
-class Timer @Inject constructor() {
+class Timer {
     fun startTimer(durationInSec: Long = DEFAULT_DURATION_IN_SEC): Flow<Long> = flow {
         var remainingTime = durationInSec
 

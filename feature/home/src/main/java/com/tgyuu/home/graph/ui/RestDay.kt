@@ -14,7 +14,7 @@ import com.tgyuu.designsystem.component.EbbingChip
 import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import kotlinx.collections.immutable.ImmutableSet
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 @Composable
 internal fun RestDayContent(

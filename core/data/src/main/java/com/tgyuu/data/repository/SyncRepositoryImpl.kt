@@ -1,5 +1,6 @@
 package com.tgyuu.data.repository
 
+import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.database.source.repeatcycle.LocalRepeatCycleDataSource
 import com.tgyuu.database.source.sync.LocalSyncTransactionDataSource
 import com.tgyuu.database.source.tag.LocalTagDataSource
@@ -14,7 +15,6 @@ import com.tgyuu.domain.model.sync.ServerSyncInfo
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import com.tgyuu.domain.model.sync.TodoTagForSync
-import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.repository.ErrorRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.network.source.SyncRemoteDataSource
@@ -22,12 +22,16 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Date
-import javax.inject.Inject
 
-class SyncRepositoryImpl @Inject constructor(
+class SyncRepositoryImpl(
     private val syncDataSource: SyncRemoteDataSource,
     private val localTagDataSource: LocalTagDataSource,
     private val localTodoDataSource: LocalTodoDataSource,
@@ -58,7 +62,7 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getLocalSyncedAt(): ZonedDateTime? =
-        localSyncDataSource.lastSyncTime.first()
+        localSyncDataSource.lastSyncTime.first()?.toZonedDateTime()
 
     override suspend fun syncUpData(): ZonedDateTime {
         downloadData()
@@ -77,7 +81,7 @@ class SyncRepositoryImpl @Inject constructor(
             )
 
             val codeExpirationJob = launch {
-                localSyncDataSource.setConnectCodeExpirationTime(response)
+                localSyncDataSource.setConnectCodeExpirationTime(response.toKotlinxLocalDateTime())
             }
             val connectCodeJob = launch {
                 localSyncDataSource.setConnectCode(connectCode)
@@ -90,7 +94,8 @@ class SyncRepositoryImpl @Inject constructor(
 
     override suspend fun getMyConnectCode(): String? = localSyncDataSource.connectCode.first()
     override suspend fun getConnectCodeExpiration(): ZonedDateTime? {
-        val expiration = localSyncDataSource.connectCodeExpirationTime.first() ?: return null
+        val expiration = localSyncDataSource.connectCodeExpirationTime.first()
+            ?.toZonedDateTime() ?: return null
         val now = ZonedDateTime.now()
         if (expiration.isAfter(now)) return expiration
 
@@ -240,7 +245,7 @@ class SyncRepositoryImpl @Inject constructor(
         repeatCyclesDeleteJob.join()
 
         // 클라이언트 동기화 시간 갱신
-        localSyncDataSource.setLastSyncTime(response)
+        localSyncDataSource.setLastSyncTime(response.toKotlinxLocalDateTime())
         response
     }
 
@@ -252,8 +257,7 @@ class SyncRepositoryImpl @Inject constructor(
         val connectedUuid = connectedUuidDeferred.await()
 
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.let { Date.from(it.toInstant()) }
-            ?: Date(0L)
+            ?.toDate() ?: Date(0L)
 
         val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
             .getOrThrow()
@@ -337,29 +341,25 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     private suspend fun loadSchedulesForSync(): List<TodoScheduleForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: EPOCH
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first() ?: EPOCH
 
         return localTodoDataSource.getSchedulesForSync(lastSyncTime)
     }
 
     private suspend fun loadTagsForSync(): List<TodoTagForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: EPOCH
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first() ?: EPOCH
 
         return localTagDataSource.getTagsForSync(lastSyncTime)
     }
 
     private suspend fun loadRepeatCyclesForSync(): List<RepeatCycleForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: EPOCH
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first() ?: EPOCH
 
         return localRepeatCycleDataSource.getRepeatCyclesForSync(lastSyncTime)
     }
 
     private suspend fun loadTodoInfosForSync(): List<TodoInfoForSync> {
-        val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.toLocalDateTime() ?: EPOCH
+        val lastSyncTime = localSyncDataSource.lastSyncTime.first() ?: EPOCH
 
         return localTodoDataSource.getTodoInfosForSync(lastSyncTime)
     }
@@ -372,8 +372,7 @@ class SyncRepositoryImpl @Inject constructor(
         val connectedUuid = connectedUuidDeferred.await()
 
         val lastSyncTime = localSyncDataSource.lastSyncTime.first()
-            ?.let { Date.from(it.toInstant()) }
-            ?: Date(0L)
+            ?.toDate() ?: Date(0L)
 
         val response = syncDataSource.downloadData(connectedUuid ?: uuid, lastSyncTime)
             .getOrThrow()
@@ -385,12 +384,21 @@ class SyncRepositoryImpl @Inject constructor(
             schedules = response.schedules,
         )
 
-        localSyncDataSource.setLastSyncTime(response.syncedAt)
+        localSyncDataSource.setLastSyncTime(response.syncedAt?.toKotlinxLocalDateTime())
         response.syncedAt
     }
 
+    private fun LocalDateTime.toZonedDateTime(): ZonedDateTime =
+        toJavaLocalDateTime().atZone(ZoneId.systemDefault())
+
+    private fun LocalDateTime.toDate(): Date =
+        Date(toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds())
+
+    private fun ZonedDateTime.toKotlinxLocalDateTime(): LocalDateTime =
+        withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toKotlinLocalDateTime()
+
     private companion object {
-        val EPOCH: LocalDateTime = LocalDateTime.of(1970, 1, 1, 0, 0)
+        val EPOCH: LocalDateTime = LocalDateTime(1970, 1, 1, 0, 0)
         const val UUID_PREFIX_MIN_LENGTH = 8
         const val UUID_ALLOWED_CHARS = "0123456789abcdef-"
     }
