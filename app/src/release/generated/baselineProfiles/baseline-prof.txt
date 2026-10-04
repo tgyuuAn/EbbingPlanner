@@ -479,6 +479,7 @@ SPLandroidx/collection/MutableScatterMap;-><init>(I)V
 SPLandroidx/collection/MutableScatterMap;-><init>(IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 SPLandroidx/collection/MutableScatterMap;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterMap;->clear()V
+SPLandroidx/collection/MutableScatterMap;->dropDeletes$collection()V
 SPLandroidx/collection/MutableScatterMap;->findFirstAvailableSlot(I)I
 HSPLandroidx/collection/MutableScatterMap;->findInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterMap;->initializeGrowth()V
@@ -496,7 +497,6 @@ SPLandroidx/collection/MutableScatterSet;->addAll(Landroidx/collection/ScatterSe
 SPLandroidx/collection/MutableScatterSet;->adjustStorage$collection()V
 SPLandroidx/collection/MutableScatterSet;->asMutableSet()Ljava/util/Set;
 SPLandroidx/collection/MutableScatterSet;->clear()V
-SPLandroidx/collection/MutableScatterSet;->dropDeletes$collection()V
 HSPLandroidx/collection/MutableScatterSet;->findAbsoluteInsertIndex(Ljava/lang/Object;)I
 SPLandroidx/collection/MutableScatterSet;->findFirstAvailableSlot(I)I
 SPLandroidx/collection/MutableScatterSet;->initializeGrowth()V
@@ -9528,7 +9528,7 @@ SPLandroidx/compose/ui/node/LayoutNode;->getForceUseOldLayers()Z
 SPLandroidx/compose/ui/node/LayoutNode;->getHasFixedInnerContentConstraints$ui_release()Z
 SPLandroidx/compose/ui/node/LayoutNode;->getHeight()I
 HSPLandroidx/compose/ui/node/LayoutNode;->getInnerCoordinator$ui_release()Landroidx/compose/ui/node/NodeCoordinator;
-HSPLandroidx/compose/ui/node/LayoutNode;->getInnerLayerCoordinator$ui_release()Landroidx/compose/ui/node/NodeCoordinator;
+SPLandroidx/compose/ui/node/LayoutNode;->getInnerLayerCoordinator$ui_release()Landroidx/compose/ui/node/NodeCoordinator;
 SPLandroidx/compose/ui/node/LayoutNode;->getIntrinsicsUsageByParent$ui_release()Landroidx/compose/ui/node/LayoutNode$UsageByParent;
 SPLandroidx/compose/ui/node/LayoutNode;->getLastSize-YbymL2g$ui_release()J
 SPLandroidx/compose/ui/node/LayoutNode;->getLayoutDelegate$ui_release()Landroidx/compose/ui/node/LayoutNodeLayoutDelegate;
@@ -17709,7 +17709,7 @@ Lcom/google/android/datatransport/cct/internal/NetworkConnectionInfo;
 Lcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;
 SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;-><clinit>()V
 SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;-><init>(Ljava/lang/String;II)V
-SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;->getValue()I
+SPLcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;->forNumber(I)Lcom/google/android/datatransport/cct/internal/NetworkConnectionInfo$MobileSubtype;
 Lcom/google/android/datatransport/runtime/AutoValue_EventInternal;
 SPLcom/google/android/datatransport/runtime/AutoValue_EventInternal;-><init>(Ljava/lang/String;Ljava/lang/Integer;Lcom/google/android/datatransport/runtime/EncodedPayload;JJLjava/util/Map;Ljava/lang/Integer;Ljava/lang/String;[B[B)V
 SPLcom/google/android/datatransport/runtime/AutoValue_EventInternal;-><init>(Ljava/lang/String;Ljava/lang/Integer;Lcom/google/android/datatransport/runtime/EncodedPayload;JJLjava/util/Map;Ljava/lang/Integer;Ljava/lang/String;[B[BLcom/google/android/datatransport/runtime/AutoValue_EventInternal$1;)V
@@ -29706,7 +29706,7 @@ SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->getDefaultIns
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->getId()I
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->getSerializedSize()I
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->hasId()Z
-SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->initFields()V
+HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->initFields()V
 HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->isInitialized()Z
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->newBuilder()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;->newBuilderForType()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;
@@ -29807,7 +29807,7 @@ SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Argument$Value$
 Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Argument$ValueOrBuilder;
 Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$ArgumentOrBuilder;
 Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;
-SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;-><init>()V
+HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;-><init>()V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;->access$4200()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;->build()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Annotation$Builder;->build()Lkotlin/reflect/jvm/internal/impl/protobuf/MessageLite;
@@ -30024,7 +30024,7 @@ SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->hasName()Z
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->hasReceiverType()Z
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->hasReturnType()Z
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->hasSetterValueParameter()Z
-SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->initFields()V
+HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->initFields()V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->isInitialized()Z
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property;->writeTo(Lkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;)V
 Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Property$1;
@@ -30090,7 +30090,7 @@ SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;-><init>(Lkotlin/refl
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;-><init>(Z)V
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;->getAbbreviatedType()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;->getArgument(I)Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type$Argument;
-SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;->getArgumentCount()I
+HSPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;->getArgumentCount()I
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;->getDefaultInstance()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;->getDefaultInstanceForType()Lkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;
 SPLkotlin/reflect/jvm/internal/impl/metadata/ProtoBuf$Type;->getDefaultInstanceForType()Lkotlin/reflect/jvm/internal/impl/protobuf/MessageLite;
@@ -30612,11 +30612,11 @@ SPLkotlin/reflect/jvm/internal/impl/protobuf/AbstractParser;->parsePartialFrom(L
 Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;-><clinit>()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;-><init>()V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->concat(Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;)Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->concat(Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;)Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->copyFrom(Ljava/lang/Iterable;)Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->copyFrom([BII)Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->copyTo([BIII)V
-SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->newOutput()Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->newOutput()Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString;->toStringUtf8()Ljava/lang/String;
 Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/ByteString$Output;-><clinit>()V
@@ -30705,6 +30705,7 @@ SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->computeFieldSize(Lkotlin
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->getField(Lkotlin/reflect/jvm/internal/impl/protobuf/FieldSet$FieldDescriptorLite;)Ljava/lang/Object;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->getSerializedSize()I
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->getWireFormatForFieldType(Lkotlin/reflect/jvm/internal/impl/protobuf/WireFormat$FieldType;Z)I
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->isInitialized()Z
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->isInitialized(Ljava/util/Map$Entry;)Z
 SPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->iterator()Ljava/util/Iterator;
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/FieldSet;->makeImmutable()V
@@ -30729,7 +30730,7 @@ HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite;->parseUnknow
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$1;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$1;-><clinit>()V
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;
-SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;-><init>()V
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;-><init>()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;->getUnknownFields()Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;->setUnknownFields(Lkotlin/reflect/jvm/internal/impl/protobuf/ByteString;)Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$Builder;
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableBuilder;
@@ -30740,7 +30741,7 @@ HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMes
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->extensionsSerializedSize()I
 HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->makeExtensionsImmutable()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->newExtensionWriter()Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage$ExtensionWriter;
-SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->parseUnknownField(Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/ExtensionRegistryLite;I)Z
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;->parseUnknownField(Lkotlin/reflect/jvm/internal/impl/protobuf/CodedInputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/CodedOutputStream;Lkotlin/reflect/jvm/internal/impl/protobuf/ExtensionRegistryLite;I)Z
 Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage$ExtensionWriter;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage$ExtensionWriter;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;Z)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage$ExtensionWriter;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtendableMessage;ZLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$1;)V
@@ -30750,7 +30751,7 @@ Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescrip
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/Internal$EnumLiteMap;ILkotlin/reflect/jvm/internal/impl/protobuf/WireFormat$FieldType;ZZ)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;->compareTo(Ljava/lang/Object;)I
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;->compareTo(Lkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;)I
-SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;->getLiteJavaType()Lkotlin/reflect/jvm/internal/impl/protobuf/WireFormat$JavaType;
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;->getLiteJavaType()Lkotlin/reflect/jvm/internal/impl/protobuf/WireFormat$JavaType;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;->getLiteType()Lkotlin/reflect/jvm/internal/impl/protobuf/WireFormat$FieldType;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;->getNumber()I
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$ExtensionDescriptor;->isPacked()Z
@@ -30760,7 +30761,7 @@ SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$GeneratedExten
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$GeneratedExtension;->getContainingTypeDefaultInstance()Lkotlin/reflect/jvm/internal/impl/protobuf/MessageLite;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$GeneratedExtension;->getMessageDefaultInstance()Lkotlin/reflect/jvm/internal/impl/protobuf/MessageLite;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$GeneratedExtension;->getNumber()I
-SPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$GeneratedExtension;->singularToFieldSetType(Ljava/lang/Object;)Ljava/lang/Object;
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/GeneratedMessageLite$GeneratedExtension;->singularToFieldSetType(Ljava/lang/Object;)Ljava/lang/Object;
 Lkotlin/reflect/jvm/internal/impl/protobuf/Internal$EnumLite;
 Lkotlin/reflect/jvm/internal/impl/protobuf/Internal$EnumLiteMap;
 Lkotlin/reflect/jvm/internal/impl/protobuf/InvalidProtocolBufferException;
@@ -30819,7 +30820,7 @@ Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$EmptySet$2;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$EmptySet$2;-><init>()V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$EmptySet$2;->iterator()Ljava/util/Iterator;
 Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$Entry;
-SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$Entry;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;Ljava/lang/Comparable;Ljava/lang/Object;)V
+HSPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$Entry;-><init>(Lkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap;Ljava/lang/Comparable;Ljava/lang/Object;)V
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$Entry;->getKey()Ljava/lang/Comparable;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$Entry;->getKey()Ljava/lang/Object;
 SPLkotlin/reflect/jvm/internal/impl/protobuf/SmallSortedMap$Entry;->getValue()Ljava/lang/Object;
@@ -32533,6 +32534,7 @@ Lkotlinx/coroutines/NotCompleted;
 Lkotlinx/coroutines/ParentJob;
 Lkotlinx/coroutines/ResumeAwaitOnCompletion;
 SPLkotlinx/coroutines/ResumeAwaitOnCompletion;-><init>(Lkotlinx/coroutines/CancellableContinuationImpl;)V
+SPLkotlinx/coroutines/ResumeAwaitOnCompletion;->getOnCancelling()Z
 SPLkotlinx/coroutines/ResumeAwaitOnCompletion;->invoke(Ljava/lang/Throwable;)V
 Lkotlinx/coroutines/ResumeOnCompletion;
 SPLkotlinx/coroutines/ResumeOnCompletion;-><init>(Lkotlin/coroutines/Continuation;)V
@@ -33447,9 +33449,14 @@ Lkotlinx/coroutines/internal/LockFreeTaskQueueCore;
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;-><clinit>()V
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;-><init>(IZ)V
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->addLast(Ljava/lang/Object;)I
+SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->allocateNextCopy(J)Lkotlinx/coroutines/internal/LockFreeTaskQueueCore;
+SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->allocateOrGetNextCopy(J)Lkotlinx/coroutines/internal/LockFreeTaskQueueCore;
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->getArray()Ljava/util/concurrent/atomic/AtomicReferenceArray;
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->getSize()I
+SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->get_next$volatile$FU()Ljava/util/concurrent/atomic/AtomicReferenceFieldUpdater;
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->get_state$volatile$FU()Ljava/util/concurrent/atomic/AtomicLongFieldUpdater;
+SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->markFrozen()J
+SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->next()Lkotlinx/coroutines/internal/LockFreeTaskQueueCore;
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore;->removeFirstOrNull()Ljava/lang/Object;
 Lkotlinx/coroutines/internal/LockFreeTaskQueueCore$Companion;
 SPLkotlinx/coroutines/internal/LockFreeTaskQueueCore$Companion;-><init>()V
