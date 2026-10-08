@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -38,7 +38,7 @@ import com.tgyuu.sync.graph.restore.contract.RestoreState
 
 @Composable
 internal fun RestoreByDeviceIdRoute(
-    viewModel: RestoreViewModel = hiltViewModel()
+    viewModel: RestoreViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

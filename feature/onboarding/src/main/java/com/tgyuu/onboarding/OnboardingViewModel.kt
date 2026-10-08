@@ -6,11 +6,8 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.onboarding.contract.OnboardingIntent
 import com.tgyuu.onboarding.contract.OnboardingState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@HiltViewModel
-class OnboardingViewModel @Inject constructor(
+class OnboardingViewModel(
     private val navigationBus: NavigationBus,
 ) : BaseViewModel<OnboardingState, OnboardingIntent>(OnboardingState()) {
 

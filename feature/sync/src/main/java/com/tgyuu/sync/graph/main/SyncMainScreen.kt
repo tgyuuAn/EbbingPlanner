@@ -40,7 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -48,6 +48,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
+import kotlinx.datetime.toKotlinLocalDateTime
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
@@ -64,7 +65,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 internal fun SyncMainRoute(
-    viewModel: SyncMainViewModel = hiltViewModel(),
+    viewModel: SyncMainViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -493,7 +494,7 @@ private fun LastSyncSection(
             .padding(vertical = 4.dp),
     ) {
         Text(
-            text = state.localLastSyncedAt?.toLocalDateTime()?.toFormattedString()
+            text = state.localLastSyncedAt?.toLocalDateTime()?.toKotlinLocalDateTime()?.toFormattedString()
                 ?: stringResource(R.string.sync_no_record),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,

@@ -4,9 +4,9 @@ import androidx.room.TypeConverter
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.common.toLocalDateTimeOrThrow
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 class EbbingConverters {
     // --- LocalDate ---
@@ -43,7 +43,7 @@ class EbbingConverters {
     // --- Set<DayOfWeek> ---
     @TypeConverter
     fun fromRestDays(value: Set<DayOfWeek>?): String {
-        return value?.joinToString(",") { it.value.toString() } ?: ""
+        return value?.joinToString(",") { (it.ordinal + 1).toString() } ?: ""
     }
 
     @TypeConverter
@@ -52,7 +52,7 @@ class EbbingConverters {
         return value.split(",")
             .mapNotNull { it.trim().toIntOrNull() }
             .filter { it in 1..7 }
-            .map { DayOfWeek.of(it) }
+            .map { DayOfWeek.entries[it - 1] }
             .toSet()
     }
 }

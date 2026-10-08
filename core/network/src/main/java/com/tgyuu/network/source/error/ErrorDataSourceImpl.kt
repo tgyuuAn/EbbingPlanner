@@ -1,9 +1,8 @@
 package com.tgyuu.network.source.error
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import javax.inject.Inject
 
-class ErrorDataSourceImpl @Inject constructor(
+class ErrorDataSourceImpl constructor(
     private val firebaseCrashlytics: FirebaseCrashlytics,
 ) : ErrorDataSource {
     override suspend fun logError(exception: Throwable) {
