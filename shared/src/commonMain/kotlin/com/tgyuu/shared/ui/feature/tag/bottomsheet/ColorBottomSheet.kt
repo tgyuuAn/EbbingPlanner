@@ -1,0 +1,168 @@
+package com.tgyuu.shared.ui.feature.tag.bottomsheet
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.ui.unit.dp
+import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHeader
+import com.tgyuu.shared.designsystem.component.EbbingSolidButton
+import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.tag_manage_title
+import ebbingplanner.shared.generated.resources.tag_add_button
+import ebbingplanner.shared.generated.resources.tag_empty_message
+import ebbingplanner.shared.generated.resources.tag_delete
+import ebbingplanner.shared.generated.resources.tag_edit
+import ebbingplanner.shared.generated.resources.tag_back
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_prefix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_highlight
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
+import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
+import ebbingplanner.shared.generated.resources.tag_add_title
+import ebbingplanner.shared.generated.resources.tag_edit_title
+import ebbingplanner.shared.generated.resources.tag_save
+import ebbingplanner.shared.generated.resources.tag_add_headline
+import ebbingplanner.shared.generated.resources.tag_edit_headline
+import ebbingplanner.shared.generated.resources.tag_name_label
+import ebbingplanner.shared.generated.resources.tag_name_hint
+import ebbingplanner.shared.generated.resources.tag_color
+import ebbingplanner.shared.generated.resources.tag_apply
+import ebbingplanner.shared.generated.resources.common_clear
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
+import ebbingplanner.shared.generated.resources.ic_check
+
+// Android core/designsystem ColorOptions와 동일한 6계열 × 6음영 (동기화 색상값 일치)
+val TAG_COLORS = listOf(
+    // Red
+    0xFFFF0000.toInt(), 0xFFFF4C4C.toInt(), 0xFFFF8080.toInt(),
+    0xFFFF9999.toInt(), 0xFFFFB3B3.toInt(), 0xFFFFC7C7.toInt(),
+    // Orange
+    0xFFFF7F00.toInt(), 0xFFFF9933.toInt(), 0xFFFFB266.toInt(),
+    0xFFFFCC99.toInt(), 0xFFFFD9B3.toInt(), 0xFFFFE5CC.toInt(),
+    // Yellow
+    0xFFFFFF00.toInt(), 0xFFFFF000.toInt(), 0xFFFFF380.toInt(),
+    0xFFFFF5A3.toInt(), 0xFFFFF7C2.toInt(), 0xFFFFFAE0.toInt(),
+    // Green
+    0xFF008000.toInt(), 0xFF33A766.toInt(), 0xFF66C28C.toInt(),
+    0xFF99DAB3.toInt(), 0xFFBFEBD2.toInt(), 0xFFE0F8E9.toInt(),
+    // Blue
+    0xFF0000FF.toInt(), 0xFF4285F4.toInt(), 0xFF6FA8FF.toInt(),
+    0xFF99C2FF.toInt(), 0xFFCCE0FF.toInt(), 0xFFE3F0FF.toInt(),
+    // Purple
+    0xFF8A2BE2.toInt(), 0xFF9B4DCC.toInt(), 0xFFB36EFF.toInt(),
+    0xFFD1A3FF.toInt(), 0xFFE5CCFF.toInt(), 0xFFF0E5FF.toInt(),
+)
+
+@Composable
+fun ColorBottomSheet(
+    currentColor: Int,
+    onColorSelect: (Int) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var selectedColor by remember { mutableStateOf(currentColor) }
+
+    // Android ColorBottomSheet와 동일: 바깥 Column이 horizontal=20 제공, 그리드/버튼은 vertical만.
+    Column(
+        modifier = modifier.padding(horizontal = 20.dp),
+    ) {
+        EbbingBottomSheetHeader(
+            title = stringResource(Res.string.tag_color),
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(6),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            // Android와 동일: 최대 228dp(약 4줄)로 높이 제한 → 나머지는 스크롤(드래그)로 노출
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 20.dp)
+                .heightIn(max = 228.dp),
+        ) {
+            items(TAG_COLORS) { color ->
+                ColorItem(
+                    color = color,
+                    isSelected = color == selectedColor,
+                    onClick = { selectedColor = color },
+                )
+            }
+        }
+
+        EbbingSolidButton(
+            label = stringResource(Res.string.tag_apply),
+            onClick = {
+                onColorSelect(selectedColor)
+                onDismiss()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, bottom = 10.dp),
+        )
+    }
+}
+
+@Composable
+private fun ColorItem(
+    color: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Android와 동일: 선택 시 색을 어둡게(lerp) 애니메이션 + 체크 아이콘 페이드
+    val targetColor = if (isSelected) lerp(Color(color), Color.Black, 0.2f) else Color(color)
+    val animatedColor by animateColorAsState(targetColor)
+    // 그리드 셀 폭이 45dp와 달라도 정확한 원(45x45)이 되도록 바깥 Box(fillMaxWidth)에
+    // 45dp 색상 원을 가운데 배치(리플도 원에 한정). 체크는 형제로 오버레이.
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(45.dp)
+                .clip(CircleShape)
+                .background(animatedColor)
+                .clickable { onClick() },
+        )
+
+        EbbingVisibleAnimation(visible = isSelected) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_check),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
+}

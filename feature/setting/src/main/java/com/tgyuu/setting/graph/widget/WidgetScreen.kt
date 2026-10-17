@@ -37,7 +37,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingVisibleAnimation
@@ -71,7 +71,7 @@ import kotlin.math.roundToInt
 
 @Composable
 internal fun WidgetRoute(
-    viewModel: WidgetViewModel = hiltViewModel()
+    viewModel: WidgetViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

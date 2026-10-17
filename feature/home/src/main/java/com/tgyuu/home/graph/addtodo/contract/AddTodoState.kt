@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.tgyuu.common.base.UiState
 import com.tgyuu.common.generateDailySchedules
 import com.tgyuu.common.generateValidSchedules
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.RepeatCycle
@@ -11,8 +12,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 
 @Immutable
 data class AddTodoState(

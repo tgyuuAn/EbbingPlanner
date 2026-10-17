@@ -1,7 +1,7 @@
 package com.tgyuu.domain.model.sync
 
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 data class TodoInfoForSync(
     val id: Int,

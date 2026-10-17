@@ -1,6 +1,5 @@
 plugins {
     id("ebbing.android.library")
-    id("ebbing.android.hilt")
 }
 
 android {

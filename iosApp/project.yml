@@ -1,0 +1,93 @@
+name: EbbingPlanner
+options:
+  bundleIdPrefix: com.tgyuu
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    # shared 프레임워크는 iosSimulatorArm64(arm64)로만 빌드되므로
+    # 시뮬레이터 빌드에서 x86_64를 제외해 링크 실패를 방지한다.
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": x86_64
+    ONLY_ACTIVE_ARCH: "YES"
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+        excludes:
+          - "**/*.xcodeproj"
+          - "**/*.xcworkspace"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tgyuu.ebbingplanner
+        INFOPLIST_FILE: iosApp/Info.plist
+        PRODUCT_NAME: EbbingPlanner
+        SWIFT_VERSION: "5.9"
+        ENABLE_PREVIEWS: YES
+        FRAMEWORK_SEARCH_PATHS:
+          - "$(inherited)"
+          - "$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework"
+          - "$(SRCROOT)/../shared/build/bin/iosArm64/debugFramework"
+        OTHER_LDFLAGS:
+          - "$(inherited)"
+          - "-framework"
+          - "shared"
+    dependencies:
+      - framework: ../shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework
+        embed: true
+        codeSign: false
+      - target: EbbingPlannerWidget
+    preBuildScripts:
+      - name: "Build Shared Framework"
+        script: |
+          cd "$SRCROOT/.."
+          if [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
+            ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+          else
+            ./gradlew :shared:linkDebugFrameworkIosArm64
+          fi
+          # compose 리소스를 앱 번들에 복사 (정적 프레임워크라 필수)
+          ./gradlew :shared:syncComposeResourcesForIos
+        basedOnDependencyAnalysis: false
+    entitlements:
+      path: iosApp/EbbingPlanner.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tgyuu.ebbingplanner
+
+  EbbingPlannerWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: EbbingPlannerWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tgyuu.ebbingplanner.widget
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: EbbingPlannerWidget/Info.plist
+    entitlements:
+      path: EbbingPlannerWidget/EbbingPlannerWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tgyuu.ebbingplanner
+
+# 위젯 익스텐션은 단독 실행할 수 없으므로, 호스트 앱 iosApp을
+# 기본 실행 스킴으로 공유해 위젯 스킴이 잘못 선택되는 것을 방지한다.
+schemes:
+  iosApp:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    archive:
+      config: Release

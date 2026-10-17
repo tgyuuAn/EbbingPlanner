@@ -13,6 +13,7 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
+import kotlinx.datetime.number
 
 @Composable
 internal fun ConfirmDeleteRemainingDialog(
@@ -26,7 +27,7 @@ internal fun ConfirmDeleteRemainingDialog(
             val prefix = stringResource(
                 R.string.home_delete_remaining_confirm_prefix,
                 schedule.title.originalText,
-                schedule.date.monthValue,
+                schedule.date.monthNumber,
                 schedule.date.dayOfMonth,
             )
             val deleteWord = stringResource(R.string.home_delete)

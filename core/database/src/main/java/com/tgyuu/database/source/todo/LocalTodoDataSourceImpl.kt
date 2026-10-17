@@ -3,7 +3,6 @@ package com.tgyuu.database.source.todo
 import com.tgyuu.database.dao.ScheduleUpdateParams
 import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
-import com.tgyuu.database.model.TodoInfoEntity
 import com.tgyuu.database.model.TodoScheduleEntity
 import com.tgyuu.database.model.toEntity
 import com.tgyuu.domain.model.TodoInfo
@@ -11,11 +10,10 @@ import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.domain.model.sync.TodoScheduleForSync
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
-import java.time.LocalDateTime
-import javax.inject.Inject
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
-class LocalTodoDataSourceImpl @Inject constructor(
+class LocalTodoDataSourceImpl constructor(
     private val todoSchedulesDao: TodoSchedulesDao,
     private val todoWithSchedulesDao: TodoWithSchedulesDao,
 ) : LocalTodoDataSource {
@@ -45,9 +43,6 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun getTodoScheduleEntity(id: Int): TodoScheduleEntity? =
         todoSchedulesDao.loadTodoScheduleEntity(id)
 
-    override suspend fun getTodoInfoEntity(id: Int): TodoInfoEntity? =
-        todoSchedulesDao.loadTodoInfoEntity(id)
-
     override suspend fun insertSchedule(scheduleForSync: TodoScheduleForSync) =
         todoSchedulesDao.insertTodoSchedule(scheduleForSync.toEntity())
 
@@ -59,7 +54,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek>,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
         tagId = tagId,
@@ -74,7 +69,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek>,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
         tagId = tagId,
@@ -96,28 +91,15 @@ class LocalTodoDataSourceImpl @Inject constructor(
     override suspend fun updateSchedule(todoScheduleForSync: TodoScheduleForSync) =
         todoSchedulesDao.updateTodoSchedule(todoScheduleForSync.toEntity())
 
-    override suspend fun toggleDone(id: Int) = todoSchedulesDao.toggleDone(id)
-
-    override suspend fun updateSchedules(schedules: List<TodoSchedule>) =
-        todoWithSchedulesDao.updateSchedules(
-            schedules.map { schedule ->
-                ScheduleUpdateParams(
-                    id = schedule.id,
-                    date = schedule.date,
-                    memo = schedule.memo,
-                    isPinned = schedule.isPinned,
-                    isDone = schedule.isDone,
-                )
-            }
-        )
-
-    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<java.time.DayOfWeek>) =
+    override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<kotlinx.datetime.DayOfWeek>) =
         todoWithSchedulesDao.updateInfo(
             id = todoSchedule.infoId,
             title = todoSchedule.title,
             tagId = todoSchedule.tagId,
-            restDays = restDays.joinToString(",") { it.value.toString() },
+            restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
         )
+
+    override suspend fun toggleDone(id: Int) = todoSchedulesDao.toggleDone(id)
 
     override suspend fun updateTodoInfo(todoInfoForSync: TodoInfoForSync) =
         todoSchedulesDao.updateTodoInfo(todoInfoForSync.toEntity())
@@ -126,10 +108,10 @@ class LocalTodoDataSourceImpl @Inject constructor(
         infoId: Int,
         title: String,
         tagId: Int,
-        dates: List<LocalDate>,
+        dates: List<kotlinx.datetime.LocalDate>,
         isDoneSchedules: List<Boolean>,
         isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek>,
+        restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = todoWithSchedulesDao.replaceSchedules(
         infoId = infoId,
         title = title,
@@ -163,6 +145,22 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getTodoInfoById(infoId: Int): TodoInfo =
         todoSchedulesDao.getTodoInfoById(infoId)
+
+    override suspend fun getTodoInfoEntity(id: Int) =
+        todoSchedulesDao.loadTodoInfoEntity(id)
+
+    override suspend fun updateSchedules(schedules: List<TodoSchedule>) =
+        todoWithSchedulesDao.updateSchedules(
+            schedules.map { schedule ->
+                ScheduleUpdateParams(
+                    id = schedule.id,
+                    date = schedule.date,
+                    memo = schedule.memo,
+                    isPinned = schedule.isPinned,
+                    isDone = schedule.isDone,
+                )
+            }
+        )
 
     override suspend fun deleteAllTodoInfos() = todoSchedulesDao.hardDeleteAllTodoInfos()
 }
