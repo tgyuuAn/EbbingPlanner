@@ -71,6 +71,11 @@
    - SDK 호출은 Swift `AmplitudeAnalyticsBridge`(pod `AmplitudeSwift ~> 1.19`)가 람다로 주입. `initKoin`/`initKoinWithFirebase` 둘 다 `onTrackAnalyticsEvent`/`onSetAnalyticsUserId`(nullable)를 받는다 → 분석 경로가 Firebase 설정 여부와 무관해졌다.
    - **디버그 빌드에서는 Amplitude 인스턴스를 만들지 않는다**(`#if DEBUG` → nil → shared `DebugAnalyticsHelper` 콘솔 출력). Amplitude SDK 는 `autocapture` 기본값이 `SESSIONS` 라서 인스턴스만 생겨도 세션 이벤트를 보내기 때문이다. 릴리스여도 `AMPLITUDE_API_KEY` 가 비어 있으면 같은 폴백.
    - API 키는 Android 와 같은 값을 쓴다. Amplitude 키는 플랫폼이 아니라 프로젝트 단위이고, 플랫폼은 SDK 가 `platform`/`os_name` 으로 자동 기록한다.
+8. **비밀값 원본을 `local.properties` 하나로 통일**: Android 처럼 저장소 루트의 `local.properties`(gitignore)에 `SUPABASE_URL`/`SUPABASE_ANON_KEY`/`AMPLITUDE_API_KEY` 를 두면, Xcode 빌드 단계 "Generate Secrets.plist"(`iosApp/scripts/generate_secrets_plist.sh`)가 매 빌드마다 `iosApp/iosApp/Secrets.plist`(gitignore)를 만든다. 값이 없으면 빈 문자열 + 빌드 경고 → 앱은 Stub sync/콘솔 출력으로 폴백.
+   - `Secrets.plist` 를 손으로 고치지 말 것(다음 빌드에 덮어써짐). 템플릿 `Secrets.example.plist` 는 앱 번들 리소스로 같이 들어가고 있어서 삭제했다.
+   - `GoogleService-Info.plist` 는 Firebase 가 정한 형식의 파일이라 여전히 따로 둔다(Android `google-services.json` 과 같은 위치).
+   - 제거: `FirebaseAnalyticsHelper.kt`, Swift `FirebaseAnalyticsBridge`(커스텀 이벤트의 Firebase 전송). Crashlytics 와 Firebase Analytics userId 설정(`FirebaseErrorBridge`)은 유지.
+   - 새 Swift 파일은 `project.pbxproj` 에 직접 4곳 등록했다. XcodeGen 으로 재생성하면 CocoaPods 가 Pods 객체 ID 를 새로 발급해 무관한 변경이 대량으로 생기므로, ID 는 XcodeGen 이 발급하는 값(`143C8A76…`/`0B7ACB05…`)을 그대로 썼다.
 
 ## 검증 원칙
 - 변경 후 `./gradlew :shared:compileKotlinIosSimulatorArm64`로 컴파일 확인.
