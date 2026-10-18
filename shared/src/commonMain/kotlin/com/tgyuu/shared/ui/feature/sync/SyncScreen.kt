@@ -89,7 +89,6 @@ import ebbingplanner.shared.generated.resources.sync_new_device_section
 import ebbingplanner.shared.generated.resources.sync_no_record
 import ebbingplanner.shared.generated.resources.sync_qr_code_title
 import ebbingplanner.shared.generated.resources.sync_remaining_time
-import ebbingplanner.shared.generated.resources.sync_restore_title
 import ebbingplanner.shared.generated.resources.sync_scan_qr
 import ebbingplanner.shared.generated.resources.sync_scan_qr_desc
 import ebbingplanner.shared.generated.resources.sync_scan_qr_warning
@@ -194,7 +193,6 @@ fun SyncScreen(
             clipboardManager.setText(AnnotatedString(state.displayDeviceInfo))
             viewModel.onIntent(SyncIntent.OnDeviceInfoCopied)
         },
-        onRestoreClick = { viewModel.onIntent(SyncIntent.OnRestoreClick) },
         modifier = modifier,
     )
 }
@@ -210,7 +208,6 @@ private fun SyncScreenContent(
     onDismissScan: () -> Unit,
     onQrDetected: (String) -> Unit,
     onCopyDeviceInfo: () -> Unit,
-    onRestoreClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
@@ -261,7 +258,6 @@ private fun SyncScreenContent(
                                     AdvancedInfoSection(
                                         state = state,
                                         onCopyClick = onCopyDeviceInfo,
-                                        onRestoreClick = onRestoreClick,
                                     )
                                 }
                             }
@@ -281,7 +277,6 @@ private fun SyncScreenContent(
                             AdvancedInfoSection(
                                 state = state,
                                 onCopyClick = onCopyDeviceInfo,
-                                onRestoreClick = onRestoreClick,
                             )
                         }
                     }
@@ -564,7 +559,6 @@ private fun LastSyncSection(
 private fun AdvancedInfoSection(
     state: SyncState,
     onCopyClick: () -> Unit,
-    onRestoreClick: () -> Unit,
 ) {
     Text(
         text = stringResource(Res.string.sync_advanced_info),
@@ -602,35 +596,6 @@ private fun AdvancedInfoSection(
                 .size(20.dp)
                 .clickable { onCopyClick() },
         )
-    }
-
-    // 데이터 복원 (deviceId) 진입
-    if (state.linkedUuid == null) {
-        HorizontalDivider(
-            thickness = 1.dp,
-            color = EbbingTheme.colors.light2,
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onRestoreClick() }
-                .padding(vertical = 17.dp),
-        ) {
-            Text(
-                text = stringResource(Res.string.sync_restore_title),
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.dark1,
-                modifier = Modifier.weight(1f),
-            )
-
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_right),
-                contentDescription = null,
-                tint = EbbingTheme.colors.dark3,
-            )
-        }
     }
 }
 

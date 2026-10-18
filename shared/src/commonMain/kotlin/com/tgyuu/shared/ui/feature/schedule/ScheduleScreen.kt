@@ -75,15 +75,13 @@ import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.schedule_card_date
 import ebbingplanner.shared.generated.resources.schedule_collapse
 import ebbingplanner.shared.generated.resources.schedule_empty_message
+import ebbingplanner.shared.generated.resources.schedule_delete_tag_dialog_subtext
+import ebbingplanner.shared.generated.resources.schedule_delete_tag_dialog_title
+import ebbingplanner.shared.generated.resources.schedule_dialog_cancel
+import ebbingplanner.shared.generated.resources.schedule_dialog_delete
 import ebbingplanner.shared.generated.resources.schedule_empty_register_button
 import ebbingplanner.shared.generated.resources.schedule_tag_count_completion
 import ebbingplanner.shared.generated.resources.schedule_top_bar_title
-import ebbingplanner.shared.generated.resources.tag_back
-import ebbingplanner.shared.generated.resources.tag_delete
-import ebbingplanner.shared.generated.resources.tag_delete_confirm_highlight
-import ebbingplanner.shared.generated.resources.tag_delete_confirm_prefix
-import ebbingplanner.shared.generated.resources.tag_delete_confirm_subtext
-import ebbingplanner.shared.generated.resources.tag_delete_confirm_suffix
 import org.jetbrains.compose.resources.stringResource
 import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
 import org.jetbrains.compose.resources.painterResource
@@ -659,26 +657,21 @@ private fun DeleteTagDialog(
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
+    // Android 일정 화면은 태그 화면과 달리 하이라이트 없는 단일 문구를 쓴다.
+    val dialogTitle = stringResource(Res.string.schedule_delete_tag_dialog_title, tagName)
+    val dialogSubText = stringResource(Res.string.schedule_delete_tag_dialog_subtext)
+
     EbbingDialog(
         dialogTop = {
-            val deletePrefix = stringResource(Res.string.tag_delete_confirm_prefix, tagName)
-            val deleteHighlight = stringResource(Res.string.tag_delete_confirm_highlight)
-            val deleteSuffix = stringResource(Res.string.tag_delete_confirm_suffix)
             EbbingDialogDefaultTop(
-                title = buildAnnotatedString {
-                    append(deletePrefix)
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
-                        append(deleteHighlight)
-                    }
-                    append(deleteSuffix)
-                },
-                subText = stringResource(Res.string.tag_delete_confirm_subtext),
+                title = buildAnnotatedString { append(dialogTitle) },
+                subText = dialogSubText,
             )
         },
         dialogBottom = {
             EbbingDialogBottom(
-                leftButtonText = stringResource(Res.string.tag_back),
-                rightButtonText = stringResource(Res.string.tag_delete),
+                leftButtonText = stringResource(Res.string.schedule_dialog_cancel),
+                rightButtonText = stringResource(Res.string.schedule_dialog_delete),
                 onLeftButtonClick = onDismissRequest,
                 onRightButtonClick = onDeleteClick,
             )

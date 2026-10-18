@@ -60,6 +60,7 @@
     <string name="sync_screen_title">Sync</string>
     <string name="sync_back">Back</string>
     <string name="sync_sync">Sync</string>
+    <string name="ds_cd_sync">Sync data</string>
     <string name="sync_disconnect">Disconnect</string>
     <string name="sync_no_record">No record</string>
     <string name="sync_no_record_or_network">No record or no network</string>
@@ -184,6 +185,10 @@
     <string name="schedule_card_date">%1$d/%2$d (%3$s)</string>
     <string name="schedule_empty_message">No schedules yet.\nShall we add a new one?</string>
     <string name="schedule_empty_register_button">Add a schedule</string>
+    <string name="schedule_delete_tag_dialog_title">Delete the &quot;%1$s&quot; tag?</string>
+    <string name="schedule_delete_tag_dialog_subtext">This tag will be removed from all linked schedules, and it cannot be recovered afterward.</string>
+    <string name="schedule_dialog_cancel">Cancel</string>
+    <string name="schedule_dialog_delete">Delete</string>
     <string name="schedule_tag_edit_title">Edit '%1$s' tag</string>
     <string name="schedule_tag_name_label">Tag name</string>
     <string name="schedule_tag_name_hint">Enter a tag name</string>
@@ -264,19 +269,19 @@
     <string name="memo_edit_button">Edit note</string>
 
     <!-- Notification -->
-    <string name="notification_placeholder_desc">Using {task} automatically replaces it with the schedule name</string>
+    <string name="notification_placeholder_desc">{task} is automatically replaced with the task title (up to once)</string>
 
     <!-- Onboarding -->
     <string name="onboarding_next">Next</string>
     <string name="onboarding_start">Get started</string>
-    <string name="onboarding_page1_title">Learning based on the Ebbinghaus forgetting curve</string>
-    <string name="onboarding_page1_desc">We automatically tell you the optimal review timing\nbased on the forgetting curve.</string>
-    <string name="onboarding_page2_title">Easy schedule check</string>
-    <string name="onboarding_page2_desc">Easily check and complete today's schedule\nfrom the home screen.</string>
-    <string name="onboarding_page3_title">Never miss it with reminders</string>
-    <string name="onboarding_page3_desc">We notify you of today's tasks\nat the time you set.</string>
-    <string name="onboarding_page4_title">Sync across devices</string>
-    <string name="onboarding_page4_desc">Connect with other devices\nto manage schedules together.</string>
+    <string name="onboarding_page1_title">60 percent disappears in a single day</string>
+    <string name="onboarding_page1_desc">According to Hermann Ebbinghaus's research, without review\nover 60 percent of your memory is lost within a day.</string>
+    <string name="onboarding_page2_title">Review is essential to prevent forgetting</string>
+    <string name="onboarding_page2_desc">You need to review at the right time along the forgetting curve\nto retain memory longer.</string>
+    <string name="onboarding_page3_title">Personalized review cycles &amp; reminders</string>
+    <string name="onboarding_page3_desc">Ebbing Planner calculates the optimal review cycle\nand sends reminders automatically.</string>
+    <string name="onboarding_page4_title">Get started right now</string>
+    <string name="onboarding_page4_desc">Start your systematic review journey\nwith Ebbing Planner right now!</string>
 
     <!-- Device linking -->
     <string name="connect_title">Link with another device</string>

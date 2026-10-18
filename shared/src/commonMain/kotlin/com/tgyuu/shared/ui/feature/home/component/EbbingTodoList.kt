@@ -1,5 +1,8 @@
 package com.tgyuu.shared.ui.feature.home.component
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -86,6 +89,17 @@ fun EbbingTodoList(
             totalCount = todoLists.size,
             sortType = sortType,
             onSortTypeChange = onSortTypeChange,
+            modifier = if (calendarNestedScroll != null) {
+                Modifier
+                    .nestedScroll(calendarNestedScroll)
+                    // 헤더 드래그를 nested scroll 이벤트로 변환 (델타는 소비하지 않음)
+                    .scrollable(
+                        state = rememberScrollableState { 0f },
+                        orientation = Orientation.Vertical,
+                    )
+            } else {
+                Modifier
+            },
         )
 
         HorizontalPager(state = pagerState) { _ ->

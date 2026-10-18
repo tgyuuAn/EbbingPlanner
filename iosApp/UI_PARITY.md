@@ -357,3 +357,30 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - en 1건(위 sync)/ja 0건. 나머지 공백차 22건은 Android 래핑따옴표 vs iOS 순수공백의 표기차일 뿐 렌더 동일(오탐).
 - schedule_tag_count_completion `%2$d%`(iOS) vs `%2$d%%`(AND)는 CMP 포매터 특성상 의도적(동일 렌더).
 - 교훈: "전수조사=이스케이프"가 아니라 텍스트 내용까지 봐야 함. 키-값 스크립트 대조가 확실.
+
+## MEDIUM 잔여 처리 (2026-09-27, develop 동기화 후)
+
+`develop` 병합(60커밋, targetSdk 36 정렬 포함) 후 MEDIUM 보류 13건을 코드로 전수 재검증했다.
+보류 목록 중 일부는 이후 배치에서 이미 반영되었는데 문서만 갱신되지 않은 상태였다.
+
+### 이미 반영되어 있던 항목 (문서만 미갱신)
+- ✅ M1 알림 시간 밑줄: `TextDecoration.Underline` 적용되어 있음. 12시간제 표기는 제품 선택으로 유지.
+- ✅ M4 미리보기 카드: `light3` 라운드 16dp 카드 + `isValidPlaceholder && previewMessage.isNotEmpty()` 조건 분기 적용되어 있음.
+
+### 이번에 수정한 항목
+- 🔧 **M3** 플레이스홀더 안내 문구: `notification_placeholder_desc` 를 Android `home_alarm_placeholder_desc` 와 동일하게 정렬(ko/en/ja). '(최대 1번)' 제한 안내가 빠져 있던 문제 해소. 토큰 강조 로직(`startsWith`)은 기존 그대로 동작한다.
+- 🔧 **M6** 온보딩 카피: iOS 독자 문구(에빙하우스 곡선/일정 체크/알림/기기 동기화) → Android 원본 `onboarding_1~4`(망각률 서사)로 3개 로케일 정렬. iOS가 Android 일러스트(`ic_onboarding_1~4`)를 그대로 쓰므로 문구·그림 정합성도 함께 회복된다. en 문구의 `\'` 이스케이프는 변환기 함정(노트 #3 계열)을 피해 `'` 로 저장했다.
+- 🔧 **M7** 캘린더 동기화 아이콘: Android `ic_link.xml` 을 shared drawable 로 포팅하고 `EbbingSyncIcon`(코드 벡터) 대신 사용. 접근성 라벨도 `sync_sync`("동기화") → `ds_cd_sync`("데이터 동기화")로 맞추고 리소스 3개 로케일 추가.
+- 🔧 **M8** 월↔주 전환 제스처: `TodoHeader` 호출부에 Android 와 동일한 `nestedScroll(calendarNestedScroll) + scrollable(rememberScrollableState { 0f })` 부착. 헤더는 항상 렌더되므로 일정이 없는 empty 상태에서도 전환이 가능해졌다.
+- 🔧 **M9** 카드 제목/메모 링크: `designsystem/model/ClickableText.kt`(URL 정규식 파서)와 `designsystem/component/Text.kt`(`EbbingClickableText`)를 shared 에 신설하고 `Card.kt` 의 제목·메모에 적용. 클릭 처리는 `LinkAnnotation.Url` 이 담당하므로 expect/actual 분기가 필요 없다. `www.` 접두사에 `https://` 를 붙이는 Android 동작도 동일하게 구현.
+- 🔧 **M18** 일정화면 태그 삭제 다이얼로그: 태그 화면용 `tag_delete_confirm_*`(prefix+highlight+suffix) 재사용을 중단하고, Android 일정화면과 동일한 `schedule_delete_tag_dialog_title/_subtext` + `schedule_dialog_cancel/_delete` 로 교체(리소스 3개 로케일 신규). '연결된 모든 일정에서 함께 삭제' 안내가 빠져 있던 정보 손실이 해소된다. 태그 화면(`TagScreen`)은 Android 도 하이라이트 방식이므로 그대로 둔다.
+- 🔧 **M20** sync 메인 복원 진입: Android `SyncMainScreen` 에 없는 항목이므로 제거. 복원 동선은 설정 > 데이터 섹션(H12 에서 추가)으로 일원화된다. `AdvancedInfoSection`/`SyncScreenContent` 의 `onRestoreClick` 배선도 정리했다. 단 `SyncIntent.OnRestoreClick` 정의와 ViewModel 분기는 향후 동선 변경에 대비해 남겨 두었다.
+- 🔧 **M23** 색상 시트 스크롤바: `designsystem/util/Scrollbar.kt` 에 `LazyGridState` 오버로드가 이미 포팅되어 있어, 그리드에 `rememberLazyGridState()` + `verticalScrollbar(color = fillDisabled)` 를 연결. 원 45dp·가로 간격 10dp·`heightIn(max = 228.dp)` 는 이전 배치에서 이미 일치.
+
+### 수정하지 않기로 확정한 항목 (근거 확인 완료)
+- ⬜ **M5** 알림 화면 하단 CTA: iOS 의 `NotificationScreen` 은 설정에서만 진입한다(`RootContent` 의 Setting 블록에서만 `navigateToNotification` 호출). 일정 등록 플로우의 알림 넛지는 `AddTodoScreen` 의 `Page.NOTIFICATION` 으로 분리되어 있고 거기에 `home_add_todo_button` CTA 가 이미 있다. 설정 전용 화면에 등록 CTA 를 넣으면 오히려 오동작이므로 의도적 차이로 확정.
+- ⬜ **M12** 버전/업데이트 행: Android 는 Google Play Core 의 `AppUpdateManager`(`core/in-app-update`)에 의존한다. iOS 에는 대응 API 가 없고 App Store 조회를 새로 붙여야 하므로 패리티 범위를 벗어난다. 플랫폼 차이로 확정.
+- ⬜ **M21** 카메라 권한 분기: 검증 결과 iOS 구현이 정확하다. iOS `AVAuthorizationStatusDenied` 는 재요청해도 시스템 다이얼로그가 뜨지 않는 상태이므로 설정으로 보내는 것이 맞다. 반면 Android 의 `shouldShowRationale == true` 는 '재요청 가능' 상태여서, 설정으로 보내는 현재 Android 구현이 오히려 영구 거부 사용자를 설정으로 유도하지 못한다. iOS 를 Android 에 맞추면 기능이 나빠지므로 현행 유지하고, Android 쪽 개선은 별도 과제로 남긴다.
+
+### 남은 범위
+- LOW 35건은 미착수. `iosApp/UI_PARITY_FINDINGS.json` 의 `severity == "low"` 항목 참조.

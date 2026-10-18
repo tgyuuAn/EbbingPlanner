@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -36,6 +37,7 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHead
 import com.tgyuu.shared.designsystem.component.EbbingSolidButton
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
+import com.tgyuu.shared.designsystem.util.verticalScrollbar
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.tag_manage_title
 import ebbingplanner.shared.generated.resources.tag_add_button
@@ -100,7 +102,10 @@ fun ColorBottomSheet(
             title = stringResource(Res.string.tag_color),
         )
 
+        val gridState = rememberLazyGridState()
+
         LazyVerticalGrid(
+            state = gridState,
             columns = GridCells.Fixed(6),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -108,7 +113,11 @@ fun ColorBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 20.dp)
-                .heightIn(max = 228.dp),
+                .heightIn(max = 228.dp)
+                .verticalScrollbar(
+                    state = gridState,
+                    color = EbbingTheme.colors.dark1,
+                ),
         ) {
             items(TAG_COLORS) { color ->
                 ColorItem(

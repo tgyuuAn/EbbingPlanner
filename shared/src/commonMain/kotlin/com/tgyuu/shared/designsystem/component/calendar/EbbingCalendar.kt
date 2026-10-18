@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.designsystem.component.EbbingTextToggle
-import com.tgyuu.shared.designsystem.component.icon.EbbingSyncIcon
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
@@ -50,7 +49,8 @@ import ebbingplanner.shared.generated.resources.calendar_view_month
 import ebbingplanner.shared.generated.resources.calendar_view_week
 import ebbingplanner.shared.generated.resources.calendar_year_month
 import ebbingplanner.shared.generated.resources.ic_return
-import ebbingplanner.shared.generated.resources.sync_sync
+import ebbingplanner.shared.generated.resources.ds_cd_sync
+import ebbingplanner.shared.generated.resources.ic_link
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -321,8 +321,8 @@ private fun SyncButton(onClick: () -> Unit) {
             .clickable(onClick = onClick),
     ) {
         Icon(
-            imageVector = EbbingSyncIcon,
-            contentDescription = stringResource(Res.string.sync_sync),
+            painter = painterResource(Res.drawable.ic_link),
+            contentDescription = stringResource(Res.string.ds_cd_sync),
             tint = EbbingTheme.colors.black,
             modifier = Modifier.size(24.dp),
         )
