@@ -66,6 +66,11 @@
    - 넛지 UI는 addtodo/AddTodoNotificationNudge.kt(독립 파일). 표준 Notification 설정화면과 동일 컴포넌트/리소스 재사용. 토글 off면 상세 접힘(AnimatedVisibility).
    - **의도적 차이(기록)**: Android saveTodoAndNavigateHome은 무조건 스케줄하지만 iOS는 enabled일 때만 스케줄(권한/사용자 선택 존중). 넛지 토글 기본 off는 Android와 동일. `incrementTodoRegisteredCount`/위젯 넛지 인자는 shared 미구현이라 제외.
    - 검증: iOS/Android 타깃 컴파일 + 앱 빌드/실행 무크래시 + 임시 라우팅(page=NOTIFICATION)으로 넛지 화면 스크린샷 확인 후 원복.
+7. **제품 분석을 Amplitude 로 전환 (Android 패리티)**: Android 는 화면 조회·클릭 같은 앱 이벤트를 Amplitude 로만 보내고 `firebase-analytics` 는 SDK 자동 수집만 켜 둔다. iOS 도 같은 구조로 맞췄다.
+   - `shared/.../platform/AmplitudeAnalyticsHelper.kt`(commonMain): 이벤트명을 Android 규칙(`View_{screen}` / `Click_{button}_{screen}` / `Action_{action}_{screen}[_{result}]`)으로 만들고, 이름에 쓴 키는 속성에서 뺀다. userId 는 `ios-` 접두사(Android 는 `android-`). 규칙은 `commonTest` 의 `AmplitudeAnalyticsHelperTest` 로 고정.
+   - SDK 호출은 Swift `AmplitudeAnalyticsBridge`(pod `AmplitudeSwift ~> 1.19`)가 람다로 주입. `initKoin`/`initKoinWithFirebase` 둘 다 `onTrackAnalyticsEvent`/`onSetAnalyticsUserId`(nullable)를 받는다 → 분석 경로가 Firebase 설정 여부와 무관해졌다.
+   - **디버그 빌드에서는 Amplitude 인스턴스를 만들지 않는다**(`#if DEBUG` → nil → shared `DebugAnalyticsHelper` 콘솔 출력). Amplitude SDK 는 `autocapture` 기본값이 `SESSIONS` 라서 인스턴스만 생겨도 세션 이벤트를 보내기 때문이다. 릴리스여도 `AMPLITUDE_API_KEY` 가 비어 있으면 같은 폴백.
+   - API 키는 Android 와 같은 값을 쓴다. Amplitude 키는 플랫폼이 아니라 프로젝트 단위이고, 플랫폼은 SDK 가 `platform`/`os_name` 으로 자동 기록한다.
 
 ## 검증 원칙
 - 변경 후 `./gradlew :shared:compileKotlinIosSimulatorArm64`로 컴파일 확인.

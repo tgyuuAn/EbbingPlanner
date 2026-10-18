@@ -7,6 +7,7 @@ target 'iosApp' do
   pod 'FirebaseFirestore', '~> 11.6'
   pod 'FirebaseAnalytics', '~> 11.6'
   pod 'FirebaseCrashlytics', '~> 11.6'
+  pod 'AmplitudeSwift', '~> 1.19'
 end
 
 post_install do |installer|

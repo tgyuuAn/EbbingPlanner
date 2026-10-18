@@ -31,6 +31,9 @@ struct EbbingPlannerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) private var scenePhase
 
+    /// 릴리스 빌드에서만 만들어진다. 디버그이거나 키가 없으면 nil → shared 가 콘솔 출력 헬퍼를 쓴다.
+    private static var amplitudeBridge: AmplitudeAnalyticsBridge?
+
     init() {
         // Supabase 시크릿은 gitignore된 Secrets.plist에서 읽어 shared(initKoin)로 전달
         // (파일/값이 없으면 shared가 Stub sync로 폴백 — 크래시 없음)
@@ -38,36 +41,55 @@ struct EbbingPlannerApp: App {
         let supabaseUrl = secrets["SUPABASE_URL"] ?? ""
         let supabaseKey = secrets["SUPABASE_ANON_KEY"] ?? ""
 
+        Self.amplitudeBridge = Self.makeAmplitudeBridge(apiKey: secrets["AMPLITUDE_API_KEY"] ?? "")
+        let onTrackAnalyticsEvent: ((String, [String: Any]) -> Void)? = Self.amplitudeBridge.map { bridge in
+            { eventType, properties in bridge.track(eventType: eventType, properties: properties) }
+        }
+        let onSetAnalyticsUserId: ((String?) -> Void)? = Self.amplitudeBridge.map { bridge in
+            { userId in bridge.setUserId(userId) }
+        }
+
         // Check if Firebase is available
         if FirebaseApp.app() != nil {
             // Firebase is configured - use native implementations
-            initKoinWithFirebaseIntegration(supabaseUrl: supabaseUrl, supabaseKey: supabaseKey)
+            IosModuleKt.doInitKoinWithFirebase(
+                onLogError: { message in
+                    FirebaseErrorBridge.shared.logError(message: message)
+                },
+                onSetErrorUserId: { userId in
+                    FirebaseErrorBridge.shared.setUserId(userId)
+                },
+                onClearErrorUserId: {
+                    FirebaseErrorBridge.shared.clearUserId()
+                },
+                onTrackAnalyticsEvent: onTrackAnalyticsEvent,
+                onSetAnalyticsUserId: onSetAnalyticsUserId,
+                supabaseUrl: supabaseUrl,
+                supabaseKey: supabaseKey
+            )
         } else {
             // Firebase not configured - use debug/stub implementations
-            IosModuleKt.doInitKoin(supabaseUrl: supabaseUrl, supabaseKey: supabaseKey)
+            IosModuleKt.doInitKoin(
+                onTrackAnalyticsEvent: onTrackAnalyticsEvent,
+                onSetAnalyticsUserId: onSetAnalyticsUserId,
+                supabaseUrl: supabaseUrl,
+                supabaseKey: supabaseKey
+            )
         }
     }
 
-    private func initKoinWithFirebaseIntegration(supabaseUrl: String, supabaseKey: String) {
-        IosModuleKt.doInitKoinWithFirebase(
-            onLogError: { message in
-                FirebaseErrorBridge.shared.logError(message: message)
-            },
-            onSetErrorUserId: { userId in
-                FirebaseErrorBridge.shared.setUserId(userId)
-            },
-            onClearErrorUserId: {
-                FirebaseErrorBridge.shared.clearUserId()
-            },
-            onLogAnalyticsEvent: { name, params in
-                FirebaseAnalyticsBridge.shared.logEvent(name: name, parameters: params as? [String: Any])
-            },
-            onSetAnalyticsUserId: { userId in
-                FirebaseAnalyticsBridge.shared.setUserId(userId)
-            },
-            supabaseUrl: supabaseUrl,
-            supabaseKey: supabaseKey
-        )
+    /// Android 는 BuildConfig.DEBUG 이면 Amplitude 대신 로그만 남긴다. iOS 도 디버그 빌드에서는 만들지 않는다.
+    private static func makeAmplitudeBridge(apiKey: String) -> AmplitudeAnalyticsBridge? {
+        #if DEBUG
+        return nil
+        #else
+        let key = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty, !key.hasPrefix("YOUR_") else {
+            print("⚠️ Amplitude: AMPLITUDE_API_KEY not configured. Analytics events will only be printed.")
+            return nil
+        }
+        return AmplitudeAnalyticsBridge(apiKey: key)
+        #endif
     }
 
     private static func loadSecrets() -> [String: String] {

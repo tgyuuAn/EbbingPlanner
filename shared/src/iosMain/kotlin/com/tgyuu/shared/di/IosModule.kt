@@ -9,7 +9,7 @@ import com.tgyuu.shared.platform.InAppReviewManager
 import com.tgyuu.shared.platform.Settings
 import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.platform.ErrorDataSource
-import com.tgyuu.shared.platform.FirebaseAnalyticsHelper
+import com.tgyuu.shared.platform.AmplitudeAnalyticsHelper
 import com.tgyuu.shared.platform.FirebaseErrorDataSource
 import com.tgyuu.shared.database.dao.RepeatCyclesDao
 import com.tgyuu.shared.database.dao.TodoSchedulesDao
@@ -53,25 +53,52 @@ fun getIosModules(supabaseUrl: String, supabaseKey: String) =
     listOf(iosModule(supabaseUrl, supabaseKey)) + getSharedModules()
 
 /**
+ * Amplitude 콜백이 주어지면 기본 DebugAnalyticsHelper(콘솔 출력)를 AmplitudeAnalyticsHelper 로 덮어쓴다.
+ * Swift 는 디버그 빌드이거나 API 키가 없으면 null 을 넘긴다(Android 의 BuildConfig.DEBUG 분기 대응).
+ */
+private fun analyticsOverrideModule(
+    onTrackAnalyticsEvent: ((String, Map<String, Any?>) -> Unit)?,
+    onSetAnalyticsUserId: ((String?) -> Unit)?,
+) = module {
+    if (onTrackAnalyticsEvent != null && onSetAnalyticsUserId != null) {
+        single<AnalyticsHelper> {
+            AmplitudeAnalyticsHelper(
+                onTrack = onTrackAnalyticsEvent,
+                onSetUserId = onSetAnalyticsUserId,
+            )
+        }
+    }
+}
+
+/**
  * Initialize Koin for iOS.
  * Call from Swift:
- *   IosModuleKt.doInitKoin(supabaseUrl:..., supabaseKey:...)
+ *   IosModuleKt.doInitKoin(onTrackAnalyticsEvent:..., onSetAnalyticsUserId:..., supabaseUrl:..., supabaseKey:...)
  */
-fun initKoin(supabaseUrl: String, supabaseKey: String) {
+fun initKoin(
+    onTrackAnalyticsEvent: ((String, Map<String, Any?>) -> Unit)?,
+    onSetAnalyticsUserId: ((String?) -> Unit)?,
+    supabaseUrl: String,
+    supabaseKey: String,
+) {
     startKoin {
-        modules(getIosModules(supabaseUrl, supabaseKey))
+        modules(
+            getIosModules(supabaseUrl, supabaseKey) +
+                analyticsOverrideModule(onTrackAnalyticsEvent, onSetAnalyticsUserId)
+        )
     }
 }
 
 /**
  * Initialize Koin with Firebase services. Call from Swift after FirebaseApp.configure().
+ * 제품 분석 이벤트는 Android 와 같이 Firebase 가 아니라 Amplitude 로 보낸다.
  */
 fun initKoinWithFirebase(
     onLogError: (String) -> Unit,
     onSetErrorUserId: (String) -> Unit,
     onClearErrorUserId: () -> Unit,
-    onLogAnalyticsEvent: (String, Map<String, Any?>) -> Unit,
-    onSetAnalyticsUserId: (String?) -> Unit,
+    onTrackAnalyticsEvent: ((String, Map<String, Any?>) -> Unit)?,
+    onSetAnalyticsUserId: ((String?) -> Unit)?,
     supabaseUrl: String,
     supabaseKey: String,
 ) {
@@ -86,13 +113,7 @@ fun initKoinWithFirebase(
                         onClearUserId = onClearErrorUserId,
                     )
                 }
-                single<AnalyticsHelper> {
-                    FirebaseAnalyticsHelper(
-                        onLogEvent = onLogAnalyticsEvent,
-                        onSetUserId = onSetAnalyticsUserId,
-                    )
-                }
-            }
+            } + analyticsOverrideModule(onTrackAnalyticsEvent, onSetAnalyticsUserId)
         )
     }
 }

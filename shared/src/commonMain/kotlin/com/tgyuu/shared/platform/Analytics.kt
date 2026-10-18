@@ -14,6 +14,7 @@ data class AnalyticsEvent(
         const val SCREEN_NAME = "screen_name"
         const val ACTION_NAME = "action_name"
         const val BUTTON_NAME = "button_name"
+        const val ACTION_RESULT = "action_result"
     }
 }
 

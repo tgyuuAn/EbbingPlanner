@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		143C8A765DC520C2F46FBBDE /* AmplitudeAnalyticsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B7ACB05B1140A5B726B5B01 /* AmplitudeAnalyticsBridge.swift */; };
 		4146A945CD15E1CE993E50EF /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0AD8AE9C88DBD1FFBA2358FD /* Secrets.plist */; };
 		4333AA3CCBAF451893621143 /* EbbingPlannerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91238F3C9A0E4494E140C0B3 /* EbbingPlannerWidget.swift */; };
 		4AB704C7D831C67237D46E9C /* FirebaseSyncBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F57D35DAA05B93B48FF8154 /* FirebaseSyncBridge.swift */; };
@@ -59,6 +60,7 @@
 		00618EFE4984C4F62DE5A936 /* Pods-iosApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debug.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debug.xcconfig"; sourceTree = "<group>"; };
 		0122956141A7451E81839E0F /* EbbingPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbbingPlannerApp.swift; sourceTree = "<group>"; };
 		0AD8AE9C88DBD1FFBA2358FD /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.plist; sourceTree = "<group>"; };
+		0B7ACB05B1140A5B726B5B01 /* AmplitudeAnalyticsBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeAnalyticsBridge.swift; sourceTree = "<group>"; };
 		0C3FBE3C34D4030B255DD997 /* EbbingPlannerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbbingPlannerWidget.entitlements; sourceTree = "<group>"; };
 		0F44F0E6E246AB4B8BDAEEAF /* FirebaseErrorBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseErrorBridge.swift; sourceTree = "<group>"; };
 		455B83E474B7E41C5B515510 /* Pods_iosApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,6 +104,7 @@
 		325944CBC27CEAAED12EF47E /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				0B7ACB05B1140A5B726B5B01 /* AmplitudeAnalyticsBridge.swift */,
 				F0F86A2785CAFE64C696D907 /* EbbingPlanner.entitlements */,
 				0122956141A7451E81839E0F /* EbbingPlannerApp.swift */,
 				0F44F0E6E246AB4B8BDAEEAF /* FirebaseErrorBridge.swift */,
@@ -311,6 +314,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				143C8A765DC520C2F46FBBDE /* AmplitudeAnalyticsBridge.swift in Sources */,
 				CC38D4F51AC8335130D1C35E /* EbbingPlannerApp.swift in Sources */,
 				A5ECB83A94CBA1C95B3FB32A /* FirebaseErrorBridge.swift in Sources */,
 				4AB704C7D831C67237D46E9C /* FirebaseSyncBridge.swift in Sources */,
