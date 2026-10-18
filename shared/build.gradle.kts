@@ -17,7 +17,7 @@ kotlin {
     // AGP 9+ KMP 전용 안드로이드 라이브러리 타깃 (구 androidTarget + android {} 블록 대체)
     androidLibrary {
         namespace = "com.tgyuu.shared"
-        compileSdk = 35
+        compileSdk = 36
         minSdk = 28
 
         compilerOptions {
