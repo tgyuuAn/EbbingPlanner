@@ -60,6 +60,7 @@
     <string name="sync_screen_title">同期</string>
     <string name="sync_back">戻る</string>
     <string name="sync_sync">同期</string>
+    <string name="ds_cd_sync">データ同期</string>
     <string name="sync_disconnect">連携を解除</string>
     <string name="sync_no_record">記録なし</string>
     <string name="sync_no_record_or_network">記録がないかネットワークがありません</string>
@@ -184,6 +185,10 @@
     <string name="schedule_card_date">%1$d月%2$d日 (%3$s)</string>
     <string name="schedule_empty_message">まだ予定がありません。\n新しい予定を登録しましょうか？</string>
     <string name="schedule_empty_register_button">予定を登録する</string>
+    <string name="schedule_delete_tag_dialog_title">%1$s タグを削除しますか？</string>
+    <string name="schedule_delete_tag_dialog_subtext">このタグは現在リンクされているすべての予定からも削除され、削除後は復元できません。</string>
+    <string name="schedule_dialog_cancel">キャンセル</string>
+    <string name="schedule_dialog_delete">削除</string>
     <string name="schedule_tag_edit_title">「%1$s」タグの編集</string>
     <string name="schedule_tag_name_label">タグ名</string>
     <string name="schedule_tag_name_hint">タグ名を入力してください</string>
@@ -264,19 +269,19 @@
     <string name="memo_edit_button">メモを編集</string>
 
     <!-- 通知 -->
-    <string name="notification_placeholder_desc">{タスク}を使うと予定名に自動置換されます</string>
+    <string name="notification_placeholder_desc">{タスク}はやること名に自動変換されます（最大1回）</string>
 
     <!-- オンボーディング -->
     <string name="onboarding_next">次へ</string>
     <string name="onboarding_start">始める</string>
-    <string name="onboarding_page1_title">エビングハウスの忘却曲線に基づく学習</string>
-    <string name="onboarding_page1_desc">忘却曲線に合わせて最適な復習タイミングを\n自動でお知らせします。</string>
-    <string name="onboarding_page2_title">簡単な予定チェック</string>
-    <string name="onboarding_page2_desc">ホーム画面で簡単に\n今日の予定を確認して完了しましょう。</string>
-    <string name="onboarding_page3_title">通知で見逃さない</string>
-    <string name="onboarding_page3_desc">設定した時間に今日のやることを\n通知でお知らせします。</string>
-    <string name="onboarding_page4_title">複数の端末で同期</string>
-    <string name="onboarding_page4_desc">他の端末と接続して\n予定を一緒に管理しましょう。</string>
+    <string name="onboarding_page1_title">1日で60%が失われます</string>
+    <string name="onboarding_page1_desc">ヘルマン・エビングハウスの研究によると、復習しないと\n1日で記憶の60%以上が失われます。</string>
+    <string name="onboarding_page2_title">忘却を防ぐには復習が必須</string>
+    <string name="onboarding_page2_desc">忘却曲線に合わせて適切なタイミングで復習することで\n記憶を長く保てます。</string>
+    <string name="onboarding_page3_title">カスタム復習サイクル＆通知</string>
+    <string name="onboarding_page3_desc">エビングプランナーが最適な復習サイクルを計算し\n自動で通知をお送りします。</string>
+    <string name="onboarding_page4_title">今すぐ始めましょう</string>
+    <string name="onboarding_page4_desc">エビングプランナーと一緒に体系的な復習の旅を\n今すぐ始めてみましょう！</string>
 
     <!-- 端末連携 -->
     <string name="connect_title">他の端末と連携</string>

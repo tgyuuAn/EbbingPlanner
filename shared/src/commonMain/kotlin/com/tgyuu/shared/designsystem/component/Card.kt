@@ -123,7 +123,7 @@ fun TodoListCard(
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
                             modifier = Modifier.padding(end = 24.dp),
                         ) {
-                            Text(
+                            EbbingClickableText(
                                 text = todo.title,
                                 style = EbbingTheme.typography.headingMB,
                                 color = titleColor,
@@ -190,7 +190,7 @@ fun TodoListCard(
                                 .heightIn(min = 28.dp)
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                         ) {
-                            Text(
+                            EbbingClickableText(
                                 text = todo.memo,
                                 style = EbbingTheme.typography.bodySM,
                                 color = subColor,
