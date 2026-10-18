@@ -33,26 +33,3 @@ class FirebaseErrorBridge {
         Analytics.setUserID(nil)
     }
 }
-
-/// Analytics bridge for event tracking from Kotlin.
-/// Only use when FirebaseApp is configured.
-class FirebaseAnalyticsBridge {
-    static let shared = FirebaseAnalyticsBridge()
-
-    func logEvent(name: String, parameters: [String: Any]? = nil) {
-        guard FirebaseApp.app() != nil else { return }
-        Analytics.logEvent(name, parameters: parameters)
-    }
-
-    func logScreenView(screenName: String) {
-        guard FirebaseApp.app() != nil else { return }
-        Analytics.logEvent(AnalyticsEventScreenView, parameters: [
-            AnalyticsParameterScreenName: screenName,
-        ])
-    }
-
-    func setUserId(_ userId: String?) {
-        guard FirebaseApp.app() != nil else { return }
-        Analytics.setUserID(userId)
-    }
-}
