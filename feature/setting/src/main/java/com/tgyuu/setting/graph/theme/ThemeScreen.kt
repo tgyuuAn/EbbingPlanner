@@ -35,7 +35,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingVisibleAnimation
@@ -65,10 +65,13 @@ import com.tgyuu.domain.model.Theme
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
 import com.tgyuu.setting.graph.ui.animateEbbingColors
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 @Composable
-internal fun ThemeRoute(viewModel: ThemeViewModel = hiltViewModel()) {
+internal fun ThemeRoute(viewModel: ThemeViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
@@ -349,7 +352,7 @@ private fun ThemePreviewCard(
                 tagId = 1,
                 name = previewText,
                 color = DefaultTodoTag.color,
-                date = today.plusDays(index.toLong()),
+                date = today.plus(index, DateTimeUnit.DAY),
                 memo = ClickableText.from(previewText),
                 isPinned = true,
                 isDone = index == 0,

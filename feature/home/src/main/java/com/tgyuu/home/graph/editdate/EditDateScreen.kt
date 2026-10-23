@@ -30,9 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
+import com.tgyuu.common.now
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -50,12 +51,13 @@ import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleCheckContent
-import java.time.DayOfWeek
-import java.time.LocalDate
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 @Composable
 internal fun EditDateRoute(
-    viewModel: EditDateViewModel = hiltViewModel()
+    viewModel: EditDateViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var repeatCycleSheetKey by remember { mutableIntStateOf(0) }
@@ -311,7 +313,7 @@ private fun EditDateMainFormContent(
 ) {
     val monthDayText = stringResource(
         R.string.home_month_day,
-        state.selectedDate.monthValue,
+        state.selectedDate.monthNumber,
         state.selectedDate.dayOfMonth,
     )
     val editDateHeaderSuffix = stringResource(R.string.home_edit_date_header_suffix)

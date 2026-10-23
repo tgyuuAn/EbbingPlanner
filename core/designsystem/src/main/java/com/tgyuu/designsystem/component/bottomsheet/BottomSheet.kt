@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,7 +46,8 @@ fun EbbingModalBottomSheet(
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetState = sheetState.state,
         sheetContent = {
-            Column(modifier = Modifier.navigationBarsPadding()) {
+            // 시트 안에 텍스트필드가 있는 경우(태그 수정 등) 키보드가 시트를 가리지 않도록 IME 인셋 적용
+            Column(modifier = Modifier.navigationBarsPadding().imePadding()) {
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()

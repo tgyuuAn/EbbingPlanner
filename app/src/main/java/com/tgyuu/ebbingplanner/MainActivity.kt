@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -23,16 +22,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.LocalAnalyticsHelper
-import com.tgyuu.ebbingplanner.backup.AutoBackupManager
-import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.util.LocalAnimationsEnabled
 import com.tgyuu.common.util.MemoryAnimationController
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.ebbingplanner.backup.AutoBackupManager
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.HandleAppUpdate
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
@@ -51,30 +50,20 @@ import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import javax.inject.Inject
+import kotlinx.datetime.LocalDate
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModel()
 
-    @Inject
-    lateinit var navigationBus: NavigationBus
-
-    @Inject
-    lateinit var eventBus: EventBus
-
-    @Inject
-    lateinit var networkMonitor: NetworkMonitor
-
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
-
-    @Inject
-    lateinit var autoBackupManager: AutoBackupManager
+    private val navigationBus: NavigationBus by inject()
+    private val eventBus: EventBus by inject()
+    private val networkMonitor: NetworkMonitor by inject()
+    private val analyticsHelper: AnalyticsHelper by inject()
+    private val autoBackupManager: AutoBackupManager by inject()
 
     private var isInitialized = true
 

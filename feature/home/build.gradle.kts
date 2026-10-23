@@ -25,5 +25,7 @@ dependencies {
     implementation(projects.core.inAppReview)
 
     implementation(libs.accompanist.permission)
+    implementation(libs.kotlinx.datetime)
+
     testImplementation(libs.mockk)
 }

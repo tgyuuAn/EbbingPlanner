@@ -10,14 +10,11 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.tgyuu.common.util.openPlayStore
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class InAppUpdateManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+
+class InAppUpdateManager(
+    private val context: Context,
 ) {
     private val appUpdateManager = AppUpdateManagerFactory.create(context)
 

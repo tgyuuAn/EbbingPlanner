@@ -35,8 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
@@ -55,7 +55,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun RepeatCycleRoute(
-    viewModel: RepeatCycleViewModel = hiltViewModel()
+    viewModel: RepeatCycleViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -87,15 +87,17 @@ private fun RepeatCycleScreen(
     var isShowDialog by remember { mutableStateOf(false) }
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (isShowDialog && selectedRepeatCycle != null) {
-        DeleteDialog(
-            onDismissRequest = { isShowDialog = false },
-            onDeleteClick = {
-                onDeleteClick(selectedRepeatCycle!!)
-                isShowDialog = false
-                selectedRepeatCycle = null
-            },
-        )
+    selectedRepeatCycle?.let { toDelete ->
+        if (isShowDialog) {
+            DeleteDialog(
+                onDismissRequest = { isShowDialog = false },
+                onDeleteClick = {
+                    onDeleteClick(toDelete)
+                    isShowDialog = false
+                    selectedRepeatCycle = null
+                },
+            )
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -202,7 +204,7 @@ private fun RepeatCycleScreen(
 
                 EbbingSolidButton(
                     label = stringResource(R.string.repeat_edit),
-                    onClick = { onEditClick(selectedRepeatCycle!!) },
+                    onClick = { selectedRepeatCycle?.let(onEditClick) },
                     modifier = Modifier.weight(1f),
                 )
             }

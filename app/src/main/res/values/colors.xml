@@ -8,10 +8,5 @@
     <color name="black">#FF262729</color>
     <color name="white">#FFFFFFFF</color>
     <color name="dark">#FFF4F6FA</color>
-
-    <color name="widgetBackground_25">#40F4F6FA</color>
-    <color name="widgetBackground_50">#80F4F6FA</color>
-    <color name="widgetBackground_75">#BFF4F6FA</color>
-    <color name="widgetBackground_100">#FFF4F6FA</color>
 </resources>
 

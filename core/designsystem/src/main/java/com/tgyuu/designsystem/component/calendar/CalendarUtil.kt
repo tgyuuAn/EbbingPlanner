@@ -1,13 +1,30 @@
 package com.tgyuu.designsystem.component.calendar
 
-import java.time.DayOfWeek
-import java.time.LocalDate
+import com.tgyuu.common.getDisplayName
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 fun DayOfWeek.toShortLabel(): String =
     getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.getDefault())
 
 fun yearMonthDiff(from: LocalDate, to: LocalDate): Int {
-    return (to.year - from.year) * 12 + (to.monthValue - from.monthValue)
+    return (to.year - from.year) * 12 + (to.monthNumber - from.monthNumber)
 }
+
+val EbbingDayOfWeek = listOf(
+    DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+    DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY,
+)
+
+private val EbbingDayOfWeekSunday = EbbingDayOfWeek
+
+private val EbbingDayOfWeekMonday = listOf(
+    DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY,
+    DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY,
+)
+
+fun getEbbingDayOfWeek(startFromMonday: Boolean): List<DayOfWeek> =
+    if (startFromMonday) EbbingDayOfWeekMonday else EbbingDayOfWeekSunday
 
 internal const val COLOR_ANIM_THRESHOLD = 5L * 1024 * 1024

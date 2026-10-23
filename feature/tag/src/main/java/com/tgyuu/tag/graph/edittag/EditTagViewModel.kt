@@ -14,12 +14,9 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.edittag.contract.EditTagIntent
 import com.tgyuu.tag.graph.edittag.contract.EditTagState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EditTagViewModel @Inject constructor(
+class EditTagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
@@ -56,12 +53,7 @@ class EditTagViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: EditTagIntent) {
         when (intent) {
-            EditTagIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "EditTag", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            EditTagIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             is EditTagIntent.OnNameChange -> onNameChange(intent.name)
             is EditTagIntent.OnColorDropDownClick -> eventBus.sendEvent(
                 EbbingEvent.ShowBottomSheet(intent.content)
@@ -96,9 +88,17 @@ class EditTagViewModel @Inject constructor(
             return
         }
 
+        val originTag = currentState.originTag ?: return
+        val trimmedName = currentState.name.trim()
+        val existingTags = todoRepository.loadTags()
+        if (existingTags.any { it.id != originTag.id && it.name.equals(trimmedName, ignoreCase = true) }) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 존재하는 태그 이름입니다"))
+            return
+        }
+
         todoRepository.updateTag(
-            todoTag = currentState.originTag!!.copy(
-                name = currentState.name,
+            todoTag = originTag.copy(
+                name = trimmedName,
                 color = currentState.colorValue,
             )
         )
