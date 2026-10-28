@@ -2,6 +2,7 @@ package com.tgyuu.ebbingplanner.backup
 
 import com.tgyuu.domain.repository.FeatureFlag
 import com.tgyuu.ebbingplanner.backup.fake.FakeConfigRepository
+import com.tgyuu.ebbingplanner.backup.fake.FakeErrorRepository
 import com.tgyuu.ebbingplanner.backup.fake.FakeFeatureFlagRepository
 import com.tgyuu.ebbingplanner.backup.fake.FakeSyncRepository
 import com.tgyuu.sync.network.NetworkMonitor
@@ -19,6 +20,7 @@ class AutoBackupManagerTest {
     private lateinit var syncRepository: FakeSyncRepository
     private lateinit var configRepository: FakeConfigRepository
     private lateinit var featureFlagRepository: FakeFeatureFlagRepository
+    private lateinit var errorRepository: FakeErrorRepository
     private lateinit var networkMonitor: NetworkMonitor
     private lateinit var autoBackupManager: AutoBackupManager
 
@@ -29,6 +31,7 @@ class AutoBackupManagerTest {
         syncRepository = FakeSyncRepository()
         configRepository = FakeConfigRepository()
         featureFlagRepository = FakeFeatureFlagRepository()
+        errorRepository = FakeErrorRepository()
         networkMonitor = mockk {
             every { this@mockk.networkState } returns this@AutoBackupManagerTest.networkState
         }
@@ -40,6 +43,7 @@ class AutoBackupManagerTest {
             configRepository = configRepository,
             networkMonitor = networkMonitor,
             featureFlagRepository = featureFlagRepository,
+            errorRepository = errorRepository,
         )
     }
 
@@ -99,12 +103,30 @@ class AutoBackupManagerTest {
         autoBackupManager.onAppStop()
 
         assertEquals(1, syncRepository.syncUpCallCount)
+        assertEquals(1, errorRepository.loggedErrors.size)
 
         // 실패 후 재시도 시 백업이 수행되어야 한다
         syncRepository.shouldSyncFail = false
         autoBackupManager.tryPendingBackup()
 
         assertEquals(2, syncRepository.syncUpCallCount)
+    }
+
+    @Test
+    fun `syncUpData 실패 시 에러를 기록한다`() = runTest {
+        syncRepository.shouldSyncFail = true
+
+        autoBackupManager.onAppStop()
+
+        assertEquals(1, errorRepository.loggedErrors.size)
+        assertEquals("sync failed", errorRepository.loggedErrors.first().message)
+    }
+
+    @Test
+    fun `syncUpData 성공 시 에러를 기록하지 않는다`() = runTest {
+        autoBackupManager.onAppStop()
+
+        assertEquals(0, errorRepository.loggedErrors.size)
     }
 
     @Test

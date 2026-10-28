@@ -20,6 +20,7 @@ import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.home.graph.editdate.contract.EditDateIntent
 import com.tgyuu.home.graph.editdate.contract.EditDateState
+import com.tgyuu.home.model.sortedByUsageOrder
 import com.tgyuu.home.model.toUiModel
 import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph.HomeRoute
@@ -98,7 +99,9 @@ class EditDateViewModel @Inject constructor(
     internal fun loadRepeatCycles() = viewModelScope.launch {
         val loadedRepeatCycleList = todoRepository.loadRepeatCycles()
         val allRepeatCycles = DefaultRepeatCycles + loadedRepeatCycleList
-        setState { copy(repeatCycleList = allRepeatCycles.toUiModels(resourceProvider)) }
+        val usageOrder = configRepository.getRepeatCycleUsageOrder()
+        val sortedRepeatCycles = allRepeatCycles.sortedByUsageOrder(usageOrder) { it.id }
+        setState { copy(repeatCycleList = sortedRepeatCycles.toUiModels(resourceProvider)) }
     }
 
     override suspend fun processIntent(intent: EditDateIntent) {
@@ -198,6 +201,10 @@ class EditDateViewModel @Inject constructor(
             isPinned = currentState.isPinned,
             restDays = currentState.restDays.toSet(),
         )
+
+        runCatching {
+            currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
+        }
 
         val (hour, minute) = configRepository.getAlarmTime()
         currentState.schedules.forEach { schedule ->

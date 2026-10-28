@@ -51,4 +51,8 @@ class FakeConfigRepository : ConfigRepository {
     override fun getCalendarDefaultView(): Flow<CalendarDefaultView> =
         flowOf(CalendarDefaultView.MONTHLY)
     override suspend fun setCalendarDefaultView(view: CalendarDefaultView) {}
+    override suspend fun getTagUsageOrder(): List<Int> = emptyList()
+    override suspend fun recordTagUsage(tagId: Int) {}
+    override suspend fun getRepeatCycleUsageOrder(): List<Int> = emptyList()
+    override suspend fun recordRepeatCycleUsage(cycleId: Int) {}
 }

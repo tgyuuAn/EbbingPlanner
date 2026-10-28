@@ -13,20 +13,11 @@ android {
     namespace = "com.tgyuu.ebbingplanner"
 
     defaultConfig {
-        versionCode = 39
-        versionName = "1.1.0"
-        targetSdk = 35
+        versionCode = 40
+        versionName = "1.0.39"
+        targetSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        val localProperties = Properties()
-        localProperties.load(project.rootProject.file("local.properties").bufferedReader())
-
-        buildConfigField(
-            type = "String",
-            name = "EBBING_NOTICE_URL",
-            value = "\"${localProperties["EBBING_NOTICE_URL"]}\""
-        )
     }
 
     signingConfigs {
@@ -88,4 +79,5 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.adaptive.navigation.suite)
+    implementation(libs.androidx.compose.navigation)
 }

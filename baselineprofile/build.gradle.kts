@@ -1,44 +1,35 @@
-import com.android.build.api.dsl.ManagedVirtualDevice
-
 plugins {
     alias(libs.plugins.android.test)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.baselineprofile)
 }
 
 android {
     namespace = "com.tgyuu.baselineprofile"
-    compileSdk = 35
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
-    }
-
     defaultConfig {
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     targetProjectPath = ":app"
-    testOptions.managedDevices.devices {
-        create<ManagedVirtualDevice>("pixel6Api35") {
-            device = "Pixel 6"
-            apiLevel = 35
-            systemImageSource = "aosp"
-        }
+    testOptions.managedDevices.localDevices.create("pixel6Api36") {
+        device = "Pixel 6"
+        apiLevel = 36
+        systemImageSource = "aosp"
     }
 }
 
 baselineProfile {
     managedDevices.clear()
-    managedDevices += "pixel6Api35"
+    managedDevices += "pixel6Api36"
     useConnectedDevices = false
 }
 

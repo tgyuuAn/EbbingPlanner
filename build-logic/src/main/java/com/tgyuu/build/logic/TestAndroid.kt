@@ -11,15 +11,15 @@ internal fun Project.configureTestAndroid() {
 @Suppress("UnstableApiUsage")
 internal fun Project.configureJUnitAndroid() {
     androidExtension.apply {
-        testOptions { unitTests.all { it.useJUnitPlatform() } }
-        defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
+        testOptions.unitTests.all { it.useJUnitPlatform() }
+        defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        val libs = extensions.libs
-        dependencies {
-            "androidTestImplementation"(libs.findLibrary("androidx.test.ext").get())
-            "androidTestImplementation"(libs.findLibrary("androidx.runner").get())
-            "androidTestImplementation"(libs.findLibrary("androidx.junit").get())
-            "androidTestImplementation"(libs.findLibrary("coroutines-test").get())
-        }
+    val libs = extensions.libs
+    dependencies {
+        "androidTestImplementation"(libs.findLibrary("androidx.test.ext").get())
+        "androidTestImplementation"(libs.findLibrary("androidx.runner").get())
+        "androidTestImplementation"(libs.findLibrary("androidx.junit").get())
+        "androidTestImplementation"(libs.findLibrary("coroutines-test").get())
     }
 }

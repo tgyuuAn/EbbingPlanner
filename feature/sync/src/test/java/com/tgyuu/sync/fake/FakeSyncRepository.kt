@@ -3,6 +3,7 @@ package com.tgyuu.sync.fake
 import com.tgyuu.domain.model.sync.ConnectInfo
 import com.tgyuu.domain.model.sync.ConnectResult
 import com.tgyuu.domain.model.sync.ConnectedPeer
+import com.tgyuu.domain.model.sync.RestoreResult
 import com.tgyuu.domain.model.sync.ServerSyncInfo
 import com.tgyuu.domain.repository.SyncRepository
 import java.time.LocalDateTime
@@ -60,6 +61,10 @@ class FakeSyncRepository : SyncRepository {
         if (shouldConnectFail) throw Exception("연동 오류")
         return connectResult
     }
+
+    var restoreResult: RestoreResult = RestoreResult.NotFound
+
+    override suspend fun restoreByDeviceId(deviceIdPrefix: String): RestoreResult = restoreResult
 
     override suspend fun disconnectAnother() {
         connectedUuid = null

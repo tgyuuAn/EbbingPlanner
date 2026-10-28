@@ -1,5 +1,8 @@
 package com.tgyuu.home.graph.main.ui
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -84,6 +87,17 @@ internal fun EbbingTodoList(
             totalCount = todoLists.size,
             sortType = sortType,
             onSortTypeChange = onSortTypeChange,
+            modifier = if (calendarNestedScroll != null) {
+                Modifier
+                    .nestedScroll(calendarNestedScroll)
+                    // 헤더 드래그를 nested scroll 이벤트로 변환 (델타는 소비하지 않음)
+                    .scrollable(
+                        state = rememberScrollableState { 0f },
+                        orientation = Orientation.Vertical,
+                    )
+            } else {
+                Modifier
+            },
         )
 
         HorizontalPager(state = pagerState) { page ->
@@ -94,7 +108,6 @@ internal fun EbbingTodoList(
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onCheckedChange = onCheckedChange,
                 onEdit = onEditScheduleClick,
-                calendarNestedScroll = calendarNestedScroll,
             )
         }
     }
@@ -107,10 +120,11 @@ private fun TodoHeader(
     totalCount: Int,
     sortType: SortType,
     onSortTypeChange: (SortType) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp)
     ) {
@@ -161,7 +175,6 @@ private fun TodoPage(
     schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onEdit: (TodoScheduleUiModel) -> Unit,
-    calendarNestedScroll: NestedScrollConnection? = null,
 ) {
     val listState = rememberLazyListState()
 
@@ -176,13 +189,6 @@ private fun TodoPage(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
                 .fillMaxSize()
-                .then(
-                    if (calendarNestedScroll != null) {
-                        Modifier.nestedScroll(calendarNestedScroll)
-                    } else {
-                        Modifier
-                    }
-                )
                 .padding(horizontal = 20.dp),
         ) {
             if (sortType == SortType.BY_TAG) {

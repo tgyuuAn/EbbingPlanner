@@ -59,15 +59,22 @@ class SupabaseSyncDataSource @Inject constructor(
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
     ): ZonedDateTime {
-        suspendRunCatching {
-            supabase.from(TABLE_SYNC_INFO)
-                .upsert(SyncInfoDto(uuid = uuid, deviceName = deviceName))
-        }
+        // 모든 데이터 테이블의 uuid가 sync_info.uuid를 참조하므로,
+        // 여기서 실패하면 이후 업로드는 FK 위반으로 전부 실패한다. 실패를 삼키지 않고 즉시 알린다.
+        val syncInfoDto = SyncInfoDto(uuid = uuid, deviceName = deviceName)
+        uploadTable(TABLE_SYNC_INFO, listOf(syncInfoDto)) {
+            supabase.from(TABLE_SYNC_INFO).upsert(syncInfoDto)
+        }?.let { throw it }
 
-        val scheduleDtos = schedules.map { it.toDto(uuid) }
-        val infoDtos = infos.map { it.toDto(uuid) }
-        val repeatCycleDtos = repeatCycles.map { it.toDto(uuid) }
-        val tagDtos = tags.map { it.toDto(uuid) }
+        // upsert 업데이트 시 DB가 uploaded_at을 갱신해주지 않으므로 클라이언트가 직접 찍어준다.
+        // (증분 다운로드가 uploaded_at > lastSyncTime 필터를 사용)
+        val now = ZonedDateTime.now()
+        val uploadedAtIso = now.format(ISO_FORMAT)
+
+        val scheduleDtos = schedules.map { it.toDto(uuid).copy(uploadedAt = uploadedAtIso) }
+        val infoDtos = infos.map { it.toDto(uuid).copy(uploadedAt = uploadedAtIso) }
+        val repeatCycleDtos = repeatCycles.map { it.toDto(uuid).copy(uploadedAt = uploadedAtIso) }
+        val tagDtos = tags.map { it.toDto(uuid).copy(uploadedAt = uploadedAtIso) }
 
         val failures = mutableListOf<Throwable>()
 
@@ -97,7 +104,6 @@ class SupabaseSyncDataSource @Inject constructor(
 
         if (failures.isNotEmpty()) throw failures.first()
 
-        val now = ZonedDateTime.now()
         supabase.from(TABLE_SYNC_INFO)
             .update({
                 set("last_updated_at", now.format(ISO_FORMAT))

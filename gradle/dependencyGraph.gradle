@@ -1,6 +1,6 @@
 task projectDependencyGraph {
     doLast {
-        def dot = new File(rootProject.buildDir, 'reports/dependency-graph/project.dot')
+        def dot = new File(rootProject.layout.buildDirectory.asFile.get(), 'reports/dependency-graph/project.dot')
         dot.parentFile.mkdirs()
         dot.delete()
 
@@ -45,7 +45,7 @@ task projectDependencyGraph {
             project.configurations.all { config ->
                 config.dependencies
                         .withType(ProjectDependency)
-                        .collect { it.dependencyProject }
+                        .collect { project.project(it.path) }
                         .findAll { it != project } // 👈 자기 자신 제외
                         .each { dependency ->
                             projects.add(project)
