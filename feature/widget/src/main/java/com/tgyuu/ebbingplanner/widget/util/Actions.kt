@@ -1,10 +1,13 @@
 package com.tgyuu.ebbingplanner.widget.util
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
+import androidx.glance.action.Action
 import androidx.glance.action.ActionParameters
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
@@ -24,6 +27,7 @@ const val KEY_DESTINATION = "destination"
 const val KEY_SELECTED_DATE = "selectedDate"
 const val ADD_TODO = "addTodo"
 const val ADD_TODO_ACTION = "addTodoAction"
+const val OPEN_HOME = "openHome"
 const val KEY_WIDGET_SOURCE = "widgetSource"
 
 internal val destinationKey = ActionParameters.Key<String>(KEY_DESTINATION)
@@ -137,3 +141,12 @@ class AddTodoFromWidgetAction : ActionCallback {
         context.startActivity(activityIntent)
     }
 }
+
+internal fun openHomeAction(context: Context, date: LocalDate): Action =
+    actionStartActivity(
+        Intent().apply {
+            component = ComponentName(context.packageName, "${context.packageName}.MainActivity")
+            putExtra(KEY_DESTINATION, OPEN_HOME)
+            putExtra(KEY_SELECTED_DATE, date.toString())
+        }
+    )
