@@ -58,6 +58,7 @@ import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction
 import com.tgyuu.ebbingplanner.widget.util.EbbingWidgetPreview
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.ebbingplanner.widget.util.GsonProvider
+import com.tgyuu.ebbingplanner.widget.util.openHomeAction
 import com.tgyuu.ebbingplanner.widget.util.TodayTodoBitmaps
 import com.tgyuu.ebbingplanner.widget.util.WidgetBitmapStore
 import com.tgyuu.ebbingplanner.widget.util.todoIdKey
@@ -268,9 +269,10 @@ internal fun TodoItemRow(
     titleBitmap: Bitmap? = null,
     modifier: GlanceModifier = GlanceModifier,
 ) {
+    val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier,
+        modifier = modifier.clickable(openHomeAction(context, todo.date)),
     ) {
         Spacer(
             modifier = GlanceModifier
