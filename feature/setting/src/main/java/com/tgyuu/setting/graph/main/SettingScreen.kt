@@ -25,6 +25,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import com.tgyuu.common.util.isLandscapeWindow
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,6 +84,8 @@ private val SettingDividerThickness = 6.dp
 @Composable
 internal fun SettingRoute(
     viewModel: SettingViewModel = hiltViewModel(),
+    isListPane: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -101,6 +107,8 @@ internal fun SettingRoute(
     }
 
     SettingScreen(
+        isListPane = isListPane,
+        modifier = modifier,
         state = state,
         onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) },
         onAlarmTimeClick = {
@@ -160,6 +168,8 @@ internal fun SettingRoute(
 
 @Composable
 private fun SettingScreen(
+    isListPane: Boolean,
+    modifier: Modifier,
     state: SettingState,
     onNoticeClick: () -> Unit,
     onAlarmTimeClick: () -> Unit,
@@ -190,8 +200,27 @@ private fun SettingScreen(
         )
     }
 
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+    val isPhone = currentWindowAdaptiveInfo().windowSizeClass
+        .windowWidthSizeClass == WindowWidthSizeClass.COMPACT
+
+    // 태블릿 가로 모드의 설정 목록은 앱 뼈대가 SettingListPane으로 왼쪽에 고정해서 그려요.
+    // NavHost에 놓인 설정 루트 화면은 오른쪽 상세 패널 자리이므로 비워둬요.
+    if (!isPhone && !isListPane && isLandscapeWindow()) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(EbbingTheme.colors.background)
+        )
+        return
+    }
+
+    val horizontalPadding = when {
+        isPhone -> 20.dp
+        isListPane -> SettingTabletListPanePadding
+        else -> SettingTabletPortraitPadding
+    }
+
+    CompositionLocalProvider(LocalSettingHorizontalPadding provides horizontalPadding) {
         PhoneSettingScreen(
             state = state,
             onNoticeClick = onNoticeClick,
@@ -211,27 +240,7 @@ private fun SettingScreen(
             onInAppReviewClick = onInAppReviewClick,
             onUpdateClick = onUpdateClick,
             onAutoBackupToggleClick = onAutoBackupToggleClick,
-        )
-    } else {
-        TabletSettingScreen(
-            state = state,
-            onNoticeClick = onNoticeClick,
-            onAlarmTimeClick = onAlarmTimeClick,
-            onAlarmMessageClick = onAlarmMessageClick,
-            onTagManageClick = onTagManageClick,
-            onRepeatCycleManageClick = onRepeatCycleManageClick,
-            onSyncClick = onSyncClick,
-            onRestoreByDeviceIdClick = onRestoreByDeviceIdClick,
-            onClearClick = { isShowClearConfirm = true },
-            onAppThemeManageClick = onAppThemeManageClick,
-            onWidgetManageClick = onWidgetManageClick,
-            onPrivacyAndPolicyClick = onPrivacyAndPolicyClick,
-            onTermsOfUseClick = onTermsOfUseClick,
-            onNotificationToggleClick = onNotificationToggleClick,
-            onStartDayClick = onStartDayClick,
-            onInAppReviewClick = onInAppReviewClick,
-            onUpdateClick = onUpdateClick,
-            onAutoBackupToggleClick = onAutoBackupToggleClick,
+            modifier = modifier,
         )
     }
 }
@@ -256,11 +265,14 @@ private fun PhoneSettingScreen(
     onInAppReviewClick: () -> Unit,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
     onAutoBackupToggleClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    val horizontalPadding = LocalSettingHorizontalPadding.current
+
+    Column(modifier = modifier.fillMaxSize()) {
         EbbingMainTopBar(
             title = stringResource(R.string.setting_title),
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
         HorizontalDivider(
@@ -273,7 +285,7 @@ private fun PhoneSettingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = horizontalPadding),
         ) {
             NotificationBody(
                 notificationEnabled = state.notificationEnabled,
@@ -326,108 +338,6 @@ private fun PhoneSettingScreen(
                     .fillMaxWidth()
                     .padding(vertical = SettingItemVerticalPadding),
             )
-        }
-    }
-}
-
-@Composable
-private fun TabletSettingScreen(
-    state: SettingState,
-    onNoticeClick: () -> Unit,
-    onAlarmTimeClick: () -> Unit,
-    onAlarmMessageClick: () -> Unit,
-    onTagManageClick: () -> Unit,
-    onRepeatCycleManageClick: () -> Unit,
-    onSyncClick: () -> Unit,
-    onRestoreByDeviceIdClick: () -> Unit,
-    onClearClick: () -> Unit,
-    onAppThemeManageClick: () -> Unit,
-    onWidgetManageClick: () -> Unit,
-    onPrivacyAndPolicyClick: () -> Unit,
-    onTermsOfUseClick: () -> Unit,
-    onNotificationToggleClick: () -> Unit,
-    onStartDayClick: () -> Unit,
-    onInAppReviewClick: () -> Unit,
-    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
-    onAutoBackupToggleClick: () -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        EbbingMainTopBar(
-            title = stringResource(R.string.setting_title),
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            val leftScrollState = rememberScrollState()
-            val rightScrollState = rememberScrollState()
-
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(leftScrollState)
-                    .weight(1f)
-                    .padding(horizontal = 20.dp),
-            ) {
-                NotificationBody(
-                    notificationEnabled = state.notificationEnabled,
-                    alarmTime = "${state.alarmHour}:${state.alarmMinute}",
-                    onNotificationToggleClick = onNotificationToggleClick,
-                    onAlarmTimeClick = onAlarmTimeClick,
-                    onAlarmMessageClick = onAlarmMessageClick,
-                )
-
-                CalendarStartDayBody(
-                    mondayStart = state.mondayStart,
-                    onStartDayClick = onStartDayClick,
-                )
-
-                TagRepeatCycleBody(
-                    onTagManageClick = onTagManageClick,
-                    onRepeatCycleManageClick = onRepeatCycleManageClick,
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(rightScrollState)
-                    .weight(1f)
-                    .padding(horizontal = 20.dp),
-            ) {
-                ThemeBody(
-                    onThemeManageClick = onAppThemeManageClick,
-                    onWidgetAlphaManageClick = onWidgetManageClick,
-                )
-
-                InquiryBody()
-
-                AnnouncementBody(
-                    onNoticeClick = onNoticeClick,
-                    onPrivacyPolicy = onPrivacyAndPolicyClick,
-                    onTermsClick = onTermsOfUseClick,
-                )
-
-                DataBody(
-                    autoBackupFeatureEnabled = state.autoBackupFeatureEnabled,
-                    autoBackupEnabled = state.autoBackupEnabled,
-                    lastSyncTime = state.lastSyncTime?.let { formatSyncTime(it) },
-                    onSyncClick = onSyncClick,
-                    onRestoreByDeviceIdClick = onRestoreByDeviceIdClick,
-                    onClearClick = onClearClick,
-                    onAutoBackupToggleClick = onAutoBackupToggleClick,
-                )
-
-                InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
-
-                UpdateBody(
-                    updateInfo = state.updateInfo,
-                    hardUpdateInfo = state.hardUpdateInfo,
-                    onUpdateClick = onUpdateClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = SettingItemVerticalPadding),
-                )
-            }
         }
     }
 }
@@ -548,7 +458,7 @@ private fun NotificationBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -599,7 +509,7 @@ private fun CalendarStartDayBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -622,6 +532,7 @@ private fun TagRepeatCycleBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.TAG)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onTagManageClick() },
     ) {
@@ -643,6 +554,7 @@ private fun TagRepeatCycleBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.REPEAT_CYCLE)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onRepeatCycleManageClick() },
     ) {
@@ -662,7 +574,7 @@ private fun TagRepeatCycleBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -690,6 +602,7 @@ private fun DataBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.SYNC)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onSyncClick() },
     ) {
@@ -745,6 +658,7 @@ private fun DataBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.RESTORE)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onRestoreByDeviceIdClick() },
     ) {
@@ -785,7 +699,7 @@ private fun DataBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -831,7 +745,7 @@ private fun InquiryBody() {
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -940,7 +854,7 @@ private fun AnnouncementBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -963,6 +877,7 @@ private fun ThemeBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.THEME)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onThemeManageClick() },
     ) {
@@ -984,6 +899,7 @@ private fun ThemeBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.WIDGET)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onWidgetAlphaManageClick() },
     ) {
@@ -1003,7 +919,7 @@ private fun ThemeBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -1129,6 +1045,8 @@ private fun Modifier.ignoreHorizontalPadding(horizontal: Dp = 20.dp) = layout { 
 private fun PreviewSettingScreen() {
     BasePreview {
         SettingScreen(
+                isListPane = false,
+                modifier = Modifier,
             state = SettingState(),
             onNoticeClick = {},
             onAlarmTimeClick = {},
