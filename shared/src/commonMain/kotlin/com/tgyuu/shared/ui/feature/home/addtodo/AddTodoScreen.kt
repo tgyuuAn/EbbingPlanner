@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.home.addtodo
 
+import com.tgyuu.shared.navigation.ScreenBackHandler
 import com.tgyuu.shared.ui.feature.home.component.TabletFormLayout
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
@@ -83,6 +84,8 @@ fun AddTodoScreen(
     LaunchedEffect(viewModel) {
         viewModel.loadNewTag()
         viewModel.loadNewRepeatCycle()
+        viewModel.loadTags()
+        viewModel.loadRepeatCycles()
     }
 
     val scope = rememberCoroutineScope()
@@ -163,6 +166,11 @@ fun AddTodoScreen(
             null -> null
         },
     )
+
+    // Android AddTodoScreen BackHandler(enabled = isModified) 대응: 입력 중 뒤로가기(엣지 스와이프)는 종료 확인
+    ScreenBackHandler(enabled = state.isModified && state.page == AddTodoState.Page.ADD_TODO) {
+        showExitDialog = true
+    }
 
     if (showExitDialog) {
         ConfirmExitDialog(

@@ -31,12 +31,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.ViewModelStoreOwner
+import com.tgyuu.shared.designsystem.component.EbbingSnackBar
+import com.tgyuu.shared.designsystem.component.EbbingSnackBarHost
+import com.tgyuu.shared.navigation.LocalScreenBackHandler
+import com.tgyuu.shared.navigation.OnboardingComponent
+import com.tgyuu.shared.navigation.retainedViewModel
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -101,8 +110,6 @@ import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.nav_home
 import ebbingplanner.shared.generated.resources.nav_schedule
 import ebbingplanner.shared.generated.resources.nav_setting
-import ebbingplanner.shared.generated.resources.webview_privacy_title
-import ebbingplanner.shared.generated.resources.webview_terms_title
 import org.jetbrains.compose.resources.painterResource
 import ebbingplanner.shared.generated.resources.ic_home
 import ebbingplanner.shared.generated.resources.ic_schedule
@@ -153,6 +160,29 @@ fun RootContent(
         alarmRescheduler.rescheduleAll()
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarScope = rememberCoroutineScope()
+    // 직전 스낵바 요청 시각: 저장 직후 홈 이동처럼 '요청 → 이동'이 이어질 때 새 스낵바는 이동으로 닫지 않아요
+    val lastSnackbarRequest = remember { SnackbarRequestTracker() }
+    val showSnackbar: (String) -> Unit = remember(snackbarHostState) {
+        { message ->
+            lastSnackbarRequest.mark()
+            snackbarScope.launch {
+                // Android EbbingEvent.ShowSnackBar와 동일: 떠 있는 스낵바를 닫고 새로 보여줘요
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(message)
+            }
+        }
+    }
+
+    // Android MainActivity: 화면 이동 시 떠 있는 스낵바를 닫아요
+    DisposableEffect(component) {
+        val cancellation = component.stack.subscribe {
+            if (!lastSnackbarRequest.isFresh()) snackbarHostState.currentSnackbarData?.dismiss()
+        }
+        onDispose { cancellation.cancel() }
+    }
+
     // Create ViewModels at root level so they persist across tab switches
     val homeViewModel = remember {
         HomeViewModel(
@@ -173,19 +203,22 @@ fun RootContent(
                 component.navigateToMemo(scheduleId)
             },
             onNavigateToSync = { component.navigateToSync() },
+            onShowSnackBar = showSnackbar,
             alarmRescheduler = alarmRescheduler,
         )
     }
 
-    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val webViewPrivacyTitle = stringResource(Res.string.webview_privacy_title)
-    val webViewTermsTitle = stringResource(Res.string.webview_terms_title)
-
-    val snackbarHostState = remember { SnackbarHostState() }
-    val snackbarScope = rememberCoroutineScope()
-    val showSnackbar: (String) -> Unit = remember(snackbarHostState) {
-        { message -> snackbarScope.launch { snackbarHostState.showSnackbar(message) } }
+    // Android HomeRoute(workedDate, showWidgetNudge) + popUpTo 대응: 홈으로 정리하고 작업한 날짜를 선택해요
+    val navigateToHomeAt: (LocalDate, Boolean) -> Unit = remember(homeViewModel) {
+        { workedDate, showWidgetNudge ->
+            component.navigateToTopLevelTab(RootTab.HOME)
+            homeViewModel.onIntent(HomeIntent.OnCurrentDateChanged(workedDate))
+            homeViewModel.onIntent(HomeIntent.OnDateSelected(workedDate))
+            if (showWidgetNudge) homeViewModel.showWidgetNudgeDialog()
+        }
     }
+
+    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
 
     val scheduleViewModel = remember {
         ScheduleViewModel(
@@ -195,7 +228,7 @@ fun RootContent(
             onNavigateToEditTodo = { scheduleId -> component.navigateToEditTodo(scheduleId) },
             onNavigateToEditDate = { infoId -> component.navigateToEditDate(infoId) },
             onNavigateToMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
-            onNavigateToEditMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
+            onNavigateToEditMemo = { scheduleId -> component.navigateToEditMemo(scheduleId) },
             onShowSnackBar = showSnackbar,
             alarmRescheduler = alarmRescheduler,
         )
@@ -214,16 +247,12 @@ fun RootContent(
             onNavigateToSync = { component.navigateToSync() },
             onNavigateToRestore = { component.navigateToSyncRestore() },
             onNavigateToTheme = { component.navigateToTheme() },
-            onNavigateToNotification = { component.navigateToNotification() },
             onNavigateToWidget = { component.navigateToWidget() },
-            onOpenUrl = { url ->
-                val title = when {
-                    url.contains("privacy") -> webViewPrivacyTitle
-                    url.contains("terms") -> webViewTermsTitle
-                    else -> ""
-                }
-                component.navigateToWebView(title, url)
-            },
+            onOpenUrl = { url -> component.navigateToWebView("", url) },
+            // Android SettingViewModel.navigateToWebView와 동일: 메뉴별 제목을 명시해요
+            onNavigateToWebView = { title, url -> component.navigateToWebView(title, url) },
+            onRequestInAppReview = { inAppReviewManager.requestReview() },
+            onShowSnackbar = showSnackbar,
             analyticsHelper = analyticsHelper,
             notificationScheduler = settingNotificationScheduler,
             alarmRescheduler = alarmRescheduler,
@@ -337,33 +366,38 @@ fun RootContent(
                     ) {
                         Children(
                             stack = component.stack,
+                            // Android 태블릿 NavHost와 동일: 화면 영역 위아래 20dp 여백
+                            modifier = if (windowLayout.isTablet) Modifier.padding(vertical = 20.dp) else Modifier,
                             animation = stackAnimation(fade()),
                         ) { child ->
-                            when (val instance = child.instance) {
+                            val instance = child.instance
+                            val owner = instance.viewModelStoreOwner
+                            CompositionLocalProvider(LocalScreenBackHandler provides instance.backHandler) {
+                            when (instance) {
                                 is RootComponent.Child.Home -> HomeScreen(
                                     viewModel = homeViewModel,
                                     onRequestInAppReview = { inAppReviewManager.requestReview() },
                                 )
                                 is RootComponent.Child.Schedule -> ScheduleScreen(viewModel = scheduleViewModel)
                                 is RootComponent.Child.Setting -> SettingScreen(viewModel = settingViewModel)
-                                is RootComponent.Child.Tag -> TagScreenWrapper(component)
-                                is RootComponent.Child.Memo -> MemoScreenWrapper(component, instance.scheduleId, showSnackbar)
-                                is RootComponent.Child.RepeatCycle -> RepeatCycleScreenWrapper(component)
-                                is RootComponent.Child.Sync -> SyncScreenWrapper(component, showSnackbar)
-                                is RootComponent.Child.Onboarding -> OnboardingScreenWrapper(component)
-                                is RootComponent.Child.AddTodo -> AddTodoScreenWrapper(component, instance.selectedDate, showSnackbar)
-                                is RootComponent.Child.EditTodo -> EditTodoScreenWrapper(component, instance.scheduleId, showSnackbar)
-                                is RootComponent.Child.EditDate -> EditDateScreenWrapper(component, instance.infoId, showSnackbar)
-                                is RootComponent.Child.AddTag -> AddTagScreenWrapper(component)
-                                is RootComponent.Child.AddRepeatCycle -> AddRepeatCycleScreenWrapper(component)
-                                is RootComponent.Child.EditTag -> EditTagScreenWrapper(component, instance.tagId)
-                                is RootComponent.Child.EditRepeatCycle -> EditRepeatCycleScreenWrapper(component, instance.repeatCycleId)
-                                is RootComponent.Child.SyncRestore -> RestoreScreenWrapper(component, showSnackbar)
-                                is RootComponent.Child.EditMemo -> EditMemoScreenWrapper(component, instance.scheduleId)
-                                is RootComponent.Child.ThemeChild -> ThemeScreenWrapper(component)
+                                is RootComponent.Child.Tag -> TagScreenWrapper(component, owner, showSnackbar)
+                                is RootComponent.Child.Memo -> MemoScreenWrapper(component, owner, instance.scheduleId, showSnackbar, navigateToHomeAt, isEditEntry = false)
+                                is RootComponent.Child.RepeatCycle -> RepeatCycleScreenWrapper(component, owner, showSnackbar)
+                                is RootComponent.Child.Sync -> SyncScreenWrapper(component, owner, showSnackbar)
+                                is RootComponent.Child.Onboarding -> OnboardingScreenWrapper(instance.component, owner)
+                                is RootComponent.Child.AddTodo -> AddTodoScreenWrapper(component, owner, instance.selectedDate, showSnackbar, navigateToHomeAt)
+                                is RootComponent.Child.EditTodo -> EditTodoScreenWrapper(component, owner, instance.scheduleId, showSnackbar, navigateToHomeAt)
+                                is RootComponent.Child.EditDate -> EditDateScreenWrapper(component, owner, instance.infoId, showSnackbar, navigateToHomeAt)
+                                is RootComponent.Child.AddTag -> AddTagScreenWrapper(component, owner, showSnackbar)
+                                is RootComponent.Child.AddRepeatCycle -> AddRepeatCycleScreenWrapper(component, owner, showSnackbar)
+                                is RootComponent.Child.EditTag -> EditTagScreenWrapper(component, owner, instance.tagId, showSnackbar)
+                                is RootComponent.Child.EditRepeatCycle -> EditRepeatCycleScreenWrapper(component, owner, instance.repeatCycleId, showSnackbar)
+                                is RootComponent.Child.SyncRestore -> RestoreScreenWrapper(component, owner, showSnackbar)
+                                is RootComponent.Child.EditMemo -> MemoScreenWrapper(component, owner, instance.scheduleId, showSnackbar, navigateToHomeAt, isEditEntry = true)
+                                is RootComponent.Child.ThemeChild -> ThemeScreenWrapper(component, owner)
                                 is RootComponent.Child.WebView -> WebViewScreenWrapper(component, instance.title, instance.url)
-                                is RootComponent.Child.Notification -> NotificationScreenWrapper(component)
-                                is RootComponent.Child.Widget -> WidgetScreenWrapper(component)
+                                is RootComponent.Child.Widget -> WidgetScreenWrapper(component, owner)
+                            }
                             }
                         }
                     }
@@ -371,17 +405,25 @@ fun RootContent(
 
                 if (!windowLayout.isTablet) {
                     Scaffold(
-                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                        snackbarHost = {
+                            EbbingSnackBarHost(
+                                hostState = snackbarHostState,
+                                snackbar = { EbbingSnackBar(it) },
+                            )
+                        },
                         bottomBar = {
                             if (showBottomNav) {
                                 EbbingBottomNavigationBar(
                                     selectedTab = selectedTab,
                                     onTabSelected = { tab ->
-                                        when (tab) {
-                                            BottomNavItem.HOME -> component.navigateToHome()
-                                            BottomNavItem.SCHEDULE -> component.navigateToSchedule()
-                                            BottomNavItem.SETTING -> component.navigateToSetting()
-                                        }
+                                        // Android BottomBarTo와 동일: 홈 위에 탭 화면만 남겨 스택이 쌓이지 않게 해요
+                                        component.navigateToTopLevelTab(
+                                            when (tab) {
+                                                BottomNavItem.HOME -> RootTab.HOME
+                                                BottomNavItem.SCHEDULE -> RootTab.SCHEDULE
+                                                BottomNavItem.SETTING -> RootTab.SETTING
+                                            }
+                                        )
                                     },
                                 )
                             }
@@ -399,7 +441,12 @@ fun RootContent(
                     val showTabletNavigation = activeChild !is RootComponent.Child.Onboarding
 
                     Scaffold(
-                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                        snackbarHost = {
+                            EbbingSnackBarHost(
+                                hostState = snackbarHostState,
+                                snackbar = { EbbingSnackBar(it) },
+                            )
+                        },
                         containerColor = EbbingTheme.colors.background,
                     ) { paddingValues ->
                         if (windowLayout.isLandscape) {
@@ -421,7 +468,10 @@ fun RootContent(
                                         viewModel = settingViewModel,
                                         isListPane = true,
                                         selectedMenu = activeChild.toSettingMenu(),
-                                        modifier = Modifier.weight(1f),
+                                        // Android SettingListPane과 동일: 위아래 20dp 여백
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(vertical = 20.dp),
                                     )
                                     VerticalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
                                 }
@@ -470,7 +520,6 @@ private fun RootComponent.Child?.toSettingMenu(): SettingMenu? = when (this) {
     is RootComponent.Child.SyncRestore -> SettingMenu.RESTORE
     is RootComponent.Child.ThemeChild -> SettingMenu.THEME
     is RootComponent.Child.Widget -> SettingMenu.WIDGET
-    is RootComponent.Child.Notification -> SettingMenu.NOTIFICATION
     else -> null
 }
 
@@ -517,12 +566,19 @@ private fun EbbingBottomNavigationBar(
     }
 }
 
+// 각 Wrapper는 ViewModel을 child 보관소(owner)에 두어, 하위 화면(태그/반복주기 추가 등)에 다녀와도 입력 상태가 유지돼요.
+// child가 스택에서 빠지면 보관소가 clear되며 viewModelScope도 취소돼요 (Android 백스택 엔트리 ViewModel 대응).
+
 @Composable
-private fun TagScreenWrapper(component: RootComponent) {
+private fun TagScreenWrapper(
+    component: RootComponent,
+    owner: ViewModelStoreOwner,
+    onShowSnackbar: (String) -> Unit,
+) {
     val todoRepository = koinInject<TodoRepository>()
     val alarmRescheduler = koinInject<AlarmRescheduler>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         TagViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
@@ -530,6 +586,7 @@ private fun TagScreenWrapper(component: RootComponent) {
             onNavigateToEditTag = { tagId -> component.navigateToEditTag(tagId) },
             analyticsHelper = analyticsHelper,
             alarmRescheduler = alarmRescheduler,
+            onShowSnackbar = onShowSnackbar,
         )
     }
     TagScreen(viewModel = viewModel)
@@ -538,37 +595,45 @@ private fun TagScreenWrapper(component: RootComponent) {
 @Composable
 private fun MemoScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     scheduleId: Int,
     onShowSnackbar: (String) -> Unit,
+    onNavigateToHomeAt: (LocalDate, Boolean) -> Unit,
+    isEditEntry: Boolean,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember(scheduleId) {
+    val viewModel = retainedViewModel(owner) {
         MemoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
-            onNavigateToHome = { component.navigateToHome() },
+            onNavigateToHome = { date -> onNavigateToHomeAt(date, false) },
             onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
             analyticsHelper = analyticsHelper,
-            isEditEntry = false,
+            isEditEntry = isEditEntry,
         )
     }
     MemoScreen(viewModel = viewModel)
 }
 
 @Composable
-private fun RepeatCycleScreenWrapper(component: RootComponent) {
+private fun RepeatCycleScreenWrapper(
+    component: RootComponent,
+    owner: ViewModelStoreOwner,
+    onShowSnackbar: (String) -> Unit,
+) {
     val todoRepository = koinInject<TodoRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         RepeatCycleViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             onNavigateToEditRepeatCycle = { id -> component.navigateToEditRepeatCycle(id) },
+            onShowSnackbar = onShowSnackbar,
             analyticsHelper = analyticsHelper,
         )
     }
@@ -578,11 +643,12 @@ private fun RepeatCycleScreenWrapper(component: RootComponent) {
 @Composable
 private fun SyncScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     onShowSnackbar: (String) -> Unit,
 ) {
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         SyncViewModel(
             syncRepository = syncRepository,
             onNavigateBack = { component.onBack() },
@@ -597,11 +663,12 @@ private fun SyncScreenWrapper(
 @Composable
 private fun RestoreScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     onShowSnackbar: (String) -> Unit,
 ) {
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         com.tgyuu.shared.ui.feature.sync.restore.RestoreViewModel(
             syncRepository = syncRepository,
             onNavigateBack = { component.onBack() },
@@ -613,10 +680,14 @@ private fun RestoreScreenWrapper(
 }
 
 @Composable
-private fun OnboardingScreenWrapper(component: RootComponent) {
-    val viewModel = remember {
+private fun OnboardingScreenWrapper(
+    onboardingComponent: OnboardingComponent,
+    owner: ViewModelStoreOwner,
+) {
+    val viewModel = retainedViewModel(owner) {
         OnboardingViewModel(
-            onNavigateToHome = { component.navigateToHome() },
+            // Android TopLevelTo와 동일: 온보딩을 스택에서 지우고 홈만 남겨요
+            onNavigateToHome = { onboardingComponent.onOnboardingComplete() },
         )
     }
     OnboardingScreen(viewModel = viewModel)
@@ -625,23 +696,19 @@ private fun OnboardingScreenWrapper(component: RootComponent) {
 @Composable
 private fun AddTodoScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     selectedDateString: String,
     onShowSnackbar: (String) -> Unit,
+    onNavigateToHomeAt: (LocalDate, Boolean) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
-    val selectedDate = remember(selectedDateString) {
-        try {
-            LocalDate.parse(selectedDateString)
-        } catch (e: Exception) {
-            LocalDate.now()
-        }
-    }
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
     val notificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val alarmRescheduler = koinInject<AlarmRescheduler>()
-    val viewModel = remember(selectedDate) {
+    val viewModel = retainedViewModel(owner) {
+        val selectedDate = runCatching { LocalDate.parse(selectedDateString) }.getOrElse { LocalDate.now() }
         AddTodoViewModel(
             selectedDate = selectedDate,
             todoRepository = todoRepository,
@@ -649,7 +716,7 @@ private fun AddTodoScreenWrapper(
             notificationScheduler = notificationScheduler,
             analyticsHelper = analyticsHelper,
             onNavigateBack = { component.onBack() },
-            onNavigateToHome = { date -> component.navigateToHome() },
+            onNavigateToHome = { date, isFirstTodo -> onNavigateToHomeAt(date, isFirstTodo) },
             onNavigateToAddTag = { component.navigateToAddTag() },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             onShowSnackbar = onShowSnackbar,
@@ -663,15 +730,17 @@ private fun AddTodoScreenWrapper(
 @Composable
 private fun EditTodoScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     scheduleId: Int,
     onShowSnackbar: (String) -> Unit,
+    onNavigateToHomeAt: (LocalDate, Boolean) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val alarmRescheduler = koinInject<AlarmRescheduler>()
-    val viewModel = remember(scheduleId) {
+    val viewModel = retainedViewModel(owner) {
         EditTodoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
@@ -679,7 +748,7 @@ private fun EditTodoScreenWrapper(
             alarmRescheduler = alarmRescheduler,
             analyticsHelper = analyticsHelper,
             onNavigateBack = { component.onBack() },
-            onNavigateToHome = { date -> component.navigateToHome() },
+            onNavigateToHome = { date -> onNavigateToHomeAt(date, false) },
             onNavigateToAddTag = { component.navigateToAddTag() },
             onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
@@ -691,20 +760,22 @@ private fun EditTodoScreenWrapper(
 @Composable
 private fun EditDateScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     infoId: Int,
     onShowSnackbar: (String) -> Unit,
+    onNavigateToHomeAt: (LocalDate, Boolean) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
     val alarmRescheduler = koinInject<AlarmRescheduler>()
-    val viewModel = remember(infoId) {
+    val viewModel = retainedViewModel(owner) {
         EditDateViewModel(
             alarmRescheduler = alarmRescheduler,
             infoId = infoId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
-            onNavigateToHome = { date -> component.navigateToHome() },
+            onNavigateToHome = { date -> onNavigateToHomeAt(date, false) },
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
@@ -715,14 +786,19 @@ private fun EditDateScreenWrapper(
 }
 
 @Composable
-private fun AddTagScreenWrapper(component: RootComponent) {
+private fun AddTagScreenWrapper(
+    component: RootComponent,
+    owner: ViewModelStoreOwner,
+    onShowSnackbar: (String) -> Unit,
+) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         AddTagViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
             analyticsHelper = analyticsHelper,
         )
@@ -731,14 +807,19 @@ private fun AddTagScreenWrapper(component: RootComponent) {
 }
 
 @Composable
-private fun AddRepeatCycleScreenWrapper(component: RootComponent) {
+private fun AddRepeatCycleScreenWrapper(
+    component: RootComponent,
+    owner: ViewModelStoreOwner,
+    onShowSnackbar: (String) -> Unit,
+) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         AddRepeatCycleViewModel(
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
             analyticsHelper = analyticsHelper,
         )
@@ -749,16 +830,19 @@ private fun AddRepeatCycleScreenWrapper(component: RootComponent) {
 @Composable
 private fun EditTagScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     tagId: Int,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember(tagId) {
+    val viewModel = retainedViewModel(owner) {
         EditTagViewModel(
             tagId = tagId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
             analyticsHelper = analyticsHelper,
         )
@@ -769,16 +853,19 @@ private fun EditTagScreenWrapper(
 @Composable
 private fun EditRepeatCycleScreenWrapper(
     component: RootComponent,
+    owner: ViewModelStoreOwner,
     repeatCycleId: Int,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember(repeatCycleId) {
+    val viewModel = retainedViewModel(owner) {
         EditRepeatCycleViewModel(
             repeatCycleId = repeatCycleId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
+            onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
             analyticsHelper = analyticsHelper,
         )
@@ -787,32 +874,13 @@ private fun EditRepeatCycleScreenWrapper(
 }
 
 @Composable
-private fun EditMemoScreenWrapper(
+private fun ThemeScreenWrapper(
     component: RootComponent,
-    scheduleId: Int,
+    owner: ViewModelStoreOwner,
 ) {
-    val todoRepository = koinInject<TodoRepository>()
-    val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
-    val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
-    val viewModel = remember(scheduleId) {
-        MemoViewModel(
-            scheduleId = scheduleId,
-            todoRepository = todoRepository,
-            onNavigateBack = { component.onBack() },
-            onNavigateToHome = { component.navigateToHome() },
-            experimentRepository = experimentRepository,
-            analyticsHelper = analyticsHelper,
-            isEditEntry = true,
-        )
-    }
-    MemoScreen(viewModel = viewModel)
-}
-
-@Composable
-private fun ThemeScreenWrapper(component: RootComponent) {
     val configRepository = koinInject<ConfigRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         ThemeViewModel(
             configRepository = configRepository,
             onNavigateBack = { component.onBack() },
@@ -843,24 +911,13 @@ private fun WebViewScreenWrapper(
 }
 
 @Composable
-private fun NotificationScreenWrapper(component: RootComponent) {
-    val configRepository = koinInject<ConfigRepository>()
-    val alarmRescheduler = koinInject<AlarmRescheduler>()
-    val viewModel = remember {
-        com.tgyuu.shared.ui.feature.home.notification.NotificationViewModel(
-            configRepository = configRepository,
-            alarmRescheduler = alarmRescheduler,
-            onNavigateBack = { component.onBack() },
-        )
-    }
-    com.tgyuu.shared.ui.feature.home.notification.NotificationScreen(viewModel = viewModel)
-}
-
-@Composable
-private fun WidgetScreenWrapper(component: RootComponent) {
+private fun WidgetScreenWrapper(
+    component: RootComponent,
+    owner: ViewModelStoreOwner,
+) {
     val configRepository = koinInject<ConfigRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
-    val viewModel = remember {
+    val viewModel = retainedViewModel(owner) {
         com.tgyuu.shared.ui.feature.setting.widget.WidgetViewModel(
             configRepository = configRepository,
             onNavigateBack = { component.onBack() },
@@ -890,5 +947,20 @@ private fun screenNameFor(child: RootComponent.Child?): String? = when (child) {
     is RootComponent.Child.EditMemo -> "EditMemo"
     is RootComponent.Child.ThemeChild -> "Theme"
     is RootComponent.Child.Widget -> "Widget"
-    else -> null // Onboarding/WebView/Notification 등은 Android에 대응 View 없음
+    else -> null // Onboarding/WebView 등은 Android에 대응 View 없음
+}
+
+/** 스낵바 요청 직후(같은 흐름의 화면 이동)인지 판단해, 이동 시 새 스낵바까지 닫지 않도록 해요 */
+private class SnackbarRequestTracker {
+    private var lastRequest: TimeMark? = null
+
+    fun mark() {
+        lastRequest = TimeSource.Monotonic.markNow()
+    }
+
+    fun isFresh(): Boolean = lastRequest?.let { it.elapsedNow() < FRESH_WINDOW } ?: false
+
+    private companion object {
+        val FRESH_WINDOW = 500.milliseconds
+    }
 }

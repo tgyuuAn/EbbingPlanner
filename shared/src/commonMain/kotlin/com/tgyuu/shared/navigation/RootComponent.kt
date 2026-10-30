@@ -2,6 +2,8 @@ package com.tgyuu.shared.navigation
 
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
+import androidx.lifecycle.ViewModelStoreOwner
+import com.arkivanov.essenty.backhandler.BackHandler
 import kotlinx.serialization.Serializable
 
 interface RootComponent {
@@ -12,7 +14,10 @@ interface RootComponent {
     fun navigateToSchedule()
     fun navigateToSetting()
 
-    /** 태블릿: 하위 화면에서 탭을 눌러도 스택이 쌓이지 않도록 홈 위에 탭 화면만 남기고 이동해요 */
+    /**
+     * 하위 화면에서 탭을 눌러도 스택이 쌓이지 않도록 홈 위에 탭 화면만 남기고 이동해요
+     * (Android BottomBarTo: popUpTo(HomeRoute) 대응, 폰/태블릿 공통)
+     */
     fun navigateToTopLevelTab(tab: RootTab)
     fun navigateToTag()
     fun navigateToMemo(scheduleId: Int)
@@ -30,31 +35,34 @@ interface RootComponent {
     fun navigateToEditMemo(scheduleId: Int)
     fun navigateToTheme()
     fun navigateToWebView(title: String, url: String)
-    fun navigateToNotification()
     fun navigateToWidget()
 
-    sealed class Child {
-        class Home(val component: HomeComponent) : Child()
-        class Schedule(val component: ScheduleComponent) : Child()
-        class Setting(val component: SettingComponent) : Child()
-        class Tag(val component: TagComponent) : Child()
-        class Memo(val component: MemoComponent, val scheduleId: Int) : Child()
-        class RepeatCycle(val component: RepeatCycleComponent) : Child()
-        class Sync(val component: SyncComponent) : Child()
-        class Onboarding(val component: OnboardingComponent) : Child()
-        class AddTodo(val selectedDate: String) : Child()
-        class EditTodo(val scheduleId: Int) : Child()
-        class EditDate(val infoId: Int) : Child()
-        data object AddTag : Child()
-        data object AddRepeatCycle : Child()
-        class EditTag(val tagId: Int) : Child()
-        class EditRepeatCycle(val repeatCycleId: Int) : Child()
-        data object SyncRestore : Child()
-        class EditMemo(val scheduleId: Int) : Child()
-        data object ThemeChild : Child()
-        class WebView(val title: String, val url: String) : Child()
-        data object Notification : Child()
-        data object Widget : Child()
+    /** 각 화면은 자기 ViewModel 보관소를 가지고, 스택에서 빠질 때 함께 정리돼요 */
+    sealed class Child(
+        val viewModelStoreOwner: ViewModelStoreOwner,
+        /** 화면이 뒤로가기(iOS 엣지 스와이프)를 가로챌 때 쓰는 child 전용 BackHandler */
+        val backHandler: BackHandler,
+    ) {
+        class Home(val component: HomeComponent, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class Schedule(val component: ScheduleComponent, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class Setting(val component: SettingComponent, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class Tag(val component: TagComponent, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class Memo(val component: MemoComponent, val scheduleId: Int, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class RepeatCycle(val component: RepeatCycleComponent, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class Sync(val component: SyncComponent, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class Onboarding(val component: OnboardingComponent, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class AddTodo(val selectedDate: String, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class EditTodo(val scheduleId: Int, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class EditDate(val infoId: Int, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class AddTag(owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class AddRepeatCycle(owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class EditTag(val tagId: Int, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class EditRepeatCycle(val repeatCycleId: Int, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class SyncRestore(owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class EditMemo(val scheduleId: Int, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class ThemeChild(owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class WebView(val title: String, val url: String, owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
+        class Widget(owner: ViewModelStoreOwner, backHandler: BackHandler) : Child(owner, backHandler)
     }
 }
 
@@ -119,9 +127,6 @@ sealed interface Configuration {
 
     @Serializable
     data class WebView(val title: String, val url: String) : Configuration
-
-    @Serializable
-    data object Notification : Configuration
 
     @Serializable
     data object Widget : Configuration

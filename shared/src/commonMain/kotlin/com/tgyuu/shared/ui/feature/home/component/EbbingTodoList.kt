@@ -110,7 +110,6 @@ fun EbbingTodoList(
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onCheckedChange = onCheckedChange,
                 onEdit = onEditScheduleClick,
-                calendarNestedScroll = calendarNestedScroll,
             )
         }
     }
@@ -178,7 +177,6 @@ private fun TodoPage(
     schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onEdit: (TodoScheduleUiModel) -> Unit,
-    calendarNestedScroll: NestedScrollConnection? = null,
 ) {
     val listState = rememberLazyListState()
 
@@ -192,11 +190,8 @@ private fun TodoPage(
             state = listState,
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
+                // Android(2d3dc26e)와 동일: 월/주 전환은 헤더 드래그로만 감지하고 리스트 스크롤과는 분리해요
                 .fillMaxSize()
-                .then(
-                    if (calendarNestedScroll != null) Modifier.nestedScroll(calendarNestedScroll)
-                    else Modifier
-                )
                 .padding(horizontal = 20.dp),
         ) {
             if (sortType == SortType.BY_TAG) {

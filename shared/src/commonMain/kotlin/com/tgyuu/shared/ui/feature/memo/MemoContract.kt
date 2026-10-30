@@ -13,8 +13,9 @@ data class MemoState(
     val relatedScheduleCount: Int = 0,
     val isEditEntry: Boolean = false,
 ) : UiState {
+    // Android AddMemoState/EditMemoState와 동일: 공백만 입력해도 저장 가능
     val isSaveEnabled: Boolean
-        get() = memo.isNotBlank()
+        get() = memo.isNotEmpty()
 }
 
 sealed class MemoIntent : UiIntent {

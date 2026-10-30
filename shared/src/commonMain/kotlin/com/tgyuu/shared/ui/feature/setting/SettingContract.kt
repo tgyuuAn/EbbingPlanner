@@ -52,7 +52,6 @@ sealed class SettingIntent : UiIntent {
     data object OnClearDataClick : SettingIntent()
     data object OnClearDataConfirm : SettingIntent()
     data object OnThemeClick : SettingIntent()
-    data object OnNotificationClick : SettingIntent()
     data class OnNotificationToggle(val enabled: Boolean) : SettingIntent()
     /** 화면 RESUMED 진입 시 OS 알림 권한 재확인 */
     data object OnResume : SettingIntent()

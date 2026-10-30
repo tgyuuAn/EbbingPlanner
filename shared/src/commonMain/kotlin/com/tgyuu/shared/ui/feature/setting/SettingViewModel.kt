@@ -20,7 +20,10 @@ import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.alarm_placeholder_token
 import ebbingplanner.shared.generated.resources.default_alarm_message
+import ebbingplanner.shared.generated.resources.setting_announcement
 import ebbingplanner.shared.generated.resources.setting_announcement_url
+import ebbingplanner.shared.generated.resources.setting_privacy_policy
+import ebbingplanner.shared.generated.resources.setting_term
 import ebbingplanner.shared.generated.resources.setting_privacy_policy_url
 import ebbingplanner.shared.generated.resources.setting_term_url
 import ebbingplanner.shared.generated.resources.snack_alarm_message_changed
@@ -40,9 +43,10 @@ class SettingViewModel(
     private val onNavigateToSync: () -> Unit,
     private val onNavigateToRestore: () -> Unit = {},
     private val onNavigateToTheme: () -> Unit = {},
-    private val onNavigateToNotification: () -> Unit = {},
     private val onNavigateToWidget: () -> Unit = {},
     private val onOpenUrl: (String) -> Unit = {},
+    /** Android SettingViewModel.navigateToWebView 대응: 제목을 명시해 웹뷰로 이동 */
+    private val onNavigateToWebView: (title: String, url: String) -> Unit = { _, url -> onOpenUrl(url) },
     private val onRequestInAppReview: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val analyticsHelper: com.tgyuu.shared.platform.AnalyticsHelper? = null,
@@ -143,7 +147,6 @@ class SettingViewModel(
                 analyticsHelper.logClick(SCREEN_NAME, "EditAppTheme")
                 onNavigateToTheme()
             }
-            SettingIntent.OnNotificationClick -> onNavigateToNotification()
             SettingIntent.OnResume -> refreshNotificationPermission()
             is SettingIntent.OnNotificationToggle -> {
                 analyticsHelper.logClick(SCREEN_NAME, "NotificationNudge_Toggle")
@@ -167,11 +170,11 @@ class SettingViewModel(
             // 문서 URL은 로케일별 공개 게시(notion.site) 링크로 분기
             SettingIntent.OnPrivacyPolicyClick -> {
                 analyticsHelper.logClick(SCREEN_NAME, "PrivacyAndPolicy")
-                onOpenUrl(getString(Res.string.setting_privacy_policy_url))
+                onNavigateToWebView(getString(Res.string.setting_privacy_policy), getString(Res.string.setting_privacy_policy_url))
             }
             SettingIntent.OnTermsOfUseClick -> {
                 analyticsHelper.logClick(SCREEN_NAME, "TermsOfUse")
-                onOpenUrl(getString(Res.string.setting_term_url))
+                onNavigateToWebView(getString(Res.string.setting_term), getString(Res.string.setting_term_url))
             }
             SettingIntent.OnWidgetClick -> {
                 analyticsHelper.logClick(SCREEN_NAME, "EditWidgetTheme")
@@ -187,7 +190,7 @@ class SettingViewModel(
             }
             SettingIntent.OnNoticeClick -> {
                 analyticsHelper.logClick(SCREEN_NAME, "Notice")
-                onOpenUrl(getString(Res.string.setting_announcement_url))
+                onNavigateToWebView(getString(Res.string.setting_announcement), getString(Res.string.setting_announcement_url))
             }
             SettingIntent.OnInquiryClick -> onOpenUrl(INQUIRY_URL)
         }

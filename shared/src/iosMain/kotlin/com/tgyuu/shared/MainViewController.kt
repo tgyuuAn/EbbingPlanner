@@ -5,7 +5,15 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.MutableValue
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.arkivanov.essenty.lifecycle.ApplicationLifecycle
+import com.arkivanov.essenty.backhandler.BackDispatcher
+import com.arkivanov.decompose.ExperimentalDecomposeApi
+import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.PredictiveBackGestureIcon
+import com.arkivanov.decompose.extensions.compose.stack.animation.predictiveback.PredictiveBackGestureOverlay
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.ui.Modifier
 import com.tgyuu.shared.navigation.Configuration
 import com.tgyuu.shared.navigation.DefaultRootComponent
 import com.tgyuu.shared.navigation.HomeComponent
@@ -19,11 +27,18 @@ import com.tgyuu.shared.navigation.TagComponent
 import com.tgyuu.shared.ui.RootContent
 import platform.UIKit.UIViewController
 
+@OptIn(ExperimentalDecomposeApi::class)
 fun MainViewController(): UIViewController {
-    val lifecycle = LifecycleRegistry()
+    // 앱 상태(포그라운드/백그라운드)에 맞춰 resume/pause되는 수명주기 (기존엔 created에서 멈춰 있었음)
+    val lifecycle = ApplicationLifecycle()
+    // iOS 엣지 스와이프 뒤로가기를 Decompose 스택으로 전달 (Android 시스템 back 대응)
+    val backDispatcher = BackDispatcher()
 
     val rootComponent = DefaultRootComponent(
-        componentContext = DefaultComponentContext(lifecycle = lifecycle),
+        componentContext = DefaultComponentContext(
+            lifecycle = lifecycle,
+            backHandler = backDispatcher,
+        ),
         homeComponentFactory = { context, config ->
             object : HomeComponent {
                 override val childStack: Value<ChildStack<*, HomeComponent.Child>>
@@ -131,6 +146,18 @@ fun MainViewController(): UIViewController {
     )
 
     return ComposeUIViewController {
-        RootContent(component = rootComponent)
+        PredictiveBackGestureOverlay(
+            backDispatcher = backDispatcher,
+            backIcon = { progress, _ ->
+                PredictiveBackGestureIcon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    progress = progress,
+                )
+            },
+            endEdgeEnabled = false,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            RootContent(component = rootComponent)
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.sync.restore
 
+import com.tgyuu.shared.navigation.ScreenBackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +46,9 @@ fun RestoreScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+
+    // Android RestoreScreen BackHandler(enabled = isRestoring) {} 대응: 복원 중에는 뒤로가기를 막아요
+    ScreenBackHandler(enabled = state.isRestoring) {}
 
     RestoreScreenContent(
         state = state,

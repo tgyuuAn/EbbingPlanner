@@ -11,6 +11,9 @@ import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.platform.AnalyticsEvent
 import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.platform.NotificationScheduler
+import com.tgyuu.shared.platform.NotificationPermissionStatus
+import com.tgyuu.shared.platform.openAppSettings
+import com.tgyuu.shared.navigation.AppExternalEvents
 import com.tgyuu.shared.ui.model.RepeatCycleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.toImmutableList
@@ -23,7 +26,6 @@ import ebbingplanner.shared.generated.resources.alarm_placeholder_token
 import ebbingplanner.shared.generated.resources.default_alarm_message
 import ebbingplanner.shared.generated.resources.tag_unassigned
 import ebbingplanner.shared.generated.resources.snack_all_rest_days
-import ebbingplanner.shared.generated.resources.snack_no_schedule_check_cycle
 import ebbingplanner.shared.generated.resources.snack_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_add_failed
 import ebbingplanner.shared.generated.resources.snack_todo_added
@@ -38,7 +40,8 @@ class AddTodoViewModel(
     private val notificationScheduler: NotificationScheduler,
     private val analyticsHelper: AnalyticsHelper? = null,
     private val onNavigateBack: () -> Unit,
-    private val onNavigateToHome: (LocalDate) -> Unit = {},
+    /** 저장 후 홈 이동: (작업한 날짜, 첫 일정 여부 → 위젯 넛지 노출) — Android HomeRoute(workedDate, showWidgetNudge) 대응 */
+    private val onNavigateToHome: (LocalDate, Boolean) -> Unit = { _, _ -> },
     private val onNavigateToAddTag: () -> Unit = {},
     private val onNavigateToAddRepeatCycle: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
@@ -46,11 +49,16 @@ class AddTodoViewModel(
     private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState(selectedDate = selectedDate)) {
 
+    private var pendingEnableAfterSettings = false
+
     init {
         loadInitialData()
         initNotificationState()
         safeScope.launch {
             configRepository.getMondayStart().collect { setState { copy(mondayStart = it) } }
+        }
+        safeScope.launch {
+            AppExternalEvents.foreground.collect { refreshNotificationPermission() }
         }
     }
 
@@ -139,6 +147,32 @@ class AddTodoViewModel(
         }
     }
 
+    // Android AddTodoViewModel.loadTags/loadRepeatCycles 대응: 화면에 다시 들어올 때마다 목록만 새로 불러와요(선택은 유지)
+    fun loadTags() {
+        safeScope.launch {
+            val tags = todoRepository.loadTags()
+            val tagOrder = configRepository.getTagUsageOrder()
+            val unassignedName = getString(Res.string.tag_unassigned)
+            val tagList = tags.sortedByUsageOrder(tagOrder) { it.id }
+                .map { tag ->
+                    tag.toUiModel().let { if (it.id == DefaultTodoTag.id) it.copy(name = unassignedName) else it }
+                }
+                .toImmutableList()
+            setState { copy(tagList = tagList) }
+        }
+    }
+
+    fun loadRepeatCycles() {
+        safeScope.launch {
+            val allRepeatCycles = DefaultRepeatCycles + todoRepository.loadRepeatCycles()
+            val cycleOrder = configRepository.getRepeatCycleUsageOrder()
+            val cycleList = allRepeatCycles.sortedByUsageOrder(cycleOrder) { it.id }
+                .map { it.toUiModel() }
+                .toImmutableList()
+            setState { copy(repeatCycleList = cycleList) }
+        }
+    }
+
     override suspend fun processIntent(intent: AddTodoIntent) {
         when (intent) {
             AddTodoIntent.OnBackClick -> onNavigateBack()
@@ -221,11 +255,6 @@ class AddTodoViewModel(
 
         if (currentState.tag == null) return
 
-        if (currentState.schedules.isEmpty()) {
-            onShowSnackbar(getString(Res.string.snack_no_schedule_check_cycle))
-            return
-        }
-
         // Android와 동일: 최초 저장 시 알림 넛지 노출 → 넛지 페이지, 아니면 바로 저장
         if (configRepository.shouldShowNotificationNudge()) {
             analyticsHelper?.logEvent(
@@ -243,15 +272,36 @@ class AddTodoViewModel(
     private fun onNotificationToggleClick() {
         val desiredOn = !currentState.notificationState.notificationEnabled
         if (desiredOn) {
-            // iOS: 스케줄 등록 전 알림 권한이 필요하므로 켤 때 권한을 요청하고 허용 시에만 활성화
+            // Android NotificationScreen과 동일: 허용 → 켜기, 최초 → 시스템 권한 요청, 이미 거부 → 앱 설정으로 이동
             safeScope.launch {
-                val granted = notificationScheduler.requestPermission()
-                setState {
-                    copy(notificationState = notificationState.copy(notificationEnabled = granted))
+                when (notificationScheduler.getPermissionStatus()) {
+                    NotificationPermissionStatus.GRANTED -> setNotificationEnabled(true)
+                    NotificationPermissionStatus.NOT_DETERMINED -> {
+                        setNotificationEnabled(notificationScheduler.requestPermission())
+                    }
+                    NotificationPermissionStatus.DENIED -> {
+                        pendingEnableAfterSettings = true
+                        openAppSettings()
+                    }
                 }
             }
         } else {
             setState { copy(notificationState = notificationState.copy(notificationEnabled = false)) }
+        }
+    }
+
+    private fun setNotificationEnabled(enabled: Boolean) {
+        setState { copy(notificationState = notificationState.copy(notificationEnabled = enabled)) }
+    }
+
+    /** 앱 설정에서 돌아왔을 때 권한이 허용됐으면 토글을 켜요 (Android pendingNotificationEnable 대응) */
+    fun refreshNotificationPermission() {
+        if (!pendingEnableAfterSettings) return
+        safeScope.launch {
+            if (notificationScheduler.getPermissionStatus() == NotificationPermissionStatus.GRANTED) {
+                pendingEnableAfterSettings = false
+                setNotificationEnabled(true)
+            }
         }
     }
 
@@ -288,7 +338,7 @@ class AddTodoViewModel(
                 configRepository.recordTagUsage(tag.id)
                 currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
             }
-            runCatching { configRepository.markFirstTodoAdded() }
+            val isFirstTodo = runCatching { configRepository.markFirstTodoAdded() }.getOrDefault(false)
             // Android와 동일: 인앱 리뷰 노출 조건(등록 횟수 3회 이상)용 카운트
             runCatching { configRepository.incrementTodoRegisteredCount() }
 
@@ -297,7 +347,7 @@ class AddTodoViewModel(
             else alarmRescheduler?.rescheduleDates(schedules)
 
             onShowSnackbar(getString(Res.string.snack_todo_added))
-            onNavigateToHome(currentState.selectedDate)
+            onNavigateToHome(currentState.selectedDate, isFirstTodo)
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_todo_add_failed, e.message ?: ""))
         }
