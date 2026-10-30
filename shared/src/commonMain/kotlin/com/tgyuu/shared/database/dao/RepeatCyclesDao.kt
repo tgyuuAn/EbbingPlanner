@@ -39,6 +39,7 @@ interface RepeatCyclesDao {
         updatedAt: LocalDateTime = LocalDateTime.now()
     )
 
+    /** 동기화 다운로드 전용(isDeleted/updatedAt까지 원격 값으로 덮어씀). 사용자 수정은 쿼리 기반 updateRepeatCycle(id, ...) 사용. */
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateRepeatCycle(repeatCycle: RepeatCycleEntity)
 

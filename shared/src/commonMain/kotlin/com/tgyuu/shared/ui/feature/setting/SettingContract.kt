@@ -3,7 +3,6 @@ package com.tgyuu.shared.ui.feature.setting
 import androidx.compose.runtime.Immutable
 import com.tgyuu.shared.base.UiIntent
 import com.tgyuu.shared.base.UiState
-import com.tgyuu.shared.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 
 @Immutable
 data class SettingState(
@@ -12,7 +11,7 @@ data class SettingState(
     val isNotificationEnabled: Boolean = true,
     val alarmHour: Int = 18,
     val alarmMinute: Int = 30,
-    val alarmMessage: String = DEFAULT_ALARM_MESSAGE,
+    val alarmMessage: String = "",
     val alarmMessageBottomSheet: AlarmMessageBottomSheetState = AlarmMessageBottomSheetState(),
     val mondayStart: Boolean = false,
     val autoBackupFeatureEnabled: Boolean = false,
@@ -22,10 +21,14 @@ data class SettingState(
 
 @Immutable
 data class AlarmMessageBottomSheetState(
-    val message: String = DEFAULT_ALARM_MESSAGE,
+    /** 로케일별 기본 문구(default_alarm_message). VM이 리소스로 채운다 (Android 동일) */
+    val defaultMessage: String = "",
+    val message: String = defaultMessage,
     val originMessage: String = "",
+    /** 로케일별 플레이스홀더 토큰(alarm_placeholder_token) */
+    val placeholderToken: String = "{할일}",
 ) {
-    val placeholderCount: Int = "\\{할일\\}".toRegex().findAll(message).count()
+    val placeholderCount: Int = Regex.escape(placeholderToken).toRegex().findAll(message).count()
 
     val isValidPlaceholder: Boolean = placeholderCount <= 1
 
@@ -37,7 +40,7 @@ data class AlarmMessageBottomSheetState(
 
     val canApply: Boolean = isValid && isChanged
 
-    val shouldShowResetButton: Boolean = message != DEFAULT_ALARM_MESSAGE
+    val shouldShowResetButton: Boolean = message != defaultMessage
 }
 
 sealed class SettingIntent : UiIntent {

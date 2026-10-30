@@ -2,6 +2,7 @@ package com.tgyuu.shared.domain
 
 import com.tgyuu.shared.common.currentInstant
 import com.tgyuu.shared.domain.repository.ConfigRepository
+import com.tgyuu.shared.domain.repository.ErrorRepository
 import com.tgyuu.shared.domain.repository.FeatureFlag
 import com.tgyuu.shared.domain.repository.FeatureFlagRepository
 import com.tgyuu.shared.domain.repository.SyncRepository
@@ -24,6 +25,7 @@ class AutoBackupManager(
     private val featureFlagRepository: FeatureFlagRepository,
     private val configRepository: ConfigRepository,
     private val syncRepository: SyncRepository,
+    private val errorRepository: ErrorRepository? = null,
 ) {
     private var backupPending: Boolean = false
 
@@ -35,9 +37,7 @@ class AutoBackupManager(
             return
         }
 
-        runCatching { syncRepository.syncUpData() }
-            .onSuccess { backupPending = false }
-            .onFailure { backupPending = true }
+        backup()
     }
 
     suspend fun tryPendingBackup() {
@@ -45,9 +45,20 @@ class AutoBackupManager(
         if (!backupPending) return
         if (!isCoolTimeElapsed()) return
 
-        runCatching { syncRepository.syncUpData() }
-            .onSuccess { backupPending = false }
-            .onFailure { backupPending = true }
+        backup()
+    }
+
+    // Android cancelAndBackup과 동일: 실패 시 pending 유지 + 에러 리포지토리에 기록
+    private suspend fun backup() {
+        try {
+            syncRepository.syncUpData()
+            backupPending = false
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            backupPending = true
+            runCatching { errorRepository?.logError(e) }
+        }
     }
 
     private suspend fun shouldBackup(): Boolean {

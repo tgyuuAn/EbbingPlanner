@@ -1,6 +1,8 @@
 package com.tgyuu.shared.data.repository
 
 import com.tgyuu.shared.common.now
+import com.tgyuu.shared.common.toCsv
+import com.tgyuu.shared.database.dao.ScheduleUpdateParams
 import com.tgyuu.shared.database.dao.RepeatCyclesDao
 import com.tgyuu.shared.database.dao.TodoSchedulesDao
 import com.tgyuu.shared.database.dao.TodoTagsDao
@@ -124,7 +126,12 @@ class TodoRepositoryImpl(
     }
 
     override suspend fun updateRepeatCycle(repeatCycle: RepeatCycle) {
-        repeatCyclesDao.updateRepeatCycle(repeatCycle.toEntity())
+        // Android LocalRepeatCycleDataSourceImpl와 동일: 쿼리 기반 갱신(isDeleted = 0 조건)이라
+        // 삭제된 행을 @Update(REPLACE)로 되살리지 않고 updatedAt도 함께 갱신한다.
+        repeatCyclesDao.updateRepeatCycle(
+            id = repeatCycle.id,
+            intervalsJson = repeatCycle.intervals.toCsv(),
+        )
     }
 
     override suspend fun deleteRepeatCycle(repeatCycle: RepeatCycle) {
@@ -143,6 +150,26 @@ class TodoRepositoryImpl(
 
     override suspend fun loadTodoInfoById(infoId: Int): TodoInfo =
         todoSchedulesDao.getTodoInfoById(infoId)
+
+    override suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        isPinned: Boolean,
+        restDays: Set<DayOfWeek>,
+    ) {
+        todoWithSchedulesDao.replaceSchedules(
+            infoId = infoId,
+            title = title,
+            tagId = tagId,
+            dates = dates,
+            isDoneSchedules = isDoneSchedules,
+            isPinned = isPinned,
+            restDays = restDays,
+        )
+    }
 
     override suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<DayOfWeek>) {
         todoWithSchedulesDao.updateInfo(
@@ -165,8 +192,19 @@ class TodoRepositoryImpl(
         )
     }
 
+    // Android와 동일: 한 트랜잭션 + 동일 updatedAt(now)으로 일괄 갱신
     override suspend fun updateTodos(schedules: List<TodoSchedule>) {
-        schedules.forEach { updateTodo(it) }
+        todoWithSchedulesDao.updateSchedules(
+            schedules.map {
+                ScheduleUpdateParams(
+                    id = it.id,
+                    date = it.date,
+                    memo = it.memo,
+                    isPinned = it.isPinned,
+                    isDone = it.isDone,
+                )
+            }
+        )
     }
 
     override suspend fun deleteTodo(todoSchedule: TodoSchedule) {

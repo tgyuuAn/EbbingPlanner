@@ -9,6 +9,7 @@ import com.tgyuu.shared.platform.openAppSettings
 import com.tgyuu.shared.common.appVersionName
 import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.domain.repository.ConfigRepository
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.shared.domain.repository.FeatureFlag
 import com.tgyuu.shared.domain.repository.FeatureFlagRepository
@@ -17,6 +18,8 @@ import com.tgyuu.shared.domain.repository.TodoRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.alarm_placeholder_token
+import ebbingplanner.shared.generated.resources.default_alarm_message
 import ebbingplanner.shared.generated.resources.setting_announcement_url
 import ebbingplanner.shared.generated.resources.setting_privacy_policy_url
 import ebbingplanner.shared.generated.resources.setting_term_url
@@ -44,6 +47,7 @@ class SettingViewModel(
     private val onShowSnackbar: (String) -> Unit = {},
     private val analyticsHelper: com.tgyuu.shared.platform.AnalyticsHelper? = null,
     private val notificationScheduler: NotificationScheduler? = null,
+    private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
 
     // Android NotificationBody와 동일: 토글 표시값 = 저장된 설정(enabled) && OS 알림 권한 허용
@@ -86,8 +90,8 @@ class SettingViewModel(
         viewModelScope.launch {
             val enabled = configRepository?.getNotificationEnabled()?.first() ?: true
             val (hour, minute) = configRepository?.getAlarmTime() ?: Pair(18, 30)
-            val message = configRepository?.getAlarmMessage()?.ifEmpty { DEFAULT_ALARM_MESSAGE }
-                ?: DEFAULT_ALARM_MESSAGE
+            // Android SettingViewModel과 동일: 저장 sentinel은 로케일별 기본 문구로 표시
+            val message = resolveDisplayMessage(configRepository?.getAlarmMessage().orEmpty())
             notificationConfigEnabled = enabled
             notificationPermissionGranted = notificationScheduler
                 ?.getPermissionStatus()
@@ -221,6 +225,8 @@ class SettingViewModel(
         pendingEnableAfterSettings = false
         configRepository?.setNotificationEnabled(enabled)
         notificationConfigEnabled = enabled
+        // ON이면 전체 재계산, OFF면 전부 취소 (rescheduleAll이 꺼진 설정을 보고 전체 취소)
+        if (enabled) alarmRescheduler?.rescheduleAll() else alarmRescheduler?.cancelAll()
         publishNotificationEnabled()
     }
 
@@ -232,6 +238,7 @@ class SettingViewModel(
             pendingEnableAfterSettings = false
             configRepository?.setNotificationEnabled(true)
             notificationConfigEnabled = true
+            alarmRescheduler?.rescheduleAll()
         }
         publishNotificationEnabled()
     }
@@ -242,6 +249,7 @@ class SettingViewModel(
 
     private suspend fun updateAlarmTime(hour: Int, minute: Int) {
         configRepository?.updateAlarmTime(hour.toString(), minute.toString())
+        alarmRescheduler?.rescheduleAll()
         setState {
             copy(
                 alarmHour = hour,
@@ -251,13 +259,21 @@ class SettingViewModel(
         onShowSnackbar(getString(Res.string.snack_alarm_time_changed))
     }
 
-    private fun openAlarmMessageSheet() {
-        val current = currentState.alarmMessage.ifEmpty { DEFAULT_ALARM_MESSAGE }
+    private suspend fun resolveDisplayMessage(stored: String): String =
+        if (stored.isEmpty() || stored == DEFAULT_ALARM_MESSAGE) getString(Res.string.default_alarm_message)
+        else stored
+
+    private suspend fun openAlarmMessageSheet() {
+        val defaultMessage = getString(Res.string.default_alarm_message)
+        val placeholderToken = getString(Res.string.alarm_placeholder_token)
+        val current = resolveDisplayMessage(currentState.alarmMessage)
         setState {
             copy(
                 alarmMessageBottomSheet = AlarmMessageBottomSheetState(
+                    defaultMessage = defaultMessage,
                     message = current,
                     originMessage = current,
+                    placeholderToken = placeholderToken,
                 ),
             )
         }
@@ -269,7 +285,7 @@ class SettingViewModel(
 
     private fun resetAlarmMessage() {
         setState {
-            copy(alarmMessageBottomSheet = alarmMessageBottomSheet.copy(message = DEFAULT_ALARM_MESSAGE))
+            copy(alarmMessageBottomSheet = alarmMessageBottomSheet.copy(message = alarmMessageBottomSheet.defaultMessage))
         }
     }
 
@@ -277,6 +293,7 @@ class SettingViewModel(
         val message = currentState.alarmMessageBottomSheet.message
         configRepository?.updateAlarmMessage(message)
         setState { copy(alarmMessage = message) }
+        alarmRescheduler?.rescheduleAll()
         onShowSnackbar(getString(Res.string.snack_alarm_message_changed))
     }
 
@@ -285,6 +302,7 @@ class SettingViewModel(
             setState { copy(isLoading = true) }
             try {
                 todoRepository.clearData()
+                alarmRescheduler?.cancelAll()
                 onShowSnackbar(getString(Res.string.snack_data_cleared))
             } catch (e: Exception) {
                 onShowSnackbar(getString(Res.string.snack_data_clear_failed))

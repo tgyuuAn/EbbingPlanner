@@ -59,6 +59,17 @@ interface TodoRepository {
     suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun loadTodoInfoById(infoId: Int): TodoInfo
 
+    /** Android replaceSchedules 대응: 같은 infoId 유지, 기존 일정 soft delete + 새 일정 삽입을 한 트랜잭션으로 */
+    suspend fun replaceSchedules(
+        infoId: Int,
+        title: String,
+        tagId: Int,
+        dates: List<LocalDate>,
+        isDoneSchedules: List<Boolean>,
+        isPinned: Boolean,
+        restDays: Set<DayOfWeek> = emptySet(),
+    )
+
     suspend fun updateTodoInfo(todoSchedule: TodoSchedule, restDays: Set<DayOfWeek> = emptySet())
     suspend fun updateTodo(todoSchedule: TodoSchedule)
     suspend fun updateTodos(schedules: List<TodoSchedule>)

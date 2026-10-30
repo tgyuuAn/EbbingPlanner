@@ -2,6 +2,7 @@ package com.tgyuu.shared.ui.feature.tag
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.model.TodoTag
 import com.tgyuu.shared.domain.repository.TodoRepository
 import com.tgyuu.shared.platform.AnalyticsHelper
@@ -16,6 +17,7 @@ class TagViewModel(
     private val onNavigateToAddTag: () -> Unit,
     private val onNavigateToEditTag: (Int) -> Unit,
     private val analyticsHelper: AnalyticsHelper? = null,
+    private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<TagState, TagIntent>(TagState()) {
 
     init {
@@ -62,6 +64,8 @@ class TagViewModel(
             createdAt = tag.createdAt,
         )
         todoRepository.deleteTag(domainTag)
+        // 태그 삭제로 해당 태그 일정이 목록에서 빠지므로 알림을 다시 계산
+        alarmRescheduler?.rescheduleAll()
         setState {
             copy(tagList = tagList.filterNot { it.id == tag.id }.toImmutableList())
         }

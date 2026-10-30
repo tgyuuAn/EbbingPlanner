@@ -2,6 +2,7 @@ package com.tgyuu.shared.ui.feature.home.addtodo
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
 import com.tgyuu.shared.domain.model.DefaultRepeatCycles
@@ -14,15 +15,12 @@ import com.tgyuu.shared.ui.model.RepeatCycleUiModel
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.toInstant
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.alarm_placeholder_token
+import ebbingplanner.shared.generated.resources.default_alarm_message
 import ebbingplanner.shared.generated.resources.tag_unassigned
 import ebbingplanner.shared.generated.resources.snack_all_rest_days
 import ebbingplanner.shared.generated.resources.snack_no_schedule_check_cycle
@@ -30,7 +28,6 @@ import ebbingplanner.shared.generated.resources.snack_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_add_failed
 import ebbingplanner.shared.generated.resources.snack_todo_added
 import org.jetbrains.compose.resources.getString
-import com.tgyuu.shared.common.currentInstant
 import com.tgyuu.shared.common.sortedByUsageOrder
 import com.tgyuu.shared.designsystem.model.toDisplayName
 
@@ -46,6 +43,7 @@ class AddTodoViewModel(
     private val onNavigateToAddRepeatCycle: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
+    private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState(selectedDate = selectedDate)) {
 
     init {
@@ -60,10 +58,15 @@ class AddTodoViewModel(
     private fun initNotificationState() {
         safeScope.launch {
             val (hour, minute) = configRepository.getAlarmTime()
-            val defaultMessage = ConfigRepository.DEFAULT_ALARM_MESSAGE
+            // Android AddTodoViewModel.initNotificationState와 동일: 저장 sentinel은 로케일별 기본 문구로 치환
+            val defaultMessage = getString(Res.string.default_alarm_message)
             val placeholderToken = getString(Res.string.alarm_placeholder_token)
             val storedMessage = configRepository.getAlarmMessage()
-            val message = storedMessage.ifBlank { defaultMessage }
+            val message = if (storedMessage.isBlank() || storedMessage == ConfigRepository.DEFAULT_ALARM_MESSAGE) {
+                defaultMessage
+            } else {
+                storedMessage
+            }
 
             // Android initNotificationState와 동일: 토글은 기본 off로 시작(넛지에서 opt-in)
             setState {
@@ -264,10 +267,11 @@ class AddTodoViewModel(
             configRepository.updateAlarmMessage(notificationState.message)
         }
 
-        saveTodoAndNavigateHome()
+        // 알림 설정이 바뀌었을 수 있으므로 전체 날짜를 다시 계산한다
+        saveTodoAndNavigateHome(rescheduleAll = true)
     }
 
-    private suspend fun saveTodoAndNavigateHome() {
+    private suspend fun saveTodoAndNavigateHome(rescheduleAll: Boolean = false) {
         val tag = currentState.tag ?: return
         try {
             val schedules = currentState.schedules
@@ -285,43 +289,17 @@ class AddTodoViewModel(
                 currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
             }
             runCatching { configRepository.markFirstTodoAdded() }
+            // Android와 동일: 인앱 리뷰 노출 조건(등록 횟수 3회 이상)용 카운트
+            runCatching { configRepository.incrementTodoRegisteredCount() }
 
-            // 알림 예약: 저장된 설정이 켜져 있으면 각 일정 날짜에 로컬 알림 등록
-            runCatching { scheduleAlarms(currentState.title, schedules) }
+            // 알림 재계산: 날짜당 1개, 그 날 미완료 일정 기준(Android 발화 시점 결정과 동일한 결과)
+            if (rescheduleAll) alarmRescheduler?.rescheduleAll()
+            else alarmRescheduler?.rescheduleDates(schedules)
 
             onShowSnackbar(getString(Res.string.snack_todo_added))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_todo_add_failed, e.message ?: ""))
-        }
-    }
-
-    /**
-     * 저장된 알림 설정이 켜져 있으면 각 미래 일정 날짜에 알림 시각으로 로컬 알림을 등록한다.
-     * id는 Android AlarmScheduler와 동일하게 날짜 해시(date.hashCode())를 사용해 취소 정합성을 맞춘다.
-     */
-    private suspend fun scheduleAlarms(title: String, schedules: List<LocalDate>) {
-        val enabled = configRepository.getNotificationEnabled().first()
-        if (!enabled) return
-
-        val (hour, minute) = configRepository.getAlarmTime()
-        val storedMessage = configRepository.getAlarmMessage()
-        val token = getString(Res.string.alarm_placeholder_token)
-        val body = storedMessage.replace(token, title)
-
-        val zone = TimeZone.currentSystemDefault()
-        val now = currentInstant()
-        schedules.forEach { date ->
-            // 과거 시각은 발화되지 않으므로 건너뛴다 (iOS 캘린더 트리거도 과거는 무시)
-            if (date.atTime(hour, minute).toInstant(zone) <= now) return@forEach
-            notificationScheduler.scheduleNotification(
-                id = date.hashCode(),
-                title = title,
-                message = body,
-                hour = hour,
-                minute = minute,
-                date = date,
-            )
         }
     }
 

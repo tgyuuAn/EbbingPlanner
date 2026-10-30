@@ -79,14 +79,8 @@ class ConfigRepositoryImpl(
         settings.putString(KEY_ALARM_TIME, "$hour:$minute")
     }
 
-    override suspend fun getAlarmTime(): Pair<Int, Int> {
-        val time = settings.getString(KEY_ALARM_TIME, "18:30")
-        val parts = time.split(":")
-        return Pair(
-            parts.getOrNull(0)?.toIntOrNull() ?: 18,
-            parts.getOrNull(1)?.toIntOrNull() ?: 30,
-        )
-    }
+    override suspend fun getAlarmTime(): Pair<Int, Int> =
+        ConfigRepository.parseAlarmTime(settings.getString(KEY_ALARM_TIME, "18:30"))
 
     override suspend fun updateAlarmMessage(message: String) {
         settings.putString(KEY_ALARM_MESSAGE, message)
@@ -152,6 +146,15 @@ class ConfigRepositoryImpl(
         return !hasAdded
     }
 
+    // Android TODO_REGISTERED_COUNT 대응. Settings에 Int API가 없어 문자열로 저장한다.
+    override suspend fun incrementTodoRegisteredCount() {
+        val current = settings.getString(KEY_TODO_REGISTERED_COUNT, "0").toIntOrNull() ?: 0
+        settings.putString(KEY_TODO_REGISTERED_COUNT, (current + 1).toString())
+    }
+
+    override fun getTodoRegisteredCount(): Flow<Int> =
+        settings.observeString(KEY_TODO_REGISTERED_COUNT, "0").map { it.toIntOrNull() ?: 0 }
+
     override suspend fun getTagUsageOrder(): List<Int> = usageOrderStore.tagUsageOrder()
 
     override suspend fun recordTagUsage(tagId: Int) = usageOrderStore.recordTagUsage(tagId)
@@ -179,5 +182,6 @@ class ConfigRepositoryImpl(
         private const val KEY_CALENDAR_DEFAULT_VIEW = "CALENDAR_DEFAULT_VIEW"
         private const val KEY_AUTO_BACKUP_ENABLED = "AUTO_BACKUP_ENABLED"
         private const val KEY_HAS_SHOWN_IN_APP_REVIEW = "HAS_SHOWN_IN_APP_REVIEW"
+        private const val KEY_TODO_REGISTERED_COUNT = "TODO_REGISTERED_COUNT"
     }
 }

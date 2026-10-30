@@ -93,6 +93,8 @@ import com.tgyuu.shared.common.toFormattedString
 import kotlinx.datetime.LocalDate
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import com.tgyuu.shared.domain.AlarmRescheduler
+import com.tgyuu.shared.domain.model.ErrorBus
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import ebbingplanner.shared.generated.resources.Res
@@ -128,6 +130,9 @@ fun RootContent(
     val featureFlagRepository = koinInject<com.tgyuu.shared.domain.repository.FeatureFlagRepository>()
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
     val inAppReviewManager = koinInject<InAppReviewManager>()
+    val alarmRescheduler = koinInject<AlarmRescheduler>()
+    val errorBus = koinInject<ErrorBus>()
+    val startupAnalyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
 
     // Check if first app open → show onboarding
     LaunchedEffect(Unit) {
@@ -137,6 +142,15 @@ fun RootContent(
         if (configRepository.isFirstAppOpen()) {
             component.navigateToOnboarding()
         }
+        // Android MainViewModel.initAppState 대응: UUID 보장 후 에러/분석 user id 설정
+        runCatching {
+            syncRepository.ensureUUIDExists()
+            val uuid = syncRepository.getUuid()
+            errorBus.setUserId(uuid)
+            startupAnalyticsHelper.setUserId(uuid)
+        }
+        // iOS는 발화 시점에 내용을 정할 수 없으므로 시작 시 전체 날짜 알림을 다시 계산
+        alarmRescheduler.rescheduleAll()
     }
 
     // Create ViewModels at root level so they persist across tab switches
@@ -159,6 +173,7 @@ fun RootContent(
                 component.navigateToMemo(scheduleId)
             },
             onNavigateToSync = { component.navigateToSync() },
+            alarmRescheduler = alarmRescheduler,
         )
     }
 
@@ -182,6 +197,7 @@ fun RootContent(
             onNavigateToMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
             onNavigateToEditMemo = { scheduleId -> component.navigateToMemo(scheduleId) },
             onShowSnackBar = showSnackbar,
+            alarmRescheduler = alarmRescheduler,
         )
     }
 
@@ -210,6 +226,7 @@ fun RootContent(
             },
             analyticsHelper = analyticsHelper,
             notificationScheduler = settingNotificationScheduler,
+            alarmRescheduler = alarmRescheduler,
         )
     }
 
@@ -240,6 +257,8 @@ fun RootContent(
             // 보고 있던 달 기준으로 다시 불러와요 (선택한 날짜는 유지)
             homeViewModel.onIntent(HomeIntent.OnCurrentDateChanged(homeViewModel.state.value.currentDate ?: LocalDate.now()))
             scheduleViewModel.loadTodoSchedules()
+            // 위젯에서 완료 상태를 바꿨을 수 있으므로 알림도 다시 계산
+            alarmRescheduler.rescheduleAll()
         }
     }
 
@@ -501,6 +520,7 @@ private fun EbbingBottomNavigationBar(
 @Composable
 private fun TagScreenWrapper(component: RootComponent) {
     val todoRepository = koinInject<TodoRepository>()
+    val alarmRescheduler = koinInject<AlarmRescheduler>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = remember {
         TagViewModel(
@@ -509,6 +529,7 @@ private fun TagScreenWrapper(component: RootComponent) {
             onNavigateToAddTag = { component.navigateToAddTag() },
             onNavigateToEditTag = { tagId -> component.navigateToEditTag(tagId) },
             analyticsHelper = analyticsHelper,
+            alarmRescheduler = alarmRescheduler,
         )
     }
     TagScreen(viewModel = viewModel)
@@ -619,6 +640,7 @@ private fun AddTodoScreenWrapper(
     val configRepository = koinInject<ConfigRepository>()
     val notificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
+    val alarmRescheduler = koinInject<AlarmRescheduler>()
     val viewModel = remember(selectedDate) {
         AddTodoViewModel(
             selectedDate = selectedDate,
@@ -632,6 +654,7 @@ private fun AddTodoScreenWrapper(
             onNavigateToAddRepeatCycle = { component.navigateToAddRepeatCycle() },
             onShowSnackbar = onShowSnackbar,
             experimentRepository = experimentRepository,
+            alarmRescheduler = alarmRescheduler,
         )
     }
     AddTodoScreen(viewModel = viewModel)
@@ -646,14 +669,14 @@ private fun EditTodoScreenWrapper(
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
-    val notificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
+    val alarmRescheduler = koinInject<AlarmRescheduler>()
     val viewModel = remember(scheduleId) {
         EditTodoViewModel(
             scheduleId = scheduleId,
             todoRepository = todoRepository,
             configRepository = configRepository,
-            notificationScheduler = notificationScheduler,
+            alarmRescheduler = alarmRescheduler,
             analyticsHelper = analyticsHelper,
             onNavigateBack = { component.onBack() },
             onNavigateToHome = { date -> component.navigateToHome() },
@@ -674,8 +697,10 @@ private fun EditDateScreenWrapper(
     val todoRepository = koinInject<TodoRepository>()
     val experimentRepository = koinInject<com.tgyuu.shared.domain.repository.ExperimentRepository>()
     val configRepository = koinInject<ConfigRepository>()
+    val alarmRescheduler = koinInject<AlarmRescheduler>()
     val viewModel = remember(infoId) {
         EditDateViewModel(
+            alarmRescheduler = alarmRescheduler,
             infoId = infoId,
             todoRepository = todoRepository,
             onNavigateBack = { component.onBack() },
@@ -820,9 +845,11 @@ private fun WebViewScreenWrapper(
 @Composable
 private fun NotificationScreenWrapper(component: RootComponent) {
     val configRepository = koinInject<ConfigRepository>()
+    val alarmRescheduler = koinInject<AlarmRescheduler>()
     val viewModel = remember {
         com.tgyuu.shared.ui.feature.home.notification.NotificationViewModel(
             configRepository = configRepository,
+            alarmRescheduler = alarmRescheduler,
             onNavigateBack = { component.onBack() },
         )
     }

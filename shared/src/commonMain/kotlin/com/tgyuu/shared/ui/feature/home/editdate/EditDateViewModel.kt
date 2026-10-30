@@ -2,6 +2,7 @@ package com.tgyuu.shared.ui.feature.home.editdate
 import androidx.lifecycle.viewModelScope
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.common.loadRepeatCyclesByUsage
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ExperimentRepository
@@ -33,6 +34,7 @@ class EditDateViewModel(
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
     private val configRepository: ConfigRepository,
+    private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
 
     private var originSchedules: List<TodoSchedule> = emptyList()
@@ -130,20 +132,20 @@ class EditDateViewModel(
         }
 
         try {
-            // Delete original schedules
-            originSchedules.firstOrNull()
-                ?.infoId
-                ?.let { todoRepository.deleteTodoByTodoInfo(it) }
-
-            // Add new schedules
-            todoRepository.addTodo(
+            // Android EditDateViewModel과 동일: 같은 infoId를 유지한 채 한 트랜잭션으로 일정 교체
+            // (기존 일정 soft delete + updatedAt 갱신 → 동기화 시 삭제가 서버/연동 기기에 반영됨)
+            val newDates = currentState.schedules
+            todoRepository.replaceSchedules(
+                infoId = originSchedules.firstOrNull()?.infoId ?: infoId,
                 title = currentState.title,
-                dates = currentState.schedules,
-                isDoneSchedules = isDoneSchedules,
                 tagId = tagId,
+                dates = newDates,
+                isDoneSchedules = isDoneSchedules,
                 isPinned = currentState.isPinned,
                 restDays = currentState.restDays.toSet(),
             )
+
+            alarmRescheduler?.rescheduleDates(originSchedules.map { it.date } + newDates)
 
             // 저장 완료 후 부가 기록 실패가 완료 흐름을 막지 않도록 격리
             runCatching {

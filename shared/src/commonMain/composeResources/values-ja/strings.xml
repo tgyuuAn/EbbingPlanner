@@ -51,6 +51,8 @@
     <string name="setting_alarm_time_subtitle">残りの予定の通知をいつ送りますか？</string>
     <string name="setting_alarm_message_setting">通知メッセージ設定</string>
     <string name="alarm_placeholder_token">{タスク}</string>
+    <string name="default_alarm_message">{タスク}を確認して、忘れずに復習しましょう！</string>
+    <string name="notification_content_title">エビングプランナーの予定通知</string>
     <string name="setting_alarm_message_placeholder_guide">はタスクのタイトルに自動変換されます（最大1回）</string>
     <string name="setting_alarm_message_hint">通知メッセージを入力してください</string>
     <string name="setting_preview">プレビュー</string>

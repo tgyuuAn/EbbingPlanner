@@ -1,7 +1,9 @@
 package com.tgyuu.shared.ui.feature.home.notification
 
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.repository.ConfigRepository
+import ebbingplanner.shared.generated.resources.default_alarm_message
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
@@ -13,6 +15,7 @@ class NotificationViewModel(
     private val configRepository: ConfigRepository? = null,
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
+    private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<NotificationState, NotificationIntent>(NotificationState()) {
 
     init {
@@ -23,7 +26,10 @@ class NotificationViewModel(
         safeScope.launch {
             val enabled = configRepository?.getNotificationEnabled()?.first() ?: true
             val (hour, minute) = configRepository?.getAlarmTime() ?: Pair(18, 30)
-            val message = configRepository?.getAlarmMessage() ?: NotificationState.DEFAULT_ALARM_MESSAGE
+            // 저장 sentinel은 로케일별 기본 문구로 표시 (Android 동일)
+            val defaultMessage = getString(Res.string.default_alarm_message)
+            val stored = configRepository?.getAlarmMessage().orEmpty()
+            val message = if (stored.isEmpty() || stored == ConfigRepository.DEFAULT_ALARM_MESSAGE) defaultMessage else stored
 
             setState {
                 copy(
@@ -31,6 +37,7 @@ class NotificationViewModel(
                     alarmHour = hour,
                     alarmMinute = minute,
                     alarmMessage = message,
+                    defaultMessage = defaultMessage,
                 )
             }
         }
@@ -51,10 +58,12 @@ class NotificationViewModel(
     private suspend fun toggleNotification(enabled: Boolean) {
         configRepository?.setNotificationEnabled(enabled)
         setState { copy(isNotificationEnabled = enabled) }
+        if (enabled) alarmRescheduler?.rescheduleAll() else alarmRescheduler?.cancelAll()
     }
 
     private suspend fun updateTime(hour: Int, minute: Int) {
         configRepository?.updateAlarmTime(hour.toString(), minute.toString())
+        alarmRescheduler?.rescheduleAll()
         setState { copy(alarmHour = hour, alarmMinute = minute, isShowTimePicker = false) }
         onShowSnackbar(getString(Res.string.snack_alarm_time_changed))
     }
@@ -63,13 +72,15 @@ class NotificationViewModel(
         if (message.length <= 100) {
             setState { copy(alarmMessage = message) }
             configRepository?.updateAlarmMessage(message)
+            alarmRescheduler?.rescheduleAll()
         }
     }
 
     private suspend fun resetMessage() {
-        val defaultMsg = NotificationState.DEFAULT_ALARM_MESSAGE
+        val defaultMsg = currentState.defaultMessage.ifEmpty { getString(Res.string.default_alarm_message) }
         setState { copy(alarmMessage = defaultMsg) }
         configRepository?.updateAlarmMessage(defaultMsg)
+        alarmRescheduler?.rescheduleAll()
         onShowSnackbar(getString(Res.string.snack_alarm_message_reset))
     }
 }
