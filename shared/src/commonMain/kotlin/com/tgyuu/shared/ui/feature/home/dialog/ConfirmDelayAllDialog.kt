@@ -85,7 +85,7 @@ internal fun ConfirmDelayAllDialog(
 
                     Text(
                         text = restDaysText,
-                        style = EbbingTheme.typography.bodyMR,
+                        style = EbbingTheme.typography.bodyMM,
                         color = EbbingTheme.colors.black,
                     )
                 }
@@ -96,7 +96,7 @@ internal fun ConfirmDelayAllDialog(
             Text(
                 text = stringResource(Res.string.home_delay_revert_notice),
                 style = EbbingTheme.typography.bodySR,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.dark3,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

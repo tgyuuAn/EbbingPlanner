@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.platform.AnalyticsEvent
+import com.tgyuu.shared.platform.logClick
 import org.koin.compose.koinInject
 import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.common.toLocalDateOrThrow
@@ -97,8 +98,18 @@ fun HomeScreen(
     val bottomSheetState = rememberEbbingBottomSheetState()
     var isShowDialog by remember { mutableStateOf(false) }
     var dialogType by remember { mutableStateOf<DialogType?>(null) }
+    val dialogAnalyticsHelper = koinInject<AnalyticsHelper>()
 
     if (state.showInAppReviewDialog) {
+        // Android InAppReviewDialog TrackScreenViewEvent(screenName = "ReviewDialog") 대응
+        LaunchedEffect(Unit) {
+            dialogAnalyticsHelper.logEvent(
+                AnalyticsEvent(
+                    type = AnalyticsEvent.Types.SCREEN_VIEW,
+                    properties = mapOf(AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "ReviewDialog"),
+                )
+            )
+        }
         EbbingDialog(
             dialogTop = {
                 EbbingDialogDefaultTop(
@@ -110,6 +121,7 @@ fun HomeScreen(
                 EbbingSolidButton(
                     label = stringResource(Res.string.home_review_button),
                     onClick = {
+                        dialogAnalyticsHelper.logClick(screenName = "ReviewDialog", buttonName = "Review")
                         viewModel.dismissInAppReviewDialog()
                         onRequestInAppReview()
                     },
@@ -126,6 +138,7 @@ fun HomeScreen(
 
     // Set up ViewModel callbacks
     LaunchedEffect(viewModel) {
+        viewModel.analyticsHelper = dialogAnalyticsHelper
         viewModel.onShowEditOptionsBottomSheet = { schedule ->
             scope.launch {
                 showOptionsBottomSheet(
@@ -150,12 +163,14 @@ fun HomeScreen(
         dialogType = dialogType,
         onDismiss = { isShowDialog = false },
         onIntent = viewModel::onIntent,
+        analyticsHelper = dialogAnalyticsHelper,
     )
 
     // Widget Nudge Dialog
     AnimatedVisibility(state.showWidgetNudgeDialog) {
         WidgetNudgeDialog(
-            onDismiss = { viewModel.onIntent(HomeIntent.OnWidgetNudgeDismiss) }
+            onDismiss = { viewModel.onIntent(HomeIntent.OnWidgetNudgeDismiss) },
+            analyticsHelper = dialogAnalyticsHelper,
         )
     }
 
@@ -723,12 +738,36 @@ private fun HandleDialogs(
     dialogType: DialogType?,
     onDismiss: () -> Unit,
     onIntent: (HomeIntent) -> Unit,
+    analyticsHelper: AnalyticsHelper,
 ) {
+    // Android HandleDialogs와 동일: 다이얼로그 타입이 바뀔 때 show_dialog 액션 로깅
+    LaunchedEffect(dialogType) {
+        val type = dialogType ?: return@LaunchedEffect
+        val dialogTypeName = when (type) {
+            is DialogType.ConfirmDeleteSingle -> "confirm_delete_single"
+            is DialogType.ConfirmDeleteRemaining -> "confirm_delete_remaining"
+            is DialogType.ConfirmDelay -> "confirm_delay"
+            is DialogType.ConfirmDelayAll -> "confirm_delay_all"
+            is DialogType.ConfirmDeleteMemo -> "confirm_delete_memo"
+        }
+        analyticsHelper.logEvent(
+            AnalyticsEvent(
+                type = AnalyticsEvent.Types.ACTION,
+                properties = mapOf(
+                    AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "Home",
+                    AnalyticsEvent.PropertiesKeys.ACTION_NAME to "show_dialog",
+                    "dialog_type" to dialogTypeName,
+                ),
+            )
+        )
+    }
+
     val dt = dialogType
     if (isShowDialog && dt != null) {
         when (dt) {
             is DialogType.ConfirmDeleteSingle -> ConfirmDeleteSingleDialog(
                 schedule = dt.schedule,
+                analyticsHelper = analyticsHelper,
                 onDismissRequest = onDismiss,
                 onDeleteClick = {
                     onDismiss()
@@ -738,6 +777,7 @@ private fun HandleDialogs(
 
             is DialogType.ConfirmDeleteRemaining -> ConfirmDeleteRemainingDialog(
                 schedule = dt.schedule,
+                analyticsHelper = analyticsHelper,
                 onDismissRequest = onDismiss,
                 onDeleteClick = {
                     onDismiss()

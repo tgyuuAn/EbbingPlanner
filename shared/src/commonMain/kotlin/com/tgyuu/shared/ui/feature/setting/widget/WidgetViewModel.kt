@@ -8,8 +8,8 @@ import com.tgyuu.shared.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.snack_widget_save_failed
-import ebbingplanner.shared.generated.resources.snack_widget_saved
+import ebbingplanner.shared.generated.resources.setting_theme_change_failed
+import ebbingplanner.shared.generated.resources.setting_widget_theme_changed
 import org.jetbrains.compose.resources.getString
 
 class WidgetViewModel(
@@ -62,10 +62,10 @@ class WidgetViewModel(
                     originTextAlpha = selectedTextAlpha,
                 )
             }
-            onShowSnackbar(getString(Res.string.snack_widget_saved))
+            onShowSnackbar(getString(Res.string.setting_widget_theme_changed))
             onNavigateBack()
         } catch (e: Exception) {
-            onShowSnackbar(getString(Res.string.snack_widget_save_failed))
+            onShowSnackbar(getString(Res.string.setting_theme_change_failed))
         }
     }
 

@@ -15,8 +15,9 @@ data class EditTagState(
     val saveButtonPositionVariant: Experiment.SaveButtonPosition.Variant = Experiment.SaveButtonPosition.Variant.CONTROL,
 ) : UiState {
     val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
+    // Android EditTagState와 동일: 이름이 비어있지 않고 원본 태그가 로드되면 활성화
     val isSaveEnabled: Boolean
-        get() = name.isNotBlank() && (name != originTag?.name || colorValue != originTag.color)
+        get() = name.isNotEmpty() && originTag != null
 
     companion object {
         // Android EditTagState와 동일: 기본 색상은 DefaultTodoTag.color(연한 파랑)

@@ -9,9 +9,9 @@ import com.tgyuu.shared.platform.logClick
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.snack_repeat_add_failed
-import ebbingplanner.shared.generated.resources.snack_repeat_added
-import ebbingplanner.shared.generated.resources.snack_repeat_invalid
-import ebbingplanner.shared.generated.resources.snack_required_fields
+import ebbingplanner.shared.generated.resources.repeat_snackbar_added
+import ebbingplanner.shared.generated.resources.repeat_snackbar_invalid
+import ebbingplanner.shared.generated.resources.repeat_snackbar_required
 import org.jetbrains.compose.resources.getString
 
 class AddRepeatCycleViewModel(
@@ -45,27 +45,29 @@ class AddRepeatCycleViewModel(
     }
 
     private suspend fun onSaveClick() {
-        analyticsHelper.logClick("AddRepeatCycle", "SaveRepeatCycle")
         if (currentState.intervals.isEmpty()) {
-            onShowSnackbar(getString(Res.string.snack_required_fields))
+            onShowSnackbar(getString(Res.string.repeat_snackbar_required))
             return
         }
 
         parsingIntervals(currentState.intervals).onSuccess { intervals ->
             if (intervals.isEmpty()) {
-                onShowSnackbar(getString(Res.string.snack_repeat_invalid))
+                onShowSnackbar(getString(Res.string.repeat_snackbar_invalid))
                 return
             }
 
+            // Android와 동일: 검증을 통과한 뒤에만 저장 클릭을 로깅해요
+            analyticsHelper.logClick("AddRepeatCycle", "SaveRepeatCycle")
+
             try {
                 todoRepository.addRepeatCycle(intervals = intervals)
-                onShowSnackbar(getString(Res.string.snack_repeat_added))
+                onShowSnackbar(getString(Res.string.repeat_snackbar_added))
                 onNavigateBack()
             } catch (e: Exception) {
                 onShowSnackbar(getString(Res.string.snack_repeat_add_failed))
             }
         }.onFailure {
-            onShowSnackbar(getString(Res.string.snack_repeat_invalid))
+            onShowSnackbar(getString(Res.string.repeat_snackbar_invalid))
         }
     }
 

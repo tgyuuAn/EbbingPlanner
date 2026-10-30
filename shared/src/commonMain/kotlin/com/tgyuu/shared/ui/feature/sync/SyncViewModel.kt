@@ -183,6 +183,16 @@ class SyncViewModel(
                 analyticsHelper.logClick("SyncMain", "Disconnect")
                 disconnectAnother()
             }
+            SyncIntent.OnSyncDialogBackClick -> analyticsHelper.logClick("SyncDialog", "Back")
+            SyncIntent.OnSyncDialogSyncClick -> {
+                analyticsHelper.logClick("SyncDialog", "Sync")
+                syncUpData()
+            }
+            SyncIntent.OnDisconnectDialogBackClick -> analyticsHelper.logClick("DisconnectDialog", "Back")
+            SyncIntent.OnDisconnectDialogDisconnectClick -> {
+                analyticsHelper.logClick("DisconnectDialog", "Disconnect")
+                disconnectAnother()
+            }
             SyncIntent.OnRestoreClick -> onNavigateToRestore()
             SyncIntent.OnDeviceInfoCopied -> onShowSnackbar(getString(Res.string.sync_device_info_copied))
             // QR 연동
@@ -198,10 +208,7 @@ class SyncViewModel(
             }
 
             SyncIntent.OnDismissScan -> setState { copy(isScanning = false) }
-            is SyncIntent.OnQrDetected -> {
-                analyticsHelper.logClick("SyncMain", "QrDetected")
-                handleQrDetected(intent.rawValue)
-            }
+            is SyncIntent.OnQrDetected -> handleQrDetected(intent.rawValue)
         }
     }
 
@@ -293,6 +300,8 @@ class SyncViewModel(
         if (!rawValue.startsWith(EBBINGPLANNER_SCHEME)) return
         if (isProcessingQr) return
         isProcessingQr = true
+        // Android와 동일: 스킴 검증 + 중복 처리 방지를 통과한 경우에만 1회 로깅
+        analyticsHelper.logClick("SyncMain", "QrDetected")
 
         val connectCode = rawValue.removePrefix(EBBINGPLANNER_SCHEME)
         setState { copy(isScanLoading = true) }

@@ -35,7 +35,7 @@ fun EbbingTheme(
 
     CompositionLocalProvider(
         LocalColors provides colors,
-        LocalTypography provides if (isTablet) TabletTypography else EbbingTypography(),
+        LocalTypography provides rememberEbbingTypography(isTablet),
         LocalDensity provides Density(LocalDensity.current.density, 1f)
     ) {
         CompositionLocalProvider(content = content)

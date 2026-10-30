@@ -8,6 +8,8 @@ import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.home_back
@@ -20,6 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ConfirmDeleteSingleDialog(
     schedule: TodoScheduleUiModel,
+    analyticsHelper: AnalyticsHelper? = null,
     onDismissRequest: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -43,8 +46,14 @@ internal fun ConfirmDeleteSingleDialog(
             EbbingDialogBottom(
                 leftButtonText = stringResource(Res.string.home_back),
                 rightButtonText = stringResource(Res.string.home_delete),
-                onLeftButtonClick = onDismissRequest,
-                onRightButtonClick = onDeleteClick,
+                onLeftButtonClick = {
+                    analyticsHelper.logClick(screenName = "DeleteSingleDialog", buttonName = "Back")
+                    onDismissRequest()
+                },
+                onRightButtonClick = {
+                    analyticsHelper.logClick(screenName = "DeleteSingleDialog", buttonName = "Delete")
+                    onDeleteClick()
+                },
             )
         },
         onDismissRequest = onDismissRequest,

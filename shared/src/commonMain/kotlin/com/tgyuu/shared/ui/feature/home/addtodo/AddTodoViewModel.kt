@@ -25,10 +25,10 @@ import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.alarm_placeholder_token
 import ebbingplanner.shared.generated.resources.default_alarm_message
 import ebbingplanner.shared.generated.resources.tag_unassigned
-import ebbingplanner.shared.generated.resources.snack_all_rest_days
-import ebbingplanner.shared.generated.resources.snack_required_fields
+import ebbingplanner.shared.generated.resources.home_snackbar_all_rest_days
+import ebbingplanner.shared.generated.resources.home_snackbar_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_add_failed
-import ebbingplanner.shared.generated.resources.snack_todo_added
+import ebbingplanner.shared.generated.resources.home_snackbar_todo_added
 import org.jetbrains.compose.resources.getString
 import com.tgyuu.shared.common.sortedByUsageOrder
 import com.tgyuu.shared.designsystem.model.toDisplayName
@@ -186,9 +186,13 @@ class AddTodoViewModel(
             is AddTodoIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
             AddTodoIntent.OnSaveClick -> onSaveClick()
 
-            AddTodoIntent.OnNotificationToggleClick -> onNotificationToggleClick()
-            AddTodoIntent.OnAlarmTimePickerClick -> setState {
-                copy(notificationState = notificationState.copy(isShowTimePicker = true))
+            AddTodoIntent.OnNotificationToggleClick -> {
+                logNudgeClick("toggle", mapOf("desired_on" to !currentState.notificationState.notificationEnabled))
+                onNotificationToggleClick()
+            }
+            AddTodoIntent.OnAlarmTimePickerClick -> {
+                logNudgeClick("time")
+                setState { copy(notificationState = notificationState.copy(isShowTimePicker = true)) }
             }
             AddTodoIntent.OnAlarmTimePickerDismiss -> setState {
                 copy(notificationState = notificationState.copy(isShowTimePicker = false))
@@ -205,11 +209,20 @@ class AddTodoViewModel(
             is AddTodoIntent.OnAlarmMessageChange -> setState {
                 copy(notificationState = notificationState.copy(message = intent.message))
             }
-            AddTodoIntent.OnAlarmMessageReset -> setState {
-                copy(notificationState = notificationState.copy(message = notificationState.defaultMessage))
+            AddTodoIntent.OnAlarmMessageReset -> {
+                logNudgeClick("reset")
+                setState {
+                    copy(notificationState = notificationState.copy(message = notificationState.defaultMessage))
+                }
             }
             AddTodoIntent.OnNotificationBackClick -> setState { copy(page = AddTodoState.Page.ADD_TODO) }
-            AddTodoIntent.OnNotificationSaveClick -> onNotificationSaveClick()
+            AddTodoIntent.OnNotificationSaveClick -> {
+                logNudgeClick(
+                    "save",
+                    mapOf("notification_enabled" to currentState.notificationState.notificationEnabled),
+                )
+                onNotificationSaveClick()
+            }
         }
     }
 
@@ -226,7 +239,7 @@ class AddTodoViewModel(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            viewModelScope.launch { onShowSnackbar(getString(Res.string.snack_all_rest_days)) }
+            viewModelScope.launch { onShowSnackbar(getString(Res.string.home_snackbar_all_rest_days)) }
             return
         }
 
@@ -245,11 +258,24 @@ class AddTodoViewModel(
         )
     }
 
+    /** Android NotificationScreen AnalyticsEvent.Click(screenName = "NotificationNudge") 대응 */
+    private fun logNudgeClick(buttonName: String, properties: Map<String, Any?> = emptyMap()) {
+        analyticsHelper?.logEvent(
+            AnalyticsEvent(
+                type = AnalyticsEvent.Types.BUTTON_CLICK,
+                properties = mapOf(
+                    AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "NotificationNudge",
+                    AnalyticsEvent.PropertiesKeys.BUTTON_NAME to buttonName,
+                ) + properties,
+            )
+        )
+    }
+
     private suspend fun onSaveClick() {
         logClick("Save")
 
         if (!currentState.isSaveEnabled) {
-            onShowSnackbar(getString(Res.string.snack_required_fields))
+            onShowSnackbar(getString(Res.string.home_snackbar_required_fields))
             return
         }
 
@@ -346,7 +372,7 @@ class AddTodoViewModel(
             if (rescheduleAll) alarmRescheduler?.rescheduleAll()
             else alarmRescheduler?.rescheduleDates(schedules)
 
-            onShowSnackbar(getString(Res.string.snack_todo_added))
+            onShowSnackbar(getString(Res.string.home_snackbar_todo_added))
             onNavigateToHome(currentState.selectedDate, isFirstTodo)
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_todo_add_failed, e.message ?: ""))

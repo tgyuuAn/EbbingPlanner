@@ -38,6 +38,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
+import com.tgyuu.shared.designsystem.component.EbbingDialogIconTop
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ScrollState
 import com.tgyuu.shared.designsystem.component.EbbingSubTopBar
 import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingModalBottomSheet
 import com.tgyuu.shared.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
@@ -182,112 +189,125 @@ fun AddTodoScreen(
         )
     }
 
-    // Android와 동일: 저장 시 최초 1회 알림 넛지 페이지로 전환
-    if (state.page == AddTodoState.Page.NOTIFICATION) {
-        NotificationNudgeContent(
-            state = state.notificationState,
-            modifier = modifier,
-            onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
-            onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
-            onToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
-            onTimePickerClick = { viewModel.onIntent(AddTodoIntent.OnAlarmTimePickerClick) },
-            onTimePickerDismiss = { viewModel.onIntent(AddTodoIntent.OnAlarmTimePickerDismiss) },
-            onTimeChange = { hour, minute -> viewModel.onIntent(AddTodoIntent.OnAlarmTimeChange(hour, minute)) },
-            onMessageChange = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageChange(it)) },
-            onResetClick = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageReset) },
-        )
-        return
-    }
-
-    // 저장 버튼까지 포함하는 최상위 Column에 imePadding을 적용해 키보드에 버튼이 가리지 않게 함 (Android 동일)
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .imePadding(),
-    ) {
-        EbbingSubTopBar(
-            title = stringResource(Res.string.home_add_todo_title),
-            onNavigationClick = {
-                if (state.isModified) showExitDialog = true
-                else viewModel.onIntent(AddTodoIntent.OnBackClick)
-            },
-            rightComponent = {},
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
-        val formContent: @Composable () -> Unit = {
-            AddTodoFormContent(
-                state = state,
-                viewModel = viewModel,
-                onDateClick = {
-                    currentBottomSheetType = BottomSheetType.DATE
-                    scope.launch { bottomSheetState.show() }
-                },
-                onTagClick = {
-                    currentBottomSheetType = BottomSheetType.TAG
-                    scope.launch { bottomSheetState.show() }
-                },
-                onRepeatCycleClick = {
-                    currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
-                    scope.launch { bottomSheetState.show() }
-                },
+    // Android EbbingPageTransitionAnimation 대응: 폼 ↔ 알림 넛지 페이지 전환 시 fade(700ms)
+    AnimatedContent(
+        targetState = state.page,
+        transitionSpec = {
+            fadeIn(tween(PAGE_TRANSITION_DURATION)) togetherWith fadeOut(tween(PAGE_TRANSITION_DURATION))
+        },
+        modifier = modifier,
+    ) { page ->
+        when (page) {
+            // Android와 동일: 저장 시 최초 1회 알림 넛지 페이지로 전환
+            AddTodoState.Page.NOTIFICATION -> NotificationNudgeContent(
+                state = state.notificationState,
+                onBackClick = { viewModel.onIntent(AddTodoIntent.OnNotificationBackClick) },
+                onSaveClick = { viewModel.onIntent(AddTodoIntent.OnNotificationSaveClick) },
+                onToggleClick = { viewModel.onIntent(AddTodoIntent.OnNotificationToggleClick) },
+                onTimePickerClick = { viewModel.onIntent(AddTodoIntent.OnAlarmTimePickerClick) },
+                onTimePickerDismiss = { viewModel.onIntent(AddTodoIntent.OnAlarmTimePickerDismiss) },
+                onTimeChange = { hour, minute -> viewModel.onIntent(AddTodoIntent.OnAlarmTimeChange(hour, minute)) },
+                onMessageChange = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageChange(it)) },
+                onResetClick = { viewModel.onIntent(AddTodoIntent.OnAlarmMessageReset) },
             )
-        }
-        val saveButton: @Composable (Modifier) -> Unit = { buttonModifier ->
-            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-                label = stringResource(Res.string.home_add_todo_button),
-                onClick = {
-                    focusManager.clearFocus()
-                    viewModel.onIntent(AddTodoIntent.OnSaveClick)
-                },
-                enabled = state.isSaveEnabled,
-                modifier = buttonModifier.background(EbbingTheme.colors.background),
-            )
-        }
 
-        if (EbbingTheme.windowLayout.isTablet) {
-            // 태블릿: 가로는 폼(+버튼) | 학습 일정, 세로는 한 컬럼 (Android TabletFormLayout과 동일)
-            TabletFormLayout(
-                scrollState = scrollState,
-                form = { formContent() },
-                side = {
-                    EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
-                        ScheduleContent(schedules = state.schedules)
+            AddTodoState.Page.ADD_TODO -> {
+                // 저장 버튼까지 포함하는 최상위 Column에 imePadding을 적용해 키보드에 버튼이 가리지 않게 함 (Android 동일)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding(),
+                ) {
+                    EbbingSubTopBar(
+                        title = stringResource(Res.string.home_add_todo_title),
+                        onNavigationClick = {
+                            if (state.isModified) showExitDialog = true
+                            else viewModel.onIntent(AddTodoIntent.OnBackClick)
+                        },
+                        rightComponent = {},
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                    )
+
+                    val formContent: @Composable () -> Unit = {
+                        AddTodoFormContent(
+                            state = state,
+                            viewModel = viewModel,
+                            scrollState = scrollState,
+                            onDateClick = {
+                                currentBottomSheetType = BottomSheetType.DATE
+                                scope.launch { bottomSheetState.show() }
+                            },
+                            onTagClick = {
+                                currentBottomSheetType = BottomSheetType.TAG
+                                scope.launch { bottomSheetState.show() }
+                            },
+                            onRepeatCycleClick = {
+                                currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
+                                scope.launch { bottomSheetState.show() }
+                            },
+                        )
                     }
-                },
-                button = saveButton,
-                modifier = Modifier.weight(1f),
-            )
-        } else {
-            // Phone: single column
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(20.dp),
-            ) {
-                formContent()
+                    val saveButton: @Composable (Modifier) -> Unit = { buttonModifier ->
+                        com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                            label = stringResource(Res.string.home_add_todo_button),
+                            onClick = {
+                                focusManager.clearFocus()
+                                viewModel.onIntent(AddTodoIntent.OnSaveClick)
+                            },
+                            enabled = state.isSaveEnabled,
+                            modifier = buttonModifier.background(EbbingTheme.colors.background),
+                        )
+                    }
 
-                EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
-                    ScheduleContent(schedules = state.schedules)
+                    if (EbbingTheme.windowLayout.isTablet) {
+                        // 태블릿: 가로는 폼(+버튼) | 학습 일정, 세로는 한 컬럼 (Android TabletFormLayout과 동일)
+                        TabletFormLayout(
+                            scrollState = scrollState,
+                            form = { formContent() },
+                            side = {
+                                EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
+                                    ScheduleContent(schedules = state.schedules)
+                                }
+                            },
+                            button = saveButton,
+                            modifier = Modifier.weight(1f),
+                        )
+                    } else {
+                        // Phone: single column
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .verticalScroll(scrollState)
+                                .padding(horizontal = 20.dp)
+                                .padding(bottom = 48.dp),
+                        ) {
+                            formContent()
+
+                            EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
+                                ScheduleContent(schedules = state.schedules)
+                            }
+                        }
+
+                        saveButton(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 16.dp)
+                        )
+                    }
                 }
-
-                Spacer(modifier = Modifier.height(60.dp))
             }
-
-            saveButton(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
-            )
         }
     }
 }
+
+private const val PAGE_TRANSITION_DURATION = 700
 
 @Composable
 private fun AddTodoFormContent(
     state: AddTodoState,
     viewModel: AddTodoViewModel,
+    scrollState: ScrollState,
     onDateClick: () -> Unit,
     onTagClick: () -> Unit,
     onRepeatCycleClick: () -> Unit,
@@ -305,6 +325,7 @@ private fun AddTodoFormContent(
     TitleContent(
         title = state.title,
         onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
+        scrollState = scrollState,
     )
 
     TagContent(
@@ -333,41 +354,23 @@ private fun ConfirmExitDialog(
     onContinueClick: () -> Unit,
     onExitClick: () -> Unit,
 ) {
-    EbbingDialog(onDismissRequest = onContinueClick) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        ) {
-            // Android EbbingDialogIconTop과 동일: 상단 notice 아이콘
-            Image(
-                painter = painterResource(Res.drawable.ic_notice),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(top = 40.dp)
-                    .size(40.dp),
+    // Android ConfirmExitDialog와 동일: EbbingDialogIconTop(notice) + EbbingDialogBottom
+    EbbingDialog(
+        onDismissRequest = onContinueClick,
+        dialogTop = {
+            EbbingDialogIconTop(
+                icon = Res.drawable.ic_notice,
+                title = stringResource(Res.string.home_exit_confirm_title),
+                subText = stringResource(Res.string.home_exit_confirm_sub),
             )
-            Text(
-                text = stringResource(Res.string.home_exit_confirm_title),
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 16.dp),
-            )
-
-            Text(
-                text = stringResource(Res.string.home_exit_confirm_sub),
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark1,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
-            )
-
+        },
+        dialogBottom = {
             EbbingDialogBottom(
                 leftButtonText = stringResource(Res.string.home_exit_confirm_stop),
                 rightButtonText = stringResource(Res.string.home_exit_confirm_continue),
                 onLeftButtonClick = onExitClick,
                 onRightButtonClick = onContinueClick,
             )
-        }
-    }
+        },
+    )
 }

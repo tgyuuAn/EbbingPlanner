@@ -91,7 +91,7 @@ internal fun ConfirmDelayDialog(
             Text(
                 text = dateText,
                 color = EbbingTheme.colors.primaryDefault,
-                style = EbbingTheme.typography.bodyMSB,
+                style = EbbingTheme.typography.bodyMM,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 8.dp),
             )
@@ -115,7 +115,7 @@ internal fun ConfirmDelayDialog(
 
                     Text(
                         text = restDaysText,
-                        style = EbbingTheme.typography.bodyMR,
+                        style = EbbingTheme.typography.bodyMM,
                         color = EbbingTheme.colors.black,
                     )
                 }
@@ -127,7 +127,7 @@ internal fun ConfirmDelayDialog(
                 text = stringResource(Res.string.home_delay_revert_notice),
                 style = EbbingTheme.typography.bodySR,
                 textAlign = TextAlign.Center,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.dark3,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)

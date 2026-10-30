@@ -1,5 +1,15 @@
 package com.tgyuu.shared.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.WindowInsets
 import com.tgyuu.shared.ui.feature.home.HomeIntent
 import com.tgyuu.shared.navigation.WidgetDeepLink
 import com.tgyuu.shared.navigation.AppExternalEvents
@@ -529,41 +539,85 @@ private fun EbbingBottomNavigationBar(
     onTabSelected: (BottomNavItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    NavigationBar(
-        containerColor = EbbingTheme.colors.background,
-        modifier = modifier.height(80.dp),
-    ) {
-        BottomNavItem.entries.forEach { tab ->
-            val isSelected = tab == selectedTab
-
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = { onTabSelected(tab) },
-                icon = {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Icon(
-                            painter = painterResource(tab.iconRes),
-                            contentDescription = stringResource(tab.labelRes),
-                            modifier = Modifier.size(32.dp),
-                        )
-                        Text(
-                            text = stringResource(tab.labelRes),
-                            style = EbbingTheme.typography.captionM,
-                        )
-                    }
+    // Android AppBottomBar 대응: 71dp 영역 + 상단 3dp 그림자 그라데이션, NavigationBar 68dp.
+    // Android는 바깥에서 navigationBarsPadding을 주므로 바 자체 인셋은 0, 하단 안전영역은 별도로 채워요.
+    val shadowColor = EbbingTheme.colors.black
+    Column(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(71.dp)
+                .drawBehind {
+                    val shadowHeight = 3.dp.toPx()
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, shadowColor.copy(alpha = 0.1f)),
+                            startY = 0f,
+                            endY = shadowHeight,
+                        ),
+                        topLeft = Offset(0f, 0f),
+                        size = Size(size.width, shadowHeight),
+                    )
                 },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = EbbingTheme.colors.black,
-                    unselectedIconColor = EbbingTheme.colors.dark3,
-                    selectedTextColor = EbbingTheme.colors.black,
-                    unselectedTextColor = EbbingTheme.colors.dark3,
-                    indicatorColor = Color.Transparent,
-                ),
-            )
+        ) {
+            NavigationBar(
+                containerColor = EbbingTheme.colors.background,
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .height(68.dp),
+            ) {
+                BottomNavItem.entries.forEach { tab ->
+                    NavigationBarItem(
+                        selected = tab == selectedTab,
+                        onClick = { onTabSelected(tab) },
+                        icon = {
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(top = 2.dp),
+                            ) {
+                                Icon(
+                                    painter = painterResource(tab.iconRes),
+                                    contentDescription = stringResource(tab.labelRes),
+                                    modifier = Modifier.size(32.dp),
+                                )
+                                Text(
+                                    text = stringResource(tab.labelRes),
+                                    style = EbbingTheme.typography.captionR12,
+                                )
+                            }
+                        },
+                        alwaysShowLabel = false,
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = EbbingTheme.colors.black,
+                            unselectedIconColor = EbbingTheme.colors.dark3,
+                            selectedTextColor = EbbingTheme.colors.black,
+                            unselectedTextColor = EbbingTheme.colors.dark3,
+                            indicatorColor = Color.Transparent,
+                        ),
+                        interactionSource = remember { NoRippleInteractionSource() },
+                    )
+                }
+            }
         }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(EbbingTheme.colors.background)
+                .windowInsetsBottomHeight(WindowInsets.navigationBars),
+        )
     }
+}
+
+/** Android NoRippleInteractionSource 대응: 하단 탭 터치 리플 제거 */
+private class NoRippleInteractionSource : androidx.compose.foundation.interaction.MutableInteractionSource {
+    override val interactions: kotlinx.coroutines.flow.Flow<androidx.compose.foundation.interaction.Interaction> =
+        kotlinx.coroutines.flow.emptyFlow()
+
+    override suspend fun emit(interaction: androidx.compose.foundation.interaction.Interaction) {}
+
+    override fun tryEmit(interaction: androidx.compose.foundation.interaction.Interaction): Boolean = true
 }
 
 // 각 Wrapper는 ViewModel을 child 보관소(owner)에 두어, 하위 화면(태그/반복주기 추가 등)에 다녀와도 입력 상태가 유지돼요.

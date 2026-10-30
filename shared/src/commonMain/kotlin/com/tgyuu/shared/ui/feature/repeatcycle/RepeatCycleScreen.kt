@@ -6,7 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.clickable
+import com.tgyuu.shared.common.util.noRippleClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -98,7 +98,7 @@ fun RepeatCycleScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable { selectedRepeatCycle = null },
+                .noRippleClickable { selectedRepeatCycle = null },
         ) {
             EbbingSubTopBar(
                 title = stringResource(Res.string.repeat_manage_title),
@@ -110,7 +110,7 @@ fun RepeatCycleScreen(
                         color = EbbingTheme.colors.primaryDefault,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
-                            .clickable { viewModel.onIntent(RepeatCycleIntent.OnAddClick) },
+                            .noRippleClickable { viewModel.onIntent(RepeatCycleIntent.OnAddClick) },
                     )
                 },
                 modifier = Modifier.padding(horizontal = 20.dp),

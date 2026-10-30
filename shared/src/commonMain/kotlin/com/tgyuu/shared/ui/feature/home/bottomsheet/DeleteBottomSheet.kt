@@ -14,9 +14,9 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHead
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.schedule_delete_remaining
-import ebbingplanner.shared.generated.resources.schedule_delete_single
-import ebbingplanner.shared.generated.resources.schedule_delete_title
+import ebbingplanner.shared.generated.resources.home_delete_remaining
+import ebbingplanner.shared.generated.resources.home_delete_single
+import ebbingplanner.shared.generated.resources.home_delete_method
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -30,7 +30,7 @@ internal fun DeleteBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_delete_title))
+        EbbingBottomSheetHeader(title = stringResource(Res.string.home_delete_method))
 
         Column(
             modifier = Modifier
@@ -38,7 +38,7 @@ internal fun DeleteBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = stringResource(Res.string.schedule_delete_single),
+                text = stringResource(Res.string.home_delete_single),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -50,7 +50,7 @@ internal fun DeleteBottomSheet(
             )
 
             Text(
-                text = stringResource(Res.string.schedule_delete_remaining),
+                text = stringResource(Res.string.home_delete_remaining),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,

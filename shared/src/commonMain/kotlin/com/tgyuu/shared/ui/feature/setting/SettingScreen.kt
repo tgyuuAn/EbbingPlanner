@@ -1,7 +1,8 @@
 package com.tgyuu.shared.ui.feature.setting
 
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
-import androidx.compose.foundation.clickable
+import com.tgyuu.shared.common.util.noRippleClickable
+import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.foundation.layout.Box
@@ -105,7 +106,6 @@ import ebbingplanner.shared.generated.resources.setting_preview
 import ebbingplanner.shared.generated.resources.setting_restore_default
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import com.tgyuu.shared.designsystem.model.alarmTimeText
 import ebbingplanner.shared.generated.resources.setting_alarm_message_error_placeholder
 import ebbingplanner.shared.generated.resources.setting_alarm_message_error_length
 import ebbingplanner.shared.generated.resources.setting_alarm_message_length
@@ -231,8 +231,8 @@ fun SettingScreen(
 
         // Android PhoneSettingScreen과 동일 순서: 알림→캘린더→태그/반복→테마→문의→안내→데이터→리뷰→버전
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = horizontalPadding)) {
-            NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
-            CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
+            NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = formatAlarmTime(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { viewModel.onIntent(SettingIntent.OnAlarmTimeOpen); openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
+            CalendarBody(mondayStart = state.mondayStart, onClick = { viewModel.onIntent(SettingIntent.OnStartDayOpen); openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
             TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
             ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) }, onWidgetAlphaClick = { viewModel.onIntent(SettingIntent.OnWidgetClick) })
             InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
@@ -240,7 +240,6 @@ fun SettingScreen(
             DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onRestoreClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
             InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
             VersionRow(version = state.appVersion)
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
     }
@@ -313,7 +312,7 @@ private fun DataBody(
                 Text(
                     text = stringResource(Res.string.setting_last_sync_time, lastSyncTime),
                     style = EbbingTheme.typography.bodySM,
-                    color = EbbingTheme.colors.dark3,
+                    color = EbbingTheme.colors.dark2, // Android textSub
                     modifier = Modifier.padding(top = 4.dp),
                 )
             }
@@ -410,7 +409,7 @@ private fun SectionHeader(
     Text(
         text = text,
         style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark3,
+        color = EbbingTheme.colors.dark2, // Android textSub
         modifier = modifier.padding(bottom = 8.dp),
     )
 }
@@ -432,7 +431,7 @@ private fun SettingRow(
                 // Android fillSelected(#F1F8FE) 대응: shared 토큰 primaryLight를 옅게 사용
                 if (isSelected) Modifier.background(EbbingTheme.colors.primaryLight.copy(alpha = 0.25f)) else Modifier
             )
-            .clickable(onClick = onClick)
+            .noRippleClickable(onClick = onClick)
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
@@ -482,7 +481,7 @@ private fun CalendarBody(
             textAlign = TextAlign.End,
             style = EbbingTheme.typography.bodyMSB,
             color = EbbingTheme.colors.primaryDefault,
-            modifier = Modifier.clickable { onClick() },
+            modifier = Modifier.noRippleClickable { onClick() },
         )
     }
 
@@ -568,7 +567,7 @@ private fun NotificationBody(
                 textAlign = TextAlign.End,
                 style = EbbingTheme.typography.bodyMSB,
                 color = EbbingTheme.colors.primaryDefault,
-                modifier = Modifier.clickable { onAlarmTimeClick() },
+                modifier = Modifier.noRippleClickable { onAlarmTimeClick() },
             )
         }
 
@@ -577,7 +576,7 @@ private fun NotificationBody(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = SettingItemVerticalPadding)
-                .clickable { onAlarmMessageClick() },
+                .noRippleClickable { onAlarmMessageClick() },
         ) {
             Text(
                 text = stringResource(Res.string.setting_alarm_message),
@@ -622,7 +621,7 @@ private fun InAppReviewRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .noRippleClickable(onClick = onClick)
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
@@ -646,42 +645,33 @@ private fun ClearDataDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    EbbingDialog(onDismissRequest = onDismiss) {
-        Column(
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 20.dp),
-        ) {
-            // Android ConfirmClearDialog와 동일: '데이터를 [초기화](빨강) 하시겠습니까?'
-            Text(
-                text = buildAnnotatedString {
-                    append(stringResource(Res.string.setting_clear_dialog_title_prefix))
-                    withStyle(SpanStyle(color = EbbingTheme.colors.error)) {
-                        append(stringResource(Res.string.setting_clear_dialog_title_highlight))
-                    }
-                    append(stringResource(Res.string.setting_clear_dialog_title_suffix))
+    // Android ConfirmClearDialog와 동일: EbbingDialogDefaultTop('데이터를 [초기화](빨강) 하시겠습니까?') + EbbingDialogBottom
+    val prefix = stringResource(Res.string.setting_clear_dialog_title_prefix)
+    val highlight = stringResource(Res.string.setting_clear_dialog_title_highlight)
+    val suffix = stringResource(Res.string.setting_clear_dialog_title_suffix)
+    val errorColor = EbbingTheme.colors.error
+
+    EbbingDialog(
+        dialogTop = {
+            EbbingDialogDefaultTop(
+                title = buildAnnotatedString {
+                    append(prefix)
+                    withStyle(SpanStyle(color = errorColor)) { append(highlight) }
+                    append(suffix)
                 },
-                style = EbbingTheme.typography.headingMSB,
-                color = EbbingTheme.colors.black,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                modifier = Modifier.padding(top = 40.dp),
+                subText = stringResource(Res.string.setting_clear_dialog_subtext),
             )
-
-            Text(
-                text = stringResource(Res.string.setting_clear_dialog_subtext),
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark1,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
-            )
-
+        },
+        dialogBottom = {
             EbbingDialogBottom(
                 leftButtonText = stringResource(Res.string.setting_back),
                 rightButtonText = stringResource(Res.string.setting_clear),
                 onLeftButtonClick = onDismiss,
                 onRightButtonClick = onConfirm,
             )
-        }
-    }
+        },
+        onDismissRequest = onDismiss,
+    )
 }
 
 private enum class SettingBottomSheetType { ALARM_TIME, ALARM_MESSAGE, CALENDAR_START_DAY }
@@ -739,8 +729,10 @@ private fun AlarmTimeBottomSheetContent(
                 }
                 onUpdateClick(adjustedHour, newMinute)
             },
+            // Android AlarmTimeBottomSheet와 동일: 버튼에 가로 20dp 추가 여백
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 20.dp)
                 .padding(top = 12.dp, bottom = 10.dp),
         )
     }
@@ -824,7 +816,7 @@ private fun AlarmMessageBottomSheetContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = EbbingTheme.colors.light3,
+                        color = EbbingTheme.colors.background, // Android fillNormal
                         shape = RoundedCornerShape(8.dp),
                     )
                     .padding(12.dp),
@@ -838,7 +830,7 @@ private fun AlarmMessageBottomSheetContent(
                 Text(
                     text = previewMessageText,
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark1,
+                    color = EbbingTheme.colors.dark2, // Android textSub
                 )
             }
 
@@ -851,7 +843,7 @@ private fun AlarmMessageBottomSheetContent(
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.primaryDefault,
                 modifier = Modifier
-                    .clickable { onResetClick() }
+                    .noRippleClickable { onResetClick() }
                     .padding(vertical = 8.dp),
             )
 
@@ -903,8 +895,10 @@ private fun CalendarStartDayBottomSheetContent(
             EbbingSolidButton(
                 label = stringResource(Res.string.setting_apply_action),
                 onClick = { onUpdateClick(newMondayStart) },
+                // Android CalendarStartDayBottomSheet와 동일: 버튼에 가로 20dp 추가 여백
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
                     .padding(top = 12.dp, bottom = 10.dp),
             )
         }

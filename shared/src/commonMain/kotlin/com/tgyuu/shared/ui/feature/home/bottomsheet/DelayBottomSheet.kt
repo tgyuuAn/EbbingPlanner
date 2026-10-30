@@ -14,9 +14,9 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHead
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.schedule_delay_all
-import ebbingplanner.shared.generated.resources.schedule_delay_single
-import ebbingplanner.shared.generated.resources.schedule_delay_title
+import ebbingplanner.shared.generated.resources.home_delay_all
+import ebbingplanner.shared.generated.resources.home_delay_single
+import ebbingplanner.shared.generated.resources.home_delay_method
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -30,7 +30,7 @@ internal fun DelayBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_delay_title))
+        EbbingBottomSheetHeader(title = stringResource(Res.string.home_delay_method))
 
         Column(
             modifier = Modifier
@@ -38,7 +38,7 @@ internal fun DelayBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = stringResource(Res.string.schedule_delay_single),
+                text = stringResource(Res.string.home_delay_single),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -50,7 +50,7 @@ internal fun DelayBottomSheet(
             )
 
             Text(
-                text = stringResource(Res.string.schedule_delay_all),
+                text = stringResource(Res.string.home_delay_all),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,

@@ -14,9 +14,9 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHead
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.schedule_update_info
-import ebbingplanner.shared.generated.resources.schedule_update_repeat_cycle
-import ebbingplanner.shared.generated.resources.schedule_update_title
+import ebbingplanner.shared.generated.resources.home_update_info
+import ebbingplanner.shared.generated.resources.home_update_repeat_cycle
+import ebbingplanner.shared.generated.resources.home_update_method
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -30,7 +30,7 @@ internal fun UpdateBottomSheet(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
     ) {
-        EbbingBottomSheetHeader(title = stringResource(Res.string.schedule_update_title))
+        EbbingBottomSheetHeader(title = stringResource(Res.string.home_update_method))
 
         Column(
             modifier = Modifier
@@ -38,7 +38,7 @@ internal fun UpdateBottomSheet(
                 .padding(top = 20.dp, bottom = 8.dp),
         ) {
             Text(
-                text = stringResource(Res.string.schedule_update_info),
+                text = stringResource(Res.string.home_update_info),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -50,7 +50,7 @@ internal fun UpdateBottomSheet(
             )
 
             Text(
-                text = stringResource(Res.string.schedule_update_repeat_cycle),
+                text = stringResource(Res.string.home_update_repeat_cycle),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,

@@ -9,7 +9,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.snack_repeat_delete_failed
-import ebbingplanner.shared.generated.resources.snack_repeat_deleted
+import ebbingplanner.shared.generated.resources.repeat_snackbar_deleted
 import ebbingplanner.shared.generated.resources.snack_repeat_load_failed
 import org.jetbrains.compose.resources.getString
 import com.tgyuu.shared.designsystem.model.toDisplayName
@@ -77,7 +77,7 @@ class RepeatCycleViewModel(
             setState {
                 copy(repeatCycleList = repeatCycleList.filterNot { it.id == repeatCycle.id }.toImmutableList())
             }
-            onShowSnackbar(getString(Res.string.snack_repeat_deleted))
+            onShowSnackbar(getString(Res.string.repeat_snackbar_deleted))
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_repeat_delete_failed))
         }

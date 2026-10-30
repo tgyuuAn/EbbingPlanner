@@ -481,4 +481,66 @@
     <string name="setting_content_alpha">내용 투명도</string>
     <string name="setting_detail_content">상세 내용</string>
     <string name="repeat_cycle_list_item">- %1$s</string>
+    <!-- Android schedule_snackbar_* / repeat_snackbar_* / setting_* (스낵바·위젯 투명도) -->
+    <string name="schedule_snackbar_tag_updated">태그를 수정하였습니다</string>
+    <string name="schedule_snackbar_tag_deleted">태그를 삭제하였습니다</string>
+    <string name="schedule_snackbar_schedule_deleted">해당 일정을 지웠습니다.</string>
+    <string name="schedule_snackbar_remaining_deleted">해당 일정 이후 연계된 일정들을 모두 지웠습니다.</string>
+    <string name="schedule_snackbar_delayed_single">해당 일정을 다음 날로 미뤘습니다.</string>
+    <string name="schedule_snackbar_delayed_all">%1$d개 일정을 미뤘습니다.</string>
+    <string name="schedule_snackbar_memo_removed">메모를 제거하였습니다</string>
+    <string name="repeat_snackbar_required">필수 항목을 작성해주세요</string>
+    <string name="repeat_snackbar_invalid">반복 주기가 적절하지 않습니다.</string>
+    <string name="repeat_snackbar_added">반복 주기를 추가하였습니다</string>
+    <string name="repeat_snackbar_updated">반복 주기를 수정하였습니다</string>
+    <string name="repeat_snackbar_deleted">반복 주기를 삭제하였습니다</string>
+    <string name="setting_alarm_time_changed">알람 시간을 %1$s 로 변경했어요</string>
+    <string name="setting_alarm_message_changed">알람 메시지를 변경했어요</string>
+    <string name="setting_data_cleared">저장된 데이터를 초기화 했어요</string>
+    <string name="setting_app_theme_changed">앱 테마를 변경하였습니다</string>
+    <string name="setting_widget_theme_changed">위젯 테마를 변경하였습니다</string>
+    <string name="setting_theme_change_failed">테마 변경에 실패하였습니다</string>
+    <string name="setting_alpha_percent">%1$d %</string>
+    <!-- Android home_options_*/home_update_*/home_delete_*/home_delay_* (홈 바텀시트) -->
+    <string name="home_options_title">편집</string>
+    <string name="home_options_subtitle">%1$s 일정을 어떻게 할까요?</string>
+    <string name="home_options_edit">수정하기</string>
+    <string name="home_options_delete">삭제하기</string>
+    <string name="home_options_delay_tomorrow">내일로 미루기</string>
+    <string name="home_options_add_memo">메모 추가하기</string>
+    <string name="home_options_edit_memo">메모 수정하기</string>
+    <string name="home_options_delete_memo">메모 지우기</string>
+    <string name="home_update_method">수정 방법</string>
+    <string name="home_update_info">일정 정보 수정하기</string>
+    <string name="home_update_repeat_cycle">연관된 일정 반복 주기 재설정하기</string>
+    <string name="home_delete_method">삭제 방법</string>
+    <string name="home_delete_single">해당 일정만 삭제하기</string>
+    <string name="home_delete_remaining">연계된 이후 일정 전부 삭제</string>
+    <string name="home_delay_method">미루기 방법</string>
+    <string name="home_delay_single">이 일정만 미루기</string>
+    <string name="home_delay_all">이후 일정 모두 미루기</string>
+    <!-- Android home_snackbar_*/memo_* (홈/추가/수정/메모 스낵바) -->
+    <string name="home_snackbar_all_rest_days">모든 요일을 휴식할 수는 없습니다</string>
+    <string name="home_snackbar_date_already_has_schedule">이미 해당 날짜에 일정이 있습니다.</string>
+    <string name="home_snackbar_date_repeat_changed">해당 일정의 날짜 및 반복 주기를 변경하였습니다</string>
+    <string name="home_snackbar_delayed_to_next_day">해당 일정을 다음 날로 미뤘습니다.</string>
+    <string name="home_snackbar_loading_schedule_info">일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요</string>
+    <string name="home_snackbar_memo_removed">메모를 제거하였습니다</string>
+    <string name="home_snackbar_no_schedule_to_delay">미룰 일정이 없습니다.</string>
+    <string name="home_snackbar_no_schedule_to_save">저장할 일정이 없습니다</string>
+    <string name="home_snackbar_remaining_deleted">해당 일정 이후 연계된 일정들을 모두 지웠습니다.</string>
+    <string name="home_snackbar_required_fields">필수 항목을 작성해주세요</string>
+    <string name="home_snackbar_schedule_deleted">해당 일정을 지웠습니다.</string>
+    <string name="home_snackbar_schedules_delayed">%1$d개 일정을 미뤘습니다.</string>
+    <string name="home_snackbar_todo_added">새로운 일정을 추가하였습니다</string>
+    <string name="home_snackbar_todo_updated">일정을 업데이트 하였습니다</string>
+    <string name="memo_added">메모를 추가하였습니다</string>
+    <string name="memo_added_all">현재 일정 포함 %1$d개에 메모를 추가하였습니다</string>
+    <string name="memo_updated">메모를 수정하였습니다</string>
+    <string name="memo_updated_all">현재 일정 포함 %1$d개에 메모를 수정하였습니다</string>
+    <string name="memo_required_fields">필수 항목을 작성해주세요</string>
+    <!-- Android home_alarm_* (알림 넛지) -->
+    <string name="home_alarm_reset">알림 메시지 기본값으로 복원</string>
+    <string name="home_alarm_time_sub">언제 남은 일정 알림을 보낼까요?</string>
+    <string name="home_alarm_preview_sample">영어 단어 복습</string>
 </resources>

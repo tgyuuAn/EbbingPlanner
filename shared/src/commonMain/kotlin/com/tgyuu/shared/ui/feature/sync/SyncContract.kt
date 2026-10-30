@@ -58,6 +58,11 @@ sealed class SyncIntent : UiIntent {
     data object OnSyncUpClick : SyncIntent()
     data object OnSyncUpDisabledClick : SyncIntent()
     data object OnDisconnectClick : SyncIntent()
+    // Android SyncIntent와 동일: 확인 다이얼로그 버튼 (SyncDialog / DisconnectDialog 로깅)
+    data object OnSyncDialogBackClick : SyncIntent()
+    data object OnSyncDialogSyncClick : SyncIntent()
+    data object OnDisconnectDialogBackClick : SyncIntent()
+    data object OnDisconnectDialogDisconnectClick : SyncIntent()
     data object OnRestoreClick : SyncIntent()
     data object OnDeviceInfoCopied : SyncIntent()
 

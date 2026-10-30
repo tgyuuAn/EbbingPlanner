@@ -104,7 +104,7 @@ fun RepeatCycleBottomSheetContent(
                     .fillMaxWidth()
                     .heightIn(max = 300.dp)
                     .padding(top = 12.dp)
-                    .verticalScrollbar(listState, color = EbbingTheme.colors.dark3),
+                    .verticalScrollbar(listState, color = EbbingTheme.colors.light1), // Android fillDisabled
             ) {
                 items(
                     items = repeatCycleList,

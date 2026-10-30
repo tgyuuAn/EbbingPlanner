@@ -58,7 +58,7 @@ fun TodoListCard(
     val titleColor =
         if (todo.isDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.black
     val subColor =
-        if (todo.isDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark1
+        if (todo.isDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2
     val outlineColor = EbbingTheme.colors.light2
     val orderedSchedules = remember(todosWithSameInfo) { todosWithSameInfo.sortedBy { it.date } }
     val roundNumber = remember(orderedSchedules, todo.id) {

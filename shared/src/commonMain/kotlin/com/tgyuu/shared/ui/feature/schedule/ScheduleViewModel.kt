@@ -21,13 +21,13 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.snack_delayed_single
-import ebbingplanner.shared.generated.resources.snack_memo_removed
-import ebbingplanner.shared.generated.resources.snack_remaining_deleted
-import ebbingplanner.shared.generated.resources.snack_schedule_deleted
-import ebbingplanner.shared.generated.resources.snack_schedules_delayed
-import ebbingplanner.shared.generated.resources.snack_tag_deleted
-import ebbingplanner.shared.generated.resources.snack_tag_updated
+import ebbingplanner.shared.generated.resources.schedule_snackbar_delayed_single
+import ebbingplanner.shared.generated.resources.schedule_snackbar_memo_removed
+import ebbingplanner.shared.generated.resources.schedule_snackbar_remaining_deleted
+import ebbingplanner.shared.generated.resources.schedule_snackbar_schedule_deleted
+import ebbingplanner.shared.generated.resources.schedule_snackbar_delayed_all
+import ebbingplanner.shared.generated.resources.schedule_snackbar_tag_deleted
+import ebbingplanner.shared.generated.resources.schedule_snackbar_tag_updated
 import org.jetbrains.compose.resources.getString
 
 class ScheduleViewModel(
@@ -175,7 +175,7 @@ class ScheduleViewModel(
             todoRepository.updateTag(
                 TodoTag(id = tag.id, name = name, color = color, createdAt = tag.createdAt)
             )
-            onShowSnackBar(getString(Res.string.snack_tag_updated))
+            onShowSnackBar(getString(Res.string.schedule_snackbar_tag_updated))
             loadTodoSchedules()
         }
     }
@@ -189,7 +189,7 @@ class ScheduleViewModel(
             )
             // 태그 삭제 시 해당 태그 일정이 목록에서 빠지므로 전체 알림을 다시 계산
             alarmRescheduler?.rescheduleAll()
-            onShowSnackBar(getString(Res.string.snack_tag_deleted))
+            onShowSnackBar(getString(Res.string.schedule_snackbar_tag_deleted))
             loadTodoSchedules()
         }
     }
@@ -207,7 +207,7 @@ class ScheduleViewModel(
         suspendRunCatching {
             todoRepository.deleteTodo(schedule.toDomainModel())
             alarmRescheduler?.rescheduleDates(listOf(schedule.date))
-            onShowSnackBar(getString(Res.string.snack_schedule_deleted))
+            onShowSnackBar(getString(Res.string.schedule_snackbar_schedule_deleted))
             loadTodoSchedules()
         }
     }
@@ -218,7 +218,7 @@ class ScheduleViewModel(
             val toDelete = allSchedules.filter { it.date >= schedule.date }
             toDelete.forEach { todoRepository.deleteTodo(it) }
             alarmRescheduler?.rescheduleDates(toDelete.map { it.date })
-            onShowSnackBar(getString(Res.string.snack_remaining_deleted))
+            onShowSnackBar(getString(Res.string.schedule_snackbar_remaining_deleted))
             loadTodoSchedules()
         }
     }
@@ -229,7 +229,7 @@ class ScheduleViewModel(
             val nextDate = domainSchedule.date.plus(1, DateTimeUnit.DAY)
             todoRepository.updateTodo(domainSchedule.copy(date = nextDate))
             alarmRescheduler?.rescheduleDates(listOf(domainSchedule.date, nextDate))
-            onShowSnackBar(getString(Res.string.snack_delayed_single))
+            onShowSnackBar(getString(Res.string.schedule_snackbar_delayed_single))
             loadTodoSchedules()
         }
     }
@@ -242,7 +242,7 @@ class ScheduleViewModel(
             val updated = toDelay.map { it.copy(date = it.date.plus(1, DateTimeUnit.DAY)) }
             todoRepository.updateTodos(updated)
             alarmRescheduler?.rescheduleDates(toDelay.map { it.date } + updated.map { it.date })
-            onShowSnackBar(getString(Res.string.snack_schedules_delayed, updated.size))
+            onShowSnackBar(getString(Res.string.schedule_snackbar_delayed_all, updated.size))
             loadTodoSchedules()
         }
     }
@@ -259,7 +259,7 @@ class ScheduleViewModel(
         suspendRunCatching {
             val domainSchedule = schedule.toDomainModel()
             todoRepository.updateTodo(domainSchedule.copy(memo = ""))
-            onShowSnackBar(getString(Res.string.snack_memo_removed))
+            onShowSnackBar(getString(Res.string.schedule_snackbar_memo_removed))
             loadTodoSchedules()
         }
     }
