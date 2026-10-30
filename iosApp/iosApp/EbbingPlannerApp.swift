@@ -1,6 +1,7 @@
 import SwiftUI
 import shared
 import FirebaseCore
+import WidgetKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -108,15 +109,23 @@ struct EbbingPlannerApp: App {
         WindowGroup {
             ComposeView()
                 .ignoresSafeArea(.all)
+                // 위젯 딥링크(ebbingplanner://home?date=…, addtodo?date=…) → shared RootContent
+                .onOpenURL { url in
+                    AppEventBridgeKt.handleDeepLink(url: url.absoluteString)
+                }
         }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .background:
                 // 앱 백그라운드 진입 시 자동 백업 트리거 (조건은 shared에서 판단)
                 AutoBackupBridgeKt.handleAppDidEnterBackground()
+                // 앱에서 바뀐 일정을 위젯에 반영 (Android MainActivity.onStop 위젯 갱신과 동일)
+                WidgetCenter.shared.reloadAllTimelines()
             case .active:
                 // 포그라운드 복귀 시 실패한 백업 재시도
                 AutoBackupBridgeKt.handleAppWillEnterForeground()
+                // 위젯에서 바꾼 완료 상태 등 외부 변경을 다시 불러와요
+                AppEventBridgeKt.handleAppDidBecomeActive()
             default:
                 break
             }
