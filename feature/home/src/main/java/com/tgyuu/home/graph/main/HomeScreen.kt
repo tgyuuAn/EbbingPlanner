@@ -43,6 +43,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.common.event.EbbingEvent
+import com.tgyuu.common.util.isLandscapeWindow
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -281,6 +282,19 @@ private fun HomeScreen(
             onCalendarViewChanged = onCalendarViewChanged,
             modifier = modifier
         )
+    } else if (!isLandscapeWindow()) {
+        TabletPortraitHomeScreen(
+            workedDate = workedDate,
+            state = state,
+            onAddTodoClick = onAddTodoClick,
+            onCheckedChange = onCheckedChange,
+            onSortTypeChange = onSortTypeChange,
+            onEditScheduleClick = onEditScheduleClick,
+            onCurrentDateChanged = onCurrentDateChanged,
+            onSyncClick = onSyncClick,
+            onCalendarViewChanged = onCalendarViewChanged,
+            modifier = modifier
+        )
     } else {
         TabletHomeScreen(
             workedDate = workedDate,
@@ -456,6 +470,111 @@ private fun AddTodoFab(
             contentDescription = null,
             tint = EbbingTheme.colors.textOnPrimary,
             modifier = Modifier.size(24.dp),
+        )
+    }
+}
+
+/** 태블릿 세로 모드: 캘린더 아래에 일정 리스트를 배치해요 */
+@Composable
+private fun TabletPortraitHomeScreen(
+    workedDate: LocalDate,
+    state: HomeState,
+    onAddTodoClick: (LocalDate) -> Unit,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
+    onSortTypeChange: (SortType) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
+    onCurrentDateChanged: (LocalDate) -> Unit,
+    onSyncClick: () -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+    var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
+    val calendarState = rememberCalendarState()
+
+    LaunchedEffect(workedDate) {
+        calendarState.onDateSelect(selectedDate)
+    }
+
+    LaunchedEffect(calendarState.currentDisplayDate.month) {
+        onCurrentDateChanged(calendarState.currentDisplayDate)
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            EbbingCalendar(
+                calendarState = calendarState,
+                schedulesByDateMap = state.schedulesByDateMap,
+                startFromMonday = state.mondayStart,
+                showWeekOnly = state.showWeekOnly,
+                showViewToggle = true,
+                onSelectDate = {
+                    if (selectedDate != it) {
+                        selectedDate = it
+                    }
+                },
+                onGotoTodayClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(screenName = "Home", buttonName = "ReturnToToday")
+                    )
+                },
+                onSyncClick = onSyncClick,
+                onViewToggle = { isWeek ->
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = "Home",
+                            buttonName = if (isWeek) "SwitchToWeekly" else "SwitchToMonthly",
+                        )
+                    )
+                    onCalendarViewChanged(
+                        if (isWeek) CalendarDefaultView.WEEKLY else CalendarDefaultView.MONTHLY
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 28.dp, bottom = 32.dp)
+                    .padding(horizontal = 60.dp),
+            )
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(
+                        color = EbbingTheme.colors.primaryNormal,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            } else {
+                EbbingTodoList(
+                    sortType = state.sortType,
+                    selectedDate = selectedDate,
+                    todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
+                    schedulesByTodoInfo = state.schedulesByTodoInfo,
+                    onSelectDate = {
+                        if (selectedDate != it) {
+                            selectedDate = it
+                            calendarState.onDateSelect(it)
+                        }
+                    },
+                    onCheckedChange = onCheckedChange,
+                    onSortTypeChange = onSortTypeChange,
+                    onEditScheduleClick = onEditScheduleClick,
+                    // 리스트 내부 좌우 여백(20dp)을 포함해 캘린더와 같은 60dp 라인에 맞춰요
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 40.dp),
+                )
+            }
+        }
+
+        AddTodoFab(
+            onClick = { onAddTodoClick(selectedDate) },
+            modifier = Modifier.align(Alignment.BottomEnd),
         )
     }
 }

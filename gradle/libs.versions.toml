@@ -143,7 +143,6 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidxRoom" }
 androidx-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive-android" }
-androidx-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite-android" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
 androidx-glance-appwidget-preview = { module = "androidx.glance:glance-appwidget-preview", version.ref = "glanceAppwidget" }
