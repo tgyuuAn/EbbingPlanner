@@ -2,7 +2,6 @@ package com.tgyuu.ebbingplanner.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +33,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingBottomBarEnterAnimation
 import com.tgyuu.common.util.addFocusCleaner
+import com.tgyuu.common.util.isLandscapeWindow
 import com.tgyuu.designsystem.component.EbbingSnackBar
 import com.tgyuu.designsystem.component.EbbingSnackBarHost
 import com.tgyuu.designsystem.component.bottomsheet.EbbingModalBottomSheet
@@ -168,14 +168,14 @@ private fun TabletContent(
         },
         modifier = modifier,
     ) { innerPadding ->
-        BoxWithConstraints(
+        Box(
             Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding)
         ) {
             // 가로 모드는 왼쪽 레일, 세로 모드는 하단 탭바
-            val isLandscape = maxWidth > maxHeight
+            val isLandscape = isLandscapeWindow()
 
             val content: @Composable (Modifier) -> Unit = { contentModifier ->
                 Box(contentModifier) {
