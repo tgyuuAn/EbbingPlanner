@@ -1,10 +1,12 @@
 package com.tgyuu.shared.designsystem.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -13,12 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun EbbingDialog(
@@ -155,6 +160,46 @@ fun EbbingDialogDefaultTop(
 
         descriptionComposable?.let {
             descriptionComposable()
+        }
+    }
+}
+
+/** Android EbbingDialogIconTop 대응: 아이콘(textOnBackground 틴트) + 타이틀 + 서브텍스트 */
+@Composable
+fun EbbingDialogIconTop(
+    icon: DrawableResource,
+    title: String,
+    contentDescription: String? = null,
+    subText: String? = null,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(top = 40.dp, bottom = 8.dp),
+    ) {
+        Image(
+            painter = painterResource(icon),
+            contentDescription = contentDescription,
+            colorFilter = ColorFilter.tint(EbbingTheme.colors.black),
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .size(40.dp),
+        )
+
+        Text(
+            text = title,
+            color = EbbingTheme.colors.black,
+            style = EbbingTheme.typography.headingMSB,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 12.dp),
+        )
+
+        subText?.let {
+            Text(
+                text = it,
+                color = EbbingTheme.colors.dark3,
+                style = EbbingTheme.typography.bodySM,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }

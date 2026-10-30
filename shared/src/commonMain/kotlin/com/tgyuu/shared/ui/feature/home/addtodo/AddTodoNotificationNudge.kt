@@ -43,7 +43,6 @@ import com.tgyuu.shared.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.shared.designsystem.component.EbbingToggle
 import com.tgyuu.shared.designsystem.component.picker.EbbingPicker
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
-import com.tgyuu.shared.designsystem.model.alarmTimeText
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.alarm_placeholder_token
 import ebbingplanner.shared.generated.resources.ds_am
@@ -59,10 +58,10 @@ import ebbingplanner.shared.generated.resources.setting_alarm_message_error_leng
 import ebbingplanner.shared.generated.resources.setting_alarm_message_error_placeholder
 import ebbingplanner.shared.generated.resources.setting_alarm_message_hint
 import ebbingplanner.shared.generated.resources.setting_alarm_message_length
-import ebbingplanner.shared.generated.resources.setting_alarm_message_preview_sample
+import ebbingplanner.shared.generated.resources.home_alarm_preview_sample
+import ebbingplanner.shared.generated.resources.home_alarm_reset
+import ebbingplanner.shared.generated.resources.home_alarm_time_sub
 import ebbingplanner.shared.generated.resources.setting_alarm_time
-import ebbingplanner.shared.generated.resources.setting_alarm_time_subtitle
-import ebbingplanner.shared.generated.resources.setting_clear
 import ebbingplanner.shared.generated.resources.home_notification_title
 import ebbingplanner.shared.generated.resources.setting_preview
 import org.jetbrains.compose.resources.stringResource
@@ -96,74 +95,17 @@ internal fun NotificationNudgeContent(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .imePadding(),
-    ) {
+    val isTablet = EbbingTheme.windowLayout.isTablet
+
+    val topBar: @Composable () -> Unit = {
         EbbingSubTopBar(
             title = stringResource(Res.string.home_notification_title),
             onNavigationClick = onBackClick,
             rightComponent = {},
             modifier = Modifier.padding(horizontal = 20.dp),
         )
-
-        // Android NotificationScreen과 동일: 세로 패딩만, 각 자식이 horizontal=20(구분선은 풀폭)
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(vertical = 20.dp),
-        ) {
-            // Header
-            Text(
-                text = stringResource(Res.string.home_notification_nudge),
-                style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-            Text(
-                text = stringResource(Res.string.home_notification_header_sub),
-                style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark3,
-                modifier = Modifier.padding(top = 12.dp).padding(horizontal = 20.dp),
-            )
-
-            // Toggle — Android와 동일: 라벨 + end=8 + 토글 (좌측 그룹, weight 아님)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 32.dp)
-                    .padding(horizontal = 20.dp),
-            ) {
-                Text(
-                    text = stringResource(Res.string.home_notification_receive),
-                    style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black,
-                    modifier = Modifier.padding(end = 8.dp),
-                )
-                EbbingToggle(
-                    checked = state.notificationEnabled,
-                    onCheckedChange = { onToggleClick() },
-                )
-            }
-
-            // Detail — Android와 동일: 토글 off면 접힘
-            AnimatedVisibility(
-                visible = state.notificationEnabled,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically(),
-            ) {
-                NudgeDetailSection(
-                    state = state,
-                    onTimeClick = onTimePickerClick,
-                    onMessageChange = onMessageChange,
-                    onResetClick = onResetClick,
-                )
-            }
-        }
-
+    }
+    val saveButton: @Composable () -> Unit = {
         EbbingSolidButton(
             label = stringResource(Res.string.home_add_todo_button),
             onClick = {
@@ -176,32 +118,146 @@ internal fun NotificationNudgeContent(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
         )
     }
+    val detail: @Composable (showDivider: Boolean) -> Unit = { showDivider ->
+        // Android와 동일: 토글 off면 접힘
+        AnimatedVisibility(
+            visible = state.notificationEnabled,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically(),
+        ) {
+            NudgeDetailSection(
+                state = state,
+                showDivider = showDivider,
+                onTimeClick = onTimePickerClick,
+                onMessageChange = onMessageChange,
+                onResetClick = onResetClick,
+            )
+        }
+    }
+
+    if (isTablet) {
+        // Android NotificationScreenTablet과 동일: 좌(헤더+토글) | 우(상세) 2단, 구분바 없음
+        Column(modifier = modifier.fillMaxSize()) {
+            topBar()
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .imePadding(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    NudgeHeader()
+                    NudgeToggleRow(checked = state.notificationEnabled, onToggleClick = onToggleClick)
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    detail(false)
+                }
+            }
+            saveButton()
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .imePadding(),
+        ) {
+            topBar()
+            // Android NotificationScreen과 동일: 세로 패딩만, 각 자식이 horizontal=20(구분선은 풀폭)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(vertical = 20.dp),
+            ) {
+                NudgeHeader()
+                NudgeToggleRow(checked = state.notificationEnabled, onToggleClick = onToggleClick)
+                detail(true)
+            }
+            saveButton()
+        }
+    }
+}
+
+@Composable
+private fun NudgeHeader() {
+    Text(
+        text = stringResource(Res.string.home_notification_nudge),
+        style = EbbingTheme.typography.headingLSB,
+        color = EbbingTheme.colors.black,
+        modifier = Modifier.padding(horizontal = 20.dp),
+    )
+    Text(
+        text = stringResource(Res.string.home_notification_header_sub),
+        style = EbbingTheme.typography.bodyMM,
+        color = EbbingTheme.colors.dark3,
+        modifier = Modifier.padding(top = 12.dp).padding(horizontal = 20.dp),
+    )
+}
+
+@Composable
+private fun NudgeToggleRow(
+    checked: Boolean,
+    onToggleClick: () -> Unit,
+) {
+    // Android와 동일: 라벨(heading18B/textSub) + end=8 + 토글 (좌측 그룹, weight 아님)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+            .padding(horizontal = 20.dp),
+    ) {
+        Text(
+            text = stringResource(Res.string.home_notification_receive),
+            style = EbbingTheme.typography.headingSSB,
+            color = EbbingTheme.colors.dark2,
+            modifier = Modifier.padding(end = 8.dp),
+        )
+        EbbingToggle(
+            checked = checked,
+            onCheckedChange = { onToggleClick() },
+        )
+    }
 }
 
 @Composable
 private fun NudgeDetailSection(
     state: NotificationState,
+    showDivider: Boolean,
     onTimeClick: () -> Unit,
     onMessageChange: (String) -> Unit,
     onResetClick: () -> Unit,
 ) {
     val placeholderToken = state.placeholderToken
     val placeholderDesc = stringResource(Res.string.notification_placeholder_desc)
-    val previewSample = stringResource(Res.string.setting_alarm_message_preview_sample)
+    val previewSample = stringResource(Res.string.home_alarm_preview_sample)
     val previewMessage = when {
         state.placeholderCount == 1 -> state.message.replace(placeholderToken, previewSample)
         state.placeholderCount == 0 -> state.message
         else -> ""
     }
     Column {
-        // 6dp 채움 구분바 (Android NotificationScreen: fillTextfield, vertical=28, 풀폭)
-        Spacer(
-            modifier = Modifier
-                .padding(vertical = 28.dp)
-                .fillMaxWidth()
-                .height(6.dp)
-                .background(EbbingTheme.colors.light2),
-        )
+        // 6dp 채움 구분바 (Android NotificationScreen: fillTextfield, vertical=28, 풀폭) — 태블릿은 없음
+        if (showDivider) {
+            Spacer(
+                modifier = Modifier
+                    .padding(vertical = 28.dp)
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .background(EbbingTheme.colors.light3),
+            )
+        }
 
         // 알림 시간
         Row(
@@ -218,7 +274,11 @@ private fun NudgeDetailSection(
             Text(
                 text = buildAnnotatedString {
                     withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append(alarmTimeText(state.alarmHour, state.alarmMinute))
+                        // Android formattedAlarmTime과 동일: HH:mm
+                        append(
+                            "${state.alarmHour.toString().padStart(2, '0')}:" +
+                                state.alarmMinute.toString().padStart(2, '0')
+                        )
                     }
                 },
                 // Android: body18M(Medium 18) / primaryNormal — iOS headingSM = Medium 18/22
@@ -232,8 +292,8 @@ private fun NudgeDetailSection(
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
             Text(
                 text = stringResource(Res.string.setting_alarm_message),
-                style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                style = EbbingTheme.typography.headingSSB,
+                color = EbbingTheme.colors.dark2,
                 modifier = Modifier.padding(bottom = 6.dp),
             )
             // 플레이스홀더 안내: 토큰 볼드 강조, 입력창 위에 위치 (Android 동일)
@@ -256,7 +316,6 @@ private fun NudgeDetailSection(
                 value = state.message,
                 hint = stringResource(Res.string.setting_alarm_message_hint),
                 onValueChange = onMessageChange,
-                limit = 50,
                 modifier = Modifier.padding(top = 24.dp).fillMaxWidth(),
             )
             val errorText = when {
@@ -276,26 +335,24 @@ private fun NudgeDetailSection(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(EbbingTheme.colors.light3, RoundedCornerShape(16.dp))
+                        .background(EbbingTheme.colors.background, RoundedCornerShape(16.dp))
                         .padding(vertical = 12.dp, horizontal = 16.dp),
                 ) {
                     Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(bottom = 4.dp))
-                    Text(text = previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark1)
+                    Text(text = previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark2)
                 }
             }
 
             // 초기화 링크 — 하단, 기본값과 다를 때만 (Android ResetButton 위치)
             if (state.shouldShowResetButton) {
                 Text(
-                    text = stringResource(Res.string.setting_clear),
-                    style = EbbingTheme.typography.bodySM,
+                    text = stringResource(Res.string.home_alarm_reset),
+                    style = EbbingTheme.typography.bodySSB,
                     color = EbbingTheme.colors.dark3,
                     modifier = Modifier.padding(top = 20.dp).clickable { onResetClick() },
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(60.dp))
     }
 }
 
@@ -325,7 +382,7 @@ private fun AlarmTimePickerDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = stringResource(Res.string.setting_alarm_time),
-                subText = stringResource(Res.string.setting_alarm_time_subtitle),
+                subText = stringResource(Res.string.home_alarm_time_sub),
             )
         },
         dialogBottom = {

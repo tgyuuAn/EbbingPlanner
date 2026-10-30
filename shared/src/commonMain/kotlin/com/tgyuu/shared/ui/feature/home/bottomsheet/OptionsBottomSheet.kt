@@ -14,14 +14,14 @@ import com.tgyuu.shared.designsystem.component.bottomsheet.EbbingBottomSheetHead
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.schedule_option_add_memo
-import ebbingplanner.shared.generated.resources.schedule_option_delay_tomorrow
-import ebbingplanner.shared.generated.resources.schedule_option_delete
-import ebbingplanner.shared.generated.resources.schedule_option_delete_memo
-import ebbingplanner.shared.generated.resources.schedule_option_edit
-import ebbingplanner.shared.generated.resources.schedule_option_edit_memo
-import ebbingplanner.shared.generated.resources.schedule_options_subtitle
-import ebbingplanner.shared.generated.resources.schedule_options_title
+import ebbingplanner.shared.generated.resources.home_options_add_memo
+import ebbingplanner.shared.generated.resources.home_options_delay_tomorrow
+import ebbingplanner.shared.generated.resources.home_options_delete
+import ebbingplanner.shared.generated.resources.home_options_delete_memo
+import ebbingplanner.shared.generated.resources.home_options_edit
+import ebbingplanner.shared.generated.resources.home_options_edit_memo
+import ebbingplanner.shared.generated.resources.home_options_subtitle
+import ebbingplanner.shared.generated.resources.home_options_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -39,8 +39,8 @@ internal fun OptionsBottomSheet(
             .padding(horizontal = 20.dp),
     ) {
         EbbingBottomSheetHeader(
-            title = stringResource(Res.string.schedule_options_title),
-            subTitle = stringResource(Res.string.schedule_options_subtitle, selectedSchedule.title)
+            title = stringResource(Res.string.home_options_title),
+            subTitle = stringResource(Res.string.home_options_subtitle, selectedSchedule.title)
         )
 
         Column(
@@ -49,7 +49,7 @@ internal fun OptionsBottomSheet(
                 .padding(top = 20.dp, bottom = 22.dp),
         ) {
             Text(
-                text = stringResource(Res.string.schedule_option_edit),
+                text = stringResource(Res.string.home_options_edit),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -61,7 +61,7 @@ internal fun OptionsBottomSheet(
             )
 
             Text(
-                text = stringResource(Res.string.schedule_option_delete),
+                text = stringResource(Res.string.home_options_delete),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -73,7 +73,7 @@ internal fun OptionsBottomSheet(
             )
 
             Text(
-                text = stringResource(Res.string.schedule_option_delay_tomorrow),
+                text = stringResource(Res.string.home_options_delay_tomorrow),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -85,7 +85,7 @@ internal fun OptionsBottomSheet(
             )
 
             Text(
-                text = if (selectedSchedule.memo.isEmpty()) stringResource(Res.string.schedule_option_add_memo) else stringResource(Res.string.schedule_option_edit_memo),
+                text = if (selectedSchedule.memo.isEmpty()) stringResource(Res.string.home_options_add_memo) else stringResource(Res.string.home_options_edit_memo),
                 style = EbbingTheme.typography.bodyMM,
                 color = EbbingTheme.colors.black,
                 maxLines = 1,
@@ -98,7 +98,7 @@ internal fun OptionsBottomSheet(
 
             if (selectedSchedule.memo.isNotEmpty()) {
                 Text(
-                    text = stringResource(Res.string.schedule_option_delete_memo),
+                    text = stringResource(Res.string.home_options_delete_memo),
                     style = EbbingTheme.typography.bodyMM,
                     color = EbbingTheme.colors.black,
                     maxLines = 1,

@@ -1,10 +1,10 @@
 package com.tgyuu.shared.ui.feature.repeatcycle.editrepeatcycle
 
-import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.ui.platform.LocalFocusManager
+import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.RepeatCycleInputContent
+import com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle.RepeatCyclePreviewContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -64,82 +64,64 @@ fun EditRepeatCycleScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+    val isTablet = EbbingTheme.windowLayout.isTablet
+    val onIntervalsChange: (String) -> Unit = { viewModel.onIntent(EditRepeatCycleIntent.OnIntervalsChange(it)) }
+    val onSaveClick: () -> Unit = {
+        viewModel.onIntent(EditRepeatCycleIntent.OnUpdateClick)
+        focusManager.clearFocus()
+    }
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
-    Column(modifier = Modifier.fillMaxSize()) {
-        EbbingSubTopBar(
-            title = stringResource(Res.string.repeat_edit_title),
-            onNavigationClick = { viewModel.onIntent(EditRepeatCycleIntent.OnBackClick) },
-            rightComponent = {
-                if (false) { // Android 정렬: 상단 저장 링크 미사용
-                Text(
-                    text = stringResource(Res.string.repeat_edit_button),
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
-                    else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickable(enabled = state.isSaveEnabled) {
-                            viewModel.onIntent(EditRepeatCycleIntent.OnUpdateClick)
-                        },
-                )
-                }
-            },
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
-        val inputContent: @Composable () -> Unit = {
-            Text(text = stringResource(Res.string.repeat_cycle_label), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.padding(top = 32.dp))
-            EbbingTextInputDefault(
-                value = state.intervals,
-                hint = stringResource(Res.string.repeat_cycle_input_hint),
-                onValueChange = { viewModel.onIntent(EditRepeatCycleIntent.OnIntervalsChange(it)) },
-                limit = 60,
-                rightComponent = {
-                    if (state.intervals.isNotEmpty()) {
-                        Image(painter = painterResource(Res.drawable.ic_delete_circle), contentDescription = stringResource(Res.string.common_clear), modifier = Modifier.padding(start = 8.dp).size(20.dp).clickable { viewModel.onIntent(EditRepeatCycleIntent.OnIntervalsChange("")) })
-                    }
-                },
-                modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
+    if (!isTablet) {
+        Column(modifier = modifier.fillMaxSize()) {
+            EbbingSubTopBar(
+                title = stringResource(Res.string.repeat_edit_title),
+                onNavigationClick = { viewModel.onIntent(EditRepeatCycleIntent.OnBackClick) },
+                rightComponent = {},
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
-            Text(text = stringResource(Res.string.repeat_cycle_input_guide), style = EbbingTheme.typography.bodySM, color = EbbingTheme.colors.dark2, textAlign = TextAlign.Start, modifier = Modifier.padding(top = 8.dp, start = 8.dp).fillMaxWidth())
-        }
-        val previewContent: @Composable () -> Unit = {
-            Text(text = stringResource(Res.string.repeat_cycle_preview_label), style = EbbingTheme.typography.bodyMSB, color = EbbingTheme.colors.black, modifier = Modifier.padding(top = 32.dp))
-            Text(text = state.parsedIntervals.toRepeatPreviewDisplay(), style = EbbingTheme.typography.bodySSB, color = if (state.parsedIntervals.isEmpty()) EbbingTheme.colors.error else EbbingTheme.colors.dark2, textAlign = TextAlign.Start, modifier = Modifier.padding(top = 8.dp).fillMaxWidth())
-        }
 
-        if (isWide) {
-            Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
-                Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp)) {
-                    Text(text = stringResource(Res.string.repeat_edit_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
-                    inputContent()
-                    Spacer(modifier = Modifier.height(40.dp))
-                }
-                Column(modifier = Modifier.weight(1f).padding(20.dp)) {
-                    Spacer(modifier = Modifier.height(80.dp))
-                    previewContent()
-                }
-            }
-        } else {
-            Column(modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp).imePadding()) {
+            Column(
+                modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp).imePadding(),
+            ) {
                 Text(text = stringResource(Res.string.repeat_edit_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
-                inputContent()
-                previewContent()
+                RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
+                RepeatCyclePreviewContent(intervals = state.parsedIntervals)
                 Spacer(modifier = Modifier.height(60.dp))
             }
-        }
 
-        if (true) { // Android 정렬: 항상 하단 저장 버튼
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
                 label = stringResource(Res.string.repeat_edit_button),
-                onClick = { viewModel.onIntent(EditRepeatCycleIntent.OnUpdateClick) },
+                onClick = onSaveClick,
+                enabled = state.isSaveEnabled,
+                modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
+            )
+        }
+    } else {
+        // Android EditRepeatCycleScreen 태블릿 분기와 동일: 바깥 가로 20 + 컬럼 20+20(콘텐츠 60), 버튼 40
+        Column(modifier = modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+            EbbingSubTopBar(
+                title = stringResource(Res.string.repeat_edit_title),
+                onNavigationClick = { viewModel.onIntent(EditRepeatCycleIntent.OnBackClick) },
+                rightComponent = {},
+            )
+
+            Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
+                Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {
+                    Text(text = stringResource(Res.string.repeat_edit_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
+                }
+                Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {
+                    RepeatCyclePreviewContent(intervals = state.parsedIntervals)
+                }
+            }
+
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = stringResource(Res.string.repeat_edit_button),
+                onClick = onSaveClick,
                 enabled = state.isSaveEnabled,
                 modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
             )
         }
     }
-    } // BoxWithConstraints
 }

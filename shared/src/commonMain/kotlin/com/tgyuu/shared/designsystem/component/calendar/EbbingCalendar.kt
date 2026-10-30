@@ -307,7 +307,7 @@ private fun TodayButton(onClick: () -> Unit) {
         Text(
             text = stringResource(Res.string.calendar_today),
             style = EbbingTheme.typography.captionR12,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.dark2,
         )
     }
 }

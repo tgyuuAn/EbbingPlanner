@@ -263,12 +263,12 @@ private fun TagSectionHeader(
         Text(
             text = tagName,
             style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.dark2,
         )
         Text(
             text = count.toString(),
             style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.dark1,
+            color = EbbingTheme.colors.dark2,
         )
     }
 }

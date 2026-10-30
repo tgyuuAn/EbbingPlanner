@@ -55,6 +55,8 @@ sealed class SettingIntent : UiIntent {
     data class OnNotificationToggle(val enabled: Boolean) : SettingIntent()
     /** 화면 RESUMED 진입 시 OS 알림 권한 재확인 */
     data object OnResume : SettingIntent()
+    /** 알람 시간 시트 열기 (Android onAlarmTimeClick: 열 때 NotificationNudge_Time 로깅) */
+    data object OnAlarmTimeOpen : SettingIntent()
     data class OnUpdateAlarmTime(val hour: Int, val minute: Int) : SettingIntent()
     data object OnAlarmMessageOpen : SettingIntent()
     data class OnAlarmMessageChange(val message: String) : SettingIntent()
@@ -64,6 +66,8 @@ sealed class SettingIntent : UiIntent {
     data object OnPrivacyPolicyClick : SettingIntent()
     data object OnTermsOfUseClick : SettingIntent()
     data object OnWidgetClick : SettingIntent()
+    /** 시작 요일 시트 열기 (Android onStartDayClick: 열 때 StartDay 로깅) */
+    data object OnStartDayOpen : SettingIntent()
     data class OnUpdateStartDay(val mondayStart: Boolean) : SettingIntent()
     data object OnAutoBackupToggleClick : SettingIntent()
     data object OnNoticeClick : SettingIntent()

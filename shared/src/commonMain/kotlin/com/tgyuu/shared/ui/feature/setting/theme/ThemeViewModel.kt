@@ -8,8 +8,8 @@ import com.tgyuu.shared.domain.repository.ConfigRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.snack_theme_change_failed
-import ebbingplanner.shared.generated.resources.snack_theme_changed
+import ebbingplanner.shared.generated.resources.setting_theme_change_failed
+import ebbingplanner.shared.generated.resources.setting_app_theme_changed
 import org.jetbrains.compose.resources.getString
 
 class ThemeViewModel(
@@ -50,10 +50,10 @@ class ThemeViewModel(
         try {
             configRepository?.setAppTheme(selected)
             setState { copy(originTheme = selected) }
-            onShowSnackbar(getString(Res.string.snack_theme_changed))
+            onShowSnackbar(getString(Res.string.setting_app_theme_changed))
             onNavigateBack()
         } catch (e: Exception) {
-            onShowSnackbar(getString(Res.string.snack_theme_change_failed))
+            onShowSnackbar(getString(Res.string.setting_theme_change_failed))
         }
     }
 

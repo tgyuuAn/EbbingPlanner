@@ -481,4 +481,66 @@
     <string name="setting_content_alpha">内容の透明度</string>
     <string name="setting_detail_content">詳細</string>
     <string name="repeat_cycle_list_item">- %1$s</string>
+    <!-- Android schedule_snackbar_* / repeat_snackbar_* / setting_* (스낵바·위젯 투명도) -->
+    <string name="schedule_snackbar_tag_updated">タグを修正しました</string>
+    <string name="schedule_snackbar_tag_deleted">タグを削除しました</string>
+    <string name="schedule_snackbar_schedule_deleted">この予定を削除しました。</string>
+    <string name="schedule_snackbar_remaining_deleted">この予定以降に関連する予定をすべて削除しました。</string>
+    <string name="schedule_snackbar_delayed_single">この予定を翌日に延期しました。</string>
+    <string name="schedule_snackbar_delayed_all">%1$d件の予定を延期しました。</string>
+    <string name="schedule_snackbar_memo_removed">メモを削除しました</string>
+    <string name="repeat_snackbar_required">必須項目を入力してください</string>
+    <string name="repeat_snackbar_invalid">繰り返し周期が適切ではありません。</string>
+    <string name="repeat_snackbar_added">繰り返し周期を追加しました</string>
+    <string name="repeat_snackbar_updated">繰り返し周期を編集しました</string>
+    <string name="repeat_snackbar_deleted">繰り返し周期を削除しました</string>
+    <string name="setting_alarm_time_changed">アラーム時間を %1$s に変更しました</string>
+    <string name="setting_alarm_message_changed">アラームメッセージを変更しました</string>
+    <string name="setting_data_cleared">保存されたデータを初期化しました</string>
+    <string name="setting_app_theme_changed">アプリのテーマを変更しました</string>
+    <string name="setting_widget_theme_changed">ウィジェットのテーマを変更しました</string>
+    <string name="setting_theme_change_failed">テーマの変更に失敗しました</string>
+    <string name="setting_alpha_percent">%1$d %</string>
+    <!-- Android home_options_*/home_update_*/home_delete_*/home_delay_* (홈 바텀시트) -->
+    <string name="home_options_title">編集</string>
+    <string name="home_options_subtitle">%1$sの予定をどうしますか？</string>
+    <string name="home_options_edit">編集する</string>
+    <string name="home_options_delete">削除する</string>
+    <string name="home_options_delay_tomorrow">明日に先送り</string>
+    <string name="home_options_add_memo">メモを追加</string>
+    <string name="home_options_edit_memo">メモを編集</string>
+    <string name="home_options_delete_memo">メモを削除</string>
+    <string name="home_update_method">修正の方法</string>
+    <string name="home_update_info">予定情報を編集</string>
+    <string name="home_update_repeat_cycle">関連する予定の繰り返し周期を再設定</string>
+    <string name="home_delete_method">削除の方法</string>
+    <string name="home_delete_single">この予定だけ削除</string>
+    <string name="home_delete_remaining">連動する以降の予定をすべて削除</string>
+    <string name="home_delay_method">先送りの方法</string>
+    <string name="home_delay_single">この予定だけ先送り</string>
+    <string name="home_delay_all">以降の予定をすべて先送り</string>
+    <!-- Android home_snackbar_*/memo_* (홈/추가/수정/메모 스낵바) -->
+    <string name="home_snackbar_all_rest_days">すべての曜日を休みにすることはできません</string>
+    <string name="home_snackbar_date_already_has_schedule">すでにその日付に予定があります。</string>
+    <string name="home_snackbar_date_repeat_changed">この予定の日付と繰り返し周期を変更しました</string>
+    <string name="home_snackbar_delayed_to_next_day">この予定を翌日に先送りしました。</string>
+    <string name="home_snackbar_loading_schedule_info">予定情報を読み込んでいます。しばらくしてからもう一度お試しください</string>
+    <string name="home_snackbar_memo_removed">メモを削除しました</string>
+    <string name="home_snackbar_no_schedule_to_delay">先送りする予定がありません。</string>
+    <string name="home_snackbar_no_schedule_to_save">保存する予定がありません</string>
+    <string name="home_snackbar_remaining_deleted">この予定以降の連動する予定をすべて削除しました。</string>
+    <string name="home_snackbar_required_fields">必須項目を入力してください</string>
+    <string name="home_snackbar_schedule_deleted">この予定を削除しました。</string>
+    <string name="home_snackbar_schedules_delayed">%1$d件の予定を先送りしました。</string>
+    <string name="home_snackbar_todo_added">新しい予定を追加しました</string>
+    <string name="home_snackbar_todo_updated">予定を更新しました</string>
+    <string name="memo_added">メモを追加しました</string>
+    <string name="memo_added_all">現在の予定を含む%1$d件にメモを追加しました</string>
+    <string name="memo_updated">メモを編集しました</string>
+    <string name="memo_updated_all">現在の予定を含む%1$d件のメモを編集しました</string>
+    <string name="memo_required_fields">必須項目を入力してください</string>
+    <!-- Android home_alarm_* (알림 넛지) -->
+    <string name="home_alarm_reset">通知メッセージを初期値に戻す</string>
+    <string name="home_alarm_time_sub">残りの予定の通知をいつ送りますか？</string>
+    <string name="home_alarm_preview_sample">英単語の復習</string>
 </resources>

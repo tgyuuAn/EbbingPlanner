@@ -22,6 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
+import com.tgyuu.shared.platform.AnalyticsEvent
+import com.tgyuu.shared.platform.AnalyticsHelper
+import androidx.compose.runtime.LaunchedEffect
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.home_widget_nudge_label
 import ebbingplanner.shared.generated.resources.home_widget_nudge_title
@@ -33,7 +36,17 @@ import ebbingplanner.shared.generated.resources.ic_widget_nudge
 @Composable
 internal fun WidgetNudgeDialog(
     onDismiss: () -> Unit,
+    analyticsHelper: AnalyticsHelper? = null,
 ) {
+    // Android TrackScreenViewEvent(screenName = "WidgetNudgeDialog") 대응
+    LaunchedEffect(Unit) {
+        analyticsHelper?.logEvent(
+            AnalyticsEvent(
+                type = AnalyticsEvent.Types.SCREEN_VIEW,
+                properties = mapOf(AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "WidgetNudgeDialog"),
+            )
+        )
+    }
     EbbingDialog(onDismissRequest = onDismiss) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
@@ -49,7 +62,7 @@ internal fun WidgetNudgeDialog(
             Text(
                 text = stringResource(Res.string.home_widget_nudge_label),
                 style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.dark3,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
@@ -68,8 +81,8 @@ internal fun WidgetNudgeDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
-                    .background(color = EbbingTheme.colors.light3)
-                    .padding(vertical = 24.dp),
+                    .background(color = EbbingTheme.colors.background)
+                    .padding(vertical = 23.5.dp),
             ) {
                 // Android와 동일: 위젯 미리보기 일러스트
                 Image(

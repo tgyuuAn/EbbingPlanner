@@ -6,7 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.clickable
+import com.tgyuu.shared.common.util.noRippleClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -99,7 +99,7 @@ fun TagScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable { selectedTag = null },
+                .noRippleClickable { selectedTag = null },
         ) {
             EbbingSubTopBar(
                 title = stringResource(Res.string.tag_manage_title),
@@ -111,7 +111,7 @@ fun TagScreen(
                         color = EbbingTheme.colors.primaryDefault,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
-                            .clickable { viewModel.onIntent(TagIntent.OnAddClick) },
+                            .noRippleClickable { viewModel.onIntent(TagIntent.OnAddClick) },
                     )
                 },
                 modifier = Modifier.padding(horizontal = 20.dp),

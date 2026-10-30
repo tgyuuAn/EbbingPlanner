@@ -2,7 +2,9 @@ package com.tgyuu.shared.ui.feature.schedule.bottomsheet
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import com.tgyuu.shared.common.util.noRippleClickable
+import androidx.compose.ui.text.font.FontWeight
+import com.tgyuu.shared.designsystem.foundation.EbbingTypography
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,7 +99,7 @@ fun TagEditBottomSheet(
 
         Text(
             text = stringResource(Res.string.schedule_tag_name_label),
-            style = EbbingTheme.typography.bodySSB,
+            style = EbbingTheme.typography.heading14SB,
             color = EbbingTheme.colors.black,
         )
 
@@ -117,11 +119,11 @@ fun TagEditBottomSheet(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { isColorExpanded = !isColorExpanded },
+                .noRippleClickable { isColorExpanded = !isColorExpanded },
         ) {
             Text(
                 text = stringResource(Res.string.schedule_tag_color_label),
-                style = EbbingTheme.typography.bodySSB,
+                style = EbbingTheme.typography.heading14SB,
                 color = EbbingTheme.colors.black,
                 modifier = Modifier.weight(1f),
             )
@@ -145,7 +147,7 @@ fun TagEditBottomSheet(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .heightIn(max = 228.dp)
-                    .verticalScrollbar(gridState, color = EbbingTheme.colors.dark3),
+                    .verticalScrollbar(gridState, color = EbbingTheme.colors.light1),
             ) {
                 items(TAG_COLORS) { colorValue ->
                     val baseColor = Color(colorValue)
@@ -164,7 +166,7 @@ fun TagEditBottomSheet(
                                 .size(45.dp)
                                 .clip(CircleShape)
                                 .background(displayColor)
-                                .clickable {
+                                .noRippleClickable {
                                     selectedColor = colorValue
                                     isColorExpanded = false
                                 }
@@ -185,10 +187,7 @@ fun TagEditBottomSheet(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onDelete() },
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 painter = painterResource(Res.drawable.ic_trashcan),
                 contentDescription = null,
@@ -200,7 +199,10 @@ fun TagEditBottomSheet(
                 text = stringResource(Res.string.schedule_tag_delete_label, originName),
                 style = EbbingTheme.typography.bodySM,
                 color = EbbingTheme.colors.error,
-                modifier = Modifier.padding(vertical = 4.dp),
+                // Android와 동일: 아이콘을 제외한 텍스트만 클릭 영역
+                modifier = Modifier
+                    .noRippleClickable { onDelete() }
+                    .padding(vertical = 4.dp),
             )
         }
 
@@ -336,7 +338,7 @@ private fun BottomSheetOptionItem(
         contentAlignment = Alignment.TopStart,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .noRippleClickable { onClick() }
             .height(62.dp),
     ) {
         Text(
@@ -348,3 +350,7 @@ private fun BottomSheetOptionItem(
         )
     }
 }
+
+/** Android heading14SB(SemiBold 14/18, 태블릿 16/20) 대응. 공유 타이포에 없어 headingSB를 SemiBold로 복사해 써요. */
+internal val EbbingTypography.heading14SB
+    get() = headingSB.copy(fontWeight = FontWeight.SemiBold)

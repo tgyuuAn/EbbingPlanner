@@ -20,10 +20,10 @@ import kotlinx.datetime.LocalDate
 import com.tgyuu.shared.domain.model.DefaultTodoTag
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.tag_unassigned
-import ebbingplanner.shared.generated.resources.snack_date_has_schedule
-import ebbingplanner.shared.generated.resources.snack_required_fields
+import ebbingplanner.shared.generated.resources.home_snackbar_date_already_has_schedule
+import ebbingplanner.shared.generated.resources.home_snackbar_required_fields
 import ebbingplanner.shared.generated.resources.snack_todo_update_failed
-import ebbingplanner.shared.generated.resources.snack_todo_updated
+import ebbingplanner.shared.generated.resources.home_snackbar_todo_updated
 import org.jetbrains.compose.resources.getString
 
 class EditTodoViewModel(
@@ -134,7 +134,7 @@ class EditTodoViewModel(
             ?: emptySet()
 
         if (date in scheduledDates) {
-            viewModelScope.launch { onShowSnackbar(getString(Res.string.snack_date_has_schedule)) }
+            viewModelScope.launch { onShowSnackbar(getString(Res.string.home_snackbar_date_already_has_schedule)) }
             return
         }
 
@@ -157,7 +157,7 @@ class EditTodoViewModel(
         )
 
         if (!currentState.isSaveEnabled) {
-            onShowSnackbar(getString(Res.string.snack_required_fields))
+            onShowSnackbar(getString(Res.string.home_snackbar_required_fields))
             return
         }
 
@@ -182,7 +182,7 @@ class EditTodoViewModel(
             // (날짜 단위 알림이라 기존 날짜를 단순 취소하면 같은 날의 다른 일정 알림까지 사라짐)
             alarmRescheduler?.rescheduleDates(setOf(originSchedule.date, newSchedule.date))
 
-            onShowSnackbar(getString(Res.string.snack_todo_updated))
+            onShowSnackbar(getString(Res.string.home_snackbar_todo_updated))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_todo_update_failed))

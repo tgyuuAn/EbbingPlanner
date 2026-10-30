@@ -3,6 +3,8 @@ package com.tgyuu.shared.ui.feature.tag.edittag
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import com.tgyuu.shared.common.util.noRippleClickable
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -74,6 +76,7 @@ fun EditTagScreen(
     val state by viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberEbbingBottomSheetState()
+    val focusManager = LocalFocusManager.current
 
     EbbingModalBottomSheet(
         sheetState = bottomSheetState,
@@ -146,7 +149,10 @@ fun EditTagScreen(
         if (true) { // Android 정렬: 항상 하단 저장 버튼
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
                 label = stringResource(Res.string.tag_edit_button),
-                onClick = { viewModel.onIntent(EditTagIntent.OnUpdateClick) },
+                onClick = {
+                    viewModel.onIntent(EditTagIntent.OnUpdateClick)
+                    focusManager.clearFocus()
+                },
                 enabled = state.isSaveEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,34 +173,31 @@ private fun NameContent(
     Column(modifier = modifier) {
         Text(
             text = stringResource(Res.string.tag_name_label),
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        // Android AddTagScreen과 동일: 지우기(X) 아이콘은 TextInput의 rightComponent 안에 둬요
+        EbbingTextInputDefault(
+            value = name,
+            onValueChange = onNameChange,
+            hint = stringResource(Res.string.tag_name_hint),
+            limit = 20,
+            rightComponent = {
+                if (name.isNotEmpty()) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_delete_circle),
+                        contentDescription = stringResource(Res.string.common_clear),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(20.dp)
+                            .noRippleClickable { onClearClick() },
+                    )
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-        ) {
-            EbbingTextInputDefault(
-                value = name,
-                onValueChange = onNameChange,
-                hint = stringResource(Res.string.tag_name_hint),
-                limit = 20,
-                modifier = Modifier.weight(1f),
-            )
-
-            if (name.isNotEmpty()) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_delete_circle),
-                    contentDescription = stringResource(Res.string.common_clear),
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(20.dp)
-                        .clickable { onClearClick() },
-                )
-            }
-        }
+        )
         // Android와 동일: 별도 글자수 카운터 없음 (limit=20으로 입력 제한)
     }
 }
@@ -212,11 +215,11 @@ private fun ColorContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
-            .clickable { onColorClick() },
+            .noRippleClickable { onColorClick() },
     ) {
         Text(
             text = stringResource(Res.string.tag_color),
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.headingSM,
             color = EbbingTheme.colors.black,
         )
 

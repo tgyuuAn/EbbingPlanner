@@ -14,7 +14,8 @@ data class EditRepeatCycleState(
     val isTreatment: Boolean = saveButtonPositionVariant == Experiment.SaveButtonPosition.Variant.TREATMENT
     val parsedIntervals: List<Int> = parsingIntervals(intervals).getOrDefault(emptyList())
 
-    val isSaveEnabled: Boolean = intervals.isNotEmpty() && parsedIntervals.isNotEmpty()
+    // Android EditRepeatCycleState와 동일: 입력이 비어있지 않으면 활성화 (파싱 실패는 저장 시 스낵바로 안내)
+    val isSaveEnabled: Boolean = intervals.isNotEmpty()
 }
 
 sealed interface EditRepeatCycleIntent : UiIntent {

@@ -8,13 +8,13 @@ import com.tgyuu.shared.platform.logClick
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.snack_memo_added
-import ebbingplanner.shared.generated.resources.snack_memo_added_all
+import ebbingplanner.shared.generated.resources.memo_added
+import ebbingplanner.shared.generated.resources.memo_added_all
 import ebbingplanner.shared.generated.resources.snack_memo_save_failed
-import ebbingplanner.shared.generated.resources.snack_memo_updated
-import ebbingplanner.shared.generated.resources.snack_memo_updated_all
+import ebbingplanner.shared.generated.resources.memo_updated
+import ebbingplanner.shared.generated.resources.memo_updated_all
 import ebbingplanner.shared.generated.resources.snack_schedule_load_failed
-import ebbingplanner.shared.generated.resources.snack_required_fields
+import ebbingplanner.shared.generated.resources.memo_required_fields
 import org.jetbrains.compose.resources.getString
 
 class MemoViewModel(
@@ -88,7 +88,7 @@ class MemoViewModel(
     private suspend fun onSaveClick() {
         if (!currentState.isSaveEnabled) {
             // Android AddMemo/EditMemoViewModel과 동일: memo_required_fields 안내
-            onShowSnackbar(getString(Res.string.snack_required_fields))
+            onShowSnackbar(getString(Res.string.memo_required_fields))
             return
         }
 
@@ -108,8 +108,8 @@ class MemoViewModel(
             todoRepository.updateTodo(updatedSchedule)
             val isEdit = isEditEntry
             onShowSnackbar(
-                if (isEdit) getString(Res.string.snack_memo_updated)
-                else getString(Res.string.snack_memo_added)
+                if (isEdit) getString(Res.string.memo_updated)
+                else getString(Res.string.memo_added)
             )
             onNavigateToHome(originSchedule.date)
         } catch (e: Exception) {
@@ -127,8 +127,8 @@ class MemoViewModel(
 
             val isEdit = isEditEntry
             onShowSnackbar(
-                if (isEdit) getString(Res.string.snack_memo_updated_all, relatedSchedules.size)
-                else getString(Res.string.snack_memo_added_all, relatedSchedules.size)
+                if (isEdit) getString(Res.string.memo_updated_all, relatedSchedules.size)
+                else getString(Res.string.memo_added_all, relatedSchedules.size)
             )
             onNavigateToHome(originSchedule.date)
         } catch (e: Exception) {

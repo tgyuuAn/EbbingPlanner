@@ -1,10 +1,9 @@
 package com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle
 
-import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.BoxWithConstraints
+import com.tgyuu.shared.common.util.noRippleClickable
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -56,6 +55,7 @@ import org.jetbrains.compose.resources.stringResource
 import com.tgyuu.shared.designsystem.model.toRepeatPreviewDisplay
 import org.jetbrains.compose.resources.painterResource
 import ebbingplanner.shared.generated.resources.ic_delete_circle
+import com.tgyuu.shared.ui.feature.schedule.bottomsheet.heading14SB
 
 @Composable
 fun AddRepeatCycleScreen(
@@ -64,77 +64,71 @@ fun AddRepeatCycleScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+    val isTablet = EbbingTheme.windowLayout.isTablet
+    val onIntervalsChange: (String) -> Unit = { viewModel.onIntent(AddRepeatCycleIntent.OnIntervalsChange(it)) }
+    val onSaveClick: () -> Unit = {
+        viewModel.onIntent(AddRepeatCycleIntent.OnSaveClick)
+        focusManager.clearFocus()
+    }
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
-    Column(modifier = Modifier.fillMaxSize()) {
-        EbbingSubTopBar(
-            title = stringResource(Res.string.repeat_add_title),
-            onNavigationClick = { viewModel.onIntent(AddRepeatCycleIntent.OnBackClick) },
-            rightComponent = {
-                if (false) { // Android 정렬: 상단 저장 링크 미사용
-                Text(
-                    text = stringResource(Res.string.repeat_register_button),
-                    style = if (state.isSaveEnabled) EbbingTheme.typography.bodyMSB
-                    else EbbingTheme.typography.bodyMM,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickable(enabled = state.isSaveEnabled) {
-                            viewModel.onIntent(AddRepeatCycleIntent.OnSaveClick)
-                        },
-                )
-                }
-            },
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
+    if (!isTablet) {
+        Column(modifier = modifier.fillMaxSize()) {
+            EbbingSubTopBar(
+                title = stringResource(Res.string.repeat_add_title),
+                onNavigationClick = { viewModel.onIntent(AddRepeatCycleIntent.OnBackClick) },
+                rightComponent = {},
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
 
-        if (isWide) {
-            Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
-                Column(
-                    modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp),
-                ) {
-                    Text(text = stringResource(Res.string.repeat_add_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
-                    RepeatCycleInputContent(
-                        intervals = state.intervals,
-                        onIntervalsChange = { viewModel.onIntent(AddRepeatCycleIntent.OnIntervalsChange(it)) },
-                    )
-                    Spacer(modifier = Modifier.height(40.dp))
-                }
-                Column(modifier = Modifier.weight(1f).padding(20.dp)) {
-                    Spacer(modifier = Modifier.height(80.dp))
-                    PreviewContent(intervals = state.parsedIntervals)
-                }
-            }
-        } else {
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp).imePadding(),
             ) {
                 Text(text = stringResource(Res.string.repeat_add_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
-                RepeatCycleInputContent(
-                    intervals = state.intervals,
-                    onIntervalsChange = { viewModel.onIntent(AddRepeatCycleIntent.OnIntervalsChange(it)) },
-                )
-                PreviewContent(intervals = state.parsedIntervals)
+                RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
+                RepeatCyclePreviewContent(intervals = state.parsedIntervals)
                 Spacer(modifier = Modifier.height(60.dp))
             }
-        }
 
-        if (true) { // Android 정렬: 항상 하단 저장 버튼
             com.tgyuu.shared.designsystem.component.EbbingSolidButton(
                 label = stringResource(Res.string.repeat_register_button),
-                onClick = { viewModel.onIntent(AddRepeatCycleIntent.OnSaveClick) },
+                onClick = onSaveClick,
+                enabled = state.isSaveEnabled,
+                modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
+            )
+        }
+    } else {
+        // Android AddRepeatCycleScreen 태블릿 분기와 동일: 바깥 가로 20 + 컬럼 20+20(콘텐츠 60), 버튼 40
+        Column(modifier = modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+            EbbingSubTopBar(
+                title = stringResource(Res.string.repeat_add_title),
+                onNavigationClick = { viewModel.onIntent(AddRepeatCycleIntent.OnBackClick) },
+                rightComponent = {},
+            )
+
+            Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
+                Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {
+                    Text(text = stringResource(Res.string.repeat_add_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
+                }
+                Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {
+                    RepeatCyclePreviewContent(intervals = state.parsedIntervals)
+                }
+            }
+
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = stringResource(Res.string.repeat_register_button),
+                onClick = onSaveClick,
                 enabled = state.isSaveEnabled,
                 modifier = Modifier.fillMaxWidth().background(EbbingTheme.colors.background).padding(horizontal = 20.dp, vertical = 16.dp),
             )
         }
     }
-    } // BoxWithConstraints
 }
 
+/** Android RepeatCycleContent 대응 (추가/수정 화면 공용) */
 @Composable
-private fun RepeatCycleInputContent(
+internal fun RepeatCycleInputContent(
     intervals: String,
     onIntervalsChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -142,7 +136,7 @@ private fun RepeatCycleInputContent(
     Column(modifier = modifier) {
         Text(
             text = stringResource(Res.string.repeat_cycle_label),
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(top = 32.dp),
         )
@@ -160,7 +154,7 @@ private fun RepeatCycleInputContent(
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .size(20.dp)
-                            .clickable { onIntervalsChange("") },
+                            .noRippleClickable { onIntervalsChange("") },
                     )
                 }
             },
@@ -172,7 +166,7 @@ private fun RepeatCycleInputContent(
         Text(
             text = stringResource(Res.string.repeat_cycle_input_guide),
             style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.dark3, // Android textDisabled
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(top = 8.dp, start = 8.dp)
@@ -181,24 +175,25 @@ private fun RepeatCycleInputContent(
     }
 }
 
+/** Android PreviewContent 대응 (추가/수정 화면 공용) */
 @Composable
-private fun PreviewContent(
+internal fun RepeatCyclePreviewContent(
     intervals: List<Int>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
             text = stringResource(Res.string.repeat_cycle_preview_label),
-            style = EbbingTheme.typography.bodyMSB,
+            style = EbbingTheme.typography.bodyMM,
             color = EbbingTheme.colors.black,
             modifier = Modifier.padding(top = 32.dp),
         )
 
         Text(
             text = intervals.toRepeatPreviewDisplay(),
-            style = EbbingTheme.typography.bodySSB,
+            style = EbbingTheme.typography.heading14SB,
             color = if (intervals.isEmpty()) EbbingTheme.colors.error
-            else EbbingTheme.colors.dark2,
+            else EbbingTheme.colors.dark3, // Android textDisabled
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(top = 8.dp)

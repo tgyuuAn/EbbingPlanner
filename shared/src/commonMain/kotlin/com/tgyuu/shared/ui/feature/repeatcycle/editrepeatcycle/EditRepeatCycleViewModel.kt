@@ -10,10 +10,11 @@ import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.platform.logClick
 import kotlinx.coroutines.launch
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.snack_repeat_invalid
+import ebbingplanner.shared.generated.resources.repeat_snackbar_invalid
+import ebbingplanner.shared.generated.resources.repeat_snackbar_required
 import ebbingplanner.shared.generated.resources.snack_repeat_load_failed
 import ebbingplanner.shared.generated.resources.snack_repeat_update_failed
-import ebbingplanner.shared.generated.resources.snack_repeat_updated
+import ebbingplanner.shared.generated.resources.repeat_snackbar_updated
 import org.jetbrains.compose.resources.getString
 
 class EditRepeatCycleViewModel(
@@ -66,12 +67,15 @@ class EditRepeatCycleViewModel(
 
     private suspend fun onUpdateClick() {
         analyticsHelper.logClick("EditRepeatCycle", "Save")
+        if (currentState.intervals.isEmpty()) {
+            onShowSnackbar(getString(Res.string.repeat_snackbar_required))
+            return
+        }
         val origin = currentState.originRepeatCycle ?: return
-        if (!currentState.isSaveEnabled) return
 
         parsingIntervals(currentState.intervals).onSuccess { intervals ->
             if (intervals.isEmpty()) {
-                onShowSnackbar(getString(Res.string.snack_repeat_invalid))
+                onShowSnackbar(getString(Res.string.repeat_snackbar_invalid))
                 return
             }
 
@@ -81,13 +85,13 @@ class EditRepeatCycleViewModel(
                     intervals = intervals,
                 )
                 todoRepository.updateRepeatCycle(updatedRepeatCycle)
-                onShowSnackbar(getString(Res.string.snack_repeat_updated))
+                onShowSnackbar(getString(Res.string.repeat_snackbar_updated))
                 onNavigateBack()
             } catch (e: Exception) {
                 onShowSnackbar(getString(Res.string.snack_repeat_update_failed))
             }
         }.onFailure {
-            onShowSnackbar(getString(Res.string.snack_repeat_invalid))
+            onShowSnackbar(getString(Res.string.repeat_snackbar_invalid))
         }
     }
 

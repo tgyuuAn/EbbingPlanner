@@ -429,3 +429,22 @@ LOW 35건을 현재 코드 기준으로 Android 원본과 다시 대조했다. �
 - Android에서 fillDisabled를 쓰는 곳은 shared에 대응 토큰이 없어, 위치마다 light1 또는 dark3로 갈려 있다. 예를 들어 일정 화면의 전부 완료 화살표는 light1이다. 이번에는 스크롤바만 dark3로 통일했다.
 - AddTag/EditTag/RepeatCycle의 지우기 아이콘은 Android에서 `EbbingTextInputDefault.rightComponent` 안에 있다. iOS는 입력창 바깥 Row에 둔다. 배치 차이는 그대로 두었다.
 - InAppReviewDialog의 `ReviewDialog` screen_view와 `Review` Click 로그는 iOS에 없다(analytics 항목).
+
+## 전수 재대조 (2026-10-31, develop 태블릿 UI 병합 후)
+
+6개 영역(홈 / 일정 등록·수정·메모·알림 넛지 / 모아보기·태그·반복 주기 / 설정·동기화·온보딩 / 데이터·로직 / 위젯·앱 셸)을 현재 코드 기준으로 다시 대조해 161건(중복 포함)을 찾고 4개 묶음으로 처리했다.
+
+- **B1 로직·데이터** (aef3e3f8): AlarmRescheduler(날짜별 알림 재계산, 모든 변경 지점 연결), EditDate replaceSchedules, updateTodos 트랜잭션, 반복 주기 수정 쿼리화, sync_info 업로드 실패 예외, 등록 횟수 카운터·인앱 리뷰 조건, 시작 시 UUID/사용자 ID, Documents→App Group DB 이전, 홈 로딩 경쟁 제거
+- **B4 위젯** (1b2b241c): 위젯 설정 App Group 미러링(테마·투명도·정렬·월요일 시작), 테마 5종, ko/en/ja, Android Glance 위젯 시각 요소, systemLarge, 자정 갱신
+- **B2 흐름·내비게이션** (103ef6aa): ViewModel InstanceKeeper 보관, 저장 후 날짜 선택 홈 + 위젯 넛지, 누락 스낵바, 메모 수정 경로, 웹뷰 제목, 탭 스택 정리, 엣지 스와이프 뒤로가기
+- **B3 화면 세부**: 색 토큰 매핑 위반 정리, 타이포, en/ja 문구를 Android 키로 정렬, 분석 이벤트, 알림 넛지·메모·테마·위젯 설정 태블릿 레이아웃, 설정 시간 포맷, 동기화 2단 제거, 리플 없는 클릭, 폰 하단바, Pretendard 폰트
+
+### 남은 차이 (의도적 또는 결정 필요)
+- ⬜ CLEAR_SYNC_FLAG 1회성 연동 해제: Android 2025-08 전용 장치라 iOS 이식 시 기존 iOS 사용자 연동이 모두 끊김 → 이식 안 함
+- ⬜ 업데이트 안내(soft/hard): iOS Remote Config/App Store 조회 미구현
+- ⬜ 알림 설정 서버 로그(notification_analytics), 위젯 이벤트 로그
+- ⬜ 다크 테마 열린 설정 메뉴 하이라이트: Android는 테마별 fillSelected, shared는 primaryLight 25% → 새 토큰 필요
+- ⬜ Android fillDisabled(#A1AABB) 대응 shared 토큰 없음 → light1/dark3로 근사
+- ⬜ shared 테마 팔레트 값 자체가 Android와 다름(예: forest primary) — 기존 결정(shared 토큰 유지)으로 보류, 정렬 여부 결정 필요
+- ⬜ iOS 알림은 64개 한도로 가까운 60일분만 예약(앱 진입 시 보충), 기기 이름은 iOS 16+ 일반 이름
+- ⬜ 탭 하위 화면 저장·복원(Android BottomBarTo restoreState)은 미구현

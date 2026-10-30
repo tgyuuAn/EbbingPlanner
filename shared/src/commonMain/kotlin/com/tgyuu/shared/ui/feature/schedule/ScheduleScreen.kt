@@ -94,6 +94,11 @@ import ebbingplanner.shared.generated.resources.schedule_top_bar_title
 import org.jetbrains.compose.resources.stringResource
 import com.tgyuu.shared.designsystem.component.calendar.toLocalizedShort
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
+import com.tgyuu.shared.platform.AnalyticsEvent
+import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.logClick
+import com.tgyuu.shared.ui.feature.schedule.bottomsheet.heading14SB
 import ebbingplanner.shared.generated.resources.ic_3dots
 import ebbingplanner.shared.generated.resources.ic_arrow_up
 import ebbingplanner.shared.generated.resources.ic_arrow_down
@@ -107,6 +112,7 @@ fun ScheduleScreen(
     val state by viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberEbbingBottomSheetState()
+    val analyticsHelper = koinInject<AnalyticsHelper>()
 
     LaunchedEffect(viewModel) {
         viewModel.loadTodoSchedules()
@@ -114,6 +120,19 @@ fun ScheduleScreen(
 
     // 태그 삭제 확인 다이얼로그
     state.pendingDeleteTag?.let { (tagId, tagName) ->
+        LaunchedEffect(tagId) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent(
+                    type = AnalyticsEvent.Types.ACTION,
+                    properties = mapOf(
+                        AnalyticsEvent.PropertiesKeys.SCREEN_NAME to SCREEN_NAME,
+                        AnalyticsEvent.PropertiesKeys.ACTION_NAME to "show_dialog",
+                        "dialog_type" to "confirm_delete_tag",
+                    ),
+                )
+            )
+        }
+
         DeleteTagDialog(
             tagName = tagName,
             onDismissRequest = { viewModel.onIntent(ScheduleIntent.OnClearPendingDeleteTag) },
@@ -131,6 +150,7 @@ fun ScheduleScreen(
     )
 
     val onTagThreeDotsClick: (String, Int, Int) -> Unit = { tagName, tagColor, tagId ->
+            analyticsHelper.logClick(SCREEN_NAME, "EditTag")
             scope.launch {
                 bottomSheetState.setBottomSheetContent {
                     TagEditBottomSheet(
@@ -153,10 +173,12 @@ fun ScheduleScreen(
             }
         }
     val onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit = { schedule ->
+            analyticsHelper.logClick(SCREEN_NAME, "OptionSchedule")
             scope.launch {
                 showScheduleOptionsBottomSheet(
                     schedule = schedule,
                     viewModel = viewModel,
+                    analyticsHelper = analyticsHelper,
                     bottomSheetState = bottomSheetState,
                     scope = scope,
                 )
@@ -188,7 +210,8 @@ fun ScheduleScreen(
             modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
-        HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+        // Android fillTextfield 대응
+        HorizontalDivider(color = EbbingTheme.colors.light3, thickness = 1.dp)
 
         if (state.visibleTags.isEmpty()) {
             EmptyScheduleContent(
@@ -347,7 +370,7 @@ private fun TagSummary(
             Text(
                 text = title,
                 style = EbbingTheme.typography.headingSSB,
-                color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.black,
+                color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -355,7 +378,7 @@ private fun TagSummary(
             Text(
                 text = stringResource(Res.string.schedule_tag_count_completion, scheduleCount, (achievementRate * 100).roundToInt()),
                 style = EbbingTheme.typography.bodyMM,
-                color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark3,
+                color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2,
             )
         }
     }
@@ -364,6 +387,7 @@ private fun TagSummary(
 private suspend fun showScheduleOptionsBottomSheet(
     schedule: TodoScheduleUiModel,
     viewModel: ScheduleViewModel,
+    analyticsHelper: AnalyticsHelper,
     bottomSheetState: EbbingBottomSheetState,
     scope: kotlinx.coroutines.CoroutineScope,
 ) {
@@ -371,6 +395,7 @@ private suspend fun showScheduleOptionsBottomSheet(
         ScheduleOptionsBottomSheet(
             selectedSchedule = schedule,
             onClickUpdate = { s ->
+                analyticsHelper.logClick(SCREEN_NAME, "EditSchedule")
                 scope.launch {
                     bottomSheetState.hide()
                     bottomSheetState.setBottomSheetContent {
@@ -390,6 +415,7 @@ private suspend fun showScheduleOptionsBottomSheet(
                 }
             },
             onClickDelete = { s ->
+                analyticsHelper.logClick(SCREEN_NAME, "DeleteSchedule")
                 scope.launch {
                     bottomSheetState.hide()
                     bottomSheetState.setBottomSheetContent {
@@ -409,6 +435,7 @@ private suspend fun showScheduleOptionsBottomSheet(
                 }
             },
             onClickDelay = { s ->
+                analyticsHelper.logClick(SCREEN_NAME, "DelaySchedule")
                 scope.launch {
                     bottomSheetState.hide()
                     bottomSheetState.setBottomSheetContent {
@@ -428,10 +455,12 @@ private suspend fun showScheduleOptionsBottomSheet(
                 }
             },
             onClickMemo = {
+                analyticsHelper.logClick(SCREEN_NAME, "AddMemo")
                 viewModel.onIntent(ScheduleIntent.OnMemoClick(it))
                 scope.launch { bottomSheetState.hide() }
             },
             onClickDeleteMemo = {
+                analyticsHelper.logClick(SCREEN_NAME, "DeleteMemo")
                 viewModel.onIntent(ScheduleIntent.OnDeleteMemoClick(it))
                 scope.launch { bottomSheetState.hide() }
             },
@@ -529,7 +558,7 @@ private fun TagCard(
                 Text(
                     text = title,
                     style = EbbingTheme.typography.headingSSB,
-                    color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.black,
+                    color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.black,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -537,7 +566,7 @@ private fun TagCard(
                 Text(
                     text = stringResource(Res.string.schedule_tag_count_completion, scheduleCount, (achievementRate * 100).roundToInt()),
                     style = EbbingTheme.typography.bodyMM,
-                    color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark3,
+                    color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2,
                 )
                 Spacer(modifier = Modifier.height(2.dp))
             }
@@ -567,9 +596,8 @@ private fun TagCard(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut(),
         ) {
+            // Android는 AnimatedVisibility(Box) 안에서 구분선이 배경 Column 아래에 겹쳐 그려져 실제로 보이지 않아요. 보이는 결과에 맞춰 구분선을 두지 않아요.
             Column {
-                HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
-
                 Column(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier
@@ -607,7 +635,7 @@ private fun TagCard(
                     ) {
                         Text(
                             text = stringResource(Res.string.schedule_collapse),
-                            style = EbbingTheme.typography.bodySSB,
+                            style = EbbingTheme.typography.heading14SB,
                             color = EbbingTheme.colors.dark2,
                         )
                         Spacer(modifier = Modifier.width(2.dp))
@@ -681,7 +709,7 @@ private fun TodoInfoItem(
 
                 Text(
                     text = "${(achievementRate * 100).roundToInt()}%",
-                    style = EbbingTheme.typography.bodySSB,
+                    style = EbbingTheme.typography.heading14SB,
                     color = accentColor,
                 )
 
@@ -704,7 +732,7 @@ private fun TodoInfoItem(
                     Text(
                         text = dateRange,
                         style = EbbingTheme.typography.bodySM,
-                        color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark3,
+                        color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2,
                     )
                 }
             }
@@ -733,7 +761,7 @@ private fun TodoInfoItem(
                                 .padding(vertical = 8.dp)
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(EbbingTheme.colors.light2)
+                                .background(EbbingTheme.colors.light3) // Android strokeSecondary
                         )
                     }
                 }
@@ -753,9 +781,9 @@ private fun ScheduleCard(
     onThreeDotsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val dateColor = if (schedule.isDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.black
-    val dateStyle = if (schedule.isDone) EbbingTheme.typography.bodySM else EbbingTheme.typography.bodySSB
-    val subColor = if (schedule.isDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark3
+    val dateColor = if (schedule.isDone) EbbingTheme.colors.dark2 else EbbingTheme.colors.black
+    val dateStyle = if (schedule.isDone) EbbingTheme.typography.bodySM else EbbingTheme.typography.heading14SB
+    val subColor = if (schedule.isDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark2
     val textDecoration = if (schedule.isDone) TextDecoration.LineThrough else TextDecoration.None
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
@@ -828,7 +856,7 @@ private fun EmptyScheduleContent(
         Text(
             text = stringResource(Res.string.schedule_empty_message),
             style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark3,
+            color = EbbingTheme.colors.dark2,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -837,6 +865,8 @@ private fun EmptyScheduleContent(
 }
 
 // ── Dialog ──
+
+private const val SCREEN_NAME = "ScheduleScreen"
 
 @Composable
 private fun DeleteTagDialog(

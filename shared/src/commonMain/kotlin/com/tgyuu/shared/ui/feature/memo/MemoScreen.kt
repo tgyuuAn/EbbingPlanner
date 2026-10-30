@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -88,88 +89,42 @@ fun MemoScreen(
         )
     }
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
-    Column(modifier = Modifier.fillMaxSize()) {
-        EbbingSubTopBar(
-            title = if (isEditMode) stringResource(Res.string.memo_edit_title) else stringResource(Res.string.memo_add_title),
-            onNavigationClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
-            rightComponent = {},
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
-        if (isWide) {
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(20.dp)
-                    .imePadding(),
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    state.originSchedule?.let { schedule ->
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                                    append(schedule.title)
-                                }
-                                append(if (state.isEditEntry) editHeadlineSuffix else addHeadlineSuffix)
-                            },
-                            style = EbbingTheme.typography.headingLSB,
-                            color = EbbingTheme.colors.black,
-                        )
+    val focusManager = LocalFocusManager.current
+    val title = if (isEditMode) stringResource(Res.string.memo_edit_title) else stringResource(Res.string.memo_add_title)
+    val headline: @Composable () -> Unit = {
+        state.originSchedule?.let { schedule ->
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(schedule.title)
                     }
-                    MemoContent(
-                        memo = state.memo,
-                        onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
-                        onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
-                    )
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    state.originSchedule?.let { schedule ->
-                        PreviewContent(schedule = schedule, memo = state.memo)
-                    }
-                }
-            }
-        } else {
-            // .weight(1f)로 남은 높이만 차지해 하단 저장 버튼이 항상 보이도록(fillMaxSize면 버튼이 밀려남)
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .padding(20.dp)
-                    .imePadding(),
-            ) {
-                state.originSchedule?.let { schedule ->
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                                append(schedule.title)
-                            }
-                            append(if (state.isEditEntry) editHeadlineSuffix else addHeadlineSuffix)
-                        },
-                        style = EbbingTheme.typography.headingLSB,
-                        color = EbbingTheme.colors.black,
-                    )
-                }
-                MemoContent(
-                    memo = state.memo,
-                    onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
-                    onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
-                )
-                // Android와 동일: 별도 Spacer 없음(PreviewContent 라벨 top=32가 간격 제공)
-                state.originSchedule?.let { schedule ->
-                    PreviewContent(schedule = schedule, memo = state.memo)
-                }
-                Spacer(modifier = Modifier.height(60.dp))
-            }
+                    append(if (state.isEditEntry) editHeadlineSuffix else addHeadlineSuffix)
+                },
+                style = EbbingTheme.typography.headingLSB,
+                color = EbbingTheme.colors.black,
+            )
         }
-
+    }
+    val memoContent: @Composable () -> Unit = {
+        MemoContent(
+            memo = state.memo,
+            onMemoChange = { viewModel.onIntent(MemoIntent.OnMemoChange(it)) },
+            onClearClick = { viewModel.onIntent(MemoIntent.OnMemoChange("")) },
+        )
+    }
+    val previewContent: @Composable () -> Unit = {
+        // Android와 동일: 별도 Spacer 없음(PreviewContent 라벨 top=32가 간격 제공)
+        state.originSchedule?.let { schedule ->
+            PreviewContent(schedule = schedule, memo = state.memo)
+        }
+    }
+    val saveButton: @Composable () -> Unit = {
         com.tgyuu.shared.designsystem.component.EbbingSolidButton(
             label = if (isEditMode) stringResource(Res.string.memo_edit_button) else stringResource(Res.string.memo_add_button),
-            onClick = { viewModel.onIntent(MemoIntent.OnSaveClick) },
+            onClick = {
+                viewModel.onIntent(MemoIntent.OnSaveClick)
+                focusManager.clearFocus()
+            },
             enabled = state.isSaveEnabled,
             modifier = Modifier
                 .fillMaxWidth()
@@ -177,7 +132,77 @@ fun MemoScreen(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
         )
     }
-    } // BoxWithConstraints
+
+    if (EbbingTheme.windowLayout.isTablet) {
+        // Android AddMemo/EditMemoScreen 태블릿: 바깥 h20 + 각 컬럼 padding(20)+h20 → 좌(헤드라인+입력) | 우(미리보기)
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
+        ) {
+            EbbingSubTopBar(
+                title = title,
+                onNavigationClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
+                rightComponent = {},
+            )
+
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .imePadding(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    headline()
+                    memoContent()
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    previewContent()
+                }
+            }
+
+            saveButton()
+        }
+    } else {
+        // Android와 동일: 저장 버튼까지 포함하는 최상위 Column에 imePadding
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .imePadding(),
+        ) {
+            EbbingSubTopBar(
+                title = title,
+                onNavigationClick = { viewModel.onIntent(MemoIntent.OnBackClick) },
+                rightComponent = {},
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
+
+            // .weight(1f)로 남은 높이만 차지해 하단 저장 버튼이 항상 보이도록(fillMaxSize면 버튼이 밀려남)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(20.dp),
+            ) {
+                headline()
+                memoContent()
+                previewContent()
+                Spacer(modifier = Modifier.height(60.dp))
+            }
+
+            saveButton()
+        }
+    }
 }
 
 @Composable

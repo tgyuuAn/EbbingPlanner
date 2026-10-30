@@ -481,4 +481,66 @@
     <string name="setting_content_alpha">Content opacity</string>
     <string name="setting_detail_content">View details</string>
     <string name="repeat_cycle_list_item">- %1$s</string>
+    <!-- Android schedule_snackbar_* / repeat_snackbar_* / setting_* (스낵바·위젯 투명도) -->
+    <string name="schedule_snackbar_tag_updated">Tag updated</string>
+    <string name="schedule_snackbar_tag_deleted">Tag deleted</string>
+    <string name="schedule_snackbar_schedule_deleted">Schedule deleted.</string>
+    <string name="schedule_snackbar_remaining_deleted">All linked schedules from this one onward were deleted.</string>
+    <string name="schedule_snackbar_delayed_single">Postponed this schedule to the next day.</string>
+    <string name="schedule_snackbar_delayed_all">Postponed %1$d schedules.</string>
+    <string name="schedule_snackbar_memo_removed">Memo removed</string>
+    <string name="repeat_snackbar_required">Please fill in the required fields</string>
+    <string name="repeat_snackbar_invalid">The repeat cycle is not valid.</string>
+    <string name="repeat_snackbar_added">Repeat cycle added</string>
+    <string name="repeat_snackbar_updated">Repeat cycle updated</string>
+    <string name="repeat_snackbar_deleted">Repeat cycle deleted</string>
+    <string name="setting_alarm_time_changed">Alarm time changed to %1$s</string>
+    <string name="setting_alarm_message_changed">Notification message changed</string>
+    <string name="setting_data_cleared">Saved data has been reset</string>
+    <string name="setting_app_theme_changed">App theme changed</string>
+    <string name="setting_widget_theme_changed">Widget theme changed</string>
+    <string name="setting_theme_change_failed">Failed to change theme</string>
+    <string name="setting_alpha_percent">%1$d %</string>
+    <!-- Android home_options_*/home_update_*/home_delete_*/home_delay_* (홈 바텀시트) -->
+    <string name="home_options_title">Edit</string>
+    <string name="home_options_subtitle">What would you like to do with the %1$s task?</string>
+    <string name="home_options_edit">Edit</string>
+    <string name="home_options_delete">Delete</string>
+    <string name="home_options_delay_tomorrow">Postpone to tomorrow</string>
+    <string name="home_options_add_memo">Add memo</string>
+    <string name="home_options_edit_memo">Edit memo</string>
+    <string name="home_options_delete_memo">Delete memo</string>
+    <string name="home_update_method">How to edit</string>
+    <string name="home_update_info">Edit task details</string>
+    <string name="home_update_repeat_cycle">Reset the repeat cycle of linked tasks</string>
+    <string name="home_delete_method">How to delete</string>
+    <string name="home_delete_single">Delete this task only</string>
+    <string name="home_delete_remaining">Delete all following linked tasks</string>
+    <string name="home_delay_method">How to postpone</string>
+    <string name="home_delay_single">Postpone this task only</string>
+    <string name="home_delay_all">Postpone all following tasks</string>
+    <!-- Android home_snackbar_*/memo_* (홈/추가/수정/메모 스낵바) -->
+    <string name="home_snackbar_all_rest_days">You can't set every day as a rest day</string>
+    <string name="home_snackbar_date_already_has_schedule">There is already a task on that date.</string>
+    <string name="home_snackbar_date_repeat_changed">The date and repeat cycle of this task have been changed</string>
+    <string name="home_snackbar_delayed_to_next_day">The task has been postponed to the next day.</string>
+    <string name="home_snackbar_loading_schedule_info">Loading task info. Please try again in a moment</string>
+    <string name="home_snackbar_memo_removed">The memo has been removed</string>
+    <string name="home_snackbar_no_schedule_to_delay">There are no tasks to postpone.</string>
+    <string name="home_snackbar_no_schedule_to_save">There are no tasks to save</string>
+    <string name="home_snackbar_remaining_deleted">All tasks linked from this one onward have been deleted.</string>
+    <string name="home_snackbar_required_fields">Please fill in the required fields</string>
+    <string name="home_snackbar_schedule_deleted">The task has been deleted.</string>
+    <string name="home_snackbar_schedules_delayed">%1$d tasks have been postponed.</string>
+    <string name="home_snackbar_todo_added">A new task has been added</string>
+    <string name="home_snackbar_todo_updated">The task has been updated</string>
+    <string name="memo_added">Note added</string>
+    <string name="memo_added_all">Note added to %1$d schedules including the current one</string>
+    <string name="memo_updated">Note updated</string>
+    <string name="memo_updated_all">Note updated for %1$d schedules including the current one</string>
+    <string name="memo_required_fields">Please fill in the required fields</string>
+    <!-- Android home_alarm_* (알림 넛지) -->
+    <string name="home_alarm_reset">Restore default notification message</string>
+    <string name="home_alarm_time_sub">When should we send the reminder for remaining tasks?</string>
+    <string name="home_alarm_preview_sample">English vocabulary review</string>
 </resources>

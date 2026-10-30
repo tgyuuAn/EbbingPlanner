@@ -1,9 +1,17 @@
 package com.tgyuu.shared.designsystem.foundation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.pretendard_bold
+import ebbingplanner.shared.generated.resources.pretendard_medium
+import ebbingplanner.shared.generated.resources.pretendard_semi_bold
+import org.jetbrains.compose.resources.Font
 
 @Immutable
 data class EbbingTypography(
@@ -117,4 +125,41 @@ internal val TabletTypography: EbbingTypography = EbbingTypography().run {
         captionM = captionM.copy(fontSize = 14.sp, lineHeight = 18.sp),
         captionR12 = captionR12.copy(fontSize = 14.sp, lineHeight = 18.sp),
     )
+}
+
+/** 모든 스타일에 같은 폰트 패밀리를 적용 (크기/행간/굵기는 유지) */
+private fun EbbingTypography.withFontFamily(fontFamily: FontFamily): EbbingTypography = copy(
+    headingXLSB = headingXLSB.copy(fontFamily = fontFamily),
+    headingLSB = headingLSB.copy(fontFamily = fontFamily),
+    headingMSB = headingMSB.copy(fontFamily = fontFamily),
+    headingSSB = headingSSB.copy(fontFamily = fontFamily),
+    headingSM = headingSM.copy(fontFamily = fontFamily),
+    headingMB = headingMB.copy(fontFamily = fontFamily),
+    headingSB = headingSB.copy(fontFamily = fontFamily),
+    bodyMSB = bodyMSB.copy(fontFamily = fontFamily),
+    bodyMM = bodyMM.copy(fontFamily = fontFamily),
+    bodyMR = bodyMR.copy(fontFamily = fontFamily),
+    bodySSB = bodySSB.copy(fontFamily = fontFamily),
+    bodySM = bodySM.copy(fontFamily = fontFamily),
+    bodySR = bodySR.copy(fontFamily = fontFamily),
+    captionR = captionR.copy(fontFamily = fontFamily),
+    captionM = captionM.copy(fontFamily = fontFamily),
+    captionR12 = captionR12.copy(fontFamily = fontFamily),
+)
+
+/**
+ * Android core/designsystem Type.kt의 Pretendard 대응.
+ * Compose Resources의 Font()는 @Composable이라 EbbingTheme 안에서 타이포그래피를 만들어요.
+ * Android PretendardRegular는 pretendard_medium 파일을 Normal 굵기로 쓰므로 동일하게 매핑해요.
+ */
+@Composable
+internal fun rememberEbbingTypography(isTablet: Boolean): EbbingTypography {
+    val bold = Font(Res.font.pretendard_bold, FontWeight.Bold)
+    val semiBold = Font(Res.font.pretendard_semi_bold, FontWeight.SemiBold)
+    val medium = Font(Res.font.pretendard_medium, FontWeight.Medium)
+    val regular = Font(Res.font.pretendard_medium, FontWeight.Normal)
+    return remember(bold, semiBold, medium, regular, isTablet) {
+        val fontFamily = FontFamily(bold, semiBold, medium, regular)
+        (if (isTablet) TabletTypography else EbbingTypography()).withFontFamily(fontFamily)
+    }
 }

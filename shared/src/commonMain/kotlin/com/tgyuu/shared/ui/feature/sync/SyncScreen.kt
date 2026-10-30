@@ -4,7 +4,7 @@ import com.tgyuu.shared.navigation.ScreenBackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import com.tgyuu.shared.common.util.noRippleClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -125,20 +125,28 @@ fun SyncScreen(
     }
 
     if (isShowSyncDialog) {
+        // Android와 동일: 다이얼로그 버튼은 SyncDialog 화면명으로 로깅해요
         ConfirmSyncUpDialog(
-            onDismissRequest = { isShowSyncDialog = false },
+            onDismissRequest = {
+                viewModel.onIntent(SyncIntent.OnSyncDialogBackClick)
+                isShowSyncDialog = false
+            },
             onAcceptClick = {
-                viewModel.onIntent(SyncIntent.OnSyncUpClick)
+                viewModel.onIntent(SyncIntent.OnSyncDialogSyncClick)
                 isShowSyncDialog = false
             },
         )
     }
 
     if (isShowDisconnectDialog) {
+        // Android와 동일: 다이얼로그 버튼은 DisconnectDialog 화면명으로 로깅해요
         ConfirmDisconnectDialog(
-            onDismissRequest = { isShowDisconnectDialog = false },
+            onDismissRequest = {
+                viewModel.onIntent(SyncIntent.OnDisconnectDialogBackClick)
+                isShowDisconnectDialog = false
+            },
             onAcceptClick = {
-                viewModel.onIntent(SyncIntent.OnDisconnectClick)
+                viewModel.onIntent(SyncIntent.OnDisconnectDialogDisconnectClick)
                 isShowDisconnectDialog = false
             },
         )
@@ -216,9 +224,8 @@ private fun SyncScreenContent(
     onCopyDeviceInfo: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
-
+    // Android SyncMainScreen과 동일: 폰/태블릿 모두 단일 컬럼
+    Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             EbbingSubTopBar(
                 title = stringResource(Res.string.sync_title),
@@ -247,44 +254,21 @@ private fun SyncScreenContent(
                 }
 
                 else -> Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    if (isWide) {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                MainSections(
-                                    state = state,
-                                    onSyncUpClick = onSyncUpClick,
-                                    onDisconnectClick = onDisconnectClick,
-                                    onClickGenerateCode = onClickGenerateCode,
-                                    onScanQrClick = onScanQrClick,
-                                )
-                            }
+                    MainSections(
+                        state = state,
+                        onSyncUpClick = onSyncUpClick,
+                        onDisconnectClick = onDisconnectClick,
+                        onClickGenerateCode = onClickGenerateCode,
+                        onScanQrClick = onScanQrClick,
+                    )
 
-                            Column(modifier = Modifier.weight(1f)) {
-                                Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                                    AdvancedInfoSection(
-                                        state = state,
-                                        onCopyClick = onCopyDeviceInfo,
-                                    )
-                                }
-                            }
-                        }
-                    } else {
-                        MainSections(
+                    SectionDivider()
+
+                    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                        AdvancedInfoSection(
                             state = state,
-                            onSyncUpClick = onSyncUpClick,
-                            onDisconnectClick = onDisconnectClick,
-                            onClickGenerateCode = onClickGenerateCode,
-                            onScanQrClick = onScanQrClick,
+                            onCopyClick = onCopyDeviceInfo,
                         )
-
-                        SectionDivider()
-
-                        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                            AdvancedInfoSection(
-                                state = state,
-                                onCopyClick = onCopyDeviceInfo,
-                            )
-                        }
                     }
                 }
             }
@@ -414,7 +398,7 @@ private fun QrActionCard(
                     color = EbbingTheme.colors.primaryDefault,
                     shape = RoundedCornerShape(6.dp),
                 )
-                .clickable { onClick() }
+                .noRippleClickable { onClick() }
                 .padding(vertical = 10.dp),
         ) {
             Image(
@@ -509,7 +493,7 @@ private fun ConnectedDeviceSection(
             tint = EbbingTheme.colors.dark2,
             modifier = Modifier
                 .size(24.dp)
-                .clickable { onDisconnectClick() },
+                .noRippleClickable { onDisconnectClick() },
         )
     }
 
@@ -535,7 +519,7 @@ private fun LastSyncSection(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onSyncUpClick() }
+            .noRippleClickable { onSyncUpClick() }
             .padding(vertical = 4.dp),
     ) {
         Text(
@@ -600,7 +584,7 @@ private fun AdvancedInfoSection(
             tint = EbbingTheme.colors.dark2,
             modifier = Modifier
                 .size(20.dp)
-                .clickable { onCopyClick() },
+                .noRippleClickable { onCopyClick() },
         )
     }
 }

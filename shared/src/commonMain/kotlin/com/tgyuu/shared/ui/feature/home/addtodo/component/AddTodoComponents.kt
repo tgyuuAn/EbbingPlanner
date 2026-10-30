@@ -1,6 +1,17 @@
 package com.tgyuu.shared.ui.feature.home.addtodo.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -59,16 +70,20 @@ fun TitleContent(
     title: String,
     onTitleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    scrollState: ScrollState? = null,
 ) {
     // Android와 동일: 진입 시 제목 입력에 자동 포커스 → 키보드 자동 노출
     val focusRequester = remember { FocusRequester() }
+    val density = LocalDensity.current
+    val scope = rememberCoroutineScope()
+    var scrollToPosition by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
     Text(
         text = stringResource(Res.string.home_title),
-        style = EbbingTheme.typography.bodyMSB,
+        style = EbbingTheme.typography.bodySSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
@@ -94,7 +109,24 @@ fun TitleContent(
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth()
-            .focusRequester(focusRequester),
+            .focusRequester(focusRequester)
+            // Android animateScrollWhenFocus(scrollState, -200dp) 대응: 포커스 시 입력창 위치로 스크롤
+            .then(
+                if (scrollState == null) Modifier
+                else Modifier
+                    .onGloballyPositioned { coordinates ->
+                        scrollToPosition = coordinates.positionInParent().y +
+                            with(density) { -200.dp.roundToPx() }
+                    }
+                    .onFocusEvent {
+                        if (it.isFocused) {
+                            scope.launch {
+                                delay(300L)
+                                scrollState.animateScrollTo(scrollToPosition.toInt().coerceAtLeast(0))
+                            }
+                        }
+                    }
+            ),
     )
 }
 
@@ -106,7 +138,7 @@ fun TagContent(
 ) {
     Text(
         text = stringResource(Res.string.home_tag),
-        style = EbbingTheme.typography.bodyMSB,
+        style = EbbingTheme.typography.bodySSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
@@ -156,7 +188,7 @@ fun RepeatCycleContent(
 ) {
     Text(
         text = stringResource(Res.string.home_repeat_cycle),
-        style = EbbingTheme.typography.bodyMSB,
+        style = EbbingTheme.typography.bodySSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )
@@ -178,7 +210,7 @@ fun RestDayContent(
 ) {
     Text(
         text = stringResource(Res.string.home_rest_day),
-        style = EbbingTheme.typography.bodyMSB,
+        style = EbbingTheme.typography.bodySSB,
         color = EbbingTheme.colors.black,
         modifier = Modifier.padding(top = 32.dp),
     )

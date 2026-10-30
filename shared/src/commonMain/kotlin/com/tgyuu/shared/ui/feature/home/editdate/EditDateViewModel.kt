@@ -16,12 +16,12 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.snack_required_fields
+import ebbingplanner.shared.generated.resources.home_snackbar_required_fields
 import org.jetbrains.compose.resources.getString
-import ebbingplanner.shared.generated.resources.snack_all_rest_days
-import ebbingplanner.shared.generated.resources.snack_date_repeat_changed
-import ebbingplanner.shared.generated.resources.snack_loading_schedule_info
-import ebbingplanner.shared.generated.resources.snack_no_schedule_to_save
+import ebbingplanner.shared.generated.resources.home_snackbar_all_rest_days
+import ebbingplanner.shared.generated.resources.home_snackbar_date_repeat_changed
+import ebbingplanner.shared.generated.resources.home_snackbar_loading_schedule_info
+import ebbingplanner.shared.generated.resources.home_snackbar_no_schedule_to_save
 import ebbingplanner.shared.generated.resources.snack_todo_update_failed
 import com.tgyuu.shared.designsystem.model.toDisplayName
 
@@ -118,7 +118,7 @@ class EditDateViewModel(
         }
 
         if (newRestDays.size == DayOfWeek.entries.size) {
-            viewModelScope.launch { onShowSnackbar(getString(Res.string.snack_all_rest_days)) }
+            viewModelScope.launch { onShowSnackbar(getString(Res.string.home_snackbar_all_rest_days)) }
             return
         }
 
@@ -127,12 +127,12 @@ class EditDateViewModel(
 
     private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
         if (currentState.schedules.isEmpty()) {
-            onShowSnackbar(getString(Res.string.snack_no_schedule_to_save))
+            onShowSnackbar(getString(Res.string.home_snackbar_no_schedule_to_save))
             return
         }
 
         val tagId = currentState.tagId ?: run {
-            onShowSnackbar(getString(Res.string.snack_loading_schedule_info))
+            onShowSnackbar(getString(Res.string.home_snackbar_loading_schedule_info))
             return
         }
 
@@ -157,7 +157,7 @@ class EditDateViewModel(
                 currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
             }
 
-            onShowSnackbar(getString(Res.string.snack_date_repeat_changed))
+            onShowSnackbar(getString(Res.string.home_snackbar_date_repeat_changed))
             onNavigateToHome(currentState.selectedDate)
         } catch (e: Exception) {
             onShowSnackbar(getString(Res.string.snack_todo_update_failed))

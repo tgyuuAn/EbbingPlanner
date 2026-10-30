@@ -155,6 +155,7 @@ fun EditTodoScreen(
                     TitleContent(
                         title = state.title,
                         onTitleChange = { viewModel.onIntent(EditTodoIntent.OnTitleChange(it)) },
+                        scrollState = scrollState,
                     )
 
                     TagContent(

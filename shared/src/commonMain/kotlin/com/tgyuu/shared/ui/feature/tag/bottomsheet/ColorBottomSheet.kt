@@ -2,7 +2,7 @@ package com.tgyuu.shared.ui.feature.tag.bottomsheet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import com.tgyuu.shared.common.util.noRippleClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -116,7 +116,7 @@ fun ColorBottomSheet(
                 .heightIn(max = 228.dp)
                 .verticalScrollbar(
                     state = gridState,
-                    color = EbbingTheme.colors.dark3,
+                    color = EbbingTheme.colors.light1, // Android fillDisabled
                 ),
         ) {
             items(TAG_COLORS) { color ->
@@ -162,7 +162,7 @@ private fun ColorItem(
                 .size(45.dp)
                 .clip(CircleShape)
                 .background(animatedColor)
-                .clickable { onClick() },
+                .noRippleClickable { onClick() },
         )
 
         EbbingVisibleAnimation(visible = isSelected) {

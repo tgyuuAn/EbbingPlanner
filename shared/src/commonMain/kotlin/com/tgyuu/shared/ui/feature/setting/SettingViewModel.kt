@@ -7,7 +7,9 @@ import com.tgyuu.shared.platform.NotificationPermissionStatus
 import com.tgyuu.shared.platform.NotificationScheduler
 import com.tgyuu.shared.platform.openAppSettings
 import com.tgyuu.shared.common.appVersionName
-import com.tgyuu.shared.common.toFormattedString
+import com.tgyuu.shared.platform.AnalyticsEvent
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.number
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
@@ -26,10 +28,10 @@ import ebbingplanner.shared.generated.resources.setting_privacy_policy
 import ebbingplanner.shared.generated.resources.setting_term
 import ebbingplanner.shared.generated.resources.setting_privacy_policy_url
 import ebbingplanner.shared.generated.resources.setting_term_url
-import ebbingplanner.shared.generated.resources.snack_alarm_message_changed
-import ebbingplanner.shared.generated.resources.snack_alarm_time_changed
+import ebbingplanner.shared.generated.resources.setting_alarm_message_changed
+import ebbingplanner.shared.generated.resources.setting_alarm_time_changed
 import ebbingplanner.shared.generated.resources.snack_data_clear_failed
-import ebbingplanner.shared.generated.resources.snack_data_cleared
+import ebbingplanner.shared.generated.resources.setting_data_cleared
 import org.jetbrains.compose.resources.getString
 
 class SettingViewModel(
@@ -83,7 +85,7 @@ class SettingViewModel(
 
             if (featureEnabled) {
                 val lastSync = runCatching { syncRepository?.getLocalSyncedAt() }.getOrNull()
-                setState { copy(lastSyncTime = lastSync?.toFormattedString()) }
+                setState { copy(lastSyncTime = lastSync?.toSyncTimeString()) }
                 configRepository?.getAutoBackupEnabled()
                     ?.collect { setState { copy(autoBackupEnabled = it) } }
             }
@@ -141,8 +143,12 @@ class SettingViewModel(
                 analyticsHelper.logClick(SCREEN_NAME, "RestoreByDeviceId")
                 onNavigateToRestore()
             }
-            SettingIntent.OnClearDataClick -> analyticsHelper.logClick(SCREEN_NAME, "ClearData")
-            SettingIntent.OnClearDataConfirm -> clearData()
+            SettingIntent.OnClearDataClick -> Unit
+            // Android와 동일: 확인 다이얼로그에서 초기화를 누를 때 ClearData를 로깅해요
+            SettingIntent.OnClearDataConfirm -> {
+                analyticsHelper.logClick(SCREEN_NAME, "ClearData")
+                clearData()
+            }
             SettingIntent.OnThemeClick -> {
                 analyticsHelper.logClick(SCREEN_NAME, "EditAppTheme")
                 onNavigateToTheme()
@@ -152,10 +158,8 @@ class SettingViewModel(
                 analyticsHelper.logClick(SCREEN_NAME, "NotificationNudge_Toggle")
                 toggleNotification(intent.enabled)
             }
-            is SettingIntent.OnUpdateAlarmTime -> {
-                analyticsHelper.logClick(SCREEN_NAME, "NotificationNudge_Time")
-                updateAlarmTime(intent.hour, intent.minute)
-            }
+            SettingIntent.OnAlarmTimeOpen -> analyticsHelper.logClick(SCREEN_NAME, "NotificationNudge_Time")
+            is SettingIntent.OnUpdateAlarmTime -> updateAlarmTime(intent.hour, intent.minute)
             SettingIntent.OnAlarmMessageOpen -> {
                 analyticsHelper.logClick(SCREEN_NAME, "NotificationMessage")
                 openAlarmMessageSheet()
@@ -180,8 +184,18 @@ class SettingViewModel(
                 analyticsHelper.logClick(SCREEN_NAME, "EditWidgetTheme")
                 onNavigateToWidget()
             }
+            SettingIntent.OnStartDayOpen -> analyticsHelper.logClick(SCREEN_NAME, "StartDay")
             is SettingIntent.OnUpdateStartDay -> {
-                analyticsHelper.logClick(SCREEN_NAME, "ApplyStartDay")
+                analyticsHelper?.logEvent(
+                    AnalyticsEvent(
+                        type = AnalyticsEvent.Types.BUTTON_CLICK,
+                        properties = mapOf(
+                            AnalyticsEvent.PropertiesKeys.SCREEN_NAME to SCREEN_NAME,
+                            AnalyticsEvent.PropertiesKeys.BUTTON_NAME to "ApplyStartDay",
+                            "monday_start" to intent.mondayStart,
+                        ),
+                    )
+                )
                 updateStartDay(intent.mondayStart)
             }
             SettingIntent.OnAutoBackupToggleClick -> {
@@ -259,7 +273,7 @@ class SettingViewModel(
                 alarmMinute = minute,
             )
         }
-        onShowSnackbar(getString(Res.string.snack_alarm_time_changed))
+        onShowSnackbar(getString(Res.string.setting_alarm_time_changed, formatAlarmTime(hour, minute)))
     }
 
     private suspend fun resolveDisplayMessage(stored: String): String =
@@ -297,7 +311,7 @@ class SettingViewModel(
         configRepository?.updateAlarmMessage(message)
         setState { copy(alarmMessage = message) }
         alarmRescheduler?.rescheduleAll()
-        onShowSnackbar(getString(Res.string.snack_alarm_message_changed))
+        onShowSnackbar(getString(Res.string.setting_alarm_message_changed))
     }
 
     private fun clearData() {
@@ -306,7 +320,7 @@ class SettingViewModel(
             try {
                 todoRepository.clearData()
                 alarmRescheduler?.cancelAll()
-                onShowSnackbar(getString(Res.string.snack_data_cleared))
+                onShowSnackbar(getString(Res.string.setting_data_cleared))
             } catch (e: Exception) {
                 onShowSnackbar(getString(Res.string.snack_data_clear_failed))
             } finally {
@@ -315,3 +329,12 @@ class SettingViewModel(
         }
     }
 }
+
+/** Android 설정 화면 알람 시간 표기(HH:mm, 예: "18:30") */
+internal fun formatAlarmTime(hour: Int, minute: Int): String =
+    "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+
+/** Android formatSyncTime(yyyy.MM.dd HH:mm) 대응 */
+private fun LocalDateTime.toSyncTimeString(): String =
+    "${year.toString().padStart(4, '0')}.${month.number.toString().padStart(2, '0')}.${dayOfMonth.toString().padStart(2, '0')} " +
+        "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"

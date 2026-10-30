@@ -2,6 +2,8 @@ package com.tgyuu.shared.ui.feature.home
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.platform.AnalyticsEvent
+import com.tgyuu.shared.platform.AnalyticsHelper
 import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.designsystem.component.calendar.totalDaysInMonth
@@ -22,12 +24,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import ebbingplanner.shared.generated.resources.Res
-import ebbingplanner.shared.generated.resources.snack_delayed_single
-import ebbingplanner.shared.generated.resources.snack_memo_removed
-import ebbingplanner.shared.generated.resources.snack_no_schedule_to_delay
-import ebbingplanner.shared.generated.resources.snack_remaining_deleted
-import ebbingplanner.shared.generated.resources.snack_schedule_deleted
-import ebbingplanner.shared.generated.resources.snack_schedules_delayed
+import ebbingplanner.shared.generated.resources.home_snackbar_delayed_to_next_day
+import ebbingplanner.shared.generated.resources.home_snackbar_memo_removed
+import ebbingplanner.shared.generated.resources.home_snackbar_no_schedule_to_delay
+import ebbingplanner.shared.generated.resources.home_snackbar_remaining_deleted
+import ebbingplanner.shared.generated.resources.home_snackbar_schedule_deleted
+import ebbingplanner.shared.generated.resources.home_snackbar_schedules_delayed
 import org.jetbrains.compose.resources.getString
 
 class HomeViewModel(
@@ -46,6 +48,22 @@ class HomeViewModel(
 
     // Callbacks for UI events that need to show dialogs/bottomsheets
     var onShowEditOptionsBottomSheet: ((TodoScheduleUiModel) -> Unit)? = null
+
+    /** HomeScreen에서 주입 (Android HomeViewModel analyticsHelper 대응: 미루기 액션 로깅) */
+    var analyticsHelper: AnalyticsHelper? = null
+
+    private fun logHomeAction(actionName: String, actionResult: String, properties: Map<String, Any?>) {
+        analyticsHelper?.logEvent(
+            AnalyticsEvent(
+                type = AnalyticsEvent.Types.ACTION,
+                properties = mapOf(
+                    AnalyticsEvent.PropertiesKeys.SCREEN_NAME to "Home",
+                    AnalyticsEvent.PropertiesKeys.ACTION_NAME to actionName,
+                    AnalyticsEvent.PropertiesKeys.ACTION_RESULT to actionResult,
+                ) + properties,
+            )
+        )
+    }
 
     // Cached schedules for faster updates
     private var currentMonthSchedules: List<TodoSchedule> = emptyList()
@@ -212,7 +230,7 @@ class HomeViewModel(
         cachedSchedules = cachedSchedules.filterNot { it.id == schedule.id }
         updateCacheAfterChange()
         alarmRescheduler?.rescheduleDates(listOf(schedule.date))
-        rebuildState(getString(Res.string.snack_schedule_deleted))
+        rebuildState(getString(Res.string.home_snackbar_schedule_deleted))
     }
 
     private suspend fun onDeleteRemainingSchedule(schedule: TodoScheduleUiModel) {
@@ -230,7 +248,7 @@ class HomeViewModel(
 
         updateCacheAfterChange()
         alarmRescheduler?.rescheduleDates(futureSchedulesToDelete.map { it.date })
-        rebuildState(getString(Res.string.snack_remaining_deleted))
+        rebuildState(getString(Res.string.home_snackbar_remaining_deleted))
     }
 
     private suspend fun onDelaySchedule(schedule: TodoScheduleUiModel, includeRestDays: Boolean = false) {
@@ -255,7 +273,19 @@ class HomeViewModel(
         }
         updateCacheAfterChange()
         alarmRescheduler?.rescheduleDates(listOf(schedule.date, nextDate))
-        rebuildState(getString(Res.string.snack_delayed_single))
+
+        logHomeAction(
+            actionName = "delay_single_schedule",
+            actionResult = "success",
+            properties = mapOf(
+                "schedule_id" to schedule.id,
+                "original_date" to schedule.date.toString(),
+                "next_date" to nextDate.toString(),
+                "include_rest_days" to includeRestDays,
+                "rest_days_count" to restDays.size,
+            ),
+        )
+        rebuildState(getString(Res.string.home_snackbar_delayed_to_next_day))
     }
 
     private suspend fun onDelayAllSchedules(schedule: TodoScheduleUiModel, includeRestDays: Boolean = false) {
@@ -268,7 +298,12 @@ class HomeViewModel(
             .sortedByDescending { it.date }
 
         if (futureSchedules.isEmpty()) {
-            onShowSnackBar(getString(Res.string.snack_no_schedule_to_delay))
+            logHomeAction(
+                actionName = "delay_all_schedules",
+                actionResult = "no_schedules",
+                properties = mapOf("schedule_id" to schedule.id),
+            )
+            onShowSnackBar(getString(Res.string.home_snackbar_no_schedule_to_delay))
             return
         }
 
@@ -297,7 +332,18 @@ class HomeViewModel(
 
         updateCacheAfterChange()
         alarmRescheduler?.rescheduleDates(futureSchedules.map { it.date } + updatedDates.values)
-        rebuildState(getString(Res.string.snack_schedules_delayed, futureSchedules.size))
+
+        logHomeAction(
+            actionName = "delay_all_schedules",
+            actionResult = "success",
+            properties = mapOf(
+                "schedule_id" to schedule.id,
+                "schedules_count" to futureSchedules.size,
+                "include_rest_days" to includeRestDays,
+                "rest_days_count" to restDays.size,
+            ),
+        )
+        rebuildState(getString(Res.string.home_snackbar_schedules_delayed, futureSchedules.size))
     }
 
     private suspend fun deleteMemo(schedule: TodoScheduleUiModel) {
@@ -311,7 +357,7 @@ class HomeViewModel(
             if (it.id == schedule.id) updated else it
         }
         updateCacheAfterChange()
-        rebuildState(getString(Res.string.snack_memo_removed))
+        rebuildState(getString(Res.string.home_snackbar_memo_removed))
     }
 
     private fun onUpdateSortType(sortType: SortType) {
