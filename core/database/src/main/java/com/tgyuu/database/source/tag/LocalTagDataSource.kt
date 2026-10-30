@@ -14,7 +14,6 @@ interface LocalTagDataSource {
     suspend fun updateTag(tag: TodoTagForSync)
 
     suspend fun softDeleteTag(tag: TodoTag)
-    suspend fun softDeleteAllTags()
 
     suspend fun hardDeleteTag(id: Int)
     suspend fun hardDeleteAllTags()

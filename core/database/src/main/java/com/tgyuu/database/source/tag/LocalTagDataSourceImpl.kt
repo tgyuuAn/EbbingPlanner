@@ -32,8 +32,6 @@ class LocalTagDataSourceImpl @Inject constructor(
     override suspend fun softDeleteTag(tag: TodoTag) =
         todoTagsDao.softDeleteTagWithReset(tag.toEntity())
 
-    override suspend fun softDeleteAllTags() = todoTagsDao.softDeleteAllTags(LocalDateTime.now())
-
     override suspend fun hardDeleteTag(id: Int) = todoTagsDao.hardDeleteTag(id)
     override suspend fun hardDeleteAllTags() = todoTagsDao.hardDeleteAllTags()
 
