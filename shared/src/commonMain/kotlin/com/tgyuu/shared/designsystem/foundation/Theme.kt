@@ -28,12 +28,14 @@ fun colorSchemeFor(theme: Theme, darkTheme: Boolean): EbbingColors = when (theme
 fun EbbingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     theme: Theme = Theme.NORMAL,
+    isTablet: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colors = colorSchemeFor(theme, darkTheme)
 
     CompositionLocalProvider(
         LocalColors provides colors,
+        LocalTypography provides if (isTablet) TabletTypography else EbbingTypography(),
         LocalDensity provides Density(LocalDensity.current.density, 1f)
     ) {
         CompositionLocalProvider(content = content)
@@ -47,4 +49,7 @@ object EbbingTheme {
     val typography: EbbingTypography
         @Composable
         get() = LocalTypography.current
+    val windowLayout: WindowLayout
+        @Composable
+        get() = LocalWindowLayout.current
 }

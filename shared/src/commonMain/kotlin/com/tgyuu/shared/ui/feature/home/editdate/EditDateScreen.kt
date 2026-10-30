@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.home.editdate
 
+import com.tgyuu.shared.ui.feature.home.component.TabletFormLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -151,51 +152,49 @@ fun EditDateScreen(
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            if (isWide) {
-                Row(
+            val formContent: @Composable () -> Unit = {
+                EditDateMainFormContent(
+                    state = state,
+                    onSelectedDateChangeClick = {
+                        currentBottomSheetType = EditDateBottomSheetType.DATE
+                        scope.launch { bottomSheetState.show() }
+                    },
+                    onRepeatCycleDropDownClick = {
+                        currentBottomSheetType = EditDateBottomSheetType.REPEAT_CYCLE
+                        scope.launch { bottomSheetState.show() }
+                    },
+                    onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
+                    onPinnedChange = { viewModel.onIntent(EditDateIntent.OnPinnedChange(it)) },
+                )
+            }
+            val sideContent: @Composable () -> Unit = {
+                ScheduleCheckContent(
+                    schedules = state.schedules,
+                    isDoneSchedules = isDoneSchedules,
+                    colorValue = state.originTagColor,
+                    onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
+                )
+
+                DescriptionBody()
+            }
+            val saveButton: @Composable (Modifier) -> Unit = { buttonModifier ->
+                EbbingSolidButton(
+                    label = stringResource(Res.string.home_edit_todo_button),
+                    onClick = { viewModel.onIntent(EditDateIntent.OnSaveClick(isDoneSchedules.toList())) },
+                    modifier = buttonModifier.background(EbbingTheme.colors.background),
+                )
+            }
+
+            if (EbbingTheme.windowLayout.isTablet) {
+                TabletFormLayout(
+                    scrollState = scrollState,
+                    form = { formContent() },
+                    side = { sideContent() },
+                    button = saveButton,
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth()
                         .imePadding(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(scrollState)
-                            .padding(20.dp),
-                    ) {
-                        EditDateMainFormContent(
-                            state = state,
-                            onSelectedDateChangeClick = {
-                                currentBottomSheetType = EditDateBottomSheetType.DATE
-                                scope.launch { bottomSheetState.show() }
-                            },
-                            onRepeatCycleDropDownClick = {
-                                currentBottomSheetType = EditDateBottomSheetType.REPEAT_CYCLE
-                                scope.launch { bottomSheetState.show() }
-                            },
-                            onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
-                            onPinnedChange = { viewModel.onIntent(EditDateIntent.OnPinnedChange(it)) },
-                        )
-                        Spacer(modifier = Modifier.height(60.dp))
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState())
-                            .padding(20.dp),
-                    ) {
-                        ScheduleCheckContent(
-                            schedules = state.schedules,
-                            isDoneSchedules = isDoneSchedules,
-                            colorValue = state.originTagColor,
-                            onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
-                        )
-
-                        DescriptionBody()
-                    }
-                }
+                )
             } else {
                 Column(
                     modifier = Modifier
@@ -204,41 +203,17 @@ fun EditDateScreen(
                         .padding(20.dp)
                         .imePadding(),
                 ) {
-                    EditDateMainFormContent(
-                        state = state,
-                        onSelectedDateChangeClick = {
-                            currentBottomSheetType = EditDateBottomSheetType.DATE
-                            scope.launch { bottomSheetState.show() }
-                        },
-                        onRepeatCycleDropDownClick = {
-                            currentBottomSheetType = EditDateBottomSheetType.REPEAT_CYCLE
-                            scope.launch { bottomSheetState.show() }
-                        },
-                        onRestDayChange = { viewModel.onIntent(EditDateIntent.OnRestDayChange(it)) },
-                        onPinnedChange = { viewModel.onIntent(EditDateIntent.OnPinnedChange(it)) },
-                    )
-
-                    ScheduleCheckContent(
-                        schedules = state.schedules,
-                        isDoneSchedules = isDoneSchedules,
-                        colorValue = state.originTagColor,
-                        onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
-                    )
-
-                    DescriptionBody()
-
+                    formContent()
+                    sideContent()
                     Spacer(modifier = Modifier.height(60.dp))
                 }
-            }
 
-            EbbingSolidButton(
-                label = stringResource(Res.string.home_edit_todo_button),
-                onClick = { viewModel.onIntent(EditDateIntent.OnSaveClick(isDoneSchedules.toList())) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
+                saveButton(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                )
+            }
         }
     }
 }

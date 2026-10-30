@@ -15,6 +15,19 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import com.tgyuu.shared.ui.feature.setting.SettingMenu
+import com.tgyuu.shared.navigation.RootTab
+import com.tgyuu.shared.designsystem.foundation.WindowLayout
+import com.tgyuu.shared.designsystem.foundation.LocalWindowLayout
+import com.tgyuu.shared.designsystem.foundation.LayoutConstants
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -236,66 +249,175 @@ fun RootContent(
     val appTheme by configRepository.getAppTheme()
         .collectAsState(initial = com.tgyuu.shared.domain.model.Theme.NORMAL)
 
-    EbbingTheme(theme = appTheme) {
-        Scaffold(
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            bottomBar = {
-                if (showBottomNav) {
-                    EbbingBottomNavigationBar(
-                        selectedTab = selectedTab,
-                        onTabSelected = { tab ->
-                            when (tab) {
-                                BottomNavItem.HOME -> component.navigateToHome()
-                                BottomNavItem.SCHEDULE -> component.navigateToSchedule()
-                                BottomNavItem.SETTING -> component.navigateToSetting()
+    // 태블릿은 하위 화면에서도 내비게이션을 유지하므로, 백스택에서 가장 위에 있는 탭 화면을 선택 상태로 보여줘요
+    val lastTab = childStack.items.asReversed().firstNotNullOfOrNull { item ->
+        when (item.instance) {
+            is RootComponent.Child.Home -> TopLevelTab.HOME
+            is RootComponent.Child.Schedule -> TopLevelTab.SCHEDULE
+            is RootComponent.Child.Setting -> TopLevelTab.SETTING
+            else -> null
+        }
+    } ?: TopLevelTab.HOME
+    val onTabletTabSelected: (TopLevelTab) -> Unit = { tab ->
+        component.navigateToTopLevelTab(
+            when (tab) {
+                TopLevelTab.HOME -> RootTab.HOME
+                TopLevelTab.SCHEDULE -> RootTab.SCHEDULE
+                TopLevelTab.SETTING -> RootTab.SETTING
+            }
+        )
+    }
+
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val windowLayout = WindowLayout(
+            isTablet = maxWidth >= LayoutConstants.TABLET_BREAKPOINT,
+            isLandscape = maxWidth > maxHeight,
+        )
+
+        CompositionLocalProvider(LocalWindowLayout provides windowLayout) {
+            EbbingTheme(theme = appTheme, isTablet = windowLayout.isTablet) {
+                val content: @Composable (Modifier) -> Unit = { contentModifier ->
+                    Surface(
+                        modifier = contentModifier,
+                        color = EbbingTheme.colors.background,
+                    ) {
+                        Children(
+                            stack = component.stack,
+                            animation = stackAnimation(fade()),
+                        ) { child ->
+                            when (val instance = child.instance) {
+                                is RootComponent.Child.Home -> HomeScreen(
+                                    viewModel = homeViewModel,
+                                    onRequestInAppReview = { inAppReviewManager.requestReview() },
+                                )
+                                is RootComponent.Child.Schedule -> ScheduleScreen(viewModel = scheduleViewModel)
+                                is RootComponent.Child.Setting -> SettingScreen(viewModel = settingViewModel)
+                                is RootComponent.Child.Tag -> TagScreenWrapper(component)
+                                is RootComponent.Child.Memo -> MemoScreenWrapper(component, instance.scheduleId, showSnackbar)
+                                is RootComponent.Child.RepeatCycle -> RepeatCycleScreenWrapper(component)
+                                is RootComponent.Child.Sync -> SyncScreenWrapper(component, showSnackbar)
+                                is RootComponent.Child.Onboarding -> OnboardingScreenWrapper(component)
+                                is RootComponent.Child.AddTodo -> AddTodoScreenWrapper(component, instance.selectedDate, showSnackbar)
+                                is RootComponent.Child.EditTodo -> EditTodoScreenWrapper(component, instance.scheduleId, showSnackbar)
+                                is RootComponent.Child.EditDate -> EditDateScreenWrapper(component, instance.infoId, showSnackbar)
+                                is RootComponent.Child.AddTag -> AddTagScreenWrapper(component)
+                                is RootComponent.Child.AddRepeatCycle -> AddRepeatCycleScreenWrapper(component)
+                                is RootComponent.Child.EditTag -> EditTagScreenWrapper(component, instance.tagId)
+                                is RootComponent.Child.EditRepeatCycle -> EditRepeatCycleScreenWrapper(component, instance.repeatCycleId)
+                                is RootComponent.Child.SyncRestore -> RestoreScreenWrapper(component, showSnackbar)
+                                is RootComponent.Child.EditMemo -> EditMemoScreenWrapper(component, instance.scheduleId)
+                                is RootComponent.Child.ThemeChild -> ThemeScreenWrapper(component)
+                                is RootComponent.Child.WebView -> WebViewScreenWrapper(component, instance.title, instance.url)
+                                is RootComponent.Child.Notification -> NotificationScreenWrapper(component)
+                                is RootComponent.Child.Widget -> WidgetScreenWrapper(component)
+                            }
+                        }
+                    }
+                }
+
+                if (!windowLayout.isTablet) {
+                    Scaffold(
+                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                        bottomBar = {
+                            if (showBottomNav) {
+                                EbbingBottomNavigationBar(
+                                    selectedTab = selectedTab,
+                                    onTabSelected = { tab ->
+                                        when (tab) {
+                                            BottomNavItem.HOME -> component.navigateToHome()
+                                            BottomNavItem.SCHEDULE -> component.navigateToSchedule()
+                                            BottomNavItem.SETTING -> component.navigateToSetting()
+                                        }
+                                    },
+                                )
                             }
                         },
-                    )
-                }
-            },
-            containerColor = EbbingTheme.colors.background,
-            modifier = modifier,
-        ) { paddingValues ->
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                color = EbbingTheme.colors.background,
-            ) {
-                Children(
-                    stack = component.stack,
-                    animation = stackAnimation(fade()),
-                ) { child ->
-                    when (val instance = child.instance) {
-                        is RootComponent.Child.Home -> HomeScreen(
-                            viewModel = homeViewModel,
-                            onRequestInAppReview = { inAppReviewManager.requestReview() },
+                        containerColor = EbbingTheme.colors.background,
+                    ) { paddingValues ->
+                        content(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(paddingValues)
                         )
-                        is RootComponent.Child.Schedule -> ScheduleScreen(viewModel = scheduleViewModel)
-                        is RootComponent.Child.Setting -> SettingScreen(viewModel = settingViewModel)
-                        is RootComponent.Child.Tag -> TagScreenWrapper(component)
-                        is RootComponent.Child.Memo -> MemoScreenWrapper(component, instance.scheduleId, showSnackbar)
-                        is RootComponent.Child.RepeatCycle -> RepeatCycleScreenWrapper(component)
-                        is RootComponent.Child.Sync -> SyncScreenWrapper(component, showSnackbar)
-                        is RootComponent.Child.Onboarding -> OnboardingScreenWrapper(component)
-                        is RootComponent.Child.AddTodo -> AddTodoScreenWrapper(component, instance.selectedDate, showSnackbar)
-                        is RootComponent.Child.EditTodo -> EditTodoScreenWrapper(component, instance.scheduleId, showSnackbar)
-                        is RootComponent.Child.EditDate -> EditDateScreenWrapper(component, instance.infoId, showSnackbar)
-                        is RootComponent.Child.AddTag -> AddTagScreenWrapper(component)
-                        is RootComponent.Child.AddRepeatCycle -> AddRepeatCycleScreenWrapper(component)
-                        is RootComponent.Child.EditTag -> EditTagScreenWrapper(component, instance.tagId)
-                        is RootComponent.Child.EditRepeatCycle -> EditRepeatCycleScreenWrapper(component, instance.repeatCycleId)
-                        is RootComponent.Child.SyncRestore -> RestoreScreenWrapper(component, showSnackbar)
-                        is RootComponent.Child.EditMemo -> EditMemoScreenWrapper(component, instance.scheduleId)
-                        is RootComponent.Child.ThemeChild -> ThemeScreenWrapper(component)
-                        is RootComponent.Child.WebView -> WebViewScreenWrapper(component, instance.title, instance.url)
-                        is RootComponent.Child.Notification -> NotificationScreenWrapper(component)
-                        is RootComponent.Child.Widget -> WidgetScreenWrapper(component)
+                    }
+                } else {
+                    // 태블릿: 가로는 왼쪽 레일, 세로는 하단 탭바. 온보딩에서만 숨겨요
+                    val showTabletNavigation = activeChild !is RootComponent.Child.Onboarding
+
+                    Scaffold(
+                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                        containerColor = EbbingTheme.colors.background,
+                    ) { paddingValues ->
+                        if (windowLayout.isLandscape) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues),
+                            ) {
+                                if (showTabletNavigation) {
+                                    TabletNavigationRail(
+                                        selectedTab = lastTab,
+                                        onTabSelected = onTabletTabSelected,
+                                    )
+                                }
+
+                                // 설정 탭은 가로에서 목록(왼쪽) | 하위 화면(오른쪽) 2패널로 보여줘요
+                                if (showTabletNavigation && lastTab == TopLevelTab.SETTING) {
+                                    SettingScreen(
+                                        viewModel = settingViewModel,
+                                        isListPane = true,
+                                        selectedMenu = activeChild.toSettingMenu(),
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    VerticalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+                                }
+
+                                content(
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                )
+                            }
+                        } else {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues),
+                            ) {
+                                content(
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth()
+                                )
+
+                                if (showTabletNavigation) {
+                                    TabletBottomBar(
+                                        selectedTab = lastTab,
+                                        onTabSelected = onTabletTabSelected,
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+private fun RootComponent.Child?.toSettingMenu(): SettingMenu? = when (this) {
+    is RootComponent.Child.Tag,
+    is RootComponent.Child.AddTag,
+    is RootComponent.Child.EditTag -> SettingMenu.TAG
+    is RootComponent.Child.RepeatCycle,
+    is RootComponent.Child.AddRepeatCycle,
+    is RootComponent.Child.EditRepeatCycle -> SettingMenu.REPEAT_CYCLE
+    is RootComponent.Child.Sync -> SettingMenu.SYNC
+    is RootComponent.Child.SyncRestore -> SettingMenu.RESTORE
+    is RootComponent.Child.ThemeChild -> SettingMenu.THEME
+    is RootComponent.Child.Widget -> SettingMenu.WIDGET
+    is RootComponent.Child.Notification -> SettingMenu.NOTIFICATION
+    else -> null
 }
 
 @Composable

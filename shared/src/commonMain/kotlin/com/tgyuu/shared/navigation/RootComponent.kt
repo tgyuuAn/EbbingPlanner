@@ -11,6 +11,9 @@ interface RootComponent {
     fun navigateToHome()
     fun navigateToSchedule()
     fun navigateToSetting()
+
+    /** 태블릿: 하위 화면에서 탭을 눌러도 스택이 쌓이지 않도록 홈 위에 탭 화면만 남기고 이동해요 */
+    fun navigateToTopLevelTab(tab: RootTab)
     fun navigateToTag()
     fun navigateToMemo(scheduleId: Int)
     fun navigateToRepeatCycle()
@@ -123,3 +126,5 @@ sealed interface Configuration {
     @Serializable
     data object Widget : Configuration
 }
+
+enum class RootTab { HOME, SCHEDULE, SETTING }
