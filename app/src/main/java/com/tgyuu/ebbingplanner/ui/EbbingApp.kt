@@ -1,43 +1,31 @@
 package com.tgyuu.ebbingplanner.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -45,20 +33,24 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingBottomBarEnterAnimation
 import com.tgyuu.common.util.addFocusCleaner
+import com.tgyuu.common.util.isLandscapeWindow
 import com.tgyuu.designsystem.component.EbbingSnackBar
 import com.tgyuu.designsystem.component.EbbingSnackBarHost
-import com.tgyuu.designsystem.component.bottomsheet.EbbingModalBottomSheet
+import com.tgyuu.designsystem.component.bottomsheet.EbbingAdaptiveSheetHost
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.navigation.AppNavHost
+import com.tgyuu.ebbingplanner.navigation.AppNavigationRail
+import com.tgyuu.ebbingplanner.navigation.AppTabletBottomBar
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination
-import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.SCHEDULE
-import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.HOME
-import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.SETTING
-import com.tgyuu.navigation.ScheduleRoute
-import com.tgyuu.navigation.HomeGraph
-import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.sync.network.NetworkBanner
+import androidx.compose.material3.VerticalDivider
+import com.tgyuu.navigation.RepeatCycleGraph
+import com.tgyuu.navigation.SettingGraph
+import com.tgyuu.navigation.SyncGraph
+import com.tgyuu.navigation.TagGraph
+import com.tgyuu.setting.graph.main.SettingListPane
+import com.tgyuu.setting.graph.main.SettingMenu
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
@@ -68,15 +60,16 @@ internal fun EbbingApp(
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
-    EbbingModalBottomSheet(
+    val windowWidthSize = currentWindowAdaptiveInfo()
+        .windowSizeClass
+        .windowWidthSizeClass
+
+    EbbingAdaptiveSheetHost(
         sheetState = appState.bottomSheetState,
+        isTablet = windowWidthSize != WindowWidthSizeClass.COMPACT,
         modifier = modifier,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            val windowWidthSize = currentWindowAdaptiveInfo()
-                .windowSizeClass
-                .windowWidthSizeClass
-
             when (windowWidthSize) {
                 WindowWidthSizeClass.COMPACT -> PhoneContent(
                     appState = appState,
@@ -162,20 +155,16 @@ private fun TabletContent(
     val currentDestination = appState.currentDestination
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
-    val transition = updateTransition(
-        targetState = !appState.shouldHideBottomBar,
-        label = "drawerAnim",
-    )
+    val showNavigation = !appState.shouldHideTabletNavigation
 
-    val drawerWidth by transition.animateDp(
-        label = "width",
-        transitionSpec = { tween(250) },
-    ) { shown -> if (shown) 200.dp else 0.dp }
-
-    val drawerAlpha by transition.animateFloat(
-        label = "alpha",
-        transitionSpec = { tween(250) },
-    ) { shown -> if (shown) 1f else 0f }
+    // 태블릿은 하위 화면에서도 내비게이션이 보이므로, 진입한 탭을 기억해 선택 상태로 유지해요
+    val currentTopLevel = TopLevelDestination.topLevelDestinations.firstOrNull {
+        currentDestination.isRouteInHierarchy(it.route)
+    }
+    var selectedTopLevel by rememberSaveable { mutableStateOf(TopLevelDestination.HOME) }
+    LaunchedEffect(currentTopLevel) {
+        if (currentTopLevel != null) selectedTopLevel = currentTopLevel
+    }
 
     Scaffold(
         containerColor = EbbingTheme.colors.background,
@@ -187,83 +176,66 @@ private fun TabletContent(
         },
         modifier = modifier,
     ) { innerPadding ->
-        Row(
+        Box(
             Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .animateContentSize()
+                .consumeWindowInsets(innerPadding)
         ) {
-            Box(
-                Modifier
-                    .width(drawerWidth)
-                    .padding(start = 12.dp, top = 20.dp)
-                    .graphicsLayer { alpha = drawerAlpha }
-            ) {
-                val navigationItemColor = NavigationSuiteDefaults.itemColors(
-                    navigationDrawerItemColors = NavigationDrawerItemDefaults.colors(
-                        selectedIconColor = EbbingTheme.colors.textOnPrimary,
-                        unselectedIconColor = EbbingTheme.colors.textDisabled,
-                        selectedTextColor = EbbingTheme.colors.textOnPrimary,
-                        unselectedTextColor = EbbingTheme.colors.textDisabled,
-                        selectedContainerColor = EbbingTheme.colors.primaryNormal,
+            // 가로 모드는 왼쪽 레일, 세로 모드는 하단 탭바
+            val isLandscape = isLandscapeWindow()
+
+            val content: @Composable (Modifier) -> Unit = { contentModifier ->
+                Box(contentModifier) {
+                    AppNavHost(
+                        appState = appState,
+                        modifier = Modifier
+                            .addFocusCleaner(focusManager)
+                            .padding(vertical = 20.dp),
                     )
-                )
 
-                NavigationSuiteScaffold(
-                    layoutType = NavigationSuiteType.NavigationDrawer,
-                    navigationSuiteColors = NavigationSuiteDefaults.colors(
-                        navigationDrawerContainerColor = EbbingTheme.colors.background,
-                        navigationDrawerContentColor = EbbingTheme.colors.textOnPrimary,
-                    ),
-                    navigationSuiteItems = {
-                        TopLevelDestination.topLevelDestinations.forEach { dest ->
-                            val selected = currentDestination.isRouteInHierarchy(dest.route)
+                    HandleDoubleBackToExit(
+                        appState = appState,
+                        snackBarHostState = snackBarHostState,
+                    )
 
-                            item(
-                                selected = selected,
-                                icon = {
-                                    Icon(
-                                        painterResource(dest.iconDrawableId),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(28.dp),
-                                    )
-                                },
-                                label = {
-                                    Text(
-                                        text = stringResource(dest.titleRes),
-                                        style = EbbingTheme.typography.body18M,
-                                        textAlign = TextAlign.Center,
-                                    )
-                                },
-                                colors = navigationItemColor,
-                                onClick = {
-                                    when (dest) {
-                                        HOME -> appState.navigate(HomeGraph.HomeRoute())
-                                        SCHEDULE -> appState.navigate(ScheduleRoute)
-                                        SETTING -> appState.navigate(SettingGraph.SettingRoute)
-                                    }
-                                }
-                            )
-                        }
+                    BackHandler(enabled = sheetState.isVisible) {
+                        scope.launch { sheetState.hide() }
                     }
-                )
+                }
             }
 
-            Box(Modifier.weight(1f)) {
-                AppNavHost(
-                    appState = appState,
-                    modifier = Modifier
-                        .addFocusCleaner(focusManager)
-                        .padding(vertical = 20.dp),
-                )
+            if (isLandscape) {
+                Row(Modifier.fillMaxSize()) {
+                    if (showNavigation) {
+                        AppNavigationRail(
+                            selectedDestination = selectedTopLevel,
+                            navigateToDestination = { appState.navigateToTopLevelDestination(it) },
+                        )
+                    }
 
-                HandleDoubleBackToExit(
-                    appState = appState,
-                    snackBarHostState = snackBarHostState,
-                )
+                    // 설정 탭은 가로 모드에서 목록(왼쪽) | 하위 화면(오른쪽) 2패널로 보여줘요
+                    if (showNavigation && selectedTopLevel == TopLevelDestination.SETTING) {
+                        SettingListPane(
+                            selectedMenu = currentDestination.toSettingMenu(),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(vertical = 20.dp),
+                        )
+                        VerticalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
+                    }
 
-                BackHandler(enabled = sheetState.isVisible) {
-                    scope.launch { sheetState.hide() }
+                    content(Modifier.weight(1f))
+                }
+            } else {
+                Column(Modifier.fillMaxSize()) {
+                    content(Modifier.weight(1f))
+                    if (showNavigation) {
+                        AppTabletBottomBar(
+                            selectedDestination = selectedTopLevel,
+                            navigateToDestination = { appState.navigateToTopLevelDestination(it) },
+                        )
+                    }
                 }
             }
         }
@@ -291,6 +263,22 @@ private fun HandleDoubleBackToExit(
             backPressedTime = System.currentTimeMillis()
         }
     }
+}
+
+private fun NavDestination?.toSettingMenu(): SettingMenu? = when {
+    isRouteInHierarchy(TagGraph.TagRoute::class) ||
+        isRouteInHierarchy(TagGraph.AddTagRoute::class) ||
+        isRouteInHierarchy(TagGraph.EditTagRoute::class) -> SettingMenu.TAG
+
+    isRouteInHierarchy(RepeatCycleGraph.RepeatCycleRoute::class) ||
+        isRouteInHierarchy(RepeatCycleGraph.AddRepeatCycleRoute::class) ||
+        isRouteInHierarchy(RepeatCycleGraph.EditRepeatCycleRoute::class) -> SettingMenu.REPEAT_CYCLE
+
+    isRouteInHierarchy(SyncGraph.SyncMainRoute::class) -> SettingMenu.SYNC
+    isRouteInHierarchy(SyncGraph.RestoreByDeviceIdRoute::class) -> SettingMenu.RESTORE
+    isRouteInHierarchy(SettingGraph.ThemeRoute::class) -> SettingMenu.THEME
+    isRouteInHierarchy(SettingGraph.WidgetRoute::class) -> SettingMenu.WIDGET
+    else -> null
 }
 
 internal fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =

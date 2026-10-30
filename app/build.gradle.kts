@@ -13,8 +13,8 @@ android {
     namespace = "com.tgyuu.ebbingplanner"
 
     defaultConfig {
-        versionCode = 39
-        versionName = "1.1.0"
+        versionCode = 40
+        versionName = "1.0.39"
         targetSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -82,7 +82,7 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.profileinstaller)
-    implementation(libs.androidx.adaptive.navigation.suite)
+    implementation(libs.androidx.adaptive)
     implementation(libs.kotlinx.datetime)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)

@@ -20,16 +20,16 @@ android {
     }
 
     targetProjectPath = ":app"
-    testOptions.managedDevices.localDevices.create("pixel6Api35") {
+    testOptions.managedDevices.localDevices.create("pixel6Api36") {
         device = "Pixel 6"
-        apiLevel = 35
+        apiLevel = 36
         systemImageSource = "aosp"
     }
 }
 
 baselineProfile {
     managedDevices.clear()
-    managedDevices += "pixel6Api35"
+    managedDevices += "pixel6Api36"
     useConnectedDevices = false
 }
 

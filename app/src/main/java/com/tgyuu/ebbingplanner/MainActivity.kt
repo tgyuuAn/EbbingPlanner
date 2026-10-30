@@ -1,5 +1,7 @@
 package com.tgyuu.ebbingplanner
 
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.window.core.layout.WindowWidthSizeClass
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -40,6 +42,7 @@ import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.ADD_TODO
 import com.tgyuu.ebbingplanner.widget.util.KEY_DESTINATION
 import com.tgyuu.ebbingplanner.widget.util.KEY_SELECTED_DATE
+import com.tgyuu.ebbingplanner.widget.util.OPEN_HOME
 import com.tgyuu.ebbingplanner.widget.util.RefreshAction
 import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
@@ -73,7 +76,8 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition { isInitialized }
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        handleWidgetIntent(intent)
+        // 구성 변경으로 재생성될 때 같은 위젯 intent가 다시 처리되지 않도록 최초 생성 시에만 처리
+        if (savedInstanceState == null) handleWidgetIntent(intent)
         lifecycleScope.launch {
             viewModel.initAppState()
             isInitialized = false
@@ -96,7 +100,10 @@ class MainActivity : ComponentActivity() {
             val bottomSheetState = rememberEbbingBottomSheetState()
             val snackBarHostState = remember { SnackbarHostState() }
 
-            EbbingTheme(theme = theme) {
+            val isTablet = currentWindowAdaptiveInfo().windowSizeClass
+                .windowWidthSizeClass != WindowWidthSizeClass.COMPACT
+
+            EbbingTheme(theme = theme, isTablet = isTablet) {
                 CompositionLocalProvider(
                     LocalAnalyticsHelper provides analyticsHelper,
                     LocalAnimationsEnabled provides MemoryAnimationController.animationsEnabled,
@@ -178,6 +185,17 @@ class MainActivity : ComponentActivity() {
                             )
                         )
                     }
+
+                    OPEN_HOME -> {
+                        val selectedDate = intent.extras?.getString(KEY_SELECTED_DATE)
+                            ?.let { LocalDate.parse(it) } ?: LocalDate.now()
+
+                        navigationBus.navigate(
+                            NavigationEvent.TopLevelTo(
+                                HomeGraph.HomeRoute(workedDate = selectedDate.toFormattedString())
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -253,7 +271,7 @@ class MainActivity : ComponentActivity() {
                 eventBus.eventFlow.collect { event ->
                     when (event) {
                         is EbbingEvent.ShowBottomSheet -> scope.launch {
-                            if (bottomSheetState.state.isVisible) {
+                            if (bottomSheetState.isVisible) {
                                 bottomSheetState.hide()
                             }
                             bottomSheetState.setBottomSheetContent(event.content)

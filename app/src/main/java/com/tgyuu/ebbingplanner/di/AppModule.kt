@@ -41,7 +41,7 @@ val appModule = module {
     single { ErrorBus(get()) }
     single { InAppReviewManager(androidContext()) }
     single { InAppUpdateManager(androidContext()) }
-    single { AutoBackupManager(get(), get(), get(), get()) }
+    single { AutoBackupManager(get(), get(), get(), get(), get()) }
 
     // ViewModel
     viewModelOf(::MainViewModel)
