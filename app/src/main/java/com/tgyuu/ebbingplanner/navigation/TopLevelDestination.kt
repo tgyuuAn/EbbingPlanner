@@ -11,24 +11,28 @@ import kotlin.reflect.KClass
 
 enum class TopLevelDestination(
     @DrawableRes val iconDrawableId: Int,
+    @DrawableRes val tabletIconDrawableId: Int,
     @StringRes val contentDescriptionRes: Int,
     @StringRes val titleRes: Int,
     val route: KClass<*>,
 ) {
     HOME(
         iconDrawableId = R.drawable.ic_home,
+        tabletIconDrawableId = R.drawable.ic_nav_home,
         contentDescriptionRes = DesignR.string.nav_home,
         titleRes = DesignR.string.nav_home,
         route = HomeRoute::class,
     ),
     SCHEDULE(
         iconDrawableId = R.drawable.ic_schedule,
+        tabletIconDrawableId = R.drawable.ic_nav_schedule,
         contentDescriptionRes = DesignR.string.nav_schedule,
         titleRes = DesignR.string.nav_schedule,
         route = ScheduleRoute::class,
     ),
     SETTING(
         iconDrawableId = R.drawable.ic_setting,
+        tabletIconDrawableId = R.drawable.ic_nav_setting,
         contentDescriptionRes = DesignR.string.nav_setting,
         titleRes = DesignR.string.nav_setting,
         route = SettingRoute::class,
