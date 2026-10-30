@@ -107,3 +107,25 @@ data class EbbingTypography(
         lineHeight = 16.sp,
     ),
 )
+
+/**
+ * 태블릿 토큰 모드 타이포그래피. Figma 태블릿 프레임은 Fontsize/Line-height 토큰이 한 단계씩 커요.
+ * (xs 12→14, s 14→16, m 16→18, l 18→20, xl 20→22, xxl 24→28, xxxl 28→32)
+ */
+internal val TabletTypography: EbbingTypography = EbbingTypography().run {
+    copy(
+        heading28B = heading28B.copy(fontSize = 32.sp, lineHeight = 40.sp),
+        heading24B = heading24B.copy(fontSize = 28.sp, lineHeight = 32.sp),
+        heading20B = heading20B.copy(fontSize = 22.sp, lineHeight = 24.sp),
+        heading18B = heading18B.copy(fontSize = 20.sp, lineHeight = 24.sp),
+        heading16B = heading16B.copy(fontSize = 18.sp, lineHeight = 22.sp),
+        heading14B = heading14B.copy(fontSize = 16.sp, lineHeight = 20.sp),
+        heading16SB = heading16SB.copy(fontSize = 18.sp, lineHeight = 22.sp),
+        heading14SB = heading14SB.copy(fontSize = 16.sp, lineHeight = 20.sp),
+        body18M = body18M.copy(fontSize = 20.sp, lineHeight = 24.sp),
+        body16M = body16M.copy(fontSize = 18.sp, lineHeight = 24.sp),
+        body14M = body14M.copy(fontSize = 16.sp, lineHeight = 22.sp),
+        caption14R = caption14R.copy(fontSize = 16.sp, lineHeight = 22.sp),
+        caption12R = caption12R.copy(fontSize = 14.sp, lineHeight = 18.sp),
+    )
+}

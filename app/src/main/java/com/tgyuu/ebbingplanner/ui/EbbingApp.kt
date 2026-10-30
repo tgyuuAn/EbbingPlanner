@@ -36,7 +36,7 @@ import com.tgyuu.common.util.addFocusCleaner
 import com.tgyuu.common.util.isLandscapeWindow
 import com.tgyuu.designsystem.component.EbbingSnackBar
 import com.tgyuu.designsystem.component.EbbingSnackBarHost
-import com.tgyuu.designsystem.component.bottomsheet.EbbingModalBottomSheet
+import com.tgyuu.designsystem.component.bottomsheet.EbbingAdaptiveSheetHost
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.navigation.AppBottomBar
 import com.tgyuu.ebbingplanner.navigation.AppNavHost
@@ -53,15 +53,16 @@ internal fun EbbingApp(
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
-    EbbingModalBottomSheet(
+    val windowWidthSize = currentWindowAdaptiveInfo()
+        .windowSizeClass
+        .windowWidthSizeClass
+
+    EbbingAdaptiveSheetHost(
         sheetState = appState.bottomSheetState,
+        isTablet = windowWidthSize != WindowWidthSizeClass.COMPACT,
         modifier = modifier,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            val windowWidthSize = currentWindowAdaptiveInfo()
-                .windowSizeClass
-                .windowWidthSizeClass
-
             when (windowWidthSize) {
                 WindowWidthSizeClass.COMPACT -> PhoneContent(
                     appState = appState,
