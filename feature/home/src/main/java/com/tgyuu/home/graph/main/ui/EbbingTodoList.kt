@@ -42,7 +42,11 @@ import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.designsystem.model.displayName
 import com.tgyuu.domain.model.SortType
-import java.time.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
+import kotlinx.datetime.plus
+import com.tgyuu.common.getDisplayName
 import java.time.format.TextStyle as JavaTextStyle
 import java.util.Locale
 
@@ -72,7 +76,7 @@ internal fun EbbingTodoList(
         val newPage = pagerState.currentPage
         val delta = newPage - prevPage
         if (delta != 0) {
-            onSelectDate(selectedDate.plusDays(delta.toLong()))
+            onSelectDate(selectedDate.plus(delta, DateTimeUnit.DAY))
             prevPage = newPage
         }
     }
@@ -131,7 +135,7 @@ private fun TodoHeader(
         val weekday = displayDate.dayOfWeek.getDisplayName(JavaTextStyle.SHORT, Locale.getDefault())
         val dateText = stringResource(
             R.string.home_list_date,
-            displayDate.monthValue,
+            displayDate.monthNumber,
             displayDate.dayOfMonth,
             weekday,
         )
@@ -216,7 +220,7 @@ private fun TodoPage(
         Text(
             text = stringResource(
                 R.string.home_empty_schedule,
-                date.monthValue,
+                date.monthNumber,
                 date.dayOfMonth,
             ),
             style = EbbingTheme.typography.body14M,

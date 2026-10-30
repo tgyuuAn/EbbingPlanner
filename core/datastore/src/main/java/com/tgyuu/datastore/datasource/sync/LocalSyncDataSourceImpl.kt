@@ -6,12 +6,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.ZonedDateTime
-import javax.inject.Inject
-import javax.inject.Named
+import kotlinx.datetime.LocalDateTime
 
-class LocalSyncDataSourceImpl @Inject constructor(
-    @Named("sync") private val dataStore: DataStore<Preferences>,
+class LocalSyncDataSourceImpl(
+    private val dataStore: DataStore<Preferences>,
 ) : LocalSyncDataSource {
     override val uuid: Flow<String>
         get() = dataStore.data
@@ -25,13 +23,13 @@ class LocalSyncDataSourceImpl @Inject constructor(
         get() = dataStore.data
             .map { prefs -> prefs[CONNECT_CODE] }
 
-    override val lastSyncTime: Flow<ZonedDateTime?>
+    override val lastSyncTime: Flow<LocalDateTime?>
         get() = dataStore.data
-            .map { prefs -> prefs[LAST_SYNC_TIME]?.let { ZonedDateTime.parse(it) } }
+            .map { prefs -> prefs[LAST_SYNC_TIME]?.let { LocalDateTime.parse(it) } }
 
-    override val connectCodeExpirationTime: Flow<ZonedDateTime?>
+    override val connectCodeExpirationTime: Flow<LocalDateTime?>
         get() = dataStore.data
-            .map { prefs -> prefs[CONNECT_CODE_EXPIRATION_TIME]?.let { ZonedDateTime.parse(it) } }
+            .map { prefs -> prefs[CONNECT_CODE_EXPIRATION_TIME]?.let { LocalDateTime.parse(it) } }
 
     override val peerUuid: Flow<String?>
         get() = dataStore.data
@@ -57,6 +55,7 @@ class LocalSyncDataSourceImpl @Inject constructor(
     override suspend fun setUuid(uuid: String) {
         dataStore.edit { prefs -> prefs[UUID] = uuid }
     }
+
     override suspend fun setConnectedUuid(uuid: String?) {
         dataStore.edit { prefs ->
             if (uuid == null) {
@@ -78,7 +77,7 @@ class LocalSyncDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun setLastSyncTime(time: ZonedDateTime?) {
+    override suspend fun setLastSyncTime(time: LocalDateTime?) {
         dataStore.edit { prefs ->
             if (time == null) {
                 prefs.remove(LAST_SYNC_TIME)
@@ -88,7 +87,7 @@ class LocalSyncDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun setConnectCodeExpirationTime(time: ZonedDateTime?) {
+    override suspend fun setConnectCodeExpirationTime(time: LocalDateTime?) {
         dataStore.edit { prefs ->
             if (time == null) {
                 prefs.remove(CONNECT_CODE_EXPIRATION_TIME)

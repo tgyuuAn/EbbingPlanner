@@ -1,7 +1,7 @@
 package com.tgyuu.repeatcycle.graph.addrepeatcycle.contract
 
 import com.tgyuu.common.base.UiIntent
-import java.time.DayOfWeek
+import kotlinx.datetime.DayOfWeek
 
 sealed interface AddRepeatCycleIntent : UiIntent {
     data object OnBackClick : AddRepeatCycleIntent

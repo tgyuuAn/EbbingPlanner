@@ -4,12 +4,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.tgyuu.domain.repository.FeatureFlag
 import kotlinx.coroutines.suspendCancellableCoroutine
-import javax.inject.Inject
 import kotlin.coroutines.resume
-import javax.inject.Singleton
 
-@Singleton
-class FeatureFlagDataSource @Inject constructor(
+class FeatureFlagDataSource(
     private val remoteConfig: FirebaseRemoteConfig,
 ) {
     init {

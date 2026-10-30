@@ -1,15 +1,9 @@
 package com.tgyuu.common.ui.resource
 
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class ResourceModule {
-    @Binds
-    @Singleton
-    abstract fun bindResourceProvider(impl: ResourceProviderImpl): ResourceProvider
+val resourceModule = module {
+    single { ResourceProviderImpl(androidContext()) } bind ResourceProvider::class
 }

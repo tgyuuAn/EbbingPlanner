@@ -5,10 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.tgyuu.common.now
 import com.tgyuu.database.model.TodoInfoEntity
 import com.tgyuu.database.model.TodoScheduleEntity
-import java.time.LocalDate
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface TodoWithSchedulesDao {
@@ -24,13 +25,13 @@ interface TodoWithSchedulesDao {
         tagId: Int,
         dates: List<LocalDate>,
         isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
-                restDays = restDays.joinToString(",") { it.value.toString() },
+                restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
             )
         ).toInt()
 
@@ -53,13 +54,13 @@ interface TodoWithSchedulesDao {
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         val infoId = insertInfo(
             TodoInfoEntity(
                 title = title,
                 tagId = tagId,
-                restDays = restDays.joinToString(",") { it.value.toString() },
+                restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
             )
         ).toInt()
 
@@ -121,7 +122,6 @@ interface TodoWithSchedulesDao {
             )
         }
     }
-
     @Query(
         "UPDATE schedule SET isDeleted = 1, updatedAt = :updatedAt " +
             "WHERE infoId = :infoId AND isDeleted = 0"
@@ -139,7 +139,7 @@ interface TodoWithSchedulesDao {
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
         isPinned: Boolean,
-        restDays: Set<java.time.DayOfWeek> = emptySet(),
+        restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     ) {
         require(dates.size == isDoneSchedules.size) {
             "dates.size(${dates.size}) != isDoneSchedules.size(${isDoneSchedules.size})"
@@ -151,7 +151,7 @@ interface TodoWithSchedulesDao {
             id = infoId,
             title = title,
             tagId = tagId,
-            restDays = restDays.joinToString(",") { it.value.toString() },
+            restDays = restDays.joinToString(",") { (it.ordinal + 1).toString() },
         )
 
         insertSchedules(

@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.tgyuu.common.now
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.home.graph.addtodo.AddTodoRoute
 import com.tgyuu.home.graph.editdate.EditDateRoute
@@ -12,7 +13,7 @@ import com.tgyuu.navigation.HomeBaseRoute
 import com.tgyuu.navigation.HomeGraph
 import com.tgyuu.navigation.HomeGraph.AddTodoRoute
 import com.tgyuu.navigation.HomeGraph.HomeRoute
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 fun NavGraphBuilder.homeGraph() {
     navigation<HomeBaseRoute>(startDestination = HomeGraph.HomeRoute()) {

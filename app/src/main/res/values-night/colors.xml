@@ -8,9 +8,4 @@
     <color name="black">#FFFFFFFF</color>
     <color name="white">#FF262729</color>
     <color name="dark">#FF6C7073</color>
-
-    <color name="widgetBackground_25">#40FFFFFF</color>
-    <color name="widgetBackground_50">#80FFFFFF</color>
-    <color name="widgetBackground_75">#BFFFFFFF</color>
-    <color name="widgetBackground_100">#FFFFFFFF</color>
 </resources>

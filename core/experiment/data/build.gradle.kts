@@ -1,6 +1,5 @@
 plugins {
     id("ebbing.android.library")
-    id("ebbing.android.hilt")
 }
 
 android {
@@ -22,7 +21,5 @@ dependencies {
 
     implementation(libs.firebase.config)
     implementation(libs.androidx.datastore)
-
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.coroutines.test)
+    implementation(libs.koin.android)
 }

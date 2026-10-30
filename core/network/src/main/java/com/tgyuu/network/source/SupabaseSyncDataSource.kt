@@ -23,11 +23,10 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
-import javax.inject.Inject
 
 private val ISO_FORMAT = DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
-class SupabaseSyncDataSource @Inject constructor(
+class SupabaseSyncDataSource(
     private val supabase: SupabaseClient,
 ) : SyncRemoteDataSource {
 

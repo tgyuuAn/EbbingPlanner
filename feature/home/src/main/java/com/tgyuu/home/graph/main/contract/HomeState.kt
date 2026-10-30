@@ -8,7 +8,7 @@ import com.tgyuu.domain.model.SortType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Immutable
 data class HomeState(
