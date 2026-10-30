@@ -7,13 +7,11 @@ data class NotificationState(
     val isNotificationEnabled: Boolean = true,
     val alarmHour: Int = 18,
     val alarmMinute: Int = 30,
-    val alarmMessage: String = DEFAULT_ALARM_MESSAGE,
+    val alarmMessage: String = "",
+    /** 로케일별 기본 문구(default_alarm_message). VM이 리소스로 채운다 */
+    val defaultMessage: String = "",
     val isShowTimePicker: Boolean = false,
-) : UiState {
-    companion object {
-        const val DEFAULT_ALARM_MESSAGE = "{할일} 을 확인하고, 잊지 말고 복습하세요!"
-    }
-}
+) : UiState
 
 sealed interface NotificationIntent : UiIntent {
     data object OnBackClick : NotificationIntent

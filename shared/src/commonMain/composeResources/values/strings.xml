@@ -51,6 +51,8 @@
     <string name="setting_alarm_time_subtitle">언제 남은 일정 알림을 보낼까요?</string>
     <string name="setting_alarm_message_setting">알림 메시지 설정</string>
     <string name="alarm_placeholder_token">{할일}</string>
+    <string name="default_alarm_message">{할일} 을 확인하고, 잊지 말고 복습하세요!</string>
+    <string name="notification_content_title">에빙 플래너 일정 알림</string>
     <string name="setting_alarm_message_placeholder_guide">은 할 일 제목으로 자동 변환됩니다 (최대 1번)</string>
     <string name="setting_alarm_message_hint">알림 메시지를 입력하세요</string>
     <string name="setting_preview">미리보기</string>

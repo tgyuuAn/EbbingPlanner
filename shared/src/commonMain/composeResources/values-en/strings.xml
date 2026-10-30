@@ -51,6 +51,8 @@
     <string name="setting_alarm_time_subtitle">When should we send reminders for upcoming schedules?</string>
     <string name="setting_alarm_message_setting">Notification message settings</string>
     <string name="alarm_placeholder_token">{task}</string>
+    <string name="default_alarm_message">Check {task} and don't forget to review!</string>
+    <string name="notification_content_title">Ebbing Planner reminder</string>
     <string name="setting_alarm_message_placeholder_guide"> is automatically replaced with the to-do title (up to once)</string>
     <string name="setting_alarm_message_hint">Enter a notification message</string>
     <string name="setting_preview">Preview</string>

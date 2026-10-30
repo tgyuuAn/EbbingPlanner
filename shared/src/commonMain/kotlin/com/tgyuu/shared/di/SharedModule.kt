@@ -8,7 +8,15 @@ import com.tgyuu.shared.data.repository.SyncRepositoryImpl
 import com.tgyuu.shared.data.repository.TodoRepositoryImpl
 import com.tgyuu.shared.data.source.UsageOrderStore
 import com.tgyuu.shared.database.EbbingDatabase
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.AutoBackupManager
+import com.tgyuu.shared.domain.DailyAlarmScheduler
+import com.tgyuu.shared.platform.NotificationScheduler
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.default_alarm_message
+import ebbingplanner.shared.generated.resources.notification_content_title
+import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.getString
 import com.tgyuu.shared.domain.model.ErrorBus
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.domain.repository.ErrorRepository
@@ -70,6 +78,7 @@ val sharedModule = module {
             repeatCyclesDao = get(),
             tagsDao = get(),
             errorRepository = get(),
+            onLocalDataReplaced = { getKoin().get<AlarmRescheduler>().rescheduleAll() },
         )
     }
 
@@ -86,6 +95,25 @@ val sharedModule = module {
             featureFlagRepository = get(),
             configRepository = get(),
             syncRepository = get(),
+            errorRepository = get(),
+        )
+    }
+
+    // 날짜별 알림 재계산 (Android 발화 시점 결정 로직의 iOS 대체). NotificationScheduler는 플랫폼 모듈 제공.
+    single {
+        val notificationScheduler = get<NotificationScheduler>()
+        AlarmRescheduler(
+            todoRepository = get(),
+            configRepository = get(),
+            scheduler = object : DailyAlarmScheduler {
+                override fun schedule(id: Int, title: String, message: String, hour: Int, minute: Int, date: LocalDate) =
+                    notificationScheduler.scheduleNotification(id, title, message, hour, minute, date)
+                override fun cancel(id: Int) = notificationScheduler.cancelNotification(id)
+                override fun cancelAll() = notificationScheduler.cancelAllNotifications()
+            },
+            titleProvider = { getString(Res.string.notification_content_title) },
+            defaultMessageProvider = { getString(Res.string.default_alarm_message) },
+            errorRepository = get(),
         )
     }
 }

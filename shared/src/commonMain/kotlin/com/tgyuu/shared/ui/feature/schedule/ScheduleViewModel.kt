@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.schedule
 
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.common.suspendRunCatching
@@ -38,6 +39,7 @@ class ScheduleViewModel(
     private val onNavigateToMemo: (scheduleId: Int) -> Unit,
     private val onNavigateToEditMemo: (scheduleId: Int) -> Unit,
     private val onShowSnackBar: (String) -> Unit,
+    private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<ScheduleState, ScheduleIntent>(ScheduleState()) {
 
     suspend fun loadTodoSchedules() {
@@ -162,6 +164,7 @@ class ScheduleViewModel(
         logClick("Schedule")
         val domainSchedule = schedule.toDomainModel()
         todoRepository.updateTodo(domainSchedule.copy(isDone = !domainSchedule.isDone))
+        alarmRescheduler?.rescheduleDates(listOf(domainSchedule.date))
         loadTodoSchedules()
     }
 
@@ -184,6 +187,8 @@ class ScheduleViewModel(
             todoRepository.deleteTag(
                 TodoTag(id = tag.id, name = tag.name, color = tag.color, createdAt = tag.createdAt)
             )
+            // 태그 삭제 시 해당 태그 일정이 목록에서 빠지므로 전체 알림을 다시 계산
+            alarmRescheduler?.rescheduleAll()
             onShowSnackBar(getString(Res.string.snack_tag_deleted))
             loadTodoSchedules()
         }
@@ -201,6 +206,7 @@ class ScheduleViewModel(
     private suspend fun onDeleteSingle(schedule: TodoScheduleUiModel) {
         suspendRunCatching {
             todoRepository.deleteTodo(schedule.toDomainModel())
+            alarmRescheduler?.rescheduleDates(listOf(schedule.date))
             onShowSnackBar(getString(Res.string.snack_schedule_deleted))
             loadTodoSchedules()
         }
@@ -211,6 +217,7 @@ class ScheduleViewModel(
             val allSchedules = todoRepository.loadSchedulesByTodoInfo(schedule.infoId)
             val toDelete = allSchedules.filter { it.date >= schedule.date }
             toDelete.forEach { todoRepository.deleteTodo(it) }
+            alarmRescheduler?.rescheduleDates(toDelete.map { it.date })
             onShowSnackBar(getString(Res.string.snack_remaining_deleted))
             loadTodoSchedules()
         }
@@ -219,9 +226,9 @@ class ScheduleViewModel(
     private suspend fun onDelaySingle(schedule: TodoScheduleUiModel) {
         suspendRunCatching {
             val domainSchedule = schedule.toDomainModel()
-            todoRepository.updateTodo(
-                domainSchedule.copy(date = domainSchedule.date.plus(1, DateTimeUnit.DAY))
-            )
+            val nextDate = domainSchedule.date.plus(1, DateTimeUnit.DAY)
+            todoRepository.updateTodo(domainSchedule.copy(date = nextDate))
+            alarmRescheduler?.rescheduleDates(listOf(domainSchedule.date, nextDate))
             onShowSnackBar(getString(Res.string.snack_delayed_single))
             loadTodoSchedules()
         }
@@ -234,6 +241,7 @@ class ScheduleViewModel(
             // Android와 동일: 개별 updateTodo 루프 대신 배치 updateTodos로 원자적 갱신
             val updated = toDelay.map { it.copy(date = it.date.plus(1, DateTimeUnit.DAY)) }
             todoRepository.updateTodos(updated)
+            alarmRescheduler?.rescheduleDates(toDelay.map { it.date } + updated.map { it.date })
             onShowSnackBar(getString(Res.string.snack_schedules_delayed, updated.size))
             loadTodoSchedules()
         }

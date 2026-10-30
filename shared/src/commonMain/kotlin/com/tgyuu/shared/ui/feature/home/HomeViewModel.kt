@@ -2,6 +2,7 @@ package com.tgyuu.shared.ui.feature.home
 
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.common.now
 import com.tgyuu.shared.designsystem.component.calendar.totalDaysInMonth
 import com.tgyuu.shared.domain.model.SortType
@@ -12,6 +13,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
@@ -38,6 +41,7 @@ class HomeViewModel(
     private val onNavigateToMemo: (Int) -> Unit = {},
     private val onNavigateToSync: () -> Unit = {},
     private val onShowSnackBar: (String) -> Unit = {},
+    private val alarmRescheduler: AlarmRescheduler? = null,
 ) : BaseViewModel<HomeState, HomeIntent>(HomeState()) {
 
     // Callbacks for UI events that need to show dialogs/bottomsheets
@@ -46,6 +50,10 @@ class HomeViewModel(
     // Cached schedules for faster updates
     private var currentMonthSchedules: List<TodoSchedule> = emptyList()
     private var cachedSchedules: List<TodoSchedule> = emptyList()
+
+    // Android HomeViewModel과 동일: 월 이동이 빠르게 이어질 때 이전 로드 결과가 최신 결과를 덮지 않도록
+    private var loadSchedulesJob: Job? = null
+    private var loadRequestSeq: Long = 0L
 
     init {
         val today = LocalDate.now()
@@ -66,9 +74,11 @@ class HomeViewModel(
             configRepository?.getCalendarDefaultView()
                 ?.collect { setState { copy(calendarDefaultView = it) } }
         }
-        viewModelScope.launch {
-            todoRepository.loadAllSchedules().let { schedules ->
-                if (schedules.size >= 3 && configRepository?.consumeInAppReview() == true) {
+        // Android와 동일: 일정 등록 횟수(TODO_REGISTERED_COUNT)가 3회 이상이 되는 순간 1회 노출
+        configRepository?.let { config ->
+            viewModelScope.launch {
+                config.getTodoRegisteredCount().first { it >= 3 }
+                if (config.consumeInAppReview()) {
                     setState { copy(showInAppReviewDialog = true) }
                 }
             }
@@ -85,7 +95,8 @@ class HomeViewModel(
         val end = LocalDate(today.year, today.monthNumber, today.totalDaysInMonth())
 
         currentMonthSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
-        loadSchedules(today)
+        // 오늘 기준이 아니라 사용자가 보고 있는 달 기준으로 다시 불러와, 표시 중인 달 로드와 경합하지 않게 한다
+        loadSchedules(currentState.currentDate ?: today)
     }
 
     fun showWidgetNudgeDialog() {
@@ -93,9 +104,10 @@ class HomeViewModel(
     }
 
     private fun loadSchedules(currentDate: LocalDate) {
-        viewModelScope.launch {
-            setState { copy(isLoading = true) }
-
+        val requestSeq = ++loadRequestSeq
+        loadSchedulesJob?.cancel()
+        // Android와 동일: 월 이동마다 isLoading=true로 되돌리지 않는다(초기값만 true)
+        loadSchedulesJob = viewModelScope.launch {
             try {
                 val start = currentDate.minus(1, DateTimeUnit.MONTH)
                     .let { LocalDate(it.year, it.monthNumber, 1) }
@@ -103,6 +115,7 @@ class HomeViewModel(
                     .let { LocalDate(it.year, it.monthNumber, it.totalDaysInMonth()) }
 
                 val rangeSchedules = todoRepository.loadTodoSchedulesByDateRange(start, end)
+                if (requestSeq != loadRequestSeq) return@launch
                 cachedSchedules = (currentMonthSchedules + rangeSchedules).distinctBy { it.id }
 
                 val byDate = buildByDateMap(cachedSchedules, currentState.sortType)
@@ -115,8 +128,10 @@ class HomeViewModel(
                         schedulesByTodoInfo = byInfo,
                     )
                 }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             } catch (e: Exception) {
-                setState { copy(isLoading = false) }
+                if (requestSeq == loadRequestSeq) setState { copy(isLoading = false) }
             }
         }
     }
@@ -127,6 +142,8 @@ class HomeViewModel(
                 setState { copy(selectedDate = intent.date) }
             }
             is HomeIntent.OnCurrentDateChanged -> {
+                // 보고 있는 달을 기억해 탭 복귀/포그라운드 재로드가 같은 달 기준으로 이뤄지게 한다
+                setState { copy(currentDate = intent.currentDate) }
                 loadSchedules(intent.currentDate)
             }
             is HomeIntent.OnCheckChanged -> onCheckedChange(intent.schedule)
@@ -185,6 +202,7 @@ class HomeViewModel(
         }
         updateCacheAfterChange()
         rebuildState()
+        alarmRescheduler?.rescheduleDates(listOf(schedule.date))
     }
 
     private suspend fun onDeleteSingleSchedule(schedule: TodoScheduleUiModel) {
@@ -193,6 +211,7 @@ class HomeViewModel(
         currentMonthSchedules = currentMonthSchedules.filterNot { it.id == schedule.id }
         cachedSchedules = cachedSchedules.filterNot { it.id == schedule.id }
         updateCacheAfterChange()
+        alarmRescheduler?.rescheduleDates(listOf(schedule.date))
         rebuildState(getString(Res.string.snack_schedule_deleted))
     }
 
@@ -210,6 +229,7 @@ class HomeViewModel(
         cachedSchedules = cachedSchedules.filterNot { it.id in deletedIds }
 
         updateCacheAfterChange()
+        alarmRescheduler?.rescheduleDates(futureSchedulesToDelete.map { it.date })
         rebuildState(getString(Res.string.snack_remaining_deleted))
     }
 
@@ -234,6 +254,7 @@ class HomeViewModel(
             if (it.id == schedule.id) delayed else it
         }
         updateCacheAfterChange()
+        alarmRescheduler?.rescheduleDates(listOf(schedule.date, nextDate))
         rebuildState(getString(Res.string.snack_delayed_single))
     }
 
@@ -275,6 +296,7 @@ class HomeViewModel(
         }
 
         updateCacheAfterChange()
+        alarmRescheduler?.rescheduleDates(futureSchedules.map { it.date } + updatedDates.values)
         rebuildState(getString(Res.string.snack_schedules_delayed, futureSchedules.size))
     }
 

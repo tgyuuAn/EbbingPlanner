@@ -27,6 +27,8 @@ class SyncRepositoryImpl(
     private val repeatCyclesDao: RepeatCyclesDao? = null,
     private val tagsDao: TodoTagsDao? = null,
     private val errorRepository: ErrorRepository? = null,
+    /** 다운로드/복원으로 로컬 일정이 바뀐 뒤 호출 (iOS 알림 재계산용) */
+    private val onLocalDataReplaced: () -> Unit = {},
 ) : SyncRepository {
 
     override suspend fun ensureUUIDExists() {
@@ -106,6 +108,7 @@ class SyncRepositoryImpl(
         syncDataSource.downloadData(downloadUuid, downloadSince)
             .getOrThrow()
             .let { applyDownloadedData(it) }
+        onLocalDataReplaced()
     }
 
     /**
@@ -239,6 +242,7 @@ class SyncRepositoryImpl(
             tags = response.tags.map { it.toEntity() },
             schedules = response.schedules.map { it.toEntity() },
         )
+        onLocalDataReplaced()
 
         return RestoreResult.Success(target.deviceName)
     }
@@ -315,6 +319,7 @@ class SyncRepositoryImpl(
         )
 
         response.syncedAt?.let { settings.putString(KEY_LOCAL_SYNCED_AT, it.toString()) }
+        onLocalDataReplaced()
         return response.syncedAt
     }
 

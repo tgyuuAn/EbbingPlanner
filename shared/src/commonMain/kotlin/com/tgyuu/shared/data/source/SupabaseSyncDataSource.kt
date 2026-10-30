@@ -61,10 +61,12 @@ class SupabaseSyncDataSource(
         repeatCycles: List<RepeatCycleForSync>,
         tags: List<TodoTagForSync>,
     ): LocalDateTime {
-        runCatching {
+        // Android와 동일: 모든 데이터 테이블의 uuid가 sync_info.uuid를 참조하므로,
+        // 여기서 실패하면 이후 업로드는 FK 위반으로 전부 실패한다. 실패를 삼키지 않고 즉시 알린다.
+        uploadTable(TABLE_SYNC_INFO, 1) {
             supabase.from(TABLE_SYNC_INFO)
                 .upsert(SyncInfoDto(uuid = uuid, deviceName = deviceName))
-        }
+        }?.let { throw it }
 
         // upsert 업데이트 시 DB가 uploaded_at을 갱신해주지 않으므로 클라이언트가 직접 찍어준다.
         // (증분 다운로드가 uploaded_at > lastSyncTime 필터를 사용)

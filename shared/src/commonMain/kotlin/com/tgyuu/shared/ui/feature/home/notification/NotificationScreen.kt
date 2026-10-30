@@ -200,7 +200,7 @@ private fun NotificationDetailSection(
         else state.alarmMessage.split(placeholderToken).size - 1
     val isValidLength = state.alarmMessage.length <= 50
     val isValidPlaceholder = placeholderCount <= 1
-    val shouldShowReset = state.alarmMessage != NotificationState.DEFAULT_ALARM_MESSAGE
+    val shouldShowReset = state.alarmMessage != state.defaultMessage
     val previewMessage = when {
         placeholderCount == 1 -> state.alarmMessage.replace(placeholderToken, previewSample)
         placeholderCount == 0 -> state.alarmMessage
