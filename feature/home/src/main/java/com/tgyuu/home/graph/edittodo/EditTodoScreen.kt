@@ -38,6 +38,7 @@ import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.home.graph.ui.PinnedContent
+import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
 import java.time.LocalDate
@@ -183,7 +184,9 @@ private fun EditTodoScreen(
         }
     } else {
         Column(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .fillMaxSize()
+                .imePadding(),
         ) {
             EbbingSubTopBar(
                 title = stringResource(R.string.home_edit_todo_title),
@@ -192,59 +195,60 @@ private fun EditTodoScreen(
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(20.dp)
-                    .imePadding(),
-            ) {
-                val monthDayText = stringResource(
-                    R.string.home_month_day,
-                    state.selectedDate.monthValue,
-                    state.selectedDate.dayOfMonth,
-                )
-                val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-                            append(monthDayText)
-                        }
-                        append(editTodoHeaderSuffix)
-                    },
-                    style = EbbingTheme.typography.heading24B,
-                    color = EbbingTheme.colors.textOnBackground,
-                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
-                )
+            TabletFormLayout(
+                scrollState = scrollState,
+                form = {
+                    val monthDayText = stringResource(
+                        R.string.home_month_day,
+                        state.selectedDate.monthValue,
+                        state.selectedDate.dayOfMonth,
+                    )
+                    val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                SpanStyle(
+                                    textDecoration = TextDecoration.Underline,
+                                    color = EbbingTheme.colors.textPrimary,
+                                )
+                            ) {
+                                append(monthDayText)
+                            }
+                            append(editTodoHeaderSuffix)
+                        },
+                        style = EbbingTheme.typography.heading24B,
+                        color = EbbingTheme.colors.textOnBackground,
+                        modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                    )
 
-                TitleContent(
-                    scrollState = scrollState,
-                    title = state.title,
-                    onTitleChange = onTitleChange,
-                )
+                    TitleContent(
+                        scrollState = scrollState,
+                        title = state.title,
+                        onTitleChange = onTitleChange,
+                    )
 
-                TagContent(
-                    tag = state.tag,
-                    onTagDropDownClick = onTagDropDownClick,
-                )
+                    TagContent(
+                        tag = state.tag,
+                        onTagDropDownClick = onTagDropDownClick,
+                    )
 
-                PinnedContent(
-                    isPinned = state.isPinned,
-                    onPinnedChange = onPinnedChange,
-                )
-            }
-
-            EbbingSolidButton(
-                label = stringResource(R.string.home_edit_todo_button),
-                onClick = {
-                    onSaveClick()
-                    focusManager.clearFocus()
+                    PinnedContent(
+                        isPinned = state.isPinned,
+                        onPinnedChange = onPinnedChange,
+                    )
                 },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                button = { buttonModifier ->
+                    EbbingSolidButton(
+                        label = stringResource(R.string.home_edit_todo_button),
+                        onClick = {
+                            onSaveClick()
+                            focusManager.clearFocus()
+                        },
+                        enabled = state.isSaveEnabled,
+                        modifier = buttonModifier.background(EbbingTheme.colors.background),
+                    )
+                },
+                modifier = Modifier.weight(1f),
             )
         }
     }
