@@ -24,6 +24,7 @@ import com.tgyuu.shared.designsystem.component.EbbingDialog
 import com.tgyuu.shared.designsystem.component.EbbingDialogBottom
 import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 import com.tgyuu.shared.ui.model.TodoScheduleUiModel
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import ebbingplanner.shared.generated.resources.Res
@@ -65,7 +66,7 @@ internal fun ConfirmDelayDialog(
 
     val dayLabels = rememberDayOfWeekShortLabels()
     val restDaysText = if (restDays.isNotEmpty()) {
-        val dayNames = restDays.sortedBy { it.ordinal }
+        val dayNames = restDays.sortedBy { it.isoDayNumber }
             .joinToString(", ") { dayLabels.getValue(it) }
         stringResource(Res.string.home_exclude_rest_days, dayNames)
     } else {

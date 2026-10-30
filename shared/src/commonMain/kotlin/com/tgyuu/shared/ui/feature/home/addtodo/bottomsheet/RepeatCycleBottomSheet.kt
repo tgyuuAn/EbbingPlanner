@@ -104,7 +104,7 @@ fun RepeatCycleBottomSheetContent(
                     .fillMaxWidth()
                     .heightIn(max = 300.dp)
                     .padding(top = 12.dp)
-                    .verticalScrollbar(listState, color = EbbingTheme.colors.light2),
+                    .verticalScrollbar(listState, color = EbbingTheme.colors.dark3),
             ) {
                 items(
                     items = repeatCycleList,
@@ -131,7 +131,7 @@ fun RepeatCycleBottomSheetContent(
                 Text(
                     text = stringResource(Res.string.home_daily_repeat_prompt, selectedDate.monthNumber, selectedDate.dayOfMonth),
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.light1,
+                    color = EbbingTheme.colors.dark3,
                     modifier = Modifier.padding(top = 8.dp),
                 )
 

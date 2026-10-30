@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.home.addtodo.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -80,10 +81,9 @@ fun TitleContent(
         limit = 100,
         rightComponent = {
             if (title.isNotEmpty()) {
-                Icon(
+                Image(
                     painter = painterResource(Res.drawable.ic_delete_circle),
                     contentDescription = stringResource(Res.string.home_delete),
-                    tint = EbbingTheme.colors.dark3,
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .size(20.dp)
@@ -205,8 +205,8 @@ fun ScheduleContent(
     schedules: List<LocalDate>,
     modifier: Modifier = Modifier,
 ) {
-    if (schedules.isEmpty()) return
-
+    // 노출 여부는 호출부 EbbingVisibleAnimation(schedules.isNotEmpty())가 결정한다.
+    // 여기서 조기 반환하면 퇴장 애니메이션 동안 카드가 즉시 사라지므로 Android처럼 항상 그린다.
     val shape = RoundedCornerShape(12.dp)
     Column(
         modifier = modifier

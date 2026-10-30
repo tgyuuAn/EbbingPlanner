@@ -7,6 +7,10 @@ import platform.Foundation.NSDateComponents
 import platform.UserNotifications.UNAuthorizationOptionAlert
 import platform.UserNotifications.UNAuthorizationOptionBadge
 import platform.UserNotifications.UNAuthorizationOptionSound
+import platform.UserNotifications.UNAuthorizationStatusAuthorized
+import platform.UserNotifications.UNAuthorizationStatusEphemeral
+import platform.UserNotifications.UNAuthorizationStatusNotDetermined
+import platform.UserNotifications.UNAuthorizationStatusProvisional
 import platform.UserNotifications.UNCalendarNotificationTrigger
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
@@ -69,6 +73,19 @@ actual class NotificationScheduler {
             options = UNAuthorizationOptionAlert or UNAuthorizationOptionSound or UNAuthorizationOptionBadge,
         ) { granted, error ->
             cont.resume(granted)
+        }
+    }
+
+    actual suspend fun getPermissionStatus(): NotificationPermissionStatus = suspendCancellableCoroutine { cont ->
+        center.getNotificationSettingsWithCompletionHandler { settings ->
+            val status = when (settings?.authorizationStatus) {
+                UNAuthorizationStatusAuthorized,
+                UNAuthorizationStatusProvisional,
+                UNAuthorizationStatusEphemeral -> NotificationPermissionStatus.GRANTED
+                UNAuthorizationStatusNotDetermined -> NotificationPermissionStatus.NOT_DETERMINED
+                else -> NotificationPermissionStatus.DENIED
+            }
+            cont.resume(status)
         }
     }
 }

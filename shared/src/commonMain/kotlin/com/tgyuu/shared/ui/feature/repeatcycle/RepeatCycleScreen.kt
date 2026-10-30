@@ -49,6 +49,7 @@ import com.tgyuu.shared.ui.model.RepeatCycleUiModel
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.repeat_manage_title
 import ebbingplanner.shared.generated.resources.repeat_add_button
+import ebbingplanner.shared.generated.resources.repeat_cycle_list_item
 import ebbingplanner.shared.generated.resources.repeat_empty_message
 import ebbingplanner.shared.generated.resources.repeat_delete
 import ebbingplanner.shared.generated.resources.repeat_edit
@@ -150,7 +151,7 @@ fun RepeatCycleScreen(
                 ) {
                     items(items = state.repeatCycleList, key = { it.id }) { repeatCycle ->
                         EbbingBottomSheetListItemDefault(
-                            label = "- ${repeatCycle.displayName}",
+                            label = stringResource(Res.string.repeat_cycle_list_item, repeatCycle.displayName),
                             checked = repeatCycle.id == selectedRepeatCycle?.id,
                             onChecked = { selectedRepeatCycle = repeatCycle },
                             modifier = Modifier.fillMaxWidth(),

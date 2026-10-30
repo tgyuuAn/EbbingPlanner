@@ -93,6 +93,13 @@ actual class NotificationScheduler(private val context: Context) {
         return true
     }
 
+    // shared Android 타깃은 실사용하지 않으므로(실사용 Android 앱은 feature 모듈) 시스템 알림 허용 여부만 반영
+    actual suspend fun getPermissionStatus(): NotificationPermissionStatus {
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return if (manager.areNotificationsEnabled()) NotificationPermissionStatus.GRANTED
+        else NotificationPermissionStatus.DENIED
+    }
+
     companion object {
         const val CHANNEL_ID = "ebbing_todo_channel"
         const val EXTRA_TITLE = "notification_title"

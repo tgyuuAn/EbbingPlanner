@@ -1,6 +1,7 @@
 package com.tgyuu.shared.ui.feature.repeatcycle.addrepeatcycle
 
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -153,10 +154,9 @@ private fun RepeatCycleInputContent(
             limit = 60,
             rightComponent = {
                 if (intervals.isNotEmpty()) {
-                    Icon(
+                    Image(
                         painter = painterResource(Res.drawable.ic_delete_circle),
                         contentDescription = stringResource(Res.string.common_clear),
-                        tint = EbbingTheme.colors.dark2,
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .size(20.dp)

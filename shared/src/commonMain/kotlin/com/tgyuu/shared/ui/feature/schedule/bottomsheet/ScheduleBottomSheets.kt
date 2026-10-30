@@ -145,7 +145,7 @@ fun TagEditBottomSheet(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .heightIn(max = 228.dp)
-                    .verticalScrollbar(gridState, color = EbbingTheme.colors.light2),
+                    .verticalScrollbar(gridState, color = EbbingTheme.colors.dark3),
             ) {
                 items(TAG_COLORS) { colorValue ->
                     val baseColor = Color(colorValue)
