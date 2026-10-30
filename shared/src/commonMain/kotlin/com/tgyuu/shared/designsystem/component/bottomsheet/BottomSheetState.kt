@@ -29,12 +29,15 @@ class EbbingBottomSheetState(
     var isVisible by mutableStateOf(false)
         private set
 
+    /** 태블릿에서는 [EbbingModalBottomSheet]가 가운데 다이얼로그로 띄우므로 M3 시트 애니메이션을 건너뛰어요 */
+    internal var presentAsDialog: Boolean = false
+
     fun setBottomSheetContent(newContent: BottomSheetContent) {
         content = newContent
     }
 
     suspend fun hide() {
-        state.hide()
+        if (!presentAsDialog) state.hide()
         isVisible = false
     }
 

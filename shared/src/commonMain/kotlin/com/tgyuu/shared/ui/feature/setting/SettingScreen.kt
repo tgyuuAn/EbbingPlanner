@@ -3,6 +3,8 @@ package com.tgyuu.shared.ui.feature.setting
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -115,6 +117,8 @@ import ebbingplanner.shared.generated.resources.ic_arrow_right
 fun SettingScreen(
     viewModel: SettingViewModel,
     modifier: Modifier = Modifier,
+    isListPane: Boolean = false,
+    selectedMenu: SettingMenu? = null,
 ) {
     val state by viewModel.state.collectAsState()
     var showClearDialog by remember { mutableStateOf(false) }
@@ -188,53 +192,48 @@ fun SettingScreen(
         },
     )
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-    val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
-    Column(modifier = Modifier.fillMaxSize()) {
+    val windowLayout = EbbingTheme.windowLayout
+
+    // 태블릿 가로 모드의 설정 목록은 앱 뼈대(RootContent)가 isListPane으로 왼쪽에 고정해서 그려요.
+    // 스택에 놓인 설정 루트 화면은 오른쪽 상세 패널 자리이므로 비워둬요.
+    if (windowLayout.isTablet && windowLayout.isLandscape && !isListPane) {
+        Box(modifier = modifier.fillMaxSize())
+        return
+    }
+
+    val horizontalPadding = when {
+        !windowLayout.isTablet -> 20.dp
+        isListPane -> SettingTabletListPanePadding
+        else -> SettingTabletPortraitPadding
+    }
+
+    CompositionLocalProvider(
+        LocalSelectedSettingMenu provides selectedMenu,
+        LocalSettingHorizontalPadding provides horizontalPadding,
+    ) {
+    Column(modifier = modifier.fillMaxSize()) {
         EbbingMainTopBar(
             title = stringResource(Res.string.setting_title),
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
         HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
 
-        if (isWide) {
-            Row(modifier = Modifier.fillMaxSize()) {
-                // Left column
-                Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
-                    NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
-                    CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
-                    TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
-                    DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onRestoreClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-                // Right column
-                Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
-                    ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) }, onWidgetAlphaClick = { viewModel.onIntent(SettingIntent.OnWidgetClick) })
-                    InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
-                    AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
-                    InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
-                    VersionRow(version = state.appVersion)
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-            }
-        } else {
-            // Android PhoneSettingScreen과 동일 순서: 알림→캘린더→태그/반복→테마→문의→안내→데이터→리뷰→버전
-            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
-                NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
-                CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
-                TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
-                ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) }, onWidgetAlphaClick = { viewModel.onIntent(SettingIntent.OnWidgetClick) })
-                InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
-                AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
-                DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onRestoreClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
-                InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
-                VersionRow(version = state.appVersion)
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+        // Android PhoneSettingScreen과 동일 순서: 알림→캘린더→태그/반복→테마→문의→안내→데이터→리뷰→버전
+        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = horizontalPadding)) {
+            NotificationBody(isEnabled = state.isNotificationEnabled, alarmTime = alarmTimeText(state.alarmHour, state.alarmMinute), onToggle = { viewModel.onIntent(SettingIntent.OnNotificationToggle(it)) }, onAlarmTimeClick = { openSheet(SettingBottomSheetType.ALARM_TIME) }, onAlarmMessageClick = { viewModel.onIntent(SettingIntent.OnAlarmMessageOpen); openSheet(SettingBottomSheetType.ALARM_MESSAGE) })
+            CalendarBody(mondayStart = state.mondayStart, onClick = { openSheet(SettingBottomSheetType.CALENDAR_START_DAY) })
+            TagRepeatCycleBody(onTagManageClick = { viewModel.onIntent(SettingIntent.OnTagManageClick) }, onRepeatCycleManageClick = { viewModel.onIntent(SettingIntent.OnRepeatCycleManageClick) })
+            ThemeBody(onThemeManageClick = { viewModel.onIntent(SettingIntent.OnThemeClick) }, onWidgetAlphaClick = { viewModel.onIntent(SettingIntent.OnWidgetClick) })
+            InquiryBody(onInquiryClick = { viewModel.onIntent(SettingIntent.OnInquiryClick) })
+            AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
+            DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onRestoreClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
+            InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
+            VersionRow(version = state.appVersion)
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
-    } // BoxWithConstraints
+    }
 }
 
 @Composable
@@ -246,11 +245,13 @@ private fun TagRepeatCycleBody(
 
     SettingRow(
         title = stringResource(Res.string.setting_tag_manage),
+        menu = SettingMenu.TAG,
         onClick = onTagManageClick,
     )
 
     SettingRow(
         title = stringResource(Res.string.setting_repeat_cycle_manage),
+        menu = SettingMenu.REPEAT_CYCLE,
         onClick = onRepeatCycleManageClick,
     )
 
@@ -271,6 +272,7 @@ private fun DataBody(
 
     SettingRow(
         title = stringResource(Res.string.setting_use_on_other_device),
+        menu = SettingMenu.SYNC,
         onClick = onSyncClick,
     )
 
@@ -311,6 +313,7 @@ private fun DataBody(
     // Android DataBody와 동일: 기기 ID 기반 데이터 복원 진입 행
     SettingRow(
         title = stringResource(Res.string.sync_restore_title),
+        menu = SettingMenu.RESTORE,
         onClick = onRestoreClick,
     )
 
@@ -331,11 +334,13 @@ private fun ThemeBody(
 
     SettingRow(
         title = stringResource(Res.string.setting_theme_color_change),
+        menu = SettingMenu.THEME,
         onClick = onThemeManageClick,
     )
 
     SettingRow(
         title = stringResource(Res.string.setting_widget_alpha_change),
+        menu = SettingMenu.WIDGET,
         onClick = onWidgetAlphaClick,
     )
 
@@ -405,11 +410,18 @@ private fun SettingRow(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    menu: SettingMenu? = null,
 ) {
+    val isSelected = menu != null && LocalSelectedSettingMenu.current == menu
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                // Android fillSelected(#F1F8FE) 대응: shared 토큰 primaryLight를 옅게 사용
+                if (isSelected) Modifier.background(EbbingTheme.colors.primaryLight.copy(alpha = 0.25f)) else Modifier
+            )
             .clickable(onClick = onClick)
             .padding(vertical = SettingItemVerticalPadding),
     ) {
@@ -471,7 +483,7 @@ private fun CalendarBody(
 private fun SectionDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingItemVerticalPadding),
         thickness = 6.dp,
         color = EbbingTheme.colors.light2,

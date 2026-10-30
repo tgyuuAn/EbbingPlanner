@@ -3,6 +3,8 @@ package com.tgyuu.shared.ui.feature.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -163,7 +165,21 @@ fun HomeScreen(
     )
 
     // Main Content
-    if (isTablet) {
+    val windowLayout = EbbingTheme.windowLayout
+    if ((isTablet || windowLayout.isTablet) && !windowLayout.isLandscape) {
+        TabletPortraitHomeScreen(
+            workedDate = workedDate,
+            state = state,
+            onAddTodoClick = { viewModel.onIntent(HomeIntent.OnAddTodoClick(it)) },
+            onCheckedChange = { viewModel.onIntent(HomeIntent.OnCheckChanged(it)) },
+            onSortTypeChange = { viewModel.onIntent(HomeIntent.OnUpdateSortType(it)) },
+            onEditScheduleClick = { viewModel.onIntent(HomeIntent.OnEditScheduleClick(it)) },
+            onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
+            onCalendarViewChanged = { viewModel.onIntent(HomeIntent.OnCalendarViewChanged(it)) },
+            onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
+            modifier = modifier,
+        )
+    } else if (isTablet || windowLayout.isTablet) {
         TabletHomeScreen(
             workedDate = workedDate,
             state = state,
@@ -172,6 +188,7 @@ fun HomeScreen(
             onSortTypeChange = { viewModel.onIntent(HomeIntent.OnUpdateSortType(it)) },
             onEditScheduleClick = { viewModel.onIntent(HomeIntent.OnEditScheduleClick(it)) },
             onCurrentDateChanged = { viewModel.onIntent(HomeIntent.OnCurrentDateChanged(it)) },
+            onCalendarViewChanged = { viewModel.onIntent(HomeIntent.OnCalendarViewChanged(it)) },
             onSyncClick = { viewModel.onIntent(HomeIntent.OnSyncClick) },
             modifier = modifier,
         )
@@ -498,8 +515,9 @@ private fun AddTodoFab(
     }
 }
 
+/** 태블릿 세로: 캘린더 아래에 일정 리스트 (Android TabletPortraitHomeScreen과 동일 수치) */
 @Composable
-private fun TabletHomeScreen(
+private fun TabletPortraitHomeScreen(
     workedDate: LocalDate,
     state: HomeState,
     onAddTodoClick: (LocalDate) -> Unit,
@@ -507,10 +525,10 @@ private fun TabletHomeScreen(
     onSortTypeChange: (SortType) -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
     onSyncClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
     val calendarState = rememberCalendarState()
     val analyticsHelper = koinInject<AnalyticsHelper>()
     var selectedDate by rememberRestoredSelectedDate(workedDate, calendarState)
@@ -520,60 +538,39 @@ private fun TabletHomeScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            EbbingCalendar(
+        Column(modifier = Modifier.fillMaxSize()) {
+            TabletHomeCalendar(
                 calendarState = calendarState,
-                schedulesByDateMap = state.schedulesByDateMap,
-                startFromMonday = state.mondayStart,
-                onSelectDate = {
-                    if (selectedDate != it) {
-                        scope.launch {
-                            selectedDate = it
-                        }
-                    }
-                },
+                state = state,
+                onSelectDate = { selectedDate = it },
                 onSyncClick = onSyncClick,
                 onGotoTodayClick = { analyticsHelper.logEvent(homeClickEvent("ReturnToToday")) },
+                onViewToggle = { isWeek ->
+                    analyticsHelper.logEvent(homeClickEvent(if (isWeek) "SwitchToWeekly" else "SwitchToMonthly"))
+                    onCalendarViewChanged(if (isWeek) CalendarDefaultView.WEEKLY else CalendarDefaultView.MONTHLY)
+                },
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(0.8f)
-                    .padding(horizontal = 20.dp),
+                    .fillMaxWidth()
+                    .padding(top = 40.dp, bottom = 32.dp)
+                    .padding(horizontal = 60.dp),
             )
 
-            if (state.isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator(
-                        color = EbbingTheme.colors.primaryDefault,
-                        modifier = Modifier.size(40.dp)
-                    )
-                }
-            } else {
-                EbbingTodoList(
-                    sortType = state.sortType,
-                    selectedDate = selectedDate,
-                    todoLists = state.schedulesByDateMap[selectedDate]?.toList() ?: emptyList(),
-                    schedulesByTodoInfo = state.schedulesByTodoInfo,
-                    onSelectDate = {
-                        if (selectedDate != it) {
-                            scope.launch {
-                                selectedDate = it
-                                calendarState.onDateSelect(it)
-                            }
-                        }
-                    },
-                    onCheckedChange = onCheckedChange,
-                    onSortTypeChange = onSortTypeChange,
-                    onEditScheduleClick = onEditScheduleClick,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
-                )
-            }
+            TabletHomeTodoList(
+                state = state,
+                selectedDate = selectedDate,
+                onSelectDate = {
+                    selectedDate = it
+                    calendarState.onDateSelect(it)
+                },
+                onCheckedChange = onCheckedChange,
+                onSortTypeChange = onSortTypeChange,
+                onEditScheduleClick = onEditScheduleClick,
+                // 리스트 내부 좌우 여백(20dp)을 포함해 캘린더와 같은 60dp 라인에 맞춰요
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 40.dp),
+            )
         }
 
         AddTodoFab(
@@ -582,6 +579,137 @@ private fun TabletHomeScreen(
         )
     }
 }
+
+/** 태블릿 가로: 좌우 48dp, 캘린더·리스트 같은 폭, 사이 80dp (Android TabletHomeScreen과 동일 수치) */
+@Composable
+private fun TabletHomeScreen(
+    workedDate: LocalDate,
+    state: HomeState,
+    onAddTodoClick: (LocalDate) -> Unit,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
+    onSortTypeChange: (SortType) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
+    onCurrentDateChanged: (LocalDate) -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
+    onSyncClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val calendarState = rememberCalendarState()
+    val analyticsHelper = koinInject<AnalyticsHelper>()
+    var selectedDate by rememberRestoredSelectedDate(workedDate, calendarState)
+
+    LaunchedEffect(calendarState.currentDisplayDate.month) {
+        onCurrentDateChanged(calendarState.currentDisplayDate)
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 48.dp, end = 28.dp),
+        ) {
+            TabletHomeCalendar(
+                calendarState = calendarState,
+                state = state,
+                onSelectDate = { selectedDate = it },
+                onSyncClick = onSyncClick,
+                onGotoTodayClick = { analyticsHelper.logEvent(homeClickEvent("ReturnToToday")) },
+                onViewToggle = { isWeek ->
+                    analyticsHelper.logEvent(homeClickEvent(if (isWeek) "SwitchToWeekly" else "SwitchToMonthly"))
+                    onCalendarViewChanged(if (isWeek) CalendarDefaultView.WEEKLY else CalendarDefaultView.MONTHLY)
+                },
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(TABLET_CALENDAR_WEIGHT)
+                    .padding(top = 40.dp),
+            )
+
+            Spacer(modifier = Modifier.width(60.dp))
+
+            TabletHomeTodoList(
+                state = state,
+                selectedDate = selectedDate,
+                onSelectDate = {
+                    selectedDate = it
+                    calendarState.onDateSelect(it)
+                },
+                onCheckedChange = onCheckedChange,
+                onSortTypeChange = onSortTypeChange,
+                onEditScheduleClick = onEditScheduleClick,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(TABLET_LIST_WEIGHT)
+                    .padding(top = 20.dp),
+            )
+        }
+
+        AddTodoFab(
+            onClick = { onAddTodoClick(selectedDate) },
+            modifier = Modifier.align(Alignment.BottomEnd),
+        )
+    }
+}
+
+@Composable
+private fun TabletHomeCalendar(
+    calendarState: CalendarState,
+    state: HomeState,
+    onSelectDate: (LocalDate) -> Unit,
+    onSyncClick: () -> Unit,
+    onGotoTodayClick: () -> Unit,
+    onViewToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    EbbingCalendar(
+        calendarState = calendarState,
+        schedulesByDateMap = state.schedulesByDateMap,
+        startFromMonday = state.mondayStart,
+        showWeekOnly = state.showWeekOnly,
+        showViewToggle = true,
+        onSelectDate = onSelectDate,
+        onSyncClick = onSyncClick,
+        onGotoTodayClick = onGotoTodayClick,
+        onViewToggle = onViewToggle,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun TabletHomeTodoList(
+    state: HomeState,
+    selectedDate: LocalDate,
+    onSelectDate: (LocalDate) -> Unit,
+    onCheckedChange: (TodoScheduleUiModel) -> Unit,
+    onSortTypeChange: (SortType) -> Unit,
+    onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (state.isLoading) {
+        Box(modifier = modifier, contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(
+                color = EbbingTheme.colors.primaryDefault,
+                modifier = Modifier.size(40.dp)
+            )
+        }
+        return
+    }
+
+    EbbingTodoList(
+        sortType = state.sortType,
+        selectedDate = selectedDate,
+        todoLists = state.schedulesByDateMap[selectedDate]?.toList() ?: emptyList(),
+        schedulesByTodoInfo = state.schedulesByTodoInfo,
+        onSelectDate = { if (selectedDate != it) onSelectDate(it) },
+        onCheckedChange = onCheckedChange,
+        onSortTypeChange = onSortTypeChange,
+        onEditScheduleClick = onEditScheduleClick,
+        modifier = modifier,
+    )
+}
+
+// 리스트는 내부 좌우 20dp 여백을 가지므로, 보이는 폭이 캘린더와 같도록 그만큼 비중을 더 줘요
+private const val TABLET_CALENDAR_WEIGHT = 582f
+private const val TABLET_LIST_WEIGHT = 622f
 
 @Composable
 private fun HandleDialogs(

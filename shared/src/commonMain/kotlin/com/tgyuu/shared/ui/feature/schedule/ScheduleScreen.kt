@@ -1,5 +1,13 @@
 package com.tgyuu.shared.ui.feature.schedule
 
+import androidx.compose.ui.unit.Dp
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -121,10 +129,59 @@ fun ScheduleScreen(
         onDismissRequest = { scope.launch { bottomSheetState.hide() } },
     )
 
+    val onTagThreeDotsClick: (String, Int, Int) -> Unit = { tagName, tagColor, tagId ->
+            scope.launch {
+                bottomSheetState.setBottomSheetContent {
+                    TagEditBottomSheet(
+                        originName = tagName,
+                        originColor = tagColor,
+                        onSave = { name, color ->
+                            viewModel.onIntent(ScheduleIntent.OnSaveTag(tagId, name, color))
+                            scope.launch { bottomSheetState.hide() }
+                        },
+                        onDelete = {
+                            viewModel.onIntent(ScheduleIntent.OnRequestDeleteTag(tagId, tagName))
+                            scope.launch { bottomSheetState.hide() }
+                        },
+                    )
+                }
+                bottomSheetState.show()
+            }
+        }
+    val onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit = { schedule ->
+            scope.launch {
+                showScheduleOptionsBottomSheet(
+                    schedule = schedule,
+                    viewModel = viewModel,
+                    bottomSheetState = bottomSheetState,
+                    scope = scope,
+                )
+            }
+        }
+
+    val windowLayout = EbbingTheme.windowLayout
+    val horizontalPadding = when {
+        !windowLayout.isTablet -> 20.dp
+        windowLayout.isLandscape -> 48.dp
+        else -> 60.dp
+    }
+
+    if (windowLayout.isTablet && windowLayout.isLandscape && state.visibleTags.isNotEmpty()) {
+        TabletLandscapeScheduleScreen(
+            state = state,
+            onToggleInfoExpand = { viewModel.onIntent(ScheduleIntent.OnToggleInfoExpand(it)) },
+            onScheduleClick = { viewModel.onIntent(ScheduleIntent.OnScheduleClick(it)) },
+            onTagThreeDotsClick = onTagThreeDotsClick,
+            onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+            modifier = modifier,
+        )
+        return
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         EbbingMainTopBar(
             title = stringResource(Res.string.schedule_top_bar_title),
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
         HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
@@ -140,36 +197,162 @@ fun ScheduleScreen(
                 onToggleTagExpand = { viewModel.onIntent(ScheduleIntent.OnToggleTagExpand(it)) },
                 onToggleInfoExpand = { viewModel.onIntent(ScheduleIntent.OnToggleInfoExpand(it)) },
                 onScheduleClick = { viewModel.onIntent(ScheduleIntent.OnScheduleClick(it)) },
-                onTagThreeDotsClick = { tagName, tagColor, tagId ->
-                    scope.launch {
-                        bottomSheetState.setBottomSheetContent {
-                            TagEditBottomSheet(
-                                originName = tagName,
-                                originColor = tagColor,
-                                onSave = { name, color ->
-                                    viewModel.onIntent(ScheduleIntent.OnSaveTag(tagId, name, color))
-                                    scope.launch { bottomSheetState.hide() }
-                                },
-                                onDelete = {
-                                    viewModel.onIntent(ScheduleIntent.OnRequestDeleteTag(tagId, tagName))
-                                    scope.launch { bottomSheetState.hide() }
-                                },
+                onTagThreeDotsClick = onTagThreeDotsClick,
+                onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+                modifier = Modifier.weight(1f),
+                horizontalPadding = horizontalPadding,
+            )
+        }
+    }
+}
+
+/** 태블릿 가로: 왼쪽 태그 목록에서 고른 태그의 일정을 오른쪽 상세 패널에 보여줘요 (Android와 동일 수치) */
+@Composable
+private fun TabletLandscapeScheduleScreen(
+    state: ScheduleState,
+    onToggleInfoExpand: (Int) -> Unit,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
+    onTagThreeDotsClick: (tagName: String, tagColor: Int, tagId: Int) -> Unit,
+    onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var selectedTagId by rememberSaveable { mutableStateOf<Int?>(null) }
+    val selectedTag = state.visibleTags.firstOrNull { it.id == selectedTagId }
+        ?: state.visibleTags.first()
+
+    Row(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+        ) {
+            EbbingMainTopBar(
+                title = stringResource(Res.string.schedule_top_bar_title),
+                modifier = Modifier.padding(horizontal = 48.dp),
+            )
+
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                itemsIndexed(items = state.visibleTags, key = { _, tag -> tag.id }) { idx, tag ->
+                    if (idx != 0) {
+                        HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(
+                                // Android fillSelected(#F1F8FE) 대응
+                                if (tag.id == selectedTag.id) {
+                                    Modifier.background(EbbingTheme.colors.primaryLight.copy(alpha = 0.25f))
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .clickable { selectedTagId = tag.id }
+                            .padding(horizontal = 48.dp, vertical = 20.dp),
+                    ) {
+                        TagSummary(
+                            title = tag.name,
+                            tagColor = tag.color,
+                            scheduleCount = state.tagScheduleCountMap[tag.id] ?: 0,
+                            achievementRate = state.tagAchievementRateMap[tag.id] ?: 0f,
+                            isAllDone = state.tagAllDoneMap[tag.id] ?: false,
+                            modifier = Modifier.weight(1f),
+                        )
+
+                        if (tag.id != DefaultTodoTag.id) {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_3dots),
+                                contentDescription = null,
+                                tint = EbbingTheme.colors.black,
+                                modifier = Modifier
+                                    .clickable { onTagThreeDotsClick(tag.name, tag.color, tag.id) }
+                                    .padding(8.dp)
+                                    .size(24.dp),
                             )
                         }
-                        bottomSheetState.show()
                     }
-                },
-                onScheduleThreeDotsClick = { schedule ->
-                    scope.launch {
-                        showScheduleOptionsBottomSheet(
-                            schedule = schedule,
-                            viewModel = viewModel,
-                            bottomSheetState = bottomSheetState,
-                            scope = scope,
-                        )
-                    }
-                },
-                modifier = Modifier.weight(1f),
+                }
+
+                item { HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp) }
+            }
+        }
+
+        VerticalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 40.dp, bottom = 24.dp),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .background(EbbingTheme.colors.light3),
+        ) {
+            item {
+                TagSummary(
+                    title = selectedTag.name,
+                    tagColor = selectedTag.color,
+                    scheduleCount = state.tagScheduleCountMap[selectedTag.id] ?: 0,
+                    achievementRate = state.tagAchievementRateMap[selectedTag.id] ?: 0f,
+                    isAllDone = false,
+                    barWidth = 6.dp,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+            }
+
+            items(items = state.infosByTagMap[selectedTag.id] ?: persistentListOf(), key = { it.id }) { info ->
+                TodoInfoItem(
+                    title = info.title,
+                    scheduleCount = state.infoScheduleCountMap[info.id] ?: 0,
+                    achievementRate = state.infoAchievementRateMap[info.id] ?: 0f,
+                    isExpanded = info.id in state.expandedInfoIds,
+                    isAllDone = state.infoAllDoneMap[info.id] ?: false,
+                    schedules = state.schedulesByInfoMap[info.id] ?: persistentListOf(),
+                    tagColor = selectedTag.color,
+                    onToggleExpand = { onToggleInfoExpand(info.id) },
+                    onScheduleClick = onScheduleClick,
+                    onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TagSummary(
+    title: String,
+    tagColor: Int,
+    scheduleCount: Int,
+    achievementRate: Float,
+    isAllDone: Boolean,
+    modifier: Modifier = Modifier,
+    barWidth: Dp = 4.dp,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Spacer(
+            modifier = Modifier
+                .width(barWidth)
+                .height(42.dp)
+                .background(Color(tagColor))
+        )
+
+        Column(modifier = Modifier.padding(start = 12.dp)) {
+            Text(
+                text = title,
+                style = EbbingTheme.typography.headingSSB,
+                color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(Res.string.schedule_tag_count_completion, scheduleCount, (achievementRate * 100).roundToInt()),
+                style = EbbingTheme.typography.bodyMM,
+                color = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark3,
             )
         }
     }
@@ -265,6 +448,7 @@ private fun TagList(
     onTagThreeDotsClick: (tagName: String, tagColor: Int, tagId: Int) -> Unit,
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 20.dp,
 ) {
     LazyColumn(modifier = modifier) {
         itemsIndexed(items = state.visibleTags, key = { _, tag -> tag.id }) { idx, tag ->
@@ -290,6 +474,7 @@ private fun TagList(
                 onScheduleClick = onScheduleClick,
                 onTagThreeDotsClick = { onTagThreeDotsClick(tag.name, tag.color, tag.id) },
                 onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+                horizontalPadding = horizontalPadding,
             )
         }
     }
@@ -314,6 +499,7 @@ private fun TagCard(
     onTagThreeDotsClick: () -> Unit,
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 20.dp,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         // Tag header
@@ -322,7 +508,7 @@ private fun TagCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onToggleTagExpand() }
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(horizontal = horizontalPadding, vertical = 20.dp),
         ) {
             Spacer(
                 modifier = Modifier
@@ -387,7 +573,7 @@ private fun TagCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(EbbingTheme.colors.light3)
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = horizontalPadding - 4.dp)
                         .padding(top = 12.dp, bottom = 8.dp),
                 ) {
                     infos.forEach { info ->

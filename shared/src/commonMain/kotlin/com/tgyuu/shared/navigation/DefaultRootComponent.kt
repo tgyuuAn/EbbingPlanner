@@ -5,6 +5,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.bringToFront
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.navigate
 import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.pushNew
 import com.arkivanov.decompose.router.stack.replaceAll
@@ -89,6 +90,17 @@ class DefaultRootComponent(
 
     override fun navigateToSetting() {
         navigation.bringToFront(Configuration.Setting)
+    }
+
+    override fun navigateToTopLevelTab(tab: RootTab) {
+        navigation.navigate { stack ->
+            val home = stack.firstOrNull { it is Configuration.Home } ?: Configuration.Home()
+            when (tab) {
+                RootTab.HOME -> listOf(home)
+                RootTab.SCHEDULE -> listOf(home, Configuration.Schedule)
+                RootTab.SETTING -> listOf(home, Configuration.Setting)
+            }
+        }
     }
 
     override fun navigateToTag() {

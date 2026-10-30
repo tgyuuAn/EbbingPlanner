@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.home.addtodo
 
+import com.tgyuu.shared.ui.feature.home.component.TabletFormLayout
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import com.tgyuu.shared.designsystem.util.EbbingVisibleAnimation
 import androidx.compose.foundation.Image
@@ -206,97 +207,72 @@ fun AddTodoScreen(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        BoxWithConstraints(modifier = Modifier.weight(1f)) {
-            val isWide = maxWidth > LayoutConstants.TABLET_BREAKPOINT
+        val formContent: @Composable () -> Unit = {
+            AddTodoFormContent(
+                state = state,
+                viewModel = viewModel,
+                onDateClick = {
+                    currentBottomSheetType = BottomSheetType.DATE
+                    scope.launch { bottomSheetState.show() }
+                },
+                onTagClick = {
+                    currentBottomSheetType = BottomSheetType.TAG
+                    scope.launch { bottomSheetState.show() }
+                },
+                onRepeatCycleClick = {
+                    currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
+                    scope.launch { bottomSheetState.show() }
+                },
+            )
+        }
+        val saveButton: @Composable (Modifier) -> Unit = { buttonModifier ->
+            com.tgyuu.shared.designsystem.component.EbbingSolidButton(
+                label = stringResource(Res.string.home_add_todo_button),
+                onClick = {
+                    focusManager.clearFocus()
+                    viewModel.onIntent(AddTodoIntent.OnSaveClick)
+                },
+                enabled = state.isSaveEnabled,
+                modifier = buttonModifier.background(EbbingTheme.colors.background),
+            )
+        }
 
-            if (isWide) {
-                // Tablet: two columns
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .verticalScroll(scrollState)
-                            .padding(20.dp),
-                    ) {
-                        AddTodoFormContent(
-                            state = state,
-                            viewModel = viewModel,
-                            onDateClick = {
-                                currentBottomSheetType = BottomSheetType.DATE
-                                scope.launch { bottomSheetState.show() }
-                            },
-                            onTagClick = {
-                                currentBottomSheetType = BottomSheetType.TAG
-                                scope.launch { bottomSheetState.show() }
-                            },
-                            onRepeatCycleClick = {
-                                currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
-                                scope.launch { bottomSheetState.show() }
-                            },
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .verticalScroll(rememberScrollState())
-                            .padding(20.dp),
-                    ) {
-                        EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
-                        ScheduleContent(schedules = state.schedules)
-                    }
-                        Spacer(modifier = Modifier.height(60.dp))
-                    }
-                }
-            } else {
-                // Phone: single column
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(scrollState)
-                        .padding(20.dp),
-                ) {
-                    AddTodoFormContent(
-                        state = state,
-                        viewModel = viewModel,
-                        onDateClick = {
-                            currentBottomSheetType = BottomSheetType.DATE
-                            scope.launch { bottomSheetState.show() }
-                        },
-                        onTagClick = {
-                            currentBottomSheetType = BottomSheetType.TAG
-                            scope.launch { bottomSheetState.show() }
-                        },
-                        onRepeatCycleClick = {
-                            currentBottomSheetType = BottomSheetType.REPEAT_CYCLE
-                            scope.launch { bottomSheetState.show() }
-                        },
-                    )
-
+        if (EbbingTheme.windowLayout.isTablet) {
+            // 태블릿: 가로는 폼(+버튼) | 학습 일정, 세로는 한 컬럼 (Android TabletFormLayout과 동일)
+            TabletFormLayout(
+                scrollState = scrollState,
+                form = { formContent() },
+                side = {
                     EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
                         ScheduleContent(schedules = state.schedules)
                     }
+                },
+                button = saveButton,
+                modifier = Modifier.weight(1f),
+            )
+        } else {
+            // Phone: single column
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(20.dp),
+            ) {
+                formContent()
 
-                    Spacer(modifier = Modifier.height(60.dp))
+                EbbingVisibleAnimation(visible = state.schedules.isNotEmpty()) {
+                    ScheduleContent(schedules = state.schedules)
                 }
-            }
-        }
 
-        com.tgyuu.shared.designsystem.component.EbbingSolidButton(
-            label = stringResource(Res.string.home_add_todo_button),
-            onClick = {
-                focusManager.clearFocus()
-                viewModel.onIntent(AddTodoIntent.OnSaveClick)
-            },
-            enabled = state.isSaveEnabled,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(EbbingTheme.colors.background)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-        )
+                Spacer(modifier = Modifier.height(60.dp))
+            }
+
+            saveButton(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+            )
+        }
     }
 }
 

@@ -13,6 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,6 +38,10 @@ import org.jetbrains.compose.resources.painterResource
 import ebbingplanner.shared.generated.resources.Res
 import ebbingplanner.shared.generated.resources.ic_textinput_check
 
+/**
+ * 폰은 바텀시트, 태블릿([EbbingTheme.windowLayout])은 화면 가운데 다이얼로그(최대 760dp)로 띄워요.
+ * Android EbbingAdaptiveSheetHost와 같은 규칙이고, 호출부는 표시 방식을 몰라도 돼요.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EbbingModalBottomSheet(
@@ -44,27 +52,51 @@ fun EbbingModalBottomSheet(
 ) {
     // Use passed content or fall back to sheetState.content
     val actualContent = content ?: sheetState.content
+    val isTablet = EbbingTheme.windowLayout.isTablet
+    sheetState.presentAsDialog = isTablet
 
-    if (sheetState.isVisible && actualContent != null) {
-        // Trigger animation after ModalBottomSheet enters composition
-        LaunchedEffect(Unit) {
-            sheetState.state.show()
-        }
+    if (!sheetState.isVisible || actualContent == null) return
 
-        ModalBottomSheet(
+    if (isTablet) {
+        Dialog(
             onDismissRequest = onDismissRequest,
-            sheetState = sheetState.state,
-            containerColor = EbbingTheme.colors.background,
-            contentColor = EbbingTheme.colors.black,
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            dragHandle = {
-                Spacer(modifier = Modifier.height(28.dp))
-            },
-            modifier = modifier,
+            properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            Column(modifier = Modifier.navigationBarsPadding()) {
+            Column(
+                modifier = modifier
+                    .padding(40.dp)
+                    .widthIn(max = 760.dp)
+                    .fillMaxWidth()
+                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(EbbingTheme.colors.background)
+                    // 시트 content가 좌우 20dp를 갖고 있어 합쳐서 디자인의 32dp가 돼요
+                    .padding(horizontal = 12.dp, vertical = 28.dp),
+            ) {
                 actualContent()
             }
+        }
+        return
+    }
+
+    // Trigger animation after ModalBottomSheet enters composition
+    LaunchedEffect(Unit) {
+        sheetState.state.show()
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState.state,
+        containerColor = EbbingTheme.colors.background,
+        contentColor = EbbingTheme.colors.black,
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        dragHandle = {
+            Spacer(modifier = Modifier.height(28.dp))
+        },
+        modifier = modifier,
+    ) {
+        Column(modifier = Modifier.navigationBarsPadding()) {
+            actualContent()
         }
     }
 }

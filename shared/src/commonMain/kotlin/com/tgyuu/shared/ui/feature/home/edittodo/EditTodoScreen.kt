@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.home.edittodo
 
+import com.tgyuu.shared.ui.feature.home.component.TabletFormLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -131,62 +132,80 @@ fun EditTodoScreen(
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(20.dp)
-                    .then(if (isWide) Modifier.imePadding() else Modifier),
-            ) {
-                EbbingPartialUnderlineText(
-                    underlinedPart = stringResource(
-                        Res.string.home_month_day,
-                        state.selectedDate.monthNumber,
-                        state.selectedDate.dayOfMonth,
-                    ),
-                    rest = stringResource(Res.string.home_edit_todo_header_suffix),
-                    style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
-                    highlightColor = EbbingTheme.colors.primaryDefault,
-                    modifier = Modifier.clickable {
-                        currentBottomSheetType = EditTodoBottomSheetType.DATE
-                        scope.launch { bottomSheetState.show() }
+            val formContent: @Composable () -> Unit = {
+                    EbbingPartialUnderlineText(
+                        underlinedPart = stringResource(
+                            Res.string.home_month_day,
+                            state.selectedDate.monthNumber,
+                            state.selectedDate.dayOfMonth,
+                        ),
+                        rest = stringResource(Res.string.home_edit_todo_header_suffix),
+                        style = EbbingTheme.typography.headingLSB,
+                        color = EbbingTheme.colors.black,
+                        highlightColor = EbbingTheme.colors.primaryDefault,
+                        modifier = Modifier.clickable {
+                            currentBottomSheetType = EditTodoBottomSheetType.DATE
+                            scope.launch { bottomSheetState.show() }
+                        },
+                    )
+
+                    TitleContent(
+                        title = state.title,
+                        onTitleChange = { viewModel.onIntent(EditTodoIntent.OnTitleChange(it)) },
+                    )
+
+                    TagContent(
+                        tag = state.tag,
+                        onTagDropDownClick = {
+                            currentBottomSheetType = EditTodoBottomSheetType.TAG
+                            scope.launch { bottomSheetState.show() }
+                        },
+                    )
+
+                    PinnedContent(
+                        isPinned = state.isPinned,
+                        onPinnedChange = { viewModel.onIntent(EditTodoIntent.OnPinnedChange(it)) },
+                    )
+            }
+            val saveButton: @Composable (Modifier) -> Unit = { buttonModifier ->
+                EbbingSolidButton(
+                    label = stringResource(Res.string.home_edit_todo_button),
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.onIntent(EditTodoIntent.OnSaveClick)
                     },
+                    enabled = state.isSaveEnabled,
+                    modifier = buttonModifier.background(EbbingTheme.colors.background),
                 )
-
-                TitleContent(
-                    title = state.title,
-                    onTitleChange = { viewModel.onIntent(EditTodoIntent.OnTitleChange(it)) },
-                )
-
-                TagContent(
-                    tag = state.tag,
-                    onTagDropDownClick = {
-                        currentBottomSheetType = EditTodoBottomSheetType.TAG
-                        scope.launch { bottomSheetState.show() }
-                    },
-                )
-
-                PinnedContent(
-                    isPinned = state.isPinned,
-                    onPinnedChange = { viewModel.onIntent(EditTodoIntent.OnPinnedChange(it)) },
-                )
-
-                Spacer(modifier = Modifier.height(60.dp))
             }
 
-            EbbingSolidButton(
-                label = stringResource(Res.string.home_edit_todo_button),
-                onClick = {
-                    focusManager.clearFocus()
-                    viewModel.onIntent(EditTodoIntent.OnSaveClick)
-                },
-                enabled = state.isSaveEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(EbbingTheme.colors.background)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-            )
+            if (EbbingTheme.windowLayout.isTablet) {
+                TabletFormLayout(
+                    scrollState = scrollState,
+                    form = { formContent() },
+                    button = saveButton,
+                    modifier = Modifier
+                        .weight(1f)
+                        .imePadding(),
+                )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                        .padding(20.dp)
+                        .then(if (isWide) Modifier.imePadding() else Modifier),
+                ) {
+                    formContent()
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
+
+                saveButton(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                )
+            }
         }
     }
 }
