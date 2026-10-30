@@ -68,7 +68,7 @@ fun TagBottomSheetContent(
                 .fillMaxWidth()
                 .heightIn(max = 300.dp)
                 .padding(top = 12.dp)
-                .verticalScrollbar(listState, color = EbbingTheme.colors.light2),
+                .verticalScrollbar(listState, color = EbbingTheme.colors.dark3),
         ) {
             items(
                 items = tagList,

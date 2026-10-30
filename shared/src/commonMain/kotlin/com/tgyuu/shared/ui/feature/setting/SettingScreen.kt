@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -111,6 +112,7 @@ import ebbingplanner.shared.generated.resources.setting_alarm_message_length
 import ebbingplanner.shared.generated.resources.setting_alarm_message_preview_sample
 import org.jetbrains.compose.resources.painterResource
 import ebbingplanner.shared.generated.resources.ic_arrow_right
+import ebbingplanner.shared.generated.resources.setting_detail_content
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,6 +124,13 @@ fun SettingScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var showClearDialog by remember { mutableStateOf(false) }
+
+    // Android NotificationBody는 POST_NOTIFICATIONS 권한 상태를 토글에 반영한다.
+    // iOS도 화면 진입/앱 복귀(설정 앱에서 돌아온 경우 포함) 시 OS 알림 권한을 다시 읽는다.
+    LifecycleResumeEffect(viewModel) {
+        viewModel.onIntent(SettingIntent.OnResume)
+        onPauseOrDispose { }
+    }
 
     if (showClearDialog) {
         ClearDataDialog(
@@ -217,7 +226,8 @@ fun SettingScreen(
             modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
-        HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
+        // Android fillNormal(=background와 동일 값) 대응: 구분선이 배경과 같은 색으로 그려져 보이지 않는다
+        HorizontalDivider(color = EbbingTheme.colors.background, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
 
         // Android PhoneSettingScreen과 동일 순서: 알림→캘린더→태그/반복→테마→문의→안내→데이터→리뷰→버전
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = horizontalPadding)) {
@@ -434,7 +444,7 @@ private fun SettingRow(
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_right),
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.setting_detail_content),
             tint = EbbingTheme.colors.dark3,
             modifier = Modifier.padding(start = 4.dp),
         )
@@ -486,7 +496,8 @@ private fun SectionDivider(modifier: Modifier = Modifier) {
             .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingItemVerticalPadding),
         thickness = 6.dp,
-        color = EbbingTheme.colors.light2,
+        // Android strokeSecondary(#F4F6FA) 대응
+        color = EbbingTheme.colors.light3,
     )
 }
 
@@ -577,7 +588,7 @@ private fun NotificationBody(
 
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_right),
-                contentDescription = null,
+                contentDescription = stringResource(Res.string.setting_detail_content),
                 tint = EbbingTheme.colors.dark3,
                 modifier = Modifier.padding(start = 4.dp),
             )
@@ -623,7 +634,7 @@ private fun InAppReviewRow(
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_right),
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.setting_detail_content),
             tint = EbbingTheme.colors.dark3,
             modifier = Modifier.padding(start = 4.dp),
         )

@@ -383,4 +383,49 @@ Android(feature/home/graph/editdate·notification, feature/schedule/dashboard) �
 - ⬜ **M21** 카메라 권한 분기: 검증 결과 iOS 구현이 정확하다. iOS `AVAuthorizationStatusDenied` 는 재요청해도 시스템 다이얼로그가 뜨지 않는 상태이므로 설정으로 보내는 것이 맞다. 반면 Android 의 `shouldShowRationale == true` 는 '재요청 가능' 상태여서, 설정으로 보내는 현재 Android 구현이 오히려 영구 거부 사용자를 설정으로 유도하지 못한다. iOS 를 Android 에 맞추면 기능이 나빠지므로 현행 유지하고, Android 쪽 개선은 별도 과제로 남긴다.
 
 ### 남은 범위
-- LOW 35건은 미착수. `iosApp/UI_PARITY_FINDINGS.json` 의 `severity == "low"` 항목 참조.
+- LOW 35건은 아래 "LOW 잔여 처리 (2026-10-31)" 에서 처리 완료.
+
+## LOW 잔여 처리 (2026-10-31)
+
+LOW 35건을 현재 코드 기준으로 Android 원본과 다시 대조했다. 이전 "LOW 진행/분류"에서 "단색이라 시각 동일"로 넘겼던 아이콘 항목은 에셋 원본 색과 iOS tint 값을 직접 비교해 다시 판정했다.
+
+- ✅ L01 온보딩: 이미지 `ColorFilter.tint(primaryDefault)`, `Box(CenterStart)`, 제목/설명 `TextAlign.Start` 모두 Android와 일치한다(7차 배치에서 반영됨).
+- ✅ L02 홈 analytics: 3개 레이아웃 모두 `ReturnToToday`/`SwitchToWeekly`/`SwitchToMonthly` Click 로그를 남긴다.
+- ✅ L03 완료 카운트 색: Android textPrimary와 primaryNormal은 같은 값(Bluescale200)이고, shared primaryDefault에 대응한다.
+- 🔧 L04 AddTodo 일정 카드 애니메이션: 호출부 `EbbingVisibleAnimation`은 이미 있었다. `ScheduleContent` 안의 `if (schedules.isEmpty()) return` 때문에 퇴장 애니메이션 동안 카드가 바로 사라져서, 조기 반환을 제거했다.
+- 🔧 L05 제목 지우기 아이콘: `ic_delete_circle` 원본 색은 #CBD1D9인데 iOS가 dark3(#909599)로 tint해 더 진하게 보였다. Android처럼 tint 없는 `Image`로 바꿨다. 같은 패턴인 AddTag/EditTag/AddRepeatCycle/EditRepeatCycle(dark2 tint)도 함께 정리했다.
+- ✅ L06 EditDate 설명문: Android textDisabled(#8994A8)는 규약상 dark3(#909599)에 대응하며, 이미 dark3이다.
+- ⬜ L07 AddTodo 시스템 백: iOS 루트는 `DefaultComponentContext`에 backHandler가 없고 `stackAnimation(fade())`라 스와이프 백이나 시스템 백 경로가 없다. 유일한 뒤로가기는 탑바 버튼이고, 이미 `isModified`일 때 ConfirmExitDialog를 거친다. 가로챌 대상이 없으므로 의도적 차이다.
+- ✅ L08 태그 시트 스크롤바: `verticalScrollbar`는 이미 적용되어 있었다. 색은 L21에서 함께 정렬했다.
+- ✅ L09 반복 주기 시트 스크롤바: L08과 같다.
+- 🔧 L10 매일 반복 안내문: light1(#CBD1D9) → dark3로 바꿨다(Android textDisabled 매핑 규약).
+- ⬜ L11 + 아이콘 contentDescription: iOS가 `tag_add_title`/`repeat_add_title` 라벨을 제공하므로 접근성 면에서 iOS가 더 낫다. 유지한다.
+- 🔧 L12 쉬는 요일 정렬: `sortedBy { it.ordinal }` → `isoDayNumber`로 바꿔 Android와 같은 키를 쓴다(결과 순서는 동일).
+- 🔧 L13 리뷰 요청 다이얼로그 버튼: `padding(horizontal=20, vertical=16)` → `padding(bottom=20)`으로 바꿨다. 좌우 여백은 EbbingDialog 내부 20dp에 맡긴다(Android와 동일).
+- 🔧 L14 위젯 넛지 닫기 아이콘: `Icon(tint=dark2)` → tint 없는 `Image`로 바꿨다. 원본 색 #12111B를 그대로 쓴다.
+- 🔧 L15 설정 알림 토글 권한: `NotificationScheduler.getPermissionStatus()`(iOS는 `UNUserNotificationCenter` 설정 조회)를 추가했다. 토글 표시값은 `설정 enabled && OS 권한 허용`이다. ON으로 바꿀 때 권한이 미결정이면 시스템 요청을, 이미 거부했으면 앱 설정을 연다. `LifecycleResumeEffect`로 복귀할 때 권한을 다시 읽고, 설정에서 허용하고 돌아오면 자동으로 켠다. Android의 `handlePermission`과 `LaunchedEffect(permissionState)`에 대응한다.
+- ✅ L16 설정 알림 행 펼침: `EbbingVisibleAnimation(visible = isEnabled)` 적용되어 있다.
+- 🔧 L17 설정 화살표: tint dark3는 에셋 원본 색(#909599)과 같아 시각 차이가 없다. 접근성 라벨만 Android처럼 `setting_detail_content`("상세 내용"/"View details"/"詳細")로 지정했고, 리소스는 3개 로케일에 추가했다.
+- ✅ L18 마지막 동기화 문구: `마지막 동기화: %1$s`(ko/en/ja) 모두 Android와 같다.
+- 🔧 L19 설정 구분선: 상단선은 Android fillNormal(모든 테마에서 background와 같은 값이라 보이지 않음)에 맞춰 light2 → background로 바꿨다. 섹션 구분선은 strokeSecondary(#F4F6FA)에 맞춰 light2 → light3로 바꿨다.
+- ✅ L20 일정 옵션 서브타이틀: iOS `title`은 순수 String이다(링크 파싱은 렌더 시점 `EbbingClickableText`). Android `title.originalText`와 같은 값이다.
+- 🔧 L21 스크롤바 색: 그리드 스크롤바는 이미 있었다. 다만 iOS 색이 light2(#E8EBF0, 거의 안 보임)와 dark1이었다. Android fillDisabled(#A1AABB/다크 #4B4F5D)에 가장 가까운 dark3로 태그/반복/일정 색상/태그 색상 시트 4곳을 통일했다.
+- ✅ L22 일정 색상 선택 애니메이션: `animateColorAsState` + 체크 `EbbingVisibleAnimation` 적용되어 있다.
+- 🔧 L23 일정 화면 아이콘: `ic_3dots` 3곳은 Android처럼 tint 없는 `Image`로 바꿨다(원본 #5B5F72, 기존 iOS는 black/dark3). '접기' 텍스트와 화살표는 Android textSub이므로 dark3 → dark2로 바꿨다.
+- ✅ L24 Sync 아이콘: close/copy는 Android textSub tint에 대응해 dark2를 쓴다. arrow_right는 Android가 tint 없이 원본 #909599를 쓰고, iOS dark3도 같은 값이다.
+- ✅ L25 Sync 로딩 색: primaryNormal ↔ primaryDefault 매핑 규약과 일치한다.
+- ✅ L26 QR 남은 시간: `%1$s` 치환이고, 포맷은 코드에서 처리하므로 정상이다.
+- ✅ L27 태그 저장 버튼 실험: 상단 링크는 `if (false)`로 숨기고 하단 버튼을 항상 노출한다. Android(항상 하단)와 같다.
+- ⬜ L28 태그 삭제 하이라이트 키: Android는 하이라이트에 `tag_delete`를 재사용해서, en/ja에서 "Delete the X tagDelete?", "X タグを削除削除しますか？"처럼 단어가 중복된다. iOS는 별도 키 `tag_delete_confirm_highlight`를 ko에는 "삭제", en/ja에는 빈 값으로 두어 이 문제를 피한다. iOS가 더 정확하므로 유지한다.
+- ✅ L29 태그 헤드라인 간격: iOS의 헤드라인 bottom=32와 Android의 이름 라벨 top=32는 같은 간격이다. headingLSB는 24sp Bold로 heading24B에 대응한다.
+- ✅ L30 태그 리스트 state: Lazy 컴포넌트의 기본 인자가 `remember*State()`라 동작이 같다. `TABLET_BREAKPOINT`는 600dp(Compact 경계)다.
+- ✅ L31 반복 삭제 다이얼로그 타이포: M27에서 공용 `EbbingDialogDefaultTop`(headingMSB/bodySM)으로 바뀌어 해소됐다.
+- 🔧 L32 반복 리스트 접두사: 문자열 리터럴 `"- ${...}"` → `repeat_cycle_list_item`("- %1$s") 리소스로 바꿨다(ko/en/ja 추가, Android와 동일).
+- ✅ L33 반복 빈 상태 색: dark3은 textDisabled 매핑 규약과 일치한다.
+- 🔧 L34 메모 지우기 아이콘: `Icon(tint=dark3)` → tint 없는 `Image`로 바꿨다. 원본 #CBD1D9로 Android와 같다(L05와 같은 패턴).
+- ✅ L35 메모 wide 미리보기: 우측 컬럼의 24dp Spacer가 이미 제거되어 PreviewContent 라벨 top=32만으로 정렬된다.
+
+남은 참고 사항(이번 범위 밖, 기록만):
+- Android에서 fillDisabled를 쓰는 곳은 shared에 대응 토큰이 없어, 위치마다 light1 또는 dark3로 갈려 있다. 예를 들어 일정 화면의 전부 완료 화살표는 light1이다. 이번에는 스크롤바만 dark3로 통일했다.
+- AddTag/EditTag/RepeatCycle의 지우기 아이콘은 Android에서 `EbbingTextInputDefault.rightComponent` 안에 있다. iOS는 입력창 바깥 Row에 둔다. 배치 차이는 그대로 두었다.
+- InAppReviewDialog의 `ReviewDialog` screen_view와 `Review` Click 로그는 iOS에 없다(analytics 항목).

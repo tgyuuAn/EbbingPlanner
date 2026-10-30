@@ -185,6 +185,7 @@ fun RootContent(
         )
     }
 
+    val settingNotificationScheduler = koinInject<com.tgyuu.shared.platform.NotificationScheduler>()
     val settingViewModel = remember {
         SettingViewModel(
             todoRepository = todoRepository,
@@ -208,6 +209,7 @@ fun RootContent(
                 component.navigateToWebView(title, url)
             },
             analyticsHelper = analyticsHelper,
+            notificationScheduler = settingNotificationScheduler,
         )
     }
 

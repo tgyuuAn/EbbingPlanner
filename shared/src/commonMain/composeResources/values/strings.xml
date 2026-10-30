@@ -477,4 +477,6 @@
     <string name="setting_change_app_theme">앱 테마를 변경해요</string>
     <string name="setting_change_widget_theme">위젯 테마를 변경해요</string>
     <string name="setting_content_alpha">내용 투명도</string>
+    <string name="setting_detail_content">상세 내용</string>
+    <string name="repeat_cycle_list_item">- %1$s</string>
 </resources>

@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.Image
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -262,10 +263,9 @@ private fun TabletLandscapeScheduleScreen(
                         )
 
                         if (tag.id != DefaultTodoTag.id) {
-                            Icon(
+                            Image(
                                 painter = painterResource(Res.drawable.ic_3dots),
                                 contentDescription = null,
-                                tint = EbbingTheme.colors.black,
                                 modifier = Modifier
                                     .clickable { onTagThreeDotsClick(tag.name, tag.color, tag.id) }
                                     .padding(8.dp)
@@ -540,10 +540,9 @@ private fun TagCard(
             }
 
             if (!isDefaultTag) {
-                Icon(
+                Image(
                     painter = painterResource(Res.drawable.ic_3dots),
                     contentDescription = null,
-                    tint = EbbingTheme.colors.black,
                     modifier = Modifier
                         .clickable { onTagThreeDotsClick() }
                         .padding(8.dp)
@@ -606,13 +605,13 @@ private fun TagCard(
                         Text(
                             text = stringResource(Res.string.schedule_collapse),
                             style = EbbingTheme.typography.bodySSB,
-                            color = EbbingTheme.colors.dark3,
+                            color = EbbingTheme.colors.dark2,
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_up),
                             contentDescription = null,
-                            tint = EbbingTheme.colors.dark3,
+                            tint = EbbingTheme.colors.dark2,
                             modifier = Modifier.size(16.dp),
                         )
                     }
@@ -791,10 +790,9 @@ private fun ScheduleCard(
                 .padding(horizontal = 8.dp),
         )
 
-        Icon(
+        Image(
             painter = painterResource(Res.drawable.ic_3dots),
             contentDescription = null,
-            tint = EbbingTheme.colors.dark3,
             modifier = Modifier
                 .clickable { onThreeDotsClick() }
                 .padding(4.dp)

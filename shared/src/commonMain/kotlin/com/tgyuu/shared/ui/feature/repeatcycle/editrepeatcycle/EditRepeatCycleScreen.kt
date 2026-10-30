@@ -1,6 +1,7 @@
 package com.tgyuu.shared.ui.feature.repeatcycle.editrepeatcycle
 
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -98,7 +99,7 @@ fun EditRepeatCycleScreen(
                 limit = 60,
                 rightComponent = {
                     if (state.intervals.isNotEmpty()) {
-                        Icon(painter = painterResource(Res.drawable.ic_delete_circle), contentDescription = stringResource(Res.string.common_clear), tint = EbbingTheme.colors.dark2, modifier = Modifier.padding(start = 8.dp).size(20.dp).clickable { viewModel.onIntent(EditRepeatCycleIntent.OnIntervalsChange("")) })
+                        Image(painter = painterResource(Res.drawable.ic_delete_circle), contentDescription = stringResource(Res.string.common_clear), modifier = Modifier.padding(start = 8.dp).size(20.dp).clickable { viewModel.onIntent(EditRepeatCycleIntent.OnIntervalsChange("")) })
                     }
                 },
                 modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),

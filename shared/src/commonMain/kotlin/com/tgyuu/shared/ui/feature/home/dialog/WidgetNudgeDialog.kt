@@ -36,10 +36,9 @@ internal fun WidgetNudgeDialog(
 ) {
     EbbingDialog(onDismissRequest = onDismiss) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
+            Image(
                 painter = painterResource(Res.drawable.ic_close),
                 contentDescription = null,
-                tint = EbbingTheme.colors.dark2,
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .padding(horizontal = 16.dp)

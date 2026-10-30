@@ -113,8 +113,9 @@ fun HomeScreen(
                         viewModel.dismissInAppReviewDialog()
                         onRequestInAppReview()
                     },
+                    // Android InAppReviewDialog와 동일: 좌우 여백은 EbbingDialog 내부 패딩에 위임
                     modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                        .padding(bottom = 20.dp),
                 )
             },
             onDismissRequest = { viewModel.dismissInAppReviewDialog() },

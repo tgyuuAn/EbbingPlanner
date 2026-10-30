@@ -477,4 +477,6 @@
     <string name="setting_change_app_theme">Change the app theme</string>
     <string name="setting_change_widget_theme">Change the widget theme</string>
     <string name="setting_content_alpha">Content opacity</string>
+    <string name="setting_detail_content">View details</string>
+    <string name="repeat_cycle_list_item">- %1$s</string>
 </resources>

@@ -3,6 +3,9 @@ package com.tgyuu.shared.ui.feature.setting
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.shared.base.BaseViewModel
 import com.tgyuu.shared.platform.logClick
+import com.tgyuu.shared.platform.NotificationPermissionStatus
+import com.tgyuu.shared.platform.NotificationScheduler
+import com.tgyuu.shared.platform.openAppSettings
 import com.tgyuu.shared.common.appVersionName
 import com.tgyuu.shared.common.toFormattedString
 import com.tgyuu.shared.domain.repository.ConfigRepository
@@ -40,7 +43,14 @@ class SettingViewModel(
     private val onRequestInAppReview: () -> Unit = {},
     private val onShowSnackbar: (String) -> Unit = {},
     private val analyticsHelper: com.tgyuu.shared.platform.AnalyticsHelper? = null,
+    private val notificationScheduler: NotificationScheduler? = null,
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
+
+    // Android NotificationBody와 동일: 토글 표시값 = 저장된 설정(enabled) && OS 알림 권한 허용
+    private var notificationConfigEnabled = true
+    private var notificationPermissionGranted = true
+    // 권한 거부 상태에서 토글 ON → 앱 설정으로 보낸 뒤, 복귀 시 권한이 허용되었으면 자동으로 켠다
+    private var pendingEnableAfterSettings = false
 
     companion object {
         private const val SCREEN_NAME = "Setting"
@@ -78,9 +88,14 @@ class SettingViewModel(
             val (hour, minute) = configRepository?.getAlarmTime() ?: Pair(18, 30)
             val message = configRepository?.getAlarmMessage()?.ifEmpty { DEFAULT_ALARM_MESSAGE }
                 ?: DEFAULT_ALARM_MESSAGE
+            notificationConfigEnabled = enabled
+            notificationPermissionGranted = notificationScheduler
+                ?.getPermissionStatus()
+                ?.let { it == NotificationPermissionStatus.GRANTED }
+                ?: true
             setState {
                 copy(
-                    isNotificationEnabled = enabled,
+                    isNotificationEnabled = notificationConfigEnabled && notificationPermissionGranted,
                     alarmHour = hour,
                     alarmMinute = minute,
                     alarmMessage = message,
@@ -125,6 +140,7 @@ class SettingViewModel(
                 onNavigateToTheme()
             }
             SettingIntent.OnNotificationClick -> onNavigateToNotification()
+            SettingIntent.OnResume -> refreshNotificationPermission()
             is SettingIntent.OnNotificationToggle -> {
                 analyticsHelper.logClick(SCREEN_NAME, "NotificationNudge_Toggle")
                 toggleNotification(intent.enabled)
@@ -183,8 +199,45 @@ class SettingViewModel(
     }
 
     private suspend fun toggleNotification(enabled: Boolean) {
+        val scheduler = notificationScheduler
+        if (enabled && scheduler != null) {
+            // Android handlePermission 대응: 최초 요청이면 시스템 권한 요청, 이미 거부했으면 앱 설정으로 이동
+            when (scheduler.getPermissionStatus()) {
+                NotificationPermissionStatus.GRANTED -> notificationPermissionGranted = true
+                NotificationPermissionStatus.NOT_DETERMINED -> {
+                    notificationPermissionGranted = scheduler.requestPermission()
+                    if (!notificationPermissionGranted) {
+                        publishNotificationEnabled()
+                        return
+                    }
+                }
+                NotificationPermissionStatus.DENIED -> {
+                    pendingEnableAfterSettings = true
+                    openAppSettings()
+                    return
+                }
+            }
+        }
+        pendingEnableAfterSettings = false
         configRepository?.setNotificationEnabled(enabled)
-        setState { copy(isNotificationEnabled = enabled) }
+        notificationConfigEnabled = enabled
+        publishNotificationEnabled()
+    }
+
+    /** 화면 복귀(앱 설정에서 돌아온 경우 포함) 시 OS 알림 권한을 다시 읽어 토글 표시를 갱신한다. */
+    private suspend fun refreshNotificationPermission() {
+        val scheduler = notificationScheduler ?: return
+        notificationPermissionGranted = scheduler.getPermissionStatus() == NotificationPermissionStatus.GRANTED
+        if (pendingEnableAfterSettings && notificationPermissionGranted) {
+            pendingEnableAfterSettings = false
+            configRepository?.setNotificationEnabled(true)
+            notificationConfigEnabled = true
+        }
+        publishNotificationEnabled()
+    }
+
+    private fun publishNotificationEnabled() {
+        setState { copy(isNotificationEnabled = notificationConfigEnabled && notificationPermissionGranted) }
     }
 
     private suspend fun updateAlarmTime(hour: Int, minute: Int) {

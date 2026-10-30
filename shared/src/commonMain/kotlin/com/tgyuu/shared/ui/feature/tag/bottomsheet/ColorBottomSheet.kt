@@ -116,7 +116,7 @@ fun ColorBottomSheet(
                 .heightIn(max = 228.dp)
                 .verticalScrollbar(
                     state = gridState,
-                    color = EbbingTheme.colors.dark1,
+                    color = EbbingTheme.colors.dark3,
                 ),
         ) {
             items(TAG_COLORS) { color ->
