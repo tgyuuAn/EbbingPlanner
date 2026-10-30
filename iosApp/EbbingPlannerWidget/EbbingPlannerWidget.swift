@@ -2,6 +2,7 @@ import WidgetKit
 import SwiftUI
 import UIKit
 import SQLite3
+import AppIntents
 
 // MARK: - Design System (Android EbbingWidget 토큰 미러링)
 
@@ -36,6 +37,42 @@ enum EWFont {
     static let caption12B = Font.system(size: 12, weight: .bold)
 }
 
+// MARK: - Shared (앱과 공유하는 값)
+
+enum WidgetShared {
+    static let appGroup = "group.com.tgyuu.ebbingplanner"
+    /// 앱의 onOpenURL 이 처리하는 딥링크 (Android 위젯 actionStartActivity 대응)
+    static let scheme = "ebbingplanner"
+    static let selectedDateKey = "widget_calendar_selected_date"
+
+    static let dayFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
+    static func dayString(_ date: Date) -> String { dayFormatter.string(from: date) }
+
+    static func openAppURL() -> URL { URL(string: "\(scheme)://open")! }
+    static func homeURL(date: String) -> URL { URL(string: "\(scheme)://home?date=\(date)")! }
+    static func addTodoURL(date: String) -> URL { URL(string: "\(scheme)://addtodo?date=\(date)")! }
+
+    /// 달력 위젯에서 고른 날짜. 이번 달이 아니면 오늘로 되돌려요 (Android SelectDateAction과 동일 규칙)
+    static func calendarSelectedDate(now: Date = Date()) -> Date {
+        guard let raw = UserDefaults(suiteName: appGroup)?.string(forKey: selectedDateKey),
+              let date = dayFormatter.date(from: raw),
+              Calendar.current.isDate(date, equalTo: now, toGranularity: .month)
+        else { return now }
+        return date
+    }
+
+    static func setCalendarSelectedDate(_ date: String) {
+        UserDefaults(suiteName: appGroup)?.set(date, forKey: selectedDateKey)
+    }
+}
+
 // MARK: - Timeline Entry
 
 struct TodoEntry: TimelineEntry {
@@ -45,8 +82,9 @@ struct TodoEntry: TimelineEntry {
 
 struct CalendarEntry: TimelineEntry {
     let date: Date
+    let selectedDate: Date
     let colorsByDate: [String: [Color]]  // "yyyy-MM-dd" -> 해당 날짜 태그색들
-    let todayTodos: [TodoItem]
+    let todayTodos: [TodoItem]           // 선택한 날짜의 할 일
 }
 
 struct TodoItem: Identifiable {
@@ -60,13 +98,16 @@ struct TodoItem: Identifiable {
 
 struct WidgetDatabaseReader {
     static func loadTodayTodos() -> [TodoItem] {
+        loadTodos(on: formattedToday())
+    }
+
+    static func loadTodos(on day: String) -> [TodoItem] {
         guard let dbPath = getDatabasePath() else { return [] }
 
         var db: OpaquePointer?
         guard sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READONLY, nil) == SQLITE_OK else { return [] }
         defer { sqlite3_close(db) }
 
-        let today = formattedToday()
         let query = """
             SELECT s.id, i.title, s.isDone, COALESCE(t.color, 0)
             FROM schedule s
@@ -81,7 +122,7 @@ struct WidgetDatabaseReader {
         guard sqlite3_prepare_v2(db, query, -1, &stmt, nil) == SQLITE_OK else { return [] }
         defer { sqlite3_finalize(stmt) }
 
-        sqlite3_bind_text(stmt, 1, (today as NSString).utf8String, -1, nil)
+        sqlite3_bind_text(stmt, 1, (day as NSString).utf8String, -1, nil)
 
         var items: [TodoItem] = []
         while sqlite3_step(stmt) == SQLITE_ROW {
@@ -94,12 +135,35 @@ struct WidgetDatabaseReader {
         return items
     }
 
+    /// 완료 토글 (Android TodoSchedulesDao.toggleDone 과 같은 쿼리, updatedAt 은 shared 컨버터 포맷)
+    static func toggleDone(id: Int) {
+        guard let dbPath = getDatabasePath() else { return }
+
+        var db: OpaquePointer?
+        guard sqlite3_open_v2(dbPath, &db, SQLITE_OPEN_READWRITE, nil) == SQLITE_OK else { return }
+        defer { sqlite3_close(db) }
+        sqlite3_busy_timeout(db, 2000)
+
+        let query = "UPDATE schedule SET isDone = NOT isDone, updatedAt = ? WHERE id = ? AND isDeleted = 0"
+        var stmt: OpaquePointer?
+        guard sqlite3_prepare_v2(db, query, -1, &stmt, nil) == SQLITE_OK else { return }
+        defer { sqlite3_finalize(stmt) }
+
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let now = f.string(from: Date())
+        sqlite3_bind_text(stmt, 1, (now as NSString).utf8String, -1, nil)
+        sqlite3_bind_int(stmt, 2, Int32(id))
+        sqlite3_step(stmt)
+    }
+
     private static func getDatabasePath() -> String? {
         let fileManager = FileManager.default
-        guard let container = fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.tgyuu.ebbingplanner") else {
+        guard let container = fileManager.containerURL(forSecurityApplicationGroupIdentifier: WidgetShared.appGroup) else {
             return nil
         }
-        let dbPath = container.appendingPathComponent("ebbingdatabase").path
+        let dbPath = container.appendingPathComponent("ebbing-database").path // shared EbbingDatabase.NAME
         return fileManager.fileExists(atPath: dbPath) ? dbPath : nil
     }
 
@@ -150,9 +214,7 @@ struct WidgetDatabaseReader {
     }
 
     private static func formattedToday() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: Date())
+        WidgetShared.dayString(Date())
     }
 
     static func color(from argb: Int) -> Color {
@@ -193,10 +255,13 @@ struct TodoTimelineProvider: TimelineProvider {
 // MARK: - Shared Components
 
 /// 진행도 헤더 칩: "{prefix} {done} /{total}" (Android TodayTodo 헤더와 동일)
+/// "+"는 일정 등록 화면을 열고(Android AddTodoFromWidgetAction), 새로고침은 iOS 17+에서 위젯을 다시 그려요(RefreshAction).
 struct ProgressHeader: View {
     let title: String
     let doneCount: Int
     let totalCount: Int
+    var addTodoDate: String? = nil
+    var showRefresh: Bool = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -210,9 +275,22 @@ struct ProgressHeader: View {
                 .font(EWFont.heading14B)
                 .foregroundColor(EWColor.surface)
             Spacer(minLength: 4)
-            Image(systemName: "plus")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundColor(EWColor.surface)
+            if let addTodoDate {
+                Link(destination: WidgetShared.addTodoURL(date: addTodoDate)) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(EWColor.surface)
+                }
+            }
+            if showRefresh, #available(iOS 17.0, *) {
+                Button(intent: RefreshWidgetIntent()) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(EWColor.surface)
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 10)
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
@@ -222,40 +300,57 @@ struct ProgressHeader: View {
 }
 
 /// 할일 행: [색 dot · 제목 · 체크박스] (Android TodoItemRow와 동일)
+/// 행을 누르면 해당 날짜가 선택된 홈으로(Android openHomeAction), 체크박스는 iOS 17+에서 바로 완료 토글(CheckTodoAction).
 struct TodoRow: View {
     let todo: TodoItem
+    let day: String
 
     var body: some View {
         HStack(spacing: 8) {
-            Circle()
-                .fill(todo.tagColor)
-                .frame(width: 16, height: 16)
+            Link(destination: WidgetShared.homeURL(date: day)) {
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(todo.tagColor)
+                        .frame(width: 16, height: 16)
 
-            Text(todo.title)
-                .font(.system(size: 14, weight: todo.isDone ? .bold : .regular))
-                .foregroundColor(EWColor.surface)
-                .strikethrough(todo.isDone)
-                .lineLimit(2)
+                    Text(todo.title)
+                        .font(.system(size: 14, weight: todo.isDone ? .bold : .regular))
+                        .foregroundColor(EWColor.surface)
+                        .strikethrough(todo.isDone)
+                        .lineLimit(2)
 
-            Spacer(minLength: 4)
+                    Spacer(minLength: 4)
+                }
+            }
 
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(todo.tagColor, lineWidth: 1.5)
-                .frame(width: 20, height: 20)
-                .overlay(
-                    todo.isDone
-                        ? Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(todo.tagColor)
-                        : nil
-                )
+            if #available(iOS 17.0, *) {
+                Button(intent: ToggleTodoIntent(todoId: todo.id)) {
+                    checkBox
+                }
+                .buttonStyle(.plain)
+            } else {
+                checkBox
+            }
         }
+    }
+
+    private var checkBox: some View {
+        RoundedRectangle(cornerRadius: 6)
+            .stroke(todo.tagColor, lineWidth: 1.5)
+            .frame(width: 20, height: 20)
+            .overlay(
+                todo.isDone
+                    ? Image(systemName: "checkmark")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(todo.tagColor)
+                    : nil
+            )
     }
 }
 
 struct EmptyScheduleText: View {
     var body: some View {
-        Text("금일 스케줄이 없어요.")
+        Text("오늘은 일정이 없어요")
             .font(EWFont.body14M)
             .foregroundColor(EWColor.surface)
             .frame(maxWidth: .infinity, alignment: .center)
@@ -272,7 +367,13 @@ struct TodayTodoWidgetView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            ProgressHeader(title: "오늘 할 일   ", doneCount: doneCount, totalCount: totalCount)
+            ProgressHeader(
+                title: "오늘 할 일   ",
+                doneCount: doneCount,
+                totalCount: totalCount,
+                addTodoDate: WidgetShared.dayString(entry.date),
+                showRefresh: true
+            )
 
             if entry.todos.isEmpty {
                 Spacer(minLength: 0)
@@ -281,13 +382,14 @@ struct TodayTodoWidgetView: View {
             } else {
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(entry.todos.prefix(5)) { todo in
-                        TodoRow(todo: todo)
+                        TodoRow(todo: todo, day: WidgetShared.dayString(entry.date))
                     }
                 }
                 Spacer(minLength: 0)
             }
         }
         .padding(12)
+        .widgetURL(WidgetShared.openAppURL())
     }
 }
 
@@ -295,23 +397,29 @@ struct TodayTodoWidgetView: View {
 
 struct CalendarTimelineProvider: TimelineProvider {
     func placeholder(in context: Context) -> CalendarEntry {
-        CalendarEntry(date: Date(), colorsByDate: [:], todayTodos: [
+        CalendarEntry(date: Date(), selectedDate: Date(), colorsByDate: [:], todayTodos: [
             TodoItem(id: 1, title: "오늘의 할일", isDone: false, tagColor: EWColor.primary),
         ])
     }
 
+    private func makeEntry() -> CalendarEntry {
+        let now = Date()
+        let selected = WidgetShared.calendarSelectedDate(now: now)
+        return CalendarEntry(
+            date: now,
+            selectedDate: selected,
+            colorsByDate: WidgetDatabaseReader.loadMonthColorsByDate(for: now),
+            todayTodos: WidgetDatabaseReader.loadTodos(on: WidgetShared.dayString(selected))
+        )
+    }
+
     func getSnapshot(in context: Context, completion: @escaping (CalendarEntry) -> Void) {
-        let colors = WidgetDatabaseReader.loadMonthColorsByDate(for: Date())
-        let todos = WidgetDatabaseReader.loadTodayTodos()
-        completion(CalendarEntry(date: Date(), colorsByDate: colors, todayTodos: todos))
+        completion(makeEntry())
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<CalendarEntry>) -> Void) {
-        let colors = WidgetDatabaseReader.loadMonthColorsByDate(for: Date())
-        let todos = WidgetDatabaseReader.loadTodayTodos()
-        let entry = CalendarEntry(date: Date(), colorsByDate: colors, todayTodos: todos)
         let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
-        completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+        completion(Timeline(entries: [makeEntry()], policy: .after(nextUpdate)))
     }
 }
 
@@ -336,11 +444,16 @@ struct CalendarWidgetView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(8)
+            .widgetURL(WidgetShared.openAppURL())
         } else {
             calendarSection
                 .padding(8)
+                .widgetURL(WidgetShared.openAppURL())
         }
     }
+
+    private var selectedDay: String { WidgetShared.dayString(entry.selectedDate) }
+    private var todayDay: String { WidgetShared.dayString(entry.date) }
 
     private var calendarSection: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -351,10 +464,14 @@ struct CalendarWidgetView: View {
                     .font(EWFont.heading14B)
                     .foregroundColor(EWColor.surface)
                     .frame(maxWidth: .infinity)
-                Image(systemName: "arrow.uturn.left")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(EWColor.surface)
-                    .frame(width: 14)
+                // Android 달력 위젯 헤더: "+"(선택한 날짜로 일정 등록) · 오늘로 돌아가기
+                Link(destination: WidgetShared.addTodoURL(date: selectedDay)) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(EWColor.surface)
+                }
+                .padding(.trailing, 8)
+                returnToTodayIcon
             }
 
             // 요일 헤더
@@ -378,15 +495,43 @@ struct CalendarWidgetView: View {
         }
     }
 
+    @ViewBuilder
+    private var returnToTodayIcon: some View {
+        let icon = Image(systemName: "arrow.uturn.left")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(EWColor.surface)
+            .frame(width: 14)
+        if #available(iOS 17.0, *) {
+            Button(intent: SelectCalendarDateIntent(date: todayDay)) { icon }
+                .buttonStyle(.plain)
+        } else {
+            icon
+        }
+    }
+
+    @ViewBuilder
     private func dayCell(_ day: Date) -> some View {
+        // 날짜를 누르면 위젯 안에서 그 날짜를 선택해요 (Android SelectDateAction, 이번 달만)
+        if #available(iOS 17.0, *) {
+            Button(intent: SelectCalendarDateIntent(date: dateFmt.string(from: day))) {
+                dayCellContent(day)
+            }
+            .buttonStyle(.plain)
+        } else {
+            dayCellContent(day)
+        }
+    }
+
+    private func dayCellContent(_ day: Date) -> some View {
         let cal = Calendar.current
         let dateStr = dateFmt.string(from: day)
         let isToday = cal.isDateInToday(day)
+        let isSelected = cal.isDate(day, inSameDayAs: entry.selectedDate)
         let isCurrentMonth = cal.isDate(day, equalTo: entry.date, toGranularity: .month)
         let colors = entry.colorsByDate[dateStr] ?? []
 
         return ZStack {
-            if isToday {
+            if isSelected {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(EWColor.surface)
             }
@@ -394,7 +539,7 @@ struct CalendarWidgetView: View {
                 Text("\(cal.component(.day, from: day))")
                     .font(.system(size: 12, weight: isToday ? .bold : .regular))
                     .foregroundColor(
-                        isToday ? EWColor.inverseSurface
+                        isSelected ? EWColor.inverseSurface
                             : (isCurrentMonth ? EWColor.surface : EWColor.tertiary)
                     )
                 HStack(spacing: 2) {
@@ -413,18 +558,25 @@ struct CalendarWidgetView: View {
         let done = entry.todayTodos.filter { $0.isDone }.count
         let total = entry.todayTodos.count
         return VStack(alignment: .leading, spacing: 8) {
-            ProgressHeader(title: "오늘 할 일   ", doneCount: done, totalCount: total)
+            ProgressHeader(title: todoTitle, doneCount: done, totalCount: total, showRefresh: true)
             if entry.todayTodos.isEmpty {
                 Spacer(minLength: 0)
                 EmptyScheduleText()
                 Spacer(minLength: 0)
             } else {
                 ForEach(entry.todayTodos.prefix(3)) { todo in
-                    TodoRow(todo: todo)
+                    TodoRow(todo: todo, day: selectedDay)
                 }
                 Spacer(minLength: 0)
             }
         }
+    }
+
+    /// Android widget_today_todo_spaced / widget_month_day_todo_spaced
+    private var todoTitle: String {
+        if selectedDay == todayDay { return "오늘 할 일   " }
+        let cal = Calendar.current
+        return "\(cal.component(.month, from: entry.selectedDate))월 \(cal.component(.day, from: entry.selectedDate))일 할 일   "
     }
 
     private var monthTitle: String {
@@ -442,6 +594,60 @@ struct CalendarWidgetView: View {
         let leading = cal.component(.weekday, from: firstDay) - 1 // 0=일
         guard let gridStart = cal.date(byAdding: .day, value: -leading, to: firstDay) else { return [] }
         return (0..<42).compactMap { cal.date(byAdding: .day, value: $0, to: gridStart) }
+    }
+}
+
+// MARK: - Interactive Intents (iOS 17+)
+
+/// Android CheckTodoAction: 위젯에서 바로 완료 토글
+@available(iOS 17.0, *)
+struct ToggleTodoIntent: AppIntent {
+    static var title: LocalizedStringResource = "일정 완료 토글"
+    static var isDiscoverable: Bool = false
+
+    @Parameter(title: "Todo ID") var todoId: Int
+
+    init() {}
+    init(todoId: Int) { self.todoId = todoId }
+
+    func perform() async throws -> some IntentResult {
+        WidgetDatabaseReader.toggleDone(id: todoId)
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
+    }
+}
+
+/// Android SelectDateAction: 달력 위젯 안에서 날짜 선택
+@available(iOS 17.0, *)
+struct SelectCalendarDateIntent: AppIntent {
+    static var title: LocalizedStringResource = "달력 날짜 선택"
+    static var isDiscoverable: Bool = false
+
+    @Parameter(title: "Date") var date: String
+
+    init() {}
+    init(date: String) { self.date = date }
+
+    func perform() async throws -> some IntentResult {
+        // 이번 달이 아니면 무시 (Android와 동일)
+        if let picked = WidgetShared.dayFormatter.date(from: date),
+           Calendar.current.isDate(picked, equalTo: Date(), toGranularity: .month) {
+            WidgetShared.setCalendarSelectedDate(date)
+        }
+        WidgetCenter.shared.reloadTimelines(ofKind: "CalendarWidget")
+        return .result()
+    }
+}
+
+/// Android RefreshAction
+@available(iOS 17.0, *)
+struct RefreshWidgetIntent: AppIntent {
+    static var title: LocalizedStringResource = "위젯 새로고침"
+    static var isDiscoverable: Bool = false
+
+    func perform() async throws -> some IntentResult {
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result()
     }
 }
 

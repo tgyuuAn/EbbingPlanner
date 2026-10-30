@@ -1,5 +1,8 @@
 package com.tgyuu.shared.ui
 
+import com.tgyuu.shared.ui.feature.home.HomeIntent
+import com.tgyuu.shared.navigation.WidgetDeepLink
+import com.tgyuu.shared.navigation.AppExternalEvents
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -206,6 +209,36 @@ fun RootContent(
             },
             analyticsHelper = analyticsHelper,
         )
+    }
+
+    // 위젯 딥링크: 해당 날짜가 선택된 홈 / 해당 날짜로 일정 등록 (Android MainActivity.handleWidgetIntent 대응)
+    LaunchedEffect(Unit) {
+        AppExternalEvents.deepLinks.collect { link ->
+            AppExternalEvents.consumeDeepLink()
+            when (link) {
+                WidgetDeepLink.Open -> Unit
+                is WidgetDeepLink.Home -> {
+                    component.navigateToTopLevelTab(RootTab.HOME)
+                    runCatching { LocalDate.parse(link.date) }.getOrNull()?.let { date ->
+                        homeViewModel.onIntent(HomeIntent.OnCurrentDateChanged(date))
+                        homeViewModel.onIntent(HomeIntent.OnDateSelected(date))
+                    }
+                }
+                is WidgetDeepLink.AddTodo -> {
+                    component.navigateToTopLevelTab(RootTab.HOME)
+                    component.navigateToAddTodo(link.date)
+                }
+            }
+        }
+    }
+
+    // 포그라운드 복귀: 위젯에서 바꾼 완료 상태 등 외부 변경을 다시 불러와요
+    LaunchedEffect(Unit) {
+        AppExternalEvents.foreground.collect {
+            // 보고 있던 달 기준으로 다시 불러와요 (선택한 날짜는 유지)
+            homeViewModel.onIntent(HomeIntent.OnCurrentDateChanged(homeViewModel.state.value.currentDate ?: LocalDate.now()))
+            scheduleViewModel.loadTodoSchedules()
+        }
     }
 
     // Reload data when returning to main tabs
