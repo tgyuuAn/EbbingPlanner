@@ -14,6 +14,7 @@ import ebbingplanner.shared.generated.resources.snack_memo_save_failed
 import ebbingplanner.shared.generated.resources.snack_memo_updated
 import ebbingplanner.shared.generated.resources.snack_memo_updated_all
 import ebbingplanner.shared.generated.resources.snack_schedule_load_failed
+import ebbingplanner.shared.generated.resources.snack_required_fields
 import org.jetbrains.compose.resources.getString
 
 class MemoViewModel(
@@ -24,7 +25,7 @@ class MemoViewModel(
     private val onShowSnackbar: (String) -> Unit = {},
     private val experimentRepository: ExperimentRepository? = null,
     private val analyticsHelper: AnalyticsHelper? = null,
-    isEditEntry: Boolean = false,
+    private val isEditEntry: Boolean = false,
 ) : BaseViewModel<MemoState, MemoIntent>(MemoState(isEditEntry = isEditEntry)) {
 
     private val screenName = if (isEditEntry) "EditMemo" else "AddMemo"
@@ -44,7 +45,8 @@ class MemoViewModel(
                 setState {
                     copy(
                         originSchedule = schedule,
-                        memo = schedule.memo,
+                        // Android와 동일: 메모 추가 진입은 빈 입력으로, 수정 진입만 기존 메모를 불러와요
+                        memo = if (isEditEntry) schedule.memo else "",
                         relatedScheduleCount = relatedSchedules.size,
                     )
                 }
@@ -84,7 +86,11 @@ class MemoViewModel(
     }
 
     private suspend fun onSaveClick() {
-        if (!currentState.isSaveEnabled) return
+        if (!currentState.isSaveEnabled) {
+            // Android AddMemo/EditMemoViewModel과 동일: memo_required_fields 안내
+            onShowSnackbar(getString(Res.string.snack_required_fields))
+            return
+        }
 
         if (currentState.relatedScheduleCount <= 1) {
             saveMemoToSingle()
@@ -100,7 +106,7 @@ class MemoViewModel(
         try {
             val updatedSchedule = originSchedule.copy(memo = currentState.memo)
             todoRepository.updateTodo(updatedSchedule)
-            val isEdit = originSchedule.memo.isNotEmpty()
+            val isEdit = isEditEntry
             onShowSnackbar(
                 if (isEdit) getString(Res.string.snack_memo_updated)
                 else getString(Res.string.snack_memo_added)
@@ -119,7 +125,7 @@ class MemoViewModel(
             val relatedSchedules = todoRepository.loadSchedulesByTodoInfo(originSchedule.infoId)
             todoRepository.updateTodos(relatedSchedules.map { it.copy(memo = currentState.memo) })
 
-            val isEdit = originSchedule.memo.isNotEmpty()
+            val isEdit = isEditEntry
             onShowSnackbar(
                 if (isEdit) getString(Res.string.snack_memo_updated_all, relatedSchedules.size)
                 else getString(Res.string.snack_memo_added_all, relatedSchedules.size)

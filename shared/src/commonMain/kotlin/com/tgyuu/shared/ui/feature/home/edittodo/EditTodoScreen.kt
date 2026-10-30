@@ -60,7 +60,10 @@ fun EditTodoScreen(
     val focusManager = LocalFocusManager.current
 
     // Android 대응: 태그 추가 화면 복귀 시 방금 추가한 태그 자동 선택
-    LaunchedEffect(viewModel) { viewModel.loadNewTag() }
+    LaunchedEffect(viewModel) {
+        viewModel.loadNewTag()
+        viewModel.refreshTags()
+    }
 
     val scope = rememberCoroutineScope()
     val bottomSheetState = rememberEbbingBottomSheetState()

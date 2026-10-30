@@ -1,5 +1,6 @@
 package com.tgyuu.shared.ui.feature.sync
 
+import com.tgyuu.shared.navigation.ScreenBackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -117,6 +118,11 @@ fun SyncScreen(
     var isShowSyncDialog by remember { mutableStateOf(false) }
     var isShowDisconnectDialog by remember { mutableStateOf(false) }
     var isShowPermissionDialog by remember { mutableStateOf(false) }
+
+    // Android SyncMainScreen BackHandler(enabled = isScanning) 대응: 스캔 중 뒤로가기는 스캔만 닫아요
+    ScreenBackHandler(enabled = state.isScanning) {
+        viewModel.onIntent(SyncIntent.OnDismissScan)
+    }
 
     if (isShowSyncDialog) {
         ConfirmSyncUpDialog(

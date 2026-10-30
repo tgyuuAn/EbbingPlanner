@@ -141,8 +141,11 @@ fun ScheduleScreen(
                             scope.launch { bottomSheetState.hide() }
                         },
                         onDelete = {
-                            viewModel.onIntent(ScheduleIntent.OnRequestDeleteTag(tagId, tagName))
-                            scope.launch { bottomSheetState.hide() }
+                            // Android ScheduleViewModel.onRequestDeleteTag와 동일: 시트가 다 닫힌 뒤 삭제 다이얼로그를 띄워요
+                            scope.launch {
+                                bottomSheetState.hide()
+                                viewModel.onIntent(ScheduleIntent.OnRequestDeleteTag(tagId, tagName))
+                            }
                         },
                     )
                 }

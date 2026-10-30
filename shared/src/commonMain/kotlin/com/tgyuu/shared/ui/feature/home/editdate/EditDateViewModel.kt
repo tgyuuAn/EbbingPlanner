@@ -75,6 +75,11 @@ class EditDateViewModel(
         }
     }
 
+    // Android loadRepeatCycles() 대응: 화면에 다시 들어올 때마다 목록을 새로 불러와 방금 추가한 항목이 보이게 해요
+    fun refreshRepeatCycles() {
+        safeScope.launch { loadRepeatCycles() }
+    }
+
     private suspend fun loadRepeatCycles() {
         val models = todoRepository.loadRepeatCyclesByUsage(configRepository)
             .map { it.toUiModel() }.toImmutableList()

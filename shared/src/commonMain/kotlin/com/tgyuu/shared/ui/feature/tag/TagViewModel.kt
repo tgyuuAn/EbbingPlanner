@@ -10,6 +10,9 @@ import com.tgyuu.shared.platform.logClick
 import com.tgyuu.shared.ui.model.TodoTagUiModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.snack_tag_deleted
+import org.jetbrains.compose.resources.getString
 
 class TagViewModel(
     private val todoRepository: TodoRepository,
@@ -18,6 +21,7 @@ class TagViewModel(
     private val onNavigateToEditTag: (Int) -> Unit,
     private val analyticsHelper: AnalyticsHelper? = null,
     private val alarmRescheduler: AlarmRescheduler? = null,
+    private val onShowSnackbar: (String) -> Unit = {},
 ) : BaseViewModel<TagState, TagIntent>(TagState()) {
 
     init {
@@ -69,6 +73,8 @@ class TagViewModel(
         setState {
             copy(tagList = tagList.filterNot { it.id == tag.id }.toImmutableList())
         }
+        // Android TagViewModel.deleteTag와 동일: 삭제 완료 안내
+        onShowSnackbar(getString(Res.string.snack_tag_deleted))
     }
 }
 

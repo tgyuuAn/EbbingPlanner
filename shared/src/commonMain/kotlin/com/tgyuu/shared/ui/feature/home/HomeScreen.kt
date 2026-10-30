@@ -334,14 +334,15 @@ private suspend fun showDelayBottomSheet(
             onClickDelaySingle = {
                 scope.launch {
                     bottomSheetState.hide()
-                    val (_, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
+                    // Android HomeRoute와 동일: 일정의 휴식 요일을 다이얼로그에 전달
+                    val (restDays, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
                         schedule.infoId,
                         schedule.date
                     )
                     onShowDialog(
                         DialogType.ConfirmDelay(
                             schedule = schedule,
-                            restDays = emptySet(),
+                            restDays = restDays,
                             expectedDateExcludingRestDays = expectedDateExcludingRestDays,
                             expectedDateIncludingRestDays = schedule.date.plus(1, DateTimeUnit.DAY)
                         )
@@ -351,10 +352,14 @@ private suspend fun showDelayBottomSheet(
             onClickDelayAll = {
                 scope.launch {
                     bottomSheetState.hide()
+                    val (restDays, _) = viewModel.calculateDelayInfo(
+                        schedule.infoId,
+                        schedule.date
+                    )
                     onShowDialog(
                         DialogType.ConfirmDelayAll(
                             schedule = schedule,
-                            restDays = emptySet(),
+                            restDays = restDays,
                         )
                     )
                 }

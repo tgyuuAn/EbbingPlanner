@@ -79,7 +79,10 @@ fun EditDateScreen(
     val scrollState = rememberScrollState()
 
     // Android 대응: 반복주기 추가 화면 복귀 시 방금 추가한 주기 자동 선택
-    LaunchedEffect(viewModel) { viewModel.loadNewRepeatCycle() }
+    LaunchedEffect(viewModel) {
+        viewModel.loadNewRepeatCycle()
+        viewModel.refreshRepeatCycles()
+    }
 
     val isDoneSchedules = remember(state.schedules.size) {
         mutableStateListOf(*List(state.schedules.size) { false }.toTypedArray())

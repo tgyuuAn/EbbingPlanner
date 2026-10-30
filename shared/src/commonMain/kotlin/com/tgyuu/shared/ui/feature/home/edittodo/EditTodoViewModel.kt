@@ -88,6 +88,11 @@ class EditTodoViewModel(
         }
     }
 
+    // Android loadTags() 대응: 화면에 다시 들어올 때마다 목록을 새로 불러와 방금 추가한 항목이 보이게 해요
+    fun refreshTags() {
+        safeScope.launch { loadTags() }
+    }
+
     private suspend fun loadTags() {
         val unassignedName = getString(Res.string.tag_unassigned)
         val models = todoRepository.loadTagsByUsage(configRepository)
