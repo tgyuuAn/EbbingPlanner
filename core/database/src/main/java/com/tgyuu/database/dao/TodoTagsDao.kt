@@ -33,8 +33,24 @@ interface TodoTagsDao {
         hardDeleteTagInternal(id)
     }
 
+    @Query(
+        """
+        UPDATE todo_info SET tagId = 1, updatedAt = :updatedAt
+        WHERE tagId IN (SELECT id FROM todo_tag WHERE isDeleted = 1 AND id != 1)
+        """
+    )
+    suspend fun resetDeletedTagIds(updatedAt: LocalDateTime)
+
     @Query("DELETE FROM todo_tag WHERE isDeleted = 1 AND id != 1")
-    suspend fun hardDeleteAllTags()
+    suspend fun hardDeleteAllTagsInternal()
+
+    // 삭제된 태그를 아직 참조하는 todo_info가 있으면 FK 위반으로 삭제가 실패하므로,
+    // hardDeleteTag와 같이 기본 태그로 옮긴 뒤 지운다.
+    @Transaction
+    suspend fun hardDeleteAllTags() {
+        resetDeletedTagIds(LocalDateTime.now())
+        hardDeleteAllTagsInternal()
+    }
 
     @Transaction
     suspend fun softDeleteTagWithReset(todoTag: TodoTagEntity) {

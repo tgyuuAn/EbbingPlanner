@@ -19,9 +19,13 @@ class LocalSyncTransactionDataSourceImpl @Inject constructor(
     ) {
         val tagEntities = tags.map(TodoTagForSync::toEntity)
         val tagIds = tagEntities.map { it.id }.toSet() + DEFAULT_TAG_ID
+        val deletedTagIds = tagEntities.filter { it.isDeleted }.map { it.id }.toSet() - DEFAULT_TAG_ID
 
+        // 서버에는 삭제된 태그를 참조하는 todo_info가 남아 있을 수 있다(예: 데이터 초기화 후 업로드되지 않은 info).
+        // 그대로 넣으면 이후 hardDeleteAllTags에서 FK 위반이 나므로, 태그 삭제 시와 같이 기본 태그로 옮긴다.
         val infoEntities = infos.map(TodoInfoForSync::toEntity)
             .filter { it.tagId in tagIds }
+            .map { if (it.tagId in deletedTagIds) it.copy(tagId = DEFAULT_TAG_ID) else it }
         val infoIds = infoEntities.map { it.id }.toSet()
 
         val scheduleEntities = schedules.map(TodoScheduleForSync::toEntity)
