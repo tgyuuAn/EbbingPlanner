@@ -44,6 +44,13 @@ import com.tgyuu.ebbingplanner.navigation.AppNavigationRail
 import com.tgyuu.ebbingplanner.navigation.AppTabletBottomBar
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination
 import com.tgyuu.sync.network.NetworkBanner
+import androidx.compose.material3.VerticalDivider
+import com.tgyuu.navigation.RepeatCycleGraph
+import com.tgyuu.navigation.SettingGraph
+import com.tgyuu.navigation.SyncGraph
+import com.tgyuu.navigation.TagGraph
+import com.tgyuu.setting.graph.main.SettingListPane
+import com.tgyuu.setting.graph.main.SettingMenu
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
@@ -206,6 +213,18 @@ private fun TabletContent(
                             navigateToDestination = { appState.navigateToTopLevelDestination(it) },
                         )
                     }
+
+                    // 설정 탭은 가로 모드에서 목록(왼쪽) | 하위 화면(오른쪽) 2패널로 보여줘요
+                    if (showNavigation && selectedTopLevel == TopLevelDestination.SETTING) {
+                        SettingListPane(
+                            selectedMenu = currentDestination.toSettingMenu(),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(vertical = 20.dp),
+                        )
+                        VerticalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
+                    }
+
                     content(Modifier.weight(1f))
                 }
             } else {
@@ -244,6 +263,22 @@ private fun HandleDoubleBackToExit(
             backPressedTime = System.currentTimeMillis()
         }
     }
+}
+
+private fun NavDestination?.toSettingMenu(): SettingMenu? = when {
+    isRouteInHierarchy(TagGraph.TagRoute::class) ||
+        isRouteInHierarchy(TagGraph.AddTagRoute::class) ||
+        isRouteInHierarchy(TagGraph.EditTagRoute::class) -> SettingMenu.TAG
+
+    isRouteInHierarchy(RepeatCycleGraph.RepeatCycleRoute::class) ||
+        isRouteInHierarchy(RepeatCycleGraph.AddRepeatCycleRoute::class) ||
+        isRouteInHierarchy(RepeatCycleGraph.EditRepeatCycleRoute::class) -> SettingMenu.REPEAT_CYCLE
+
+    isRouteInHierarchy(SyncGraph.SyncMainRoute::class) -> SettingMenu.SYNC
+    isRouteInHierarchy(SyncGraph.RestoreByDeviceIdRoute::class) -> SettingMenu.RESTORE
+    isRouteInHierarchy(SettingGraph.ThemeRoute::class) -> SettingMenu.THEME
+    isRouteInHierarchy(SettingGraph.WidgetRoute::class) -> SettingMenu.WIDGET
+    else -> null
 }
 
 internal fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =

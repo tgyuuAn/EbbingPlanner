@@ -3,6 +3,8 @@ package com.tgyuu.home.graph.main
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -305,6 +307,7 @@ private fun HomeScreen(
             onEditScheduleClick = onEditScheduleClick,
             onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
+            onCalendarViewChanged = onCalendarViewChanged,
             modifier = modifier
         )
     }
@@ -532,7 +535,7 @@ private fun TabletPortraitHomeScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 28.dp, bottom = 32.dp)
+                    .padding(top = 40.dp, bottom = 32.dp)
                     .padding(horizontal = 60.dp),
             )
 
@@ -589,10 +592,10 @@ private fun TabletHomeScreen(
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
+    onCalendarViewChanged: (CalendarDefaultView) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
-    val scope = rememberCoroutineScope()
     var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
     val calendarState = rememberCalendarState()
 
@@ -605,16 +608,21 @@ private fun TabletHomeScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxSize()) {
+        // 디자인: 좌우 48dp, 캘린더·리스트 같은 폭, 사이 80dp (리스트 내부 좌우 20dp 포함해 보정)
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 48.dp, end = 28.dp),
+        ) {
             EbbingCalendar(
                 calendarState = calendarState,
                 schedulesByDateMap = state.schedulesByDateMap,
                 startFromMonday = state.mondayStart,
+                showWeekOnly = state.showWeekOnly,
+                showViewToggle = true,
                 onSelectDate = {
                     if (selectedDate != it) {
-                        scope.launch {
-                            selectedDate = it
-                        }
+                        selectedDate = it
                     }
                 },
                 onGotoTodayClick = {
@@ -623,17 +631,30 @@ private fun TabletHomeScreen(
                     )
                 },
                 onSyncClick = onSyncClick,
+                onViewToggle = { isWeek ->
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = "Home",
+                            buttonName = if (isWeek) "SwitchToWeekly" else "SwitchToMonthly",
+                        )
+                    )
+                    onCalendarViewChanged(
+                        if (isWeek) CalendarDefaultView.WEEKLY else CalendarDefaultView.MONTHLY
+                    )
+                },
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(0.8f)
-                    .padding(horizontal = 20.dp)
+                    .weight(TABLET_CALENDAR_WEIGHT)
+                    .padding(top = 40.dp),
             )
+
+            Spacer(modifier = Modifier.width(60.dp))
 
             if (state.isLoading) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .weight(1f),
+                        .weight(TABLET_LIST_WEIGHT),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
@@ -649,18 +670,16 @@ private fun TabletHomeScreen(
                     schedulesByTodoInfo = state.schedulesByTodoInfo,
                     onSelectDate = {
                         if (selectedDate != it) {
-                            scope.launch {
-                                selectedDate = it
-                                calendarState.onDateSelect(it)
-                            }
+                            selectedDate = it
+                            calendarState.onDateSelect(it)
                         }
                     },
                     onCheckedChange = onCheckedChange,
                     onSortTypeChange = onSortTypeChange,
                     onEditScheduleClick = onEditScheduleClick,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 20.dp),
+                        .weight(TABLET_LIST_WEIGHT)
+                        .padding(top = 20.dp),
                 )
             }
         }
@@ -776,3 +795,7 @@ private fun Preview1() {
         )
     }
 }
+
+// 리스트는 내부 좌우 20dp 여백을 가지므로, 보이는 폭이 캘린더와 같도록 그만큼 비중을 더 줘요
+private const val TABLET_CALENDAR_WEIGHT = 582f
+private const val TABLET_LIST_WEIGHT = 622f
