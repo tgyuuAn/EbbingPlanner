@@ -12,9 +12,7 @@ import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.model.TodoTag
 import com.tgyuu.domain.repository.TodoRepository
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -177,17 +175,8 @@ class TodoRepositoryImpl @Inject constructor(
         localUserConfigDataSource.removeTagUsage(todoTag.id)
     }
 
-    override suspend fun clearData() = coroutineScope {
-        val tagJob = launch { localTagDataSource.softDeleteAllTags() }
-        val todoJob = launch { localTodoDataSource.softDeleteAllTodos() }
-        val todoInfoJob = launch { localTodoDataSource.deleteAllTodoInfos() }
-        val repeatCycleJob = launch { localRepeatCycleDataSource.softDeleteAllRepeatCycles() }
-        val usageOrderJob = launch { localUserConfigDataSource.clearUsageOrder() }
-
-        tagJob.join()
-        todoJob.join()
-        todoInfoJob.join()
-        repeatCycleJob.join()
-        usageOrderJob.join()
+    override suspend fun clearData() {
+        localTodoDataSource.softDeleteAllData()
+        localUserConfigDataSource.clearUsageOrder()
     }
 }
