@@ -19,6 +19,7 @@ val LocalTypography = staticCompositionLocalOf {
 fun EbbingTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     theme: Theme = Theme.NORMAL,
+    isTablet: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colors = when (theme) {
@@ -31,6 +32,7 @@ fun EbbingTheme(
 
     CompositionLocalProvider(
         LocalColors provides colors,
+        LocalTypography provides if (isTablet) TabletTypography else EbbingTypography(),
         LocalDensity provides Density(LocalDensity.current.density, 1f)
     ) {
         CompositionLocalProvider(content = content)
