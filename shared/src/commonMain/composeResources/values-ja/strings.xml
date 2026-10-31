@@ -543,4 +543,13 @@
     <string name="home_alarm_reset">通知メッセージを初期値に戻す</string>
     <string name="home_alarm_time_sub">残りの予定の通知をいつ送りますか？</string>
     <string name="home_alarm_preview_sample">英単語の復習</string>
+    <!-- Android update_* (앱 업데이트 안내), sync_network_* (네트워크 배너·오프라인 안내) -->
+    <string name="update_title">新しいバージョンが公開されました！</string>
+    <string name="update_view_notes">アップデート内容を見る</string>
+    <string name="update_close">閉じる</string>
+    <string name="update_button">アップデート</string>
+    <string name="sync_network_required">ネットワークに接続されていません。</string>
+    <string name="sync_network_disconnected">ネットワークに接続されていません。</string>
+    <string name="sync_network_connect_action">接続する</string>
+    <string name="sync_network_connected">ネットワークに接続しました。</string>
 </resources>

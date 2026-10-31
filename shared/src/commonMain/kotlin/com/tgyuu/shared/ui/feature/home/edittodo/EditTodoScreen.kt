@@ -144,8 +144,8 @@ fun EditTodoScreen(
                         ),
                         rest = stringResource(Res.string.home_edit_todo_header_suffix),
                         style = EbbingTheme.typography.headingLSB,
-                        color = EbbingTheme.colors.black,
-                        highlightColor = EbbingTheme.colors.primaryDefault,
+                        color = EbbingTheme.colors.textOnBackground,
+                        highlightColor = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier.clickable {
                             currentBottomSheetType = EditTodoBottomSheetType.DATE
                             scope.launch { bottomSheetState.show() }

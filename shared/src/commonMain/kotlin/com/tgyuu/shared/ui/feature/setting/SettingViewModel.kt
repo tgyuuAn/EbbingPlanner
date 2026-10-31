@@ -7,6 +7,7 @@ import com.tgyuu.shared.platform.NotificationPermissionStatus
 import com.tgyuu.shared.platform.NotificationScheduler
 import com.tgyuu.shared.platform.openAppSettings
 import com.tgyuu.shared.common.appVersionName
+import com.tgyuu.shared.domain.AppUpdatePolicy
 import com.tgyuu.shared.platform.AnalyticsEvent
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.number
@@ -54,6 +55,8 @@ class SettingViewModel(
     private val analyticsHelper: com.tgyuu.shared.platform.AnalyticsHelper? = null,
     private val notificationScheduler: NotificationScheduler? = null,
     private val alarmRescheduler: AlarmRescheduler? = null,
+    /** 앱 밖에서 URL 열기 (App Store). Android 는 InAppUpdateManager 가 Play 스토어/인앱 업데이트를 띄운다 */
+    private val onOpenExternalUrl: (String) -> Unit = {},
 ) : BaseViewModel<SettingState, SettingIntent>(SettingState()) {
 
     // Android NotificationBody와 동일: 토글 표시값 = 저장된 설정(enabled) && OS 알림 권한 허용
@@ -75,6 +78,24 @@ class SettingViewModel(
         loadNotificationState()
         loadMondayStart()
         loadAutoBackup()
+        loadUpdateInfo()
+    }
+
+    // Android SettingViewModel init: 소프트/하드 업데이트 정보를 불러와 버전 행 버튼 노출을 정해요
+    private fun loadUpdateInfo() {
+        val repository = configRepository ?: return
+        viewModelScope.launch {
+            val softUpdateInfo = runCatching { repository.getSoftUpdateInfo() }.getOrNull()
+            setState {
+                copy(isUpdateButtonVisible = AppUpdatePolicy.shouldShowUpdateButton(appVersionName(), softUpdateInfo))
+            }
+        }
+    }
+
+    private suspend fun onUpdateClick() {
+        analyticsHelper.logClick(SCREEN_NAME, "Update")
+        val storeUrl = runCatching { configRepository?.getAppStoreUrl() }.getOrNull().orEmpty()
+        if (storeUrl.isNotBlank()) onOpenExternalUrl(storeUrl)
     }
 
     private fun loadAutoBackup() {
@@ -207,6 +228,7 @@ class SettingViewModel(
                 onNavigateToWebView(getString(Res.string.setting_announcement), getString(Res.string.setting_announcement_url))
             }
             SettingIntent.OnInquiryClick -> onOpenUrl(INQUIRY_URL)
+            SettingIntent.OnUpdateClick -> onUpdateClick()
         }
     }
 

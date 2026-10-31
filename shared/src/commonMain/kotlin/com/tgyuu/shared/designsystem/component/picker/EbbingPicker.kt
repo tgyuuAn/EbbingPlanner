@@ -75,7 +75,7 @@ fun EbbingPicker(
                         .align(Alignment.Center)
                         .padding(horizontal = 20.dp)
                         .height(50.dp)
-                        .background(EbbingTheme.colors.light3, shape = RoundedCornerShape(12.dp)),
+                        .background(EbbingTheme.colors.fillNormal, shape = RoundedCornerShape(12.dp)),
                 )
 
                 Row(

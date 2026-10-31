@@ -60,7 +60,7 @@ internal fun ConfirmDelayAllDialog(
         ) {
             Text(
                 text = stringResource(Res.string.home_delay_all_confirm_title, schedule.title),
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 style = EbbingTheme.typography.headingMSB,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp),
@@ -78,15 +78,15 @@ internal fun ConfirmDelayAllDialog(
                         checked = excludeRestDays,
                         onCheckedChange = { excludeRestDays = it },
                         colors = CheckboxDefaults.colors(
-                            checkedColor = EbbingTheme.colors.primaryDefault,
-                            uncheckedColor = EbbingTheme.colors.light1,
+                            checkedColor = EbbingTheme.colors.primaryNormal,
+                            uncheckedColor = EbbingTheme.colors.fillDisabled,
                         )
                     )
 
                     Text(
                         text = restDaysText,
                         style = EbbingTheme.typography.bodyMM,
-                        color = EbbingTheme.colors.black,
+                        color = EbbingTheme.colors.textOnBackground,
                     )
                 }
             } else {
@@ -96,7 +96,7 @@ internal fun ConfirmDelayAllDialog(
             Text(
                 text = stringResource(Res.string.home_delay_revert_notice),
                 style = EbbingTheme.typography.bodySR,
-                color = EbbingTheme.colors.dark3,
+                color = EbbingTheme.colors.textDisabled,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

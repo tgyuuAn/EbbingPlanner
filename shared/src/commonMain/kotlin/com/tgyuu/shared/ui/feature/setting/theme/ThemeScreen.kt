@@ -101,7 +101,7 @@ fun ThemeScreen(
                 Text(
                     text = stringResource(Res.string.setting_change_app_theme),
                     style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
 
                 state.selectTheme?.let { selectTheme ->
@@ -145,7 +145,7 @@ fun ThemeScreen(
                     Text(
                         text = stringResource(Res.string.setting_change_app_theme),
                         style = EbbingTheme.typography.headingLSB,
-                        color = EbbingTheme.colors.black,
+                        color = EbbingTheme.colors.textOnBackground,
                     )
 
                     state.selectTheme?.let { selectTheme ->
@@ -182,7 +182,7 @@ private fun ThemeBody(
     Text(
         text = stringResource(Res.string.setting_theme),
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -200,7 +200,7 @@ private fun ThemeBody(
                     modifier = Modifier
                         .size(45.dp)
                         .clip(CircleShape)
-                        .background(colorSchemeFor(theme, darkTheme).primaryDefault)
+                        .background(colorSchemeFor(theme, darkTheme).primaryNormal)
                         .noRippleClickable { onThemeChange(theme) },
                 )
 
@@ -208,8 +208,7 @@ private fun ThemeBody(
                     Icon(
                         painter = painterResource(Res.drawable.ic_check),
                         contentDescription = null,
-                        // Android textOnPrimary 대응 (라이트=흰색, 다크=검정)
-                        tint = EbbingTheme.colors.white,
+                        tint = EbbingTheme.colors.textOnPrimary,
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -227,7 +226,7 @@ private fun PreviewBody(theme: Theme) {
     Text(
         text = stringResource(Res.string.setting_preview),
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -276,7 +275,7 @@ private fun ThemePreviewCard(
         modifier = modifier
             .background(EbbingTheme.colors.background, shape = RoundedCornerShape(12.dp))
             .border(
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 width = 0.5.dp,
                 shape = RoundedCornerShape(12.dp),
             )
@@ -295,7 +294,7 @@ private fun ThemePreviewCard(
         Text(
             text = stringResource(if (isDarkMode) Res.string.setting_dark else Res.string.setting_light),
             style = EbbingTheme.typography.heading14SB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.align(Alignment.BottomEnd),
         )
     }
@@ -305,19 +304,31 @@ private fun ThemePreviewCard(
 @Composable
 internal fun animateEbbingColors(target: EbbingColors): EbbingColors = EbbingColors(
     background = animateColor(target.background),
-    primaryDefault = animateColor(target.primaryDefault),
-    primaryMiddle = animateColor(target.primaryMiddle),
-    primaryLight = animateColor(target.primaryLight),
-    black = animateColor(target.black),
-    dark1 = animateColor(target.dark1),
-    dark2 = animateColor(target.dark2),
-    dark3 = animateColor(target.dark3),
-    light1 = animateColor(target.light1),
-    light2 = animateColor(target.light2),
-    light3 = animateColor(target.light3),
-    white = animateColor(target.white),
-    error = animateColor(target.error),
-    success = animateColor(target.success),
+    primaryNormal = animateColor(target.primaryNormal),
+    primaryDeep = animateColor(target.primaryDeep),
+    statusError = animateColor(target.statusError),
+    statusSuccess = animateColor(target.statusSuccess),
+    textOnBackground = animateColor(target.textOnBackground),
+    textSub = animateColor(target.textSub),
+    textDisabled = animateColor(target.textDisabled),
+    textOnPrimary = animateColor(target.textOnPrimary),
+    textPrimary = animateColor(target.textPrimary),
+    textError = animateColor(target.textError),
+    fillNormal = animateColor(target.fillNormal),
+    fillTextfield = animateColor(target.fillTextfield),
+    fillSelected = animateColor(target.fillSelected),
+    fillDisabled = animateColor(target.fillDisabled),
+    fillPrimary = animateColor(target.fillPrimary),
+    fillFocused = animateColor(target.fillFocused),
+    fillError = animateColor(target.fillError),
+    strokePrimary = animateColor(target.strokePrimary),
+    strokeNormal = animateColor(target.strokeNormal),
+    strokeSecondary = animateColor(target.strokeSecondary),
+    strokeOutline = animateColor(target.strokeOutline),
+    strokeOnPrimary = animateColor(target.strokeOnPrimary),
+    strokeIcon = animateColor(target.strokeIcon),
+    strokeDisabled = animateColor(target.strokeDisabled),
+    materialDimmer = animateColor(target.materialDimmer),
 )
 
 @Composable

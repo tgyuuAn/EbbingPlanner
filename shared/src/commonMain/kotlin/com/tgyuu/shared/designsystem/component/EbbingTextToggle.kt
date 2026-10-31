@@ -37,7 +37,7 @@ fun EbbingTextToggle(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(EbbingTheme.colors.light3)
+            .background(EbbingTheme.colors.fillTextfield)
             // 토글 전체 영역을 클릭하면 반대편 값으로 전환
             .throttledClickable(300L) { onSelectedChange(!selectedFirst) }
             .padding(2.dp),
@@ -76,7 +76,7 @@ private fun ToggleSegment(
         Text(
             text = label,
             style = EbbingTheme.typography.bodySSB,
-            color = if (selected) EbbingTheme.colors.black else EbbingTheme.colors.dark1,
+            color = if (selected) EbbingTheme.colors.textOnBackground else EbbingTheme.colors.textSub,
         )
     }
 }

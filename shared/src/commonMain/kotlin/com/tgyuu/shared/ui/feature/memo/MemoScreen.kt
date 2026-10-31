@@ -101,7 +101,7 @@ fun MemoScreen(
                     append(if (state.isEditEntry) editHeadlineSuffix else addHeadlineSuffix)
                 },
                 style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
             )
         }
     }
@@ -242,7 +242,7 @@ private fun MemoContent(
         Text(
             text = stringResource(Res.string.memo_label),
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             // Android MemoContent와 동일: 헤드라인과 간격 확보 위해 top=32
             modifier = Modifier.padding(top = 32.dp, bottom = 8.dp),
         )
@@ -296,7 +296,7 @@ private fun PreviewContent(
         Text(
             text = stringResource(Res.string.memo_preview_label),
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.padding(top = 32.dp),
         )
 

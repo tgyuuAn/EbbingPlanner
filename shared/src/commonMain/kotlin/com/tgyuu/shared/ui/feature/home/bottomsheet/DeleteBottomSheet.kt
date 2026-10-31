@@ -40,7 +40,7 @@ internal fun DeleteBottomSheet(
             Text(
                 text = stringResource(Res.string.home_delete_single),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -52,7 +52,7 @@ internal fun DeleteBottomSheet(
             Text(
                 text = stringResource(Res.string.home_delete_remaining),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

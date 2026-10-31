@@ -22,7 +22,7 @@ import com.tgyuu.shared.designsystem.foundation.EbbingTheme
 fun EbbingMainTopBar(
     title: String,
     modifier: Modifier = Modifier,
-    titleColor: Color = EbbingTheme.colors.black,
+    titleColor: Color = EbbingTheme.colors.textOnBackground,
     rightComponent: @Composable () -> Unit = {},
 ) {
     Row(
@@ -58,7 +58,7 @@ fun EbbingSubTopBar(
         Icon(
             imageVector = EbbingBackIcon,
             contentDescription = "Back",
-            tint = EbbingTheme.colors.black,
+            tint = EbbingTheme.colors.textOnBackground,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .size(32.dp)
@@ -68,7 +68,7 @@ fun EbbingSubTopBar(
         Text(
             text = title,
             style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.align(Alignment.Center),
         )
 

@@ -258,7 +258,7 @@ private fun CalendarController(
         Text(
             text = stringResource(Res.string.calendar_year_month, currentDate.year, currentDate.monthNumber),
             style = EbbingTheme.typography.headingMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Row(
@@ -291,15 +291,15 @@ private fun TodayButton(onClick: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier
             .clip(shape)
-            .background(EbbingTheme.colors.background)
-            .border(width = 1.dp, color = EbbingTheme.colors.light2, shape = shape)
+            .background(EbbingTheme.colors.fillNormal)
+            .border(width = 1.dp, color = EbbingTheme.colors.strokeOutline, shape = shape)
             .clickable(onClick = onClick)
             .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_return),
             contentDescription = stringResource(Res.string.calendar_go_today),
-            tint = EbbingTheme.colors.dark2,
+            tint = EbbingTheme.colors.strokeIcon,
             modifier = Modifier
                 .size(20.dp)
                 .padding(3.dp),
@@ -307,7 +307,7 @@ private fun TodayButton(onClick: () -> Unit) {
         Text(
             text = stringResource(Res.string.calendar_today),
             style = EbbingTheme.typography.captionR12,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.textSub,
         )
     }
 }
@@ -323,7 +323,7 @@ private fun SyncButton(onClick: () -> Unit) {
         Icon(
             painter = painterResource(Res.drawable.ic_link),
             contentDescription = stringResource(Res.string.ds_cd_sync),
-            tint = EbbingTheme.colors.black,
+            tint = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.size(24.dp),
         )
     }
@@ -358,7 +358,7 @@ private fun CalendarHeader(
                     text = weekDayText,
                     textAlign = TextAlign.Center,
                     style = EbbingTheme.typography.captionR12,
-                    color = EbbingTheme.colors.dark3,
+                    color = EbbingTheme.colors.textDisabled,
                 )
             }
         }
@@ -450,16 +450,16 @@ private fun CalendarDayItem(
     // 선택 = 검은 원, 오늘(미선택) = 회색 원, 그 외 = 없음
     val circleColor by animateColorAsState(
         targetValue = when {
-            isSelected -> EbbingTheme.colors.black
-            isToday -> EbbingTheme.colors.light1
+            isSelected -> EbbingTheme.colors.fillFocused
+            isToday -> EbbingTheme.colors.fillDisabled
             else -> Color.Transparent
         },
         label = "dayItemColor",
     )
     val numberColor = when {
-        isSelected || isToday -> EbbingTheme.colors.white
-        !calendarDate.isCurrentMonth -> EbbingTheme.colors.dark3
-        else -> EbbingTheme.colors.black
+        isSelected || isToday -> EbbingTheme.colors.textOnPrimary
+        !calendarDate.isCurrentMonth -> EbbingTheme.colors.textDisabled
+        else -> EbbingTheme.colors.textOnBackground
     }
     val numberStyle =
         if (isSelected || isToday) EbbingTheme.typography.headingSB

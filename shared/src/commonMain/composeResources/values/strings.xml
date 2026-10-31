@@ -543,4 +543,13 @@
     <string name="home_alarm_reset">알림 메시지 기본값으로 복원</string>
     <string name="home_alarm_time_sub">언제 남은 일정 알림을 보낼까요?</string>
     <string name="home_alarm_preview_sample">영어 단어 복습</string>
+    <!-- Android update_* (앱 업데이트 안내), sync_network_* (네트워크 배너·오프라인 안내) -->
+    <string name="update_title">새로운 버전이 출시 되었어요!</string>
+    <string name="update_view_notes">업데이트 내용 보러가기</string>
+    <string name="update_close">닫기</string>
+    <string name="update_button">업데이트</string>
+    <string name="sync_network_required">네트워크가 연결되어 있지 않습니다.</string>
+    <string name="sync_network_disconnected">네트워크가 연결되지 않았습니다.</string>
+    <string name="sync_network_connect_action">연결하기</string>
+    <string name="sync_network_connected">네트워크에 연결되었습니다.</string>
 </resources>

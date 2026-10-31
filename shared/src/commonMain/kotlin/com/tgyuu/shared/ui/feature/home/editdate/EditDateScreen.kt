@@ -237,8 +237,8 @@ private fun EditDateMainFormContent(
         ),
         rest = stringResource(Res.string.home_edit_date_header_suffix),
         style = EbbingTheme.typography.headingLSB,
-        color = EbbingTheme.colors.black,
-        highlightColor = EbbingTheme.colors.primaryDefault,
+        color = EbbingTheme.colors.textOnBackground,
+        highlightColor = EbbingTheme.colors.primaryNormal,
         modifier = Modifier.clickable { onSelectedDateChangeClick() },
     )
 
@@ -274,7 +274,7 @@ private fun ScheduleCheckContent(
                 .fillMaxWidth()
                 .padding(top = 32.dp)
                 .clip(shape)
-                .border(width = 1.dp, color = EbbingTheme.colors.light2, shape = shape)
+                .border(width = 1.dp, color = EbbingTheme.colors.strokeNormal, shape = shape)
                 .background(EbbingTheme.colors.background)
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 8.dp),
@@ -282,7 +282,7 @@ private fun ScheduleCheckContent(
             Text(
                 text = stringResource(Res.string.home_study_schedule_count, schedules.size),
                 style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
             )
 
@@ -328,12 +328,12 @@ private fun ScheduleCheckCard(
                     modifier = Modifier
                         .size(16.dp)
                         .clip(CircleShape)
-                        .background(EbbingTheme.colors.light3),
+                        .background(EbbingTheme.colors.fillTextfield),
                 ) {
                     Text(
                         text = idx.toString(),
                         style = EbbingTheme.typography.captionR12,
-                        color = EbbingTheme.colors.dark2,
+                        color = EbbingTheme.colors.textSub,
                     )
                 }
 
@@ -344,7 +344,7 @@ private fun ScheduleCheckCard(
                         schedule.dayOfWeek.toLocalizedShort(),
                     ),
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
             }
 
@@ -355,7 +355,7 @@ private fun ScheduleCheckCard(
                 Text(
                     text = schedule.toRelativeDayLabel(),
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark2,
+                    color = EbbingTheme.colors.textSub,
                 )
 
                 EbbingCheck(
@@ -372,7 +372,7 @@ private fun ScheduleCheckCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(EbbingTheme.colors.light2),
+                    .background(EbbingTheme.colors.strokeNormal),
             )
         }
     }
@@ -386,7 +386,7 @@ private fun DescriptionBody(
         text = stringResource(Res.string.home_edit_date_description),
         textAlign = TextAlign.Start,
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.dark3,
+        color = EbbingTheme.colors.textDisabled,
         modifier = modifier.padding(top = 24.dp),
     )
 }

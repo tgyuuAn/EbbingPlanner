@@ -15,10 +15,14 @@ interface RootComponent {
     fun navigateToSetting()
 
     /**
-     * 하위 화면에서 탭을 눌러도 스택이 쌓이지 않도록 홈 위에 탭 화면만 남기고 이동해요
-     * (Android BottomBarTo: popUpTo(HomeRoute) 대응, 폰/태블릿 공통)
+     * 하위 화면에서 탭을 눌러도 스택이 쌓이지 않도록 홈 위에 탭 화면만 남기고 이동해요.
+     * 일정·설정 탭의 하위 화면은 탭별로 저장했다가 다시 그 탭을 누르면 복원해요
+     * (Android BottomBarTo: popUpTo(HomeRoute){saveState} + restoreState 대응, 폰/태블릿 공통)
      */
     fun navigateToTopLevelTab(tab: RootTab)
+
+    /** 저장/복원 없이 홈 루트만 남겨요 (저장 후 홈 이동, 위젯 딥링크 등) */
+    fun popToHome()
     fun navigateToTag()
     fun navigateToMemo(scheduleId: Int)
     fun navigateToRepeatCycle()

@@ -114,6 +114,16 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.model.ErrorBus
+import com.tgyuu.shared.domain.model.UpdateState
+import com.tgyuu.shared.platform.NetworkMonitor
+import com.tgyuu.shared.platform.UrlOpener
+import com.tgyuu.shared.platform.logClick
+import com.tgyuu.shared.platform.openAppSettings
+import com.tgyuu.shared.ui.component.HandleAppUpdate
+import com.tgyuu.shared.ui.component.NetworkBanner
+import ebbingplanner.shared.generated.resources.setting_announcement
+import ebbingplanner.shared.generated.resources.setting_announcement_url
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import ebbingplanner.shared.generated.resources.Res
@@ -150,6 +160,18 @@ fun RootContent(
     val alarmRescheduler = koinInject<AlarmRescheduler>()
     val errorBus = koinInject<ErrorBus>()
     val startupAnalyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
+    val urlOpener = koinInject<UrlOpener>()
+    val networkMonitor = koinInject<NetworkMonitor>()
+    val networkState by networkMonitor.networkState.collectAsState()
+
+    // Android MainViewModel.getSoftUpdateInfo/getHardUpdateInfo: 시작 시 Remote Config 업데이트 안내를 불러와요
+    var updateState by remember { mutableStateOf(UpdateState()) }
+    var appStoreUrl by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        launch { runCatching { configRepository.getSoftUpdateInfo() }.onSuccess { updateState = updateState.copy(soft = it) } }
+        launch { runCatching { configRepository.getHardUpdateInfo() }.onSuccess { updateState = updateState.copy(hard = it) } }
+        launch { runCatching { configRepository.getAppStoreUrl() }.onSuccess { appStoreUrl = it } }
+    }
 
     // Check if first app open → show onboarding
     LaunchedEffect(Unit) {
@@ -221,7 +243,7 @@ fun RootContent(
     // Android HomeRoute(workedDate, showWidgetNudge) + popUpTo 대응: 홈으로 정리하고 작업한 날짜를 선택해요
     val navigateToHomeAt: (LocalDate, Boolean) -> Unit = remember(homeViewModel) {
         { workedDate, showWidgetNudge ->
-            component.navigateToTopLevelTab(RootTab.HOME)
+            component.popToHome()
             homeViewModel.onIntent(HomeIntent.OnCurrentDateChanged(workedDate))
             homeViewModel.onIntent(HomeIntent.OnDateSelected(workedDate))
             if (showWidgetNudge) homeViewModel.showWidgetNudgeDialog()
@@ -266,6 +288,7 @@ fun RootContent(
             analyticsHelper = analyticsHelper,
             notificationScheduler = settingNotificationScheduler,
             alarmRescheduler = alarmRescheduler,
+            onOpenExternalUrl = { url -> urlOpener.openUrl(url) },
         )
     }
 
@@ -276,14 +299,16 @@ fun RootContent(
             when (link) {
                 WidgetDeepLink.Open -> Unit
                 is WidgetDeepLink.Home -> {
-                    component.navigateToTopLevelTab(RootTab.HOME)
+                    component.popToHome()
                     runCatching { LocalDate.parse(link.date) }.getOrNull()?.let { date ->
                         homeViewModel.onIntent(HomeIntent.OnCurrentDateChanged(date))
                         homeViewModel.onIntent(HomeIntent.OnDateSelected(date))
                     }
                 }
                 is WidgetDeepLink.AddTodo -> {
-                    component.navigateToTopLevelTab(RootTab.HOME)
+                    // Android TodayTodoWidgetReceiver ADD_TODO_ACTION: Click_AddTodo_{TodoWidget|CalendarWidget}
+                    analyticsHelper.logClick(link.source ?: "TodoWidget", "AddTodo")
+                    component.popToHome()
                     component.navigateToAddTodo(link.date)
                 }
             }
@@ -483,7 +508,7 @@ fun RootContent(
                                             .weight(1f)
                                             .padding(vertical = 20.dp),
                                     )
-                                    VerticalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+                                    VerticalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
                                 }
 
                                 content(
@@ -514,6 +539,31 @@ fun RootContent(
                         }
                     }
                 }
+
+                // Android EbbingApp NetworkBanner: 네트워크가 필요한 화면(동기화·복원)에서 연결 상태를 알려요
+                NetworkBanner(
+                    needsNetwork = activeChild is RootComponent.Child.Sync ||
+                        activeChild is RootComponent.Child.SyncRestore,
+                    networkState = networkState,
+                    onConnectClick = { openAppSettings() },
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
+
+                // Android MainActivity HandleAppUpdate: 웹뷰가 아닐 때 업데이트 안내를 띄워요
+                if (activeChild !is RootComponent.Child.WebView) {
+                    HandleAppUpdate(
+                        updateState = updateState,
+                        onClickUpdateInfo = {
+                            snackbarScope.launch {
+                                component.navigateToWebView(
+                                    getString(Res.string.setting_announcement),
+                                    getString(Res.string.setting_announcement_url),
+                                )
+                            }
+                        },
+                        onUpdateClick = { if (appStoreUrl.isNotBlank()) urlOpener.openUrl(appStoreUrl) },
+                    )
+                }
             }
         }
     }
@@ -541,7 +591,7 @@ private fun EbbingBottomNavigationBar(
 ) {
     // Android AppBottomBar 대응: 71dp 영역 + 상단 3dp 그림자 그라데이션, NavigationBar 68dp.
     // Android는 바깥에서 navigationBarsPadding을 주므로 바 자체 인셋은 0, 하단 안전영역은 별도로 채워요.
-    val shadowColor = EbbingTheme.colors.black
+    val shadowColor = EbbingTheme.colors.textOnBackground
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
@@ -590,10 +640,10 @@ private fun EbbingBottomNavigationBar(
                         },
                         alwaysShowLabel = false,
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = EbbingTheme.colors.black,
-                            unselectedIconColor = EbbingTheme.colors.dark3,
-                            selectedTextColor = EbbingTheme.colors.black,
-                            unselectedTextColor = EbbingTheme.colors.dark3,
+                            selectedIconColor = EbbingTheme.colors.textOnBackground,
+                            unselectedIconColor = EbbingTheme.colors.textDisabled,
+                            selectedTextColor = EbbingTheme.colors.textOnBackground,
+                            unselectedTextColor = EbbingTheme.colors.textDisabled,
                             indicatorColor = Color.Transparent,
                         ),
                         interactionSource = remember { NoRippleInteractionSource() },
@@ -701,6 +751,7 @@ private fun SyncScreenWrapper(
     onShowSnackbar: (String) -> Unit,
 ) {
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
+    val networkMonitor = koinInject<NetworkMonitor>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = retainedViewModel(owner) {
         SyncViewModel(
@@ -709,6 +760,7 @@ private fun SyncScreenWrapper(
             onNavigateToRestore = { component.navigateToSyncRestore() },
             onShowSnackbar = onShowSnackbar,
             analyticsHelper = analyticsHelper,
+            networkMonitor = networkMonitor,
         )
     }
     SyncScreen(viewModel = viewModel)
@@ -721,6 +773,7 @@ private fun RestoreScreenWrapper(
     onShowSnackbar: (String) -> Unit,
 ) {
     val syncRepository = koinInject<com.tgyuu.shared.domain.repository.SyncRepository>()
+    val networkMonitor = koinInject<NetworkMonitor>()
     val analyticsHelper = koinInject<com.tgyuu.shared.platform.AnalyticsHelper>()
     val viewModel = retainedViewModel(owner) {
         com.tgyuu.shared.ui.feature.sync.restore.RestoreViewModel(
@@ -728,6 +781,7 @@ private fun RestoreScreenWrapper(
             onNavigateBack = { component.onBack() },
             onShowSnackbar = onShowSnackbar,
             analyticsHelper = analyticsHelper,
+            networkMonitor = networkMonitor,
         )
     }
     com.tgyuu.shared.ui.feature.sync.restore.RestoreScreen(viewModel = viewModel)

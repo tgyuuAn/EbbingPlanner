@@ -23,6 +23,7 @@ class DefaultRootComponent(
 ) : RootComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Configuration>()
+    private val tabStackSaver = TabStackSaver()
 
     override val stack: Value<ChildStack<*, RootComponent.Child>> =
         childStack(
@@ -81,6 +82,7 @@ class DefaultRootComponent(
 
     /** Android TopLevelTo(popUpTo(0) inclusive) 대응: 온보딩 등 이전 스택을 모두 비우고 홈만 남겨요 */
     private fun navigateToHomeClearingStack() {
+        tabStackSaver.clear()
         navigation.replaceAll(Configuration.Home())
     }
 
@@ -95,14 +97,15 @@ class DefaultRootComponent(
 
     override fun navigateToSetting() = navigateToTopLevelTab(RootTab.SETTING)
 
+    // Android BottomBarTo(saveState/restoreState): 일정·설정 탭의 하위 화면을 탭별로 저장했다가 복원해요
     override fun navigateToTopLevelTab(tab: RootTab) {
+        navigation.navigate { stack -> tabStackSaver.navigate(stack, tab) }
+    }
+
+    // Android HomeRoute(popUpTo)/TopLevelTo 대응: 탭 상태를 저장하지 않고 홈 루트로 정리해요
+    override fun popToHome() {
         navigation.navigate { stack ->
-            val home = stack.firstOrNull { it is Configuration.Home } ?: Configuration.Home()
-            when (tab) {
-                RootTab.HOME -> listOf(home)
-                RootTab.SCHEDULE -> listOf(home, Configuration.Schedule)
-                RootTab.SETTING -> listOf(home, Configuration.Setting)
-            }
+            listOf(stack.firstOrNull { it is Configuration.Home } ?: Configuration.Home())
         }
     }
 
@@ -123,6 +126,7 @@ class DefaultRootComponent(
     }
 
     override fun navigateToOnboarding() {
+        tabStackSaver.clear()
         navigation.replaceAll(Configuration.Onboarding)
     }
 

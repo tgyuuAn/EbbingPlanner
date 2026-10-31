@@ -6,6 +6,8 @@ import com.tgyuu.shared.domain.repository.ErrorRepository
 import com.tgyuu.shared.domain.repository.FeatureFlag
 import com.tgyuu.shared.domain.repository.FeatureFlagRepository
 import com.tgyuu.shared.domain.repository.SyncRepository
+import com.tgyuu.shared.platform.NetworkMonitor
+import com.tgyuu.shared.platform.isConnected
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -19,18 +21,26 @@ import kotlinx.datetime.toInstant
  * 피처 플래그(use_auto_backup) + 사용자 토글이 모두 켜져 있으면
  * SyncRepository.syncUpData()로 서버에 업로드한다. 실패 시 pending으로 두고 다음에 재시도한다.
  * Android처럼 서버 last_updated_at 기준 쿨타임(10초)을 적용한다.
- * (Android의 NetworkMonitor 기반 게이팅은 iOS에선 syncUpData 실패→pending 재시도로 대체)
+ * Android처럼 오프라인이면 업로드를 시도하지 않고 pending으로 두며, 업로드 실패도 pending으로 남겨
+ * 다음 포그라운드 복귀/백그라운드 진입 때 다시 시도한다.
  */
 class AutoBackupManager(
     private val featureFlagRepository: FeatureFlagRepository,
     private val configRepository: ConfigRepository,
     private val syncRepository: SyncRepository,
     private val errorRepository: ErrorRepository? = null,
+    private val networkMonitor: NetworkMonitor? = null,
 ) {
     private var backupPending: Boolean = false
 
     suspend fun onAppStop() {
         if (!shouldBackup()) return
+
+        // Android: 오프라인이면 pending 으로 두고 복귀 시 재시도
+        if (!networkMonitor.isConnected) {
+            backupPending = true
+            return
+        }
 
         if (!isCoolTimeElapsed()) {
             backupPending = true
@@ -43,6 +53,7 @@ class AutoBackupManager(
     suspend fun tryPendingBackup() {
         if (!shouldBackup()) return
         if (!backupPending) return
+        if (!networkMonitor.isConnected) return
         if (!isCoolTimeElapsed()) return
 
         backup()

@@ -82,7 +82,7 @@ internal fun ConfirmDelayDialog(
         ) {
             Text(
                 text = stringResource(Res.string.home_delay_single_confirm_title, schedule.title),
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 style = EbbingTheme.typography.headingMSB.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 40.dp),
@@ -90,7 +90,7 @@ internal fun ConfirmDelayDialog(
 
             Text(
                 text = dateText,
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.primaryNormal,
                 style = EbbingTheme.typography.bodyMM,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 8.dp),
@@ -108,15 +108,15 @@ internal fun ConfirmDelayDialog(
                         checked = excludeRestDays,
                         onCheckedChange = { excludeRestDays = it },
                         colors = CheckboxDefaults.colors(
-                            checkedColor = EbbingTheme.colors.primaryDefault,
-                            uncheckedColor = EbbingTheme.colors.light1,
+                            checkedColor = EbbingTheme.colors.primaryNormal,
+                            uncheckedColor = EbbingTheme.colors.fillDisabled,
                         )
                     )
 
                     Text(
                         text = restDaysText,
                         style = EbbingTheme.typography.bodyMM,
-                        color = EbbingTheme.colors.black,
+                        color = EbbingTheme.colors.textOnBackground,
                     )
                 }
             } else {
@@ -127,7 +127,7 @@ internal fun ConfirmDelayDialog(
                 text = stringResource(Res.string.home_delay_revert_notice),
                 style = EbbingTheme.typography.bodySR,
                 textAlign = TextAlign.Center,
-                color = EbbingTheme.colors.dark3,
+                color = EbbingTheme.colors.textDisabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)

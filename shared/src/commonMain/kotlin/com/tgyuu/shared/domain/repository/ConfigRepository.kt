@@ -28,6 +28,9 @@ interface ConfigRepository {
     suspend fun getSoftUpdateInfo(): UpdateInfo
     suspend fun getHardUpdateInfo(): UpdateInfo
 
+    /** 업데이트 버튼이 여는 스토어 주소 (iOS 는 Remote Config ios_app_store_url). 없으면 빈 문자열. */
+    suspend fun getAppStoreUrl(): String = ""
+
     fun getMondayStart(): Flow<Boolean>
     suspend fun setMondayStart(enabled: Boolean)
 

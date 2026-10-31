@@ -317,8 +317,8 @@ private fun AddTodoFormContent(
         underlinedPart = stringResource(Res.string.home_month_day, state.selectedDate.monthNumber, state.selectedDate.dayOfMonth),
         rest = stringResource(Res.string.home_add_todo_header_suffix),
         style = EbbingTheme.typography.headingLSB,
-        color = EbbingTheme.colors.black,
-        highlightColor = EbbingTheme.colors.primaryDefault,
+        color = EbbingTheme.colors.textOnBackground,
+        highlightColor = EbbingTheme.colors.primaryNormal,
         modifier = Modifier.clickable(onClick = onDateClick),
     )
 

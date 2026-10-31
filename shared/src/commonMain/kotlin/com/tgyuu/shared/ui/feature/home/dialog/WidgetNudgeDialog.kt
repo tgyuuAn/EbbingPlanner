@@ -62,7 +62,7 @@ internal fun WidgetNudgeDialog(
             Text(
                 text = stringResource(Res.string.home_widget_nudge_label),
                 style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark3,
+                color = EbbingTheme.colors.textDisabled,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
@@ -70,7 +70,7 @@ internal fun WidgetNudgeDialog(
                 text = stringResource(Res.string.home_widget_nudge_title),
                 textAlign = TextAlign.Center,
                 style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier
                     .padding(top = 6.dp, bottom = 24.dp)
                     .padding(horizontal = 16.dp),

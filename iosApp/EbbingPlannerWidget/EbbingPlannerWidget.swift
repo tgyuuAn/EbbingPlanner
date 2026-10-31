@@ -61,7 +61,10 @@ enum WidgetShared {
 
     static func openAppURL() -> URL { URL(string: "\(scheme)://open")! }
     static func homeURL(date: String) -> URL { URL(string: "\(scheme)://home?date=\(date)")! }
-    static func addTodoURL(date: String) -> URL { URL(string: "\(scheme)://addtodo?date=\(date)")! }
+    /// source: 누른 위젯 (Android KEY_WIDGET_SOURCE). 앱이 Click_AddTodo_{source} 로 기록해요
+    static func addTodoURL(date: String, source: String) -> URL {
+        URL(string: "\(scheme)://addtodo?date=\(date)&source=\(source)")!
+    }
 
     /// 다음 자정 (날짜가 바뀌는 시점)
     static func nextMidnight(after date: Date) -> Date {
@@ -85,6 +88,39 @@ enum WidgetShared {
 
     static func setCalendarSelectedDate(_ date: String) {
         UserDefaults(suiteName: appGroup)?.set(date, forKey: selectedDateKey)
+    }
+}
+
+// MARK: - Analytics queue (Android 위젯 Receiver 의 analyticsHelper.logEvent 대응)
+
+/// 위젯은 Amplitude 를 쓸 수 없어 App Group 큐에 쌓고, 앱이 포그라운드가 될 때 꺼내 보내요.
+/// 형식은 shared iosMain WidgetAnalyticsQueue 와 같아야 해요.
+enum WidgetAnalyticsQueue {
+    static let queueKey = "widget_analytics_queue"
+    static let installedKeyPrefix = "widget_installed_"
+    /// 앱이 꺼내기 전까지 너무 쌓이지 않도록 최근 것만 남겨요
+    private static let maxQueued = 100
+
+    static func logClick(screenName: String, buttonName: String) {
+        guard let defaults = UserDefaults(suiteName: WidgetShared.appGroup) else { return }
+        var queue = defaults.array(forKey: queueKey) as? [[String: Any]] ?? []
+        queue.append([
+            "type": "button_click",
+            "screen_name": screenName,
+            "button_name": buttonName,
+            "timestamp": Int64(Date().timeIntervalSince1970 * 1000),
+        ])
+        defaults.set(Array(queue.suffix(maxQueued)), forKey: queueKey)
+    }
+
+    /// Android onEnabled(첫 위젯 배치) 대응: 종류별로 처음 타임라인을 만들 때 한 번 Click_Set_{screen} 을 남겨요.
+    /// 위젯을 모두 지우면 앱이 표시를 지워 다시 배치할 때 또 기록돼요.
+    static func markInstalledIfNeeded(kind: String, screenName: String) {
+        guard let defaults = UserDefaults(suiteName: WidgetShared.appGroup) else { return }
+        let key = installedKeyPrefix + kind
+        guard !defaults.bool(forKey: key) else { return }
+        defaults.set(true, forKey: key)
+        logClick(screenName: screenName, buttonName: "Set")
     }
 }
 
@@ -496,10 +532,12 @@ struct PlusIcon: View {
 /// Android RefreshAction (ic_widget_refresh, textSub 틴트). iOS 17+ 에서만 버튼으로 동작해요.
 struct RefreshButton: View {
     let palette: WidgetPalette
+    /// 분석 화면명 (TodoWidget / CalendarWidget)
+    let source: String
 
     var body: some View {
         if #available(iOS 17.0, *) {
-            Button(intent: RefreshWidgetIntent()) {
+            Button(intent: RefreshWidgetIntent(source: source)) {
                 Image(systemName: "arrow.clockwise")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(palette.textSub)
@@ -626,6 +664,9 @@ struct TodoTimelineProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TodoEntry>) -> Void) {
+        if !context.isPreview {
+            WidgetAnalyticsQueue.markInstalledIfNeeded(kind: "TodayTodoWidget", screenName: "TodoWidget")
+        }
         let now = Date()
         let settings = WidgetSettings.load()
         // 갱신이 늦어져도 자정에는 다음 날 일정이 보이도록 자정 엔트리를 미리 넣어둬요
@@ -680,12 +721,12 @@ struct TodayTodoWidgetView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             Spacer(minLength: 6)
-            Link(destination: WidgetShared.addTodoURL(date: day)) {
+            Link(destination: WidgetShared.addTodoURL(date: day, source: "TodoWidget")) {
                 PlusIcon()
             }
             if #available(iOS 17.0, *) {
                 Spacer().frame(width: family == .systemSmall ? 8 : 12)
-                RefreshButton(palette: palette)
+                RefreshButton(palette: palette, source: "TodoWidget")
             }
         }
     }
@@ -716,6 +757,9 @@ struct CalendarTimelineProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<CalendarEntry>) -> Void) {
+        if !context.isPreview {
+            WidgetAnalyticsQueue.markInstalledIfNeeded(kind: "CalendarWidget", screenName: "CalendarWidget")
+        }
         let now = Date()
         let settings = WidgetSettings.load()
         let midnight = WidgetShared.nextMidnight(after: now)
@@ -775,7 +819,7 @@ struct CalendarWidgetView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                 Spacer(minLength: 4)
-                Link(destination: WidgetShared.addTodoURL(date: selectedDay)) {
+                Link(destination: WidgetShared.addTodoURL(date: selectedDay, source: "CalendarWidget")) {
                     PlusIcon(size: compact ? 18 : 20)
                 }
                 Spacer().frame(width: compact ? 8 : 12)
@@ -928,7 +972,7 @@ struct CalendarWidgetView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                 Spacer(minLength: 6)
-                RefreshButton(palette: palette)
+                RefreshButton(palette: palette, source: "CalendarWidget")
             }
             Spacer().frame(height: compact ? 6 : 8)
             if entry.todos.isEmpty {
@@ -1028,7 +1072,14 @@ struct RefreshWidgetIntent: AppIntent {
     static var title: LocalizedStringResource = "위젯 새로고침"
     static var isDiscoverable: Bool = false
 
+    /// 누른 위젯 (TodoWidget / CalendarWidget). Android Click_Refresh_{screen}
+    @Parameter(title: "Source") var source: String
+
+    init() { self.source = "TodoWidget" }
+    init(source: String) { self.source = source }
+
     func perform() async throws -> some IntentResult {
+        WidgetAnalyticsQueue.logClick(screenName: source, buttonName: "Refresh")
         WidgetCenter.shared.reloadAllTimelines()
         return .result()
     }

@@ -12,11 +12,14 @@ sealed interface WidgetDeepLink {
     /** 해당 날짜가 선택된 홈 (Android openHomeAction) */
     data class Home(val date: String) : WidgetDeepLink
 
-    /** 해당 날짜로 일정 등록 (Android AddTodoFromWidgetAction) */
-    data class AddTodo(val date: String) : WidgetDeepLink
+    /**
+     * 해당 날짜로 일정 등록 (Android AddTodoFromWidgetAction)
+     * @param source 누른 위젯 (TodoWidget / CalendarWidget). Android KEY_WIDGET_SOURCE 대응, 분석 로그 화면명
+     */
+    data class AddTodo(val date: String, val source: String? = null) : WidgetDeepLink
 
     companion object {
-        /** ebbingplanner://home?date=yyyy-MM-dd 형식을 해석해요 */
+        /** ebbingplanner://home?date=yyyy-MM-dd(&source=TodoWidget) 형식을 해석해요 */
         fun parse(url: String): WidgetDeepLink? {
             if (!url.contains("://")) return null
             val withoutScheme = url.substringAfter("://")
@@ -24,9 +27,12 @@ sealed interface WidgetDeepLink {
             val date = withoutScheme.substringAfter("date=", missingDelimiterValue = "")
                 .substringBefore('&')
                 .takeIf { Regex("\\d{4}-\\d{2}-\\d{2}").matches(it) }
+            val source = withoutScheme.substringAfter("source=", missingDelimiterValue = "")
+                .substringBefore('&')
+                .takeIf { it.isNotEmpty() && it.all(Char::isLetterOrDigit) }
             return when (host) {
                 "home" -> date?.let { Home(it) } ?: Open
-                "addtodo" -> date?.let { AddTodo(it) } ?: Open
+                "addtodo" -> date?.let { AddTodo(it, source) } ?: Open
                 "open" -> Open
                 else -> null
             }

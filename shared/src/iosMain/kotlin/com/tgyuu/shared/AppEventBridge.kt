@@ -11,4 +11,6 @@ fun handleDeepLink(url: String) {
 /** Swift scenePhase == .active 에서 호출: 외부(위젯)에서 바뀐 데이터를 다시 불러와요 */
 fun handleAppDidBecomeActive() {
     AppExternalEvents.emitForeground()
+    // 위젯에서 쌓아 둔 분석 이벤트(설치·새로고침)를 보내요
+    WidgetAnalyticsQueue.drain()
 }

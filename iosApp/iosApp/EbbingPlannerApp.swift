@@ -65,6 +65,13 @@ struct EbbingPlannerApp: App {
                 },
                 onTrackAnalyticsEvent: onTrackAnalyticsEvent,
                 onSetAnalyticsUserId: onSetAnalyticsUserId,
+                // 업데이트 안내·피처 플래그·실험 값 (Android Firebase Remote Config 대응)
+                onFetchRemoteConfig: { completion in
+                    RemoteConfigBridge.shared.fetchAndActivate { _ = completion() }
+                },
+                onGetRemoteConfigString: { key in
+                    RemoteConfigBridge.shared.string(forKey: key)
+                },
                 supabaseUrl: supabaseUrl,
                 supabaseKey: supabaseKey
             )
@@ -91,6 +98,20 @@ struct EbbingPlannerApp: App {
         }
         return AmplitudeAnalyticsBridge(apiKey: key)
         #endif
+    }
+
+    /// 위젯 설치 이벤트(Click_Set_*)는 종류별로 처음 배치될 때 한 번만 기록돼요 (Android onEnabled 대응).
+    /// 그 종류의 위젯이 모두 지워졌으면 표시를 지워, 다시 배치하면 또 기록되게 해요.
+    /// 키 형식은 EbbingPlannerWidget.swift 의 WidgetAnalyticsQueue 와 같아야 해요.
+    private static func resetRemovedWidgetInstallMarks() {
+        WidgetCenter.shared.getCurrentConfigurations { result in
+            guard case .success(let widgets) = result,
+                  let defaults = UserDefaults(suiteName: "group.com.tgyuu.ebbingplanner") else { return }
+            let installedKinds = Set(widgets.map(\.kind))
+            for kind in ["TodayTodoWidget", "CalendarWidget"] where !installedKinds.contains(kind) {
+                defaults.removeObject(forKey: "widget_installed_\(kind)")
+            }
+        }
     }
 
     private static func loadSecrets() -> [String: String] {
@@ -124,8 +145,9 @@ struct EbbingPlannerApp: App {
             case .active:
                 // 포그라운드 복귀 시 실패한 백업 재시도
                 AutoBackupBridgeKt.handleAppWillEnterForeground()
-                // 위젯에서 바꾼 완료 상태 등 외부 변경을 다시 불러와요
+                // 위젯에서 바꾼 완료 상태 등 외부 변경을 다시 불러오고, 위젯이 쌓아 둔 분석 이벤트를 보내요
                 AppEventBridgeKt.handleAppDidBecomeActive()
+                Self.resetRemovedWidgetInstallMarks()
             default:
                 break
             }

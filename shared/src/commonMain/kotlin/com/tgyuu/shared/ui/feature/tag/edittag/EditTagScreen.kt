@@ -94,8 +94,8 @@ fun EditTagScreen(
                 Text(
                     text = stringResource(Res.string.tag_edit_button),
                     style = EbbingTheme.typography.headingSSB,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryDefault
-                    else EbbingTheme.colors.dark3,
+                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal
+                    else EbbingTheme.colors.textDisabled,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .clickable(enabled = state.isSaveEnabled) {
@@ -116,7 +116,7 @@ fun EditTagScreen(
             Text(
                 text = stringResource(Res.string.tag_edit_headline, state.originTag?.name ?: ""),
                 style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(bottom = 32.dp),
             )
 
@@ -174,7 +174,7 @@ private fun NameContent(
         Text(
             text = stringResource(Res.string.tag_name_label),
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
@@ -220,7 +220,7 @@ private fun ColorContent(
         Text(
             text = stringResource(Res.string.tag_color),
             style = EbbingTheme.typography.headingSM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Spacer(

@@ -102,20 +102,20 @@ private fun RestoreScreenContent(
                 Text(
                     text = stringResource(Res.string.sync_restore_headline),
                     style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
 
                 Text(
                     text = stringResource(Res.string.sync_restore_description),
                     style = EbbingTheme.typography.bodySM,
-                    color = EbbingTheme.colors.dark2,
+                    color = EbbingTheme.colors.textSub,
                     modifier = Modifier.padding(top = 8.dp),
                 )
 
                 Text(
                     text = stringResource(Res.string.sync_restore_input_label),
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                     modifier = Modifier.padding(top = 32.dp),
                 )
 
@@ -142,7 +142,7 @@ private fun RestoreScreenContent(
 
         if (state.isRestoring) {
             CircularProgressIndicator(
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(40.dp),

@@ -5,8 +5,13 @@ import com.tgyuu.shared.common.suspendRunCatching
 import com.tgyuu.shared.domain.model.sync.RestoreResult
 import com.tgyuu.shared.domain.repository.SyncRepository
 import com.tgyuu.shared.platform.AnalyticsHelper
+import com.tgyuu.shared.platform.NetworkMonitor
+import com.tgyuu.shared.platform.isConnected
+import com.tgyuu.shared.platform.isNetworkError
 import com.tgyuu.shared.platform.logClick
 import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.sync_network_check
+import ebbingplanner.shared.generated.resources.sync_network_required
 import ebbingplanner.shared.generated.resources.sync_restore_ambiguous
 import ebbingplanner.shared.generated.resources.sync_restore_done
 import ebbingplanner.shared.generated.resources.sync_restore_empty_data
@@ -21,6 +26,8 @@ class RestoreViewModel(
     private val onNavigateBack: () -> Unit,
     private val onShowSnackbar: (String) -> Unit = {},
     private val analyticsHelper: AnalyticsHelper? = null,
+    /** Android RestoreViewModel networkMonitor: 오프라인이면 복원 요청 전에 막아요 */
+    private val networkMonitor: NetworkMonitor? = null,
 ) : BaseViewModel<RestoreState, RestoreIntent>(RestoreState()) {
 
     override suspend fun processIntent(intent: RestoreIntent) {
@@ -44,6 +51,11 @@ class RestoreViewModel(
 
     private suspend fun onRestoreClick() {
         if (!currentState.isRestoreEnabled) return
+
+        if (!networkMonitor.isConnected) {
+            onShowSnackbar(getString(Res.string.sync_network_required))
+            return
+        }
 
         setState { copy(isRestoring = true) }
 
@@ -75,8 +87,10 @@ class RestoreViewModel(
                 RestoreResult.LinkedDevice ->
                     onShowSnackbar(getString(Res.string.sync_restore_linked))
             }
-        }.onFailure {
-            onShowSnackbar(getString(Res.string.sync_restore_failed))
+        }.onFailure { error ->
+            onShowSnackbar(
+                getString(if (error.isNetworkError()) Res.string.sync_network_check else Res.string.sync_restore_failed)
+            )
         }
     }
 }

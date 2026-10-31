@@ -140,7 +140,7 @@ private fun OnboardingPageContent(
                 painter = painterResource(imageRes),
                 contentDescription = null,
                 // Android와 동일: 온보딩 일러스트를 primary 색으로 틴트 + Inside 스케일
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.primaryDefault),
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.primaryNormal),
                 contentScale = ContentScale.Inside,
                 modifier = Modifier
                     .padding(vertical = 66.dp)
@@ -151,7 +151,7 @@ private fun OnboardingPageContent(
             Text(
                 text = title,
                 style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
@@ -159,7 +159,7 @@ private fun OnboardingPageContent(
             Text(
                 text = description,
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark3,
+                color = EbbingTheme.colors.textDisabled,
                 textAlign = TextAlign.Start,
             )
         }
@@ -187,8 +187,8 @@ private fun OnboardingIndicator(
                     )
                     .clip(CircleShape)
                     .background(
-                        if (isSelected) EbbingTheme.colors.dark3
-                        else EbbingTheme.colors.light1
+                        if (isSelected) EbbingTheme.colors.textDisabled
+                        else EbbingTheme.colors.fillDisabled
                     ),
             )
         }

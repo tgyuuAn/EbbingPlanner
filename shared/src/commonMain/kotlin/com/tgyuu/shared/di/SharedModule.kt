@@ -6,7 +6,13 @@ import com.tgyuu.shared.data.repository.ExperimentRepositoryImpl
 import com.tgyuu.shared.data.repository.FeatureFlagRepositoryImpl
 import com.tgyuu.shared.data.repository.SyncRepositoryImpl
 import com.tgyuu.shared.data.repository.TodoRepositoryImpl
+import com.tgyuu.shared.data.source.DefaultRemoteConfigDataSource
+import com.tgyuu.shared.data.source.NoOpNotificationLogDataSource
+import com.tgyuu.shared.data.source.NotificationLogDataSource
+import com.tgyuu.shared.data.source.RemoteConfigDataSource
 import com.tgyuu.shared.data.source.UsageOrderStore
+import com.tgyuu.shared.platform.NetworkMonitor
+import com.tgyuu.shared.platform.createNetworkMonitor
 import com.tgyuu.shared.database.EbbingDatabase
 import com.tgyuu.shared.domain.AlarmRescheduler
 import com.tgyuu.shared.domain.AutoBackupManager
@@ -57,8 +63,19 @@ val sharedModule = module {
         )
     }
 
+    // 원격 설정·알림 로그·네트워크 감시 기본값. 플랫폼 모듈(iOS 오버라이드 모듈)이 실제 구현으로 덮어쓴다.
+    single<RemoteConfigDataSource> { DefaultRemoteConfigDataSource() }
+    single<NotificationLogDataSource> { NoOpNotificationLogDataSource() }
+    single<NetworkMonitor> { createNetworkMonitor() }
+
     single<ConfigRepository> {
-        ConfigRepositoryImpl(settings = get(), usageOrderStore = get())
+        ConfigRepositoryImpl(
+            settings = get(),
+            usageOrderStore = get(),
+            remoteConfigDataSource = get(),
+            notificationLogDataSource = get(),
+            uuidProvider = { get<SyncRepository>().getUuid() },
+        )
     }
 
     single<ErrorDataSource> { DebugErrorDataSource() }
@@ -85,10 +102,14 @@ val sharedModule = module {
     single<AnalyticsHelper> { DebugAnalyticsHelper() }
 
     single<ExperimentRepository> {
-        ExperimentRepositoryImpl(settings = get())
+        ExperimentRepositoryImpl(
+            settings = get(),
+            remoteConfigDataSource = get(),
+            buildType = getPropertyOrNull<String>(PROPERTY_BUILD_TYPE) ?: "release",
+        )
     }
 
-    single<FeatureFlagRepository> { FeatureFlagRepositoryImpl() }
+    single<FeatureFlagRepository> { FeatureFlagRepositoryImpl(remoteConfigDataSource = get()) }
 
     single {
         AutoBackupManager(
@@ -96,6 +117,7 @@ val sharedModule = module {
             configRepository = get(),
             syncRepository = get(),
             errorRepository = get(),
+            networkMonitor = get(),
         )
     }
 
@@ -117,6 +139,9 @@ val sharedModule = module {
         )
     }
 }
+
+/** Koin 프로퍼티: Remote Config 실험 키 접미사 ("debug" / "release", Android BuildConfig.BUILD_TYPE 대응) */
+const val PROPERTY_BUILD_TYPE = "build_type"
 
 /**
  * Returns all shared modules

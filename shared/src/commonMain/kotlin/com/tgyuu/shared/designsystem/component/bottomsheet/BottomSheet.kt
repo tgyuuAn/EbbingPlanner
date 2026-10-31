@@ -88,7 +88,7 @@ fun EbbingModalBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState.state,
         containerColor = EbbingTheme.colors.background,
-        contentColor = EbbingTheme.colors.black,
+        contentColor = EbbingTheme.colors.textOnBackground,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         dragHandle = {
             Spacer(modifier = Modifier.height(28.dp))
@@ -119,7 +119,7 @@ fun EbbingBottomSheetHeader(
             Text(
                 text = title,
                 style = EbbingTheme.typography.headingLSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.padding(top = 10.dp),
             )
 
@@ -130,7 +130,7 @@ fun EbbingBottomSheetHeader(
             Text(
                 text = subTitle,
                 style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark3,
+                color = EbbingTheme.colors.textDisabled,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
         }
@@ -166,7 +166,7 @@ fun EbbingBottomSheetListItemDefault(
                         if (checked) {
                             Modifier.border(
                                 width = 1.dp,
-                                color = EbbingTheme.colors.primaryDefault,
+                                color = EbbingTheme.colors.primaryNormal,
                                 shape = CircleShape
                             )
                         } else {
@@ -176,9 +176,9 @@ fun EbbingBottomSheetListItemDefault(
             )
         }
 
-        val textColor = if (!enabled) EbbingTheme.colors.dark3
-        else if (checked) EbbingTheme.colors.primaryDefault
-        else EbbingTheme.colors.black
+        val textColor = if (!enabled) EbbingTheme.colors.textDisabled
+        else if (checked) EbbingTheme.colors.primaryNormal
+        else EbbingTheme.colors.textOnBackground
 
         Text(
             text = label,
@@ -193,7 +193,7 @@ fun EbbingBottomSheetListItemDefault(
             Icon(
                 painter = painterResource(Res.drawable.ic_textinput_check),
                 contentDescription = null,
-                tint = EbbingTheme.colors.primaryDefault,
+                tint = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .size(32.dp),

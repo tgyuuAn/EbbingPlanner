@@ -17,6 +17,8 @@ data class SettingState(
     val autoBackupFeatureEnabled: Boolean = false,
     val autoBackupEnabled: Boolean = true,
     val lastSyncTime: String? = null,
+    /** Android UpdateBody: 소프트 업데이트 대상이면 버전 행에 업데이트 버튼(화살표)을 보여줘요 */
+    val isUpdateButtonVisible: Boolean = false,
 ) : UiState
 
 @Immutable
@@ -72,4 +74,6 @@ sealed class SettingIntent : UiIntent {
     data object OnAutoBackupToggleClick : SettingIntent()
     data object OnNoticeClick : SettingIntent()
     data object OnInquiryClick : SettingIntent()
+    /** 버전 행 업데이트 버튼 (Android OnUpdateClick: 인앱 업데이트 → iOS 는 App Store) */
+    data object OnUpdateClick : SettingIntent()
 }

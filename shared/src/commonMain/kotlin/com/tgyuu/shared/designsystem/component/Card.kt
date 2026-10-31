@@ -56,10 +56,10 @@ fun TodoListCard(
     modifier: Modifier = Modifier,
 ) {
     val titleColor =
-        if (todo.isDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.black
+        if (todo.isDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground
     val subColor =
-        if (todo.isDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2
-    val outlineColor = EbbingTheme.colors.light2
+        if (todo.isDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub
+    val outlineColor = EbbingTheme.colors.strokeOutline
     val orderedSchedules = remember(todosWithSameInfo) { todosWithSameInfo.sortedBy { it.date } }
     val roundNumber = remember(orderedSchedules, todo.id) {
         orderedSchedules.indexOfFirst { it.id == todo.id }.coerceAtLeast(0) + 1
@@ -136,7 +136,7 @@ fun TodoListCard(
                                 Icon(
                                     painter = painterResource(Res.drawable.ic_pin),
                                     contentDescription = null,
-                                    tint = EbbingTheme.colors.dark2,
+                                    tint = EbbingTheme.colors.strokeIcon,
                                     modifier = Modifier.size(16.dp),
                                 )
                             }
@@ -150,7 +150,7 @@ fun TodoListCard(
                         Text(
                             text = stringResource(Res.string.card_round_count, roundNumber),
                             style = EbbingTheme.typography.bodySM,
-                            color = EbbingTheme.colors.dark3,
+                            color = EbbingTheme.colors.textDisabled,
                         )
 
                         Row(
@@ -181,7 +181,7 @@ fun TodoListCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(EbbingTheme.colors.light3)
+                                .background(EbbingTheme.colors.fillTextfield)
                                 .then(
                                     if (memoOverflow) Modifier.clickable { memoExpanded = !memoExpanded }
                                     else Modifier
@@ -205,7 +205,7 @@ fun TodoListCard(
                                     imageVector = if (memoExpanded) Icons.Default.KeyboardArrowUp
                                     else Icons.Default.KeyboardArrowDown,
                                     contentDescription = null,
-                                    tint = EbbingTheme.colors.dark2,
+                                    tint = EbbingTheme.colors.strokeIcon,
                                     modifier = Modifier.size(20.dp),
                                 )
                             }
@@ -218,7 +218,7 @@ fun TodoListCard(
             Icon(
                 painter = painterResource(Res.drawable.ic_3dots),
                 contentDescription = null,
-                tint = EbbingTheme.colors.dark2,
+                tint = EbbingTheme.colors.strokeIcon,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .size(20.dp)

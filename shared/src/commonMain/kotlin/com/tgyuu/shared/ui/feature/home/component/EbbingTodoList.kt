@@ -141,12 +141,12 @@ private fun TodoHeader(
             text = buildAnnotatedString {
                 append(dateText)
                 append(" ")
-                withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                     append(completedCount.toString())
                 }
                 withStyle(
                     SpanStyle(
-                        color = EbbingTheme.colors.dark3,
+                        color = EbbingTheme.colors.textDisabled,
                         fontWeight = FontWeight.Medium,
                     )
                 ) {
@@ -154,7 +154,7 @@ private fun TodoHeader(
                 }
             },
             style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f)
         )
 
@@ -224,7 +224,7 @@ private fun TodoPage(
             ),
             style = EbbingTheme.typography.bodySM,
             textAlign = TextAlign.Center,
-            color = EbbingTheme.colors.dark3,
+            color = EbbingTheme.colors.textDisabled,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 30.dp),
@@ -263,12 +263,12 @@ private fun TagSectionHeader(
         Text(
             text = tagName,
             style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.textSub,
         )
         Text(
             text = count.toString(),
             style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.textSub,
         )
     }
 }

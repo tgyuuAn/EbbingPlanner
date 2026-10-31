@@ -4,15 +4,31 @@ import com.tgyuu.shared.domain.model.CalendarDefaultView
 import com.tgyuu.shared.domain.model.SortType
 import com.tgyuu.shared.domain.model.Theme
 import com.tgyuu.shared.domain.model.UpdateInfo
+import com.tgyuu.shared.data.source.DefaultRemoteConfigDataSource
+import com.tgyuu.shared.data.source.NoOpNotificationLogDataSource
+import com.tgyuu.shared.data.source.NotificationLogDataSource
+import com.tgyuu.shared.data.source.RemoteConfigDataSource
 import com.tgyuu.shared.data.source.UsageOrderStore
 import com.tgyuu.shared.domain.repository.ConfigRepository
 import com.tgyuu.shared.platform.Settings
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 class ConfigRepositoryImpl(
     private val settings: Settings,
     private val usageOrderStore: UsageOrderStore,
+    private val remoteConfigDataSource: RemoteConfigDataSource = DefaultRemoteConfigDataSource(),
+    private val notificationLogDataSource: NotificationLogDataSource = NoOpNotificationLogDataSource(),
+    /** 알림 설정 로그의 uuid (Android localSyncDataSource.uuid 대응) */
+    private val uuidProvider: suspend () -> String = { "" },
+    private val logScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
 ) : ConfigRepository {
 
     override fun getAppTheme(): Flow<Theme> =
@@ -57,6 +73,7 @@ class ConfigRepositoryImpl(
 
     override suspend fun setNotificationEnabled(enabled: Boolean) {
         settings.putBoolean(KEY_NOTIFICATION_ENABLED, enabled)
+        logNotificationConfigSilently()
     }
 
     override suspend fun setAppTheme(theme: Theme) {
@@ -84,19 +101,60 @@ class ConfigRepositoryImpl(
 
     override suspend fun updateAlarmMessage(message: String) {
         settings.putString(KEY_ALARM_MESSAGE, message)
+        logNotificationConfigSilently()
     }
 
     override suspend fun getAlarmMessage(): String =
         settings.getString(KEY_ALARM_MESSAGE, ConfigRepository.DEFAULT_ALARM_MESSAGE)
 
-    override suspend fun getSoftUpdateInfo(): UpdateInfo {
-        // TODO: Implement with remote config
-        return UpdateInfo(minVersion = "", noticeMsg = "")
+    // Android getSoftUpdateInfo/getHardUpdateInfo 대응 (키만 iOS 전용: RemoteConfigDataSource.Key 참고)
+    override suspend fun getSoftUpdateInfo(): UpdateInfo =
+        getUpdateInfo(RemoteConfigDataSource.Key.IOS_UPDATE)
+
+    override suspend fun getHardUpdateInfo(): UpdateInfo =
+        getUpdateInfo(RemoteConfigDataSource.Key.IOS_HARD_UPDATE)
+
+    override suspend fun getAppStoreUrl(): String {
+        remoteConfigDataSource.fetchAndActivate()
+        return remoteConfigDataSource.getString(RemoteConfigDataSource.Key.IOS_APP_STORE_URL)?.trim().orEmpty()
     }
 
-    override suspend fun getHardUpdateInfo(): UpdateInfo {
-        // TODO: Implement with remote config
-        return UpdateInfo(minVersion = "", noticeMsg = "")
+    private suspend fun getUpdateInfo(key: String): UpdateInfo {
+        remoteConfigDataSource.fetchAndActivate()
+        val raw = remoteConfigDataSource.getString(key)
+        // Android ConfigDataSource.getReferenceType(defaultValue = GetUpdateInfoResponse()) 와 같은 기본값
+        val response = raw?.let { runCatching { json.decodeFromString<UpdateInfoResponse>(it) }.getOrNull() }
+            ?: UpdateInfoResponse()
+        return UpdateInfo(minVersion = response.minVersion, noticeMsg = response.noticeMsg)
+    }
+
+    // Android ConfigRepositoryImpl.logNotificationConfigSilently 와 같은 값. 실패는 조용히 무시한다.
+    // Android 는 저장 코루틴 안에서 바로 업로드하지만, 오프라인 타임아웃 동안 뒤 작업(알림 재예약 등)이
+    // 밀리지 않도록 별도 스코프에서 보낸다.
+    private fun logNotificationConfigSilently() {
+        logScope.launch { sendNotificationConfigLog() }
+    }
+
+    private suspend fun sendNotificationConfigLog() {
+        try {
+            val uuid = uuidProvider()
+            val enabled = getNotificationEnabled().first()
+            val (hour, minute) = getAlarmTime()
+            val message = getAlarmMessage()
+
+            notificationLogDataSource.logNotificationConfig(
+                uuid = uuid,
+                enabled = enabled,
+                alarmTime = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}",
+                message = message,
+                usesPlaceholder = ConfigRepository.PLACEHOLDER_TOKENS.any { message.contains(it) },
+                isDefault = message == ConfigRepository.DEFAULT_ALARM_MESSAGE,
+            )
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Throwable) {
+            // silent
+        }
     }
 
     override fun getMondayStart(): Flow<Boolean> =
@@ -165,7 +223,16 @@ class ConfigRepositoryImpl(
     override suspend fun recordRepeatCycleUsage(cycleId: Int) =
         usageOrderStore.recordRepeatCycleUsage(cycleId)
 
+    /** Android GetUpdateInfoResponse 와 같은 형식·기본값 */
+    @Serializable
+    private data class UpdateInfoResponse(
+        val minVersion: String = "1.0.0",
+        val noticeMsg: String = "여러분의 의견을 반영하여 사용성을 개선했습니다.\n지금 바로 업데이트해 보세요!",
+    )
+
     companion object {
+        private val json = Json { ignoreUnknownKeys = true }
+
         private const val KEY_CLEAR_SYNC_FLAG = "CLEAR_SYNC_FLAG"
         private const val KEY_SORT_TYPE = "SORT_TYPE"
         private const val KEY_NOTIFICATION_ENABLED = "NOTIFICATION_ENABLED"
