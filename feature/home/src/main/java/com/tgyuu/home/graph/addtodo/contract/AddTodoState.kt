@@ -27,9 +27,23 @@ data class AddTodoState(
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
     val notificationState: NotificationState = NotificationState(),
     val mondayStart: Boolean = false,
+    val suggestions: ImmutableList<ProgressSuggestion> = persistentListOf(),
+    val isTagFromLast: Boolean = false,
+    val isRepeatCycleFromLast: Boolean = false,
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
     val isModified = title.isNotEmpty() || isPinned || restDays.isNotEmpty()
+
+    /** 입력 중인 제목과 겹치는 칩만 보여주고, 이미 칩 그대로 채워졌으면 숨겨요. */
+    val visibleSuggestions: List<ProgressSuggestion>
+        get() {
+            val query = title.trim()
+            if (query.isEmpty()) return suggestions
+            return suggestions.filter {
+                it.title != query && it.title.contains(query, ignoreCase = true)
+            }
+        }
+
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
@@ -52,6 +66,13 @@ data class AddTodoState(
         NOTIFICATION
     }
 }
+
+@Immutable
+data class ProgressSuggestion(
+    val title: String,
+    val tag: TodoTagUiModel,
+    val repeatCycle: RepeatCycleUiModel?,
+)
 
 @Immutable
 data class NotificationState(

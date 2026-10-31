@@ -79,6 +79,11 @@ data class EbbingTypography(
         fontSize = 14.sp,
         lineHeight = 18.sp,
     ),
+    val heading12SB: TextStyle = TextStyle(
+        fontFamily = PretendardSemiBold,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+    ),
     // Body — 본문 내에 쓰이는 일반 텍스트
     val body18M: TextStyle = TextStyle(
         fontFamily = PretendardMedium,
@@ -122,6 +127,7 @@ internal val TabletTypography: EbbingTypography = EbbingTypography().run {
         heading14B = heading14B.copy(fontSize = 16.sp, lineHeight = 20.sp),
         heading16SB = heading16SB.copy(fontSize = 18.sp, lineHeight = 22.sp),
         heading14SB = heading14SB.copy(fontSize = 16.sp, lineHeight = 20.sp),
+        heading12SB = heading12SB.copy(fontSize = 14.sp, lineHeight = 18.sp),
         body18M = body18M.copy(fontSize = 20.sp, lineHeight = 24.sp),
         body16M = body16M.copy(fontSize = 18.sp, lineHeight = 24.sp),
         body14M = body14M.copy(fontSize = 16.sp, lineHeight = 22.sp),

@@ -2,7 +2,6 @@ package com.tgyuu.home.graph.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -17,11 +16,11 @@ internal fun RepeatCycleContent(
     repeatCycle: RepeatCycleUiModel?,
     onRepeatCycleDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isFromLast: Boolean = false,
 ) {
-    Text(
-        text = stringResource(R.string.home_repeat_cycle),
-        style = EbbingTheme.typography.heading14SB,
-        color = EbbingTheme.colors.textOnBackground,
+    FieldLabel(
+        label = stringResource(R.string.home_repeat_cycle),
+        isFromLast = isFromLast,
         modifier = Modifier.padding(top = 32.dp),
     )
 

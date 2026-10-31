@@ -208,6 +208,10 @@
     <string name="home_snackbar_all_rest_days">모든 요일을 휴식할 수는 없습니다</string>
     <string name="home_snackbar_required_fields">필수 항목을 작성해주세요</string>
     <string name="home_snackbar_todo_added">새로운 일정을 추가하였습니다</string>
+    <string name="home_next_progress_title">다음 진도 추천</string>
+    <string name="home_from_last_todo">지난번 일정에서 가져옴</string>
+    <string name="home_snackbar_next_progress_eul">다음에 \'%1$s\'을 입력하면 %2$s부터 추천해 드릴게요.</string>
+    <string name="home_snackbar_next_progress_reul">다음에 \'%1$s\'를 입력하면 %2$s부터 추천해 드릴게요.</string>
     <string name="home_snackbar_loading_schedule_info">일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요</string>
     <string name="home_snackbar_no_schedule_to_save">저장할 일정이 없습니다</string>
     <string name="home_snackbar_date_repeat_changed">해당 일정의 날짜 및 반복 주기를 변경하였습니다</string>

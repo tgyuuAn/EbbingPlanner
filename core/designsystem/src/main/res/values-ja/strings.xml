@@ -207,6 +207,10 @@
     <string name="home_snackbar_all_rest_days">すべての曜日を休みにすることはできません</string>
     <string name="home_snackbar_required_fields">必須項目を入力してください</string>
     <string name="home_snackbar_todo_added">新しい予定を追加しました</string>
+    <string name="home_next_progress_title">次の進度のおすすめ</string>
+    <string name="home_from_last_todo">前回の予定から引き継ぎ</string>
+    <string name="home_snackbar_next_progress_eul">次に「%1$s」と入力すると、%2$sからおすすめします。</string>
+    <string name="home_snackbar_next_progress_reul">次に「%1$s」と入力すると、%2$sからおすすめします。</string>
     <string name="home_snackbar_loading_schedule_info">予定情報を読み込んでいます。しばらくしてからもう一度お試しください</string>
     <string name="home_snackbar_no_schedule_to_save">保存する予定がありません</string>
     <string name="home_snackbar_date_repeat_changed">この予定の日付と繰り返し周期を変更しました</string>

@@ -49,11 +49,13 @@ import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.graph.addtodo.contract.ProgressSuggestion
 import com.tgyuu.home.graph.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.ui.dialog.ConfirmExitDialog
 import com.tgyuu.home.graph.notification.NotificationScreen
+import com.tgyuu.home.graph.ui.NextProgressSuggestionContent
 import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
@@ -102,6 +104,7 @@ internal fun AddTodoRoute(
                     )
                 },
                 onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
+                onSuggestionClick = { viewModel.onIntent(AddTodoIntent.OnSuggestionClick(it)) },
                 onPinnedChange = { viewModel.onIntent(AddTodoIntent.OnPinnedChange(it)) },
                 onTagDropDownClick = {
                     viewModel.onIntent(
@@ -166,6 +169,7 @@ private fun AddTodoScreen(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
@@ -199,6 +203,7 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
+            onSuggestionClick = onSuggestionClick,
             onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -215,6 +220,7 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
+            onSuggestionClick = onSuggestionClick,
             onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -231,6 +237,7 @@ private fun AddTodoScreenPhone(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
@@ -266,6 +273,7 @@ private fun AddTodoScreenPhone(
                 scrollState = scrollState,
                 onSelectedDateChangeClick = onSelectedDateChangeClick,
                 onTitleChange = onTitleChange,
+                onSuggestionClick = onSuggestionClick,
                 onTagDropDownClick = onTagDropDownClick,
                 onPinnedChange = onPinnedChange,
                 onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -296,6 +304,7 @@ private fun AddTodoScreenTablet(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
@@ -326,6 +335,7 @@ private fun AddTodoScreenTablet(
                     scrollState = scrollState,
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onTitleChange = onTitleChange,
+                    onSuggestionClick = onSuggestionClick,
                     onTagDropDownClick = onTagDropDownClick,
                     onPinnedChange = onPinnedChange,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -355,6 +365,7 @@ private fun TodoMainFormContent(
     scrollState: ScrollState,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onTagDropDownClick: () -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
@@ -389,13 +400,20 @@ private fun TodoMainFormContent(
         onTitleChange = onTitleChange,
     )
 
+    NextProgressSuggestionContent(
+        suggestions = state.visibleSuggestions,
+        onSuggestionClick = onSuggestionClick,
+    )
+
     TagContent(
         tag = state.tag,
+        isFromLast = state.isTagFromLast,
         onTagDropDownClick = onTagDropDownClick,
     )
 
     RepeatCycleContent(
         repeatCycle = state.repeatCycle,
+        isFromLast = state.isRepeatCycleFromLast,
         onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
     )
 
@@ -430,6 +448,7 @@ private fun PreviewAddTodo() {
             onSaveClick = {},
             onBackClick = {},
             onTitleChange = {},
+            onSuggestionClick = {},
             onPinnedChange = {},
             onTagDropDownClick = {},
             onRepeatCycleDropDownClick = {},
