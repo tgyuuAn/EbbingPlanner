@@ -207,6 +207,10 @@
     <string name="home_snackbar_all_rest_days">You can\'t set every day as a rest day</string>
     <string name="home_snackbar_required_fields">Please fill in the required fields</string>
     <string name="home_snackbar_todo_added">A new task has been added</string>
+    <string name="home_next_progress_title">Suggested next</string>
+    <string name="home_from_last_todo">From your last task</string>
+    <string name="home_snackbar_next_progress_eul">Next time you type \'%1$s\', we\'ll suggest starting from %2$s.</string>
+    <string name="home_snackbar_next_progress_reul">Next time you type \'%1$s\', we\'ll suggest starting from %2$s.</string>
     <string name="home_snackbar_loading_schedule_info">Loading task info. Please try again in a moment</string>
     <string name="home_snackbar_no_schedule_to_save">There are no tasks to save</string>
     <string name="home_snackbar_date_repeat_changed">The date and repeat cycle of this task have been changed</string>

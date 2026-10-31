@@ -35,7 +35,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
@@ -62,11 +64,24 @@ fun EbbingTextInputDefault(
     val focusManager = LocalFocusManager.current
     var lastDoneTime by remember { mutableLongStateOf(0L) }
     var isFocused by remember { mutableStateOf(false) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(value, TextRange(value.length))) }
+    var lastValue by remember { mutableStateOf(value) }
+
+    // 추천 칩 선택처럼 바깥에서 값이 바뀌면 이어서 입력할 수 있게 커서를 끝으로 옮겨요.
+    if (value != lastValue) {
+        lastValue = value
+        if (value != textFieldValue.text) {
+            textFieldValue = TextFieldValue(value, TextRange(value.length))
+        }
+    }
 
     BasicTextField(
-        value = value,
+        value = textFieldValue,
         onValueChange = { input ->
-            limit?.let { if (input.length <= limit) onValueChange(input) } ?: onValueChange(input)
+            if (limit != null && input.text.length > limit) return@BasicTextField
+            val textChanged = input.text != textFieldValue.text
+            textFieldValue = input
+            if (textChanged) onValueChange(input.text)
         },
         singleLine = true,
         readOnly = readOnly,
