@@ -465,7 +465,7 @@ private fun PhoneHomeScreen(
 
             HorizontalDivider(
                 thickness = 8.dp,
-                color = EbbingTheme.colors.light3,
+                color = EbbingTheme.colors.fillTextfield,
             )
 
             if (state.isLoading) {
@@ -476,7 +476,7 @@ private fun PhoneHomeScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
-                        color = EbbingTheme.colors.primaryDefault,
+                        color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier.size(40.dp)
                     )
                 }
@@ -524,13 +524,13 @@ private fun AddTodoFab(
             .padding(end = 20.dp, bottom = 20.dp)
             .size(52.dp)
             .clip(CircleShape)
-            .background(EbbingTheme.colors.primaryDefault)
+            .background(EbbingTheme.colors.primaryNormal)
             .throttledClickable(500L) { onClick() },
     ) {
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = null,
-            tint = EbbingTheme.colors.white,
+            tint = EbbingTheme.colors.textOnPrimary,
             modifier = Modifier.size(24.dp),
         )
     }
@@ -708,7 +708,7 @@ private fun TabletHomeTodoList(
     if (state.isLoading) {
         Box(modifier = modifier, contentAlignment = Alignment.Center) {
             CircularProgressIndicator(
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier.size(40.dp)
             )
         }

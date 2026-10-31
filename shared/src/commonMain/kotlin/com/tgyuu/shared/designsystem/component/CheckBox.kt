@@ -28,7 +28,7 @@ fun EbbingCheckBox(
 ) {
     val shape = RoundedCornerShape(6.dp)
     val boxColor by animateColorAsState(
-        targetValue = if (checked) EbbingTheme.colors.primaryDefault else EbbingTheme.colors.background,
+        targetValue = if (checked) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.fillNormal,
         label = "checkbox_color",
     )
 
@@ -44,7 +44,7 @@ fun EbbingCheckBox(
                 } else {
                     Modifier.border(
                         width = 1.dp,
-                        color = EbbingTheme.colors.light1,
+                        color = EbbingTheme.colors.strokeOutline,
                         shape = shape,
                     )
                 }

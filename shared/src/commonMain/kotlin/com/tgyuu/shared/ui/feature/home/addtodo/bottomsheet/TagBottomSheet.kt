@@ -53,7 +53,7 @@ fun TagBottomSheetContent(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(Res.string.tag_add_title),
-                    tint = EbbingTheme.colors.black,
+                    tint = EbbingTheme.colors.textOnBackground,
                     modifier = Modifier
                         .size(32.dp)
                         .clickable { onAddTagClick() },
@@ -68,7 +68,7 @@ fun TagBottomSheetContent(
                 .fillMaxWidth()
                 .heightIn(max = 300.dp)
                 .padding(top = 12.dp)
-                .verticalScrollbar(listState, color = EbbingTheme.colors.light1), // Android fillDisabled
+                .verticalScrollbar(listState, color = EbbingTheme.colors.fillDisabled),
         ) {
             items(
                 items = tagList,

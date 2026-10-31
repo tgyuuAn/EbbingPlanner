@@ -84,7 +84,7 @@ fun AddRepeatCycleScreen(
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp).imePadding(),
             ) {
-                Text(text = stringResource(Res.string.repeat_add_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                Text(text = stringResource(Res.string.repeat_add_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.textOnBackground)
                 RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
                 RepeatCyclePreviewContent(intervals = state.parsedIntervals)
                 Spacer(modifier = Modifier.height(60.dp))
@@ -108,7 +108,7 @@ fun AddRepeatCycleScreen(
 
             Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
                 Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {
-                    Text(text = stringResource(Res.string.repeat_add_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    Text(text = stringResource(Res.string.repeat_add_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.textOnBackground)
                     RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
                 }
                 Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {
@@ -137,7 +137,7 @@ internal fun RepeatCycleInputContent(
         Text(
             text = stringResource(Res.string.repeat_cycle_label),
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.padding(top = 32.dp),
         )
 
@@ -166,7 +166,7 @@ internal fun RepeatCycleInputContent(
         Text(
             text = stringResource(Res.string.repeat_cycle_input_guide),
             style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark3, // Android textDisabled
+            color = EbbingTheme.colors.textDisabled,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(top = 8.dp, start = 8.dp)
@@ -185,15 +185,15 @@ internal fun RepeatCyclePreviewContent(
         Text(
             text = stringResource(Res.string.repeat_cycle_preview_label),
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.padding(top = 32.dp),
         )
 
         Text(
             text = intervals.toRepeatPreviewDisplay(),
             style = EbbingTheme.typography.heading14SB,
-            color = if (intervals.isEmpty()) EbbingTheme.colors.error
-            else EbbingTheme.colors.dark3, // Android textDisabled
+            color = if (intervals.isEmpty()) EbbingTheme.colors.statusError
+            else EbbingTheme.colors.textDisabled,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(top = 8.dp)

@@ -26,7 +26,7 @@ fun EbbingClickableText(
     overflow: TextOverflow = TextOverflow.Clip,
     onTextLayout: (TextLayoutResult) -> Unit = {},
 ) {
-    val linkColor = EbbingTheme.colors.primaryDefault
+    val linkColor = EbbingTheme.colors.primaryNormal
     val clickableText = remember(text) { ClickableText.from(text) }
     val annotatedString = remember(clickableText, linkColor) {
         clickableText.toAnnotatedString(linkColor)

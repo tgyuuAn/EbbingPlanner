@@ -250,7 +250,7 @@ private fun SyncScreenContent(
                         .weight(1f)
                         .fillMaxWidth(),
                 ) {
-                    CircularProgressIndicator(color = EbbingTheme.colors.primaryDefault)
+                    CircularProgressIndicator(color = EbbingTheme.colors.primaryNormal)
                 }
 
                 else -> Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -318,7 +318,7 @@ private fun QrCardSection(
     Text(
         text = stringResource(Res.string.sync_new_device_section),
         style = EbbingTheme.typography.bodySSB,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(bottom = 16.dp),
     )
 
@@ -358,7 +358,7 @@ private fun QrActionCard(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = EbbingTheme.colors.light2,
+                color = EbbingTheme.colors.strokeOutline,
                 shape = RoundedCornerShape(8.dp),
             )
             .padding(horizontal = 20.dp, vertical = 16.dp),
@@ -370,20 +370,20 @@ private fun QrActionCard(
             Text(
                 text = label,
                 style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.textSub,
             )
 
             Text(
                 text = description,
                 style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
             )
 
             if (warningText != null) {
                 Text(
                     text = warningText,
                     style = EbbingTheme.typography.captionR12,
-                    color = EbbingTheme.colors.error,
+                    color = EbbingTheme.colors.statusError,
                 )
             }
         }
@@ -395,7 +395,7 @@ private fun QrActionCard(
                 .fillMaxWidth()
                 .border(
                     width = 1.dp,
-                    color = EbbingTheme.colors.primaryDefault,
+                    color = EbbingTheme.colors.strokePrimary,
                     shape = RoundedCornerShape(6.dp),
                 )
                 .noRippleClickable { onClick() }
@@ -412,7 +412,7 @@ private fun QrActionCard(
             Text(
                 text = buttonLabel,
                 style = EbbingTheme.typography.headingSB,
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.textPrimary,
             )
 
             if (timerText != null) {
@@ -421,7 +421,7 @@ private fun QrActionCard(
                 Text(
                     text = timerText,
                     style = EbbingTheme.typography.bodySM,
-                    color = EbbingTheme.colors.primaryDefault,
+                    color = EbbingTheme.colors.primaryNormal,
                 )
             }
         }
@@ -435,7 +435,7 @@ private fun SectionDivider() {
             .fillMaxWidth()
             .padding(vertical = 26.dp)
             .height(6.dp)
-            .background(EbbingTheme.colors.light3),
+            .background(EbbingTheme.colors.fillTextfield),
     )
 }
 
@@ -447,7 +447,7 @@ private fun ConnectedDeviceSection(
     Text(
         text = stringResource(Res.string.sync_connected_device),
         style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 12.dp),
     )
 
@@ -463,7 +463,7 @@ private fun ConnectedDeviceSection(
             modifier = Modifier
                 .size(32.dp)
                 .background(
-                    color = EbbingTheme.colors.light3,
+                    color = EbbingTheme.colors.fillTextfield,
                     shape = RoundedCornerShape(6.dp),
                 ),
         ) {
@@ -476,13 +476,13 @@ private fun ConnectedDeviceSection(
         Text(
             text = state.connectedDeviceName ?: stringResource(Res.string.sync_unknown_device),
             style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Text(
             text = state.connectedDeviceUuidPrefix,
             style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark3,
+            color = EbbingTheme.colors.textDisabled,
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -490,7 +490,7 @@ private fun ConnectedDeviceSection(
         Icon(
             painter = painterResource(Res.drawable.ic_close),
             contentDescription = stringResource(Res.string.sync_disconnect),
-            tint = EbbingTheme.colors.dark2,
+            tint = EbbingTheme.colors.textSub,
             modifier = Modifier
                 .size(24.dp)
                 .noRippleClickable { onDisconnectClick() },
@@ -499,7 +499,7 @@ private fun ConnectedDeviceSection(
 
     HorizontalDivider(
         thickness = 1.dp,
-        color = EbbingTheme.colors.light2,
+        color = EbbingTheme.colors.strokeOutline,
     )
 }
 
@@ -511,7 +511,7 @@ private fun LastSyncSection(
     Text(
         text = stringResource(Res.string.sync_last_sync),
         style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -526,21 +526,21 @@ private fun LastSyncSection(
             text = state.localLastSyncedAt?.toFormattedString()
                 ?: stringResource(Res.string.sync_no_record),
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = null,
-            tint = EbbingTheme.colors.dark3,
+            tint = EbbingTheme.colors.textDisabled,
         )
     }
 
     Text(
         text = stringResource(Res.string.sync_manual_hint),
         style = EbbingTheme.typography.captionR12,
-        color = EbbingTheme.colors.dark2,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(top = 8.dp),
     )
 }
@@ -553,14 +553,14 @@ private fun AdvancedInfoSection(
     Text(
         text = stringResource(Res.string.sync_advanced_info),
         style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
     Text(
         text = stringResource(Res.string.sync_device_id_label),
         style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2,
+        color = EbbingTheme.colors.textSub,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 
@@ -574,14 +574,14 @@ private fun AdvancedInfoSection(
         Text(
             text = state.displayDeviceInfo,
             style = EbbingTheme.typography.bodySR,
-            color = EbbingTheme.colors.primaryDefault,
+            color = EbbingTheme.colors.primaryNormal,
             modifier = Modifier.weight(1f),
         )
 
         Icon(
             painter = painterResource(Res.drawable.ic_copy),
             contentDescription = stringResource(Res.string.sync_copy_device_info),
-            tint = EbbingTheme.colors.dark2,
+            tint = EbbingTheme.colors.textSub,
             modifier = Modifier
                 .size(20.dp)
                 .noRippleClickable { onCopyClick() },
@@ -603,7 +603,7 @@ private fun ScanQrBody(
 
         if (isLoading) {
             CircularProgressIndicator(
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier.align(Alignment.Center),
             )
         }
@@ -643,7 +643,7 @@ private fun QrCodeBottomSheetContent(
         Text(
             text = stringResource(Res.string.sync_remaining_time, formattedRemainingTime),
             style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.primaryDefault,
+            color = EbbingTheme.colors.primaryNormal,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 8.dp),
         )
@@ -651,7 +651,7 @@ private fun QrCodeBottomSheetContent(
         Text(
             text = stringResource(Res.string.sync_scan_this_qr),
             style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark3,
+            color = EbbingTheme.colors.textDisabled,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 24.dp),
         )
@@ -668,7 +668,7 @@ private fun ConfirmSyncUpDialog(
     val desc2 = stringResource(Res.string.sync_confirm_sync_desc_2)
     val descHighlight2 = stringResource(Res.string.sync_confirm_sync_desc_highlight_2)
     val desc3 = stringResource(Res.string.sync_confirm_sync_desc_3)
-    val errorColor = EbbingTheme.colors.error
+    val errorColor = EbbingTheme.colors.statusError
 
     EbbingDialog(
         dialogTop = {

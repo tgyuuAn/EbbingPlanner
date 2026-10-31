@@ -210,8 +210,7 @@ fun ScheduleScreen(
             modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
-        // Android fillTextfield 대응
-        HorizontalDivider(color = EbbingTheme.colors.light3, thickness = 1.dp)
+        HorizontalDivider(color = EbbingTheme.colors.fillTextfield, thickness = 1.dp)
 
         if (state.visibleTags.isEmpty()) {
             EmptyScheduleContent(
@@ -261,7 +260,7 @@ private fun TabletLandscapeScheduleScreen(
             LazyColumn(modifier = Modifier.weight(1f)) {
                 itemsIndexed(items = state.visibleTags, key = { _, tag -> tag.id }) { idx, tag ->
                     if (idx != 0) {
-                        HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+                        HorizontalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
                     }
 
                     Row(
@@ -269,9 +268,8 @@ private fun TabletLandscapeScheduleScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .then(
-                                // Android fillSelected(#F1F8FE) 대응
                                 if (tag.id == selectedTag.id) {
-                                    Modifier.background(EbbingTheme.colors.primaryLight.copy(alpha = 0.25f))
+                                    Modifier.background(EbbingTheme.colors.fillSelected)
                                 } else {
                                     Modifier
                                 }
@@ -301,11 +299,11 @@ private fun TabletLandscapeScheduleScreen(
                     }
                 }
 
-                item { HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp) }
+                item { HorizontalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp) }
             }
         }
 
-        VerticalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+        VerticalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -313,7 +311,7 @@ private fun TabletLandscapeScheduleScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .background(EbbingTheme.colors.light3),
+                .background(EbbingTheme.colors.fillTextfield),
         ) {
             item {
                 TagSummary(
@@ -370,7 +368,7 @@ private fun TagSummary(
             Text(
                 text = title,
                 style = EbbingTheme.typography.headingSSB,
-                color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.black,
+                color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -378,7 +376,7 @@ private fun TagSummary(
             Text(
                 text = stringResource(Res.string.schedule_tag_count_completion, scheduleCount, (achievementRate * 100).roundToInt()),
                 style = EbbingTheme.typography.bodyMM,
-                color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2,
+                color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub,
             )
         }
     }
@@ -488,7 +486,7 @@ private fun TagList(
             val infos = state.infosByTagMap[tag.id] ?: persistentListOf()
 
             if (idx != 0) {
-                HorizontalDivider(color = EbbingTheme.colors.light2, thickness = 1.dp)
+                HorizontalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
             }
 
             TagCard(
@@ -558,7 +556,7 @@ private fun TagCard(
                 Text(
                     text = title,
                     style = EbbingTheme.typography.headingSSB,
-                    color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.black,
+                    color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -566,7 +564,7 @@ private fun TagCard(
                 Text(
                     text = stringResource(Res.string.schedule_tag_count_completion, scheduleCount, (achievementRate * 100).roundToInt()),
                     style = EbbingTheme.typography.bodyMM,
-                    color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2,
+                    color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub,
                 )
                 Spacer(modifier = Modifier.height(2.dp))
             }
@@ -585,7 +583,7 @@ private fun TagCard(
             Icon(
                 painter = if (isExpanded) painterResource(Res.drawable.ic_arrow_up) else painterResource(Res.drawable.ic_arrow_down),
                 contentDescription = null,
-                tint = EbbingTheme.colors.black,
+                tint = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.size(24.dp),
             )
         }
@@ -602,7 +600,7 @@ private fun TagCard(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(EbbingTheme.colors.light3)
+                        .background(EbbingTheme.colors.fillTextfield)
                         .padding(horizontal = horizontalPadding - 4.dp)
                         .padding(top = 12.dp, bottom = 8.dp),
                 ) {
@@ -636,13 +634,13 @@ private fun TagCard(
                         Text(
                             text = stringResource(Res.string.schedule_collapse),
                             style = EbbingTheme.typography.heading14SB,
-                            color = EbbingTheme.colors.dark2,
+                            color = EbbingTheme.colors.textSub,
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_up),
                             contentDescription = null,
-                            tint = EbbingTheme.colors.dark2,
+                            tint = EbbingTheme.colors.textSub,
                             modifier = Modifier.size(16.dp),
                         )
                     }
@@ -668,8 +666,8 @@ private fun TodoInfoItem(
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val titleColor = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.black
-    val accentColor = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.primaryDefault
+    val titleColor = if (isAllDone) EbbingTheme.colors.fillDisabled else EbbingTheme.colors.textOnBackground
+    val accentColor = if (isAllDone) EbbingTheme.colors.fillDisabled else EbbingTheme.colors.primaryNormal
     val dateRange = if (schedules.isNotEmpty()) {
         val first = schedules.first().date.toFormattedString()
         val last = schedules.last().date.toFormattedString()
@@ -718,7 +716,7 @@ private fun TodoInfoItem(
                 Icon(
                     painter = if (isExpanded) painterResource(Res.drawable.ic_arrow_up) else painterResource(Res.drawable.ic_arrow_down),
                     contentDescription = null,
-                    tint = if (isAllDone) EbbingTheme.colors.light1 else EbbingTheme.colors.black,
+                    tint = if (isAllDone) EbbingTheme.colors.fillDisabled else EbbingTheme.colors.textOnBackground,
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -732,7 +730,7 @@ private fun TodoInfoItem(
                     Text(
                         text = dateRange,
                         style = EbbingTheme.typography.bodySM,
-                        color = if (isAllDone) EbbingTheme.colors.dark3 else EbbingTheme.colors.dark2,
+                        color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub,
                     )
                 }
             }
@@ -761,7 +759,7 @@ private fun TodoInfoItem(
                                 .padding(vertical = 8.dp)
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(EbbingTheme.colors.light3) // Android strokeSecondary
+                                .background(EbbingTheme.colors.strokeSecondary)
                         )
                     }
                 }
@@ -781,9 +779,9 @@ private fun ScheduleCard(
     onThreeDotsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val dateColor = if (schedule.isDone) EbbingTheme.colors.dark2 else EbbingTheme.colors.black
+    val dateColor = if (schedule.isDone) EbbingTheme.colors.textSub else EbbingTheme.colors.textOnBackground
     val dateStyle = if (schedule.isDone) EbbingTheme.typography.bodySM else EbbingTheme.typography.heading14SB
-    val subColor = if (schedule.isDone) EbbingTheme.colors.light1 else EbbingTheme.colors.dark2
+    val subColor = if (schedule.isDone) EbbingTheme.colors.fillDisabled else EbbingTheme.colors.textSub
     val textDecoration = if (schedule.isDone) TextDecoration.LineThrough else TextDecoration.None
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
@@ -792,12 +790,12 @@ private fun ScheduleCard(
             modifier = Modifier
                 .size(16.dp)
                 .clip(CircleShape)
-                .background(EbbingTheme.colors.light3),
+                .background(EbbingTheme.colors.fillTextfield),
         ) {
             Text(
                 text = "$index",
                 style = EbbingTheme.typography.captionR12,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 textAlign = TextAlign.Center,
             )
         }
@@ -856,7 +854,7 @@ private fun EmptyScheduleContent(
         Text(
             text = stringResource(Res.string.schedule_empty_message),
             style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.textSub,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))

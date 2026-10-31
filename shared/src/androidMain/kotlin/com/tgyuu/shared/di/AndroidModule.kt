@@ -7,6 +7,7 @@ import com.tgyuu.shared.database.createEbbingDatabase
 import com.tgyuu.shared.platform.InAppReviewManager
 import com.tgyuu.shared.platform.NotificationScheduler
 import com.tgyuu.shared.platform.Settings
+import com.tgyuu.shared.platform.UrlOpener
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -18,6 +19,7 @@ val androidModule = module {
     single { Settings(androidContext()) }
     single { InAppReviewManager(activity = null) }  // Activity-aware review handled by feature layer
     single { NotificationScheduler(androidContext()) }
+    single { UrlOpener(androidContext()) }
     // shared 모듈은 Android 앱에서 직접 쓰지 않지만, DI 일관성을 위해 Stub 제공
     single<SyncDataSource> { StubSyncDataSource() }
 }

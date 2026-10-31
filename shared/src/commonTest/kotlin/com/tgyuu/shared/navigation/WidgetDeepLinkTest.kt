@@ -23,6 +23,14 @@ class WidgetDeepLinkTest {
     }
 
     @Test
+    fun `일정 등록 링크는 누른 위젯을 source 로 해석한다`() {
+        assertEquals(
+            WidgetDeepLink.AddTodo("2026-11-03", source = "CalendarWidget"),
+            WidgetDeepLink.parse("ebbingplanner://addtodo?date=2026-11-03&source=CalendarWidget"),
+        )
+    }
+
+    @Test
     fun `날짜가 없거나 형식이 다르면 앱만 연다`() {
         assertEquals(WidgetDeepLink.Open, WidgetDeepLink.parse("ebbingplanner://home"))
         assertEquals(WidgetDeepLink.Open, WidgetDeepLink.parse("ebbingplanner://addtodo?date=11-03"))

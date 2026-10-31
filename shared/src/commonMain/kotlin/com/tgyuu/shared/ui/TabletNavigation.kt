@@ -50,7 +50,7 @@ internal fun TabletNavigationRail(
     onTabSelected: (TopLevelTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val strokeColor = EbbingTheme.colors.light2
+    val strokeColor = EbbingTheme.colors.strokeNormal
 
     Column(
         modifier = modifier
@@ -80,7 +80,7 @@ internal fun TabletBottomBar(
     onTabSelected: (TopLevelTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val strokeColor = EbbingTheme.colors.light2
+    val strokeColor = EbbingTheme.colors.strokeNormal
 
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -113,8 +113,8 @@ private fun TabletNavigationItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val iconColor = if (selected) EbbingTheme.colors.black else EbbingTheme.colors.dark3
-    val labelColor = if (selected) EbbingTheme.colors.black else EbbingTheme.colors.dark2
+    val iconColor = if (selected) EbbingTheme.colors.fillFocused else EbbingTheme.colors.fillDisabled
+    val labelColor = if (selected) EbbingTheme.colors.textOnBackground else EbbingTheme.colors.textSub
 
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),

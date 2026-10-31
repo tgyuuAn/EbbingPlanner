@@ -34,11 +34,11 @@ fun EbbingChip(
         selected = selected,
         border = null,
         colors = filterChipColors(
-            selectedLabelColor = EbbingTheme.colors.primaryDefault,
-            selectedContainerColor = EbbingTheme.colors.primaryLight,
-            containerColor = EbbingTheme.colors.light3,
-            labelColor = if (selected) EbbingTheme.colors.primaryDefault
-            else EbbingTheme.colors.black,
+            selectedLabelColor = EbbingTheme.colors.textOnPrimary,
+            selectedContainerColor = EbbingTheme.colors.fillPrimary,
+            containerColor = EbbingTheme.colors.fillTextfield,
+            labelColor = if (selected) EbbingTheme.colors.textOnPrimary
+            else EbbingTheme.colors.textSub,
         ),
         onClick = onChipClicked,
         modifier = modifier.height(52.dp),

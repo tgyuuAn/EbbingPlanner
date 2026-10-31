@@ -31,7 +31,7 @@ internal fun ConfirmDeleteMemoDialog(
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
                     append(deletePrefix)
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append(deleteHighlight)
                     }
                     append(deleteSuffix)

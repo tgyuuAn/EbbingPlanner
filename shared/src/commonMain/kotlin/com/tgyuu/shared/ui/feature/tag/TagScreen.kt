@@ -108,7 +108,7 @@ fun TagScreen(
                     Text(
                         text = stringResource(Res.string.tag_add_button),
                         style = EbbingTheme.typography.bodyMM,
-                        color = EbbingTheme.colors.primaryDefault,
+                        color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .noRippleClickable { viewModel.onIntent(TagIntent.OnAddClick) },
@@ -126,7 +126,7 @@ fun TagScreen(
                         text = stringResource(Res.string.tag_empty_message),
                         style = EbbingTheme.typography.bodySM,
                         textAlign = TextAlign.Center,
-                        color = EbbingTheme.colors.dark3,
+                        color = EbbingTheme.colors.textDisabled,
                     )
                 }
             } else if (isWide) {
@@ -208,7 +208,7 @@ private fun DeleteTagDialog(
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
                     append(deletePrefix)
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append(deleteHighlight)
                     }
                     append(deleteSuffix)

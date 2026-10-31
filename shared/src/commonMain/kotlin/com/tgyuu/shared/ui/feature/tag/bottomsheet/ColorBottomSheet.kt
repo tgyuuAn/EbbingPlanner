@@ -116,7 +116,7 @@ fun ColorBottomSheet(
                 .heightIn(max = 228.dp)
                 .verticalScrollbar(
                     state = gridState,
-                    color = EbbingTheme.colors.light1, // Android fillDisabled
+                    color = EbbingTheme.colors.fillDisabled,
                 ),
         ) {
             items(TAG_COLORS) { color ->

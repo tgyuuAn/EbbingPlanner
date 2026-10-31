@@ -84,7 +84,7 @@ fun TitleContent(
     Text(
         text = stringResource(Res.string.home_title),
         style = EbbingTheme.typography.bodySSB,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -139,7 +139,7 @@ fun TagContent(
     Text(
         text = stringResource(Res.string.home_tag),
         style = EbbingTheme.typography.bodySSB,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -175,7 +175,7 @@ fun PinnedContent(
         Text(
             text = stringResource(Res.string.home_pin_to_top),
             style = EbbingTheme.typography.bodySSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
     }
 }
@@ -189,7 +189,7 @@ fun RepeatCycleContent(
     Text(
         text = stringResource(Res.string.home_repeat_cycle),
         style = EbbingTheme.typography.bodySSB,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -211,7 +211,7 @@ fun RestDayContent(
     Text(
         text = stringResource(Res.string.home_rest_day),
         style = EbbingTheme.typography.bodySSB,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -245,7 +245,7 @@ fun ScheduleContent(
             .fillMaxWidth()
             .padding(top = 32.dp)
             .clip(shape)
-            .border(width = 1.dp, color = EbbingTheme.colors.light2, shape = shape)
+            .border(width = 1.dp, color = EbbingTheme.colors.strokeNormal, shape = shape)
             .background(EbbingTheme.colors.background)
             .padding(horizontal = 16.dp)
             .padding(bottom = 8.dp),
@@ -253,7 +253,7 @@ fun ScheduleContent(
         Text(
             text = stringResource(Res.string.home_study_schedule_count, schedules.size),
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
         )
 
@@ -292,12 +292,12 @@ private fun ScheduleCard(
                     modifier = Modifier
                         .size(16.dp)
                         .clip(CircleShape)
-                        .background(EbbingTheme.colors.light3),
+                        .background(EbbingTheme.colors.fillTextfield),
                 ) {
                     Text(
                         text = idx.toString(),
                         style = EbbingTheme.typography.captionR12,
-                        color = EbbingTheme.colors.dark2,
+                        color = EbbingTheme.colors.textSub,
                     )
                 }
 
@@ -308,14 +308,14 @@ private fun ScheduleCard(
                         schedule.dayOfWeek.toLocalizedShort(),
                     ),
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
             }
 
             Text(
                 text = schedule.toRelativeDayLabel(),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.textSub,
             )
         }
 
@@ -324,7 +324,7 @@ private fun ScheduleCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(EbbingTheme.colors.light2),
+                    .background(EbbingTheme.colors.strokeNormal),
             )
         }
     }

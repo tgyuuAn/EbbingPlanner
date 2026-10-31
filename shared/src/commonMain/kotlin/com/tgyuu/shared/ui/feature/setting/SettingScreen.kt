@@ -3,6 +3,8 @@ package com.tgyuu.shared.ui.feature.setting
 import com.tgyuu.shared.designsystem.foundation.LayoutConstants
 import com.tgyuu.shared.common.util.noRippleClickable
 import com.tgyuu.shared.designsystem.component.EbbingDialogDefaultTop
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.foundation.layout.Box
@@ -226,8 +228,7 @@ fun SettingScreen(
             modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
-        // Android fillNormal(=background와 동일 값) 대응: 구분선이 배경과 같은 색으로 그려져 보이지 않는다
-        HorizontalDivider(color = EbbingTheme.colors.background, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
+        HorizontalDivider(color = EbbingTheme.colors.fillNormal, thickness = 1.dp, modifier = Modifier.padding(bottom = 16.dp))
 
         // Android PhoneSettingScreen과 동일 순서: 알림→캘린더→태그/반복→테마→문의→안내→데이터→리뷰→버전
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = horizontalPadding)) {
@@ -239,7 +240,7 @@ fun SettingScreen(
             AnnouncementBody(onPrivacyPolicyClick = { viewModel.onIntent(SettingIntent.OnPrivacyPolicyClick) }, onTermsClick = { viewModel.onIntent(SettingIntent.OnTermsOfUseClick) }, onNoticeClick = { viewModel.onIntent(SettingIntent.OnNoticeClick) })
             DataBody(autoBackupFeatureEnabled = state.autoBackupFeatureEnabled, autoBackupEnabled = state.autoBackupEnabled, lastSyncTime = state.lastSyncTime, onSyncClick = { viewModel.onIntent(SettingIntent.OnSyncClick) }, onRestoreClick = { viewModel.onIntent(SettingIntent.OnRestoreByDeviceIdClick) }, onClearClick = { showClearDialog = true }, onAutoBackupToggle = { viewModel.onIntent(SettingIntent.OnAutoBackupToggleClick) })
             InAppReviewRow(onClick = { viewModel.onIntent(SettingIntent.OnInAppReviewClick) })
-            VersionRow(version = state.appVersion)
+            VersionRow(version = state.appVersion, isUpdateButtonVisible = state.isUpdateButtonVisible, onUpdateClick = { viewModel.onIntent(SettingIntent.OnUpdateClick) })
         }
     }
     }
@@ -298,7 +299,7 @@ private fun DataBody(
                 Text(
                     text = stringResource(Res.string.setting_auto_backup),
                     style = EbbingTheme.typography.bodyMSB,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                     modifier = Modifier.weight(1f),
                 )
 
@@ -312,7 +313,7 @@ private fun DataBody(
                 Text(
                     text = stringResource(Res.string.setting_last_sync_time, lastSyncTime),
                     style = EbbingTheme.typography.bodySM,
-                    color = EbbingTheme.colors.dark2, // Android textSub
+                    color = EbbingTheme.colors.textSub,
                     modifier = Modifier.padding(top = 4.dp),
                 )
             }
@@ -385,9 +386,13 @@ private fun AnnouncementBody(
 @Composable
 private fun VersionRow(
     version: String,
+    isUpdateButtonVisible: Boolean,
+    onUpdateClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Android UpdateBody: 버전 텍스트 + (업데이트 대상이면) 오른쪽 화살표 버튼
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
@@ -396,8 +401,18 @@ private fun VersionRow(
         Text(
             text = stringResource(Res.string.setting_version, "v$version"),
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
+
+        if (isUpdateButtonVisible) {
+            Image(
+                painter = painterResource(Res.drawable.ic_arrow_right),
+                contentDescription = stringResource(Res.string.setting_detail_content),
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .noRippleClickable(onClick = onUpdateClick),
+            )
+        }
     }
 }
 
@@ -409,7 +424,7 @@ private fun SectionHeader(
     Text(
         text = text,
         style = EbbingTheme.typography.bodySM,
-        color = EbbingTheme.colors.dark2, // Android textSub
+        color = EbbingTheme.colors.textSub,
         modifier = modifier.padding(bottom = 8.dp),
     )
 }
@@ -428,8 +443,7 @@ private fun SettingRow(
         modifier = modifier
             .fillMaxWidth()
             .then(
-                // Android fillSelected(#F1F8FE) 대응: shared 토큰 primaryLight를 옅게 사용
-                if (isSelected) Modifier.background(EbbingTheme.colors.primaryLight.copy(alpha = 0.25f)) else Modifier
+                if (isSelected) Modifier.background(EbbingTheme.colors.fillSelected) else Modifier
             )
             .noRippleClickable(onClick = onClick)
             .padding(vertical = SettingItemVerticalPadding),
@@ -437,14 +451,14 @@ private fun SettingRow(
         Text(
             text = title,
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = stringResource(Res.string.setting_detail_content),
-            tint = EbbingTheme.colors.dark3,
+            tint = EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -466,7 +480,7 @@ private fun CalendarBody(
         Text(
             text = stringResource(Res.string.setting_calendar_start_day),
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -480,7 +494,7 @@ private fun CalendarBody(
             },
             textAlign = TextAlign.End,
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.primaryDefault,
+            color = EbbingTheme.colors.primaryNormal,
             modifier = Modifier.noRippleClickable { onClick() },
         )
     }
@@ -495,8 +509,7 @@ private fun SectionDivider(modifier: Modifier = Modifier) {
             .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingItemVerticalPadding),
         thickness = 6.dp,
-        // Android strokeSecondary(#F4F6FA) 대응
-        color = EbbingTheme.colors.light3,
+        color = EbbingTheme.colors.strokeSecondary,
     )
 }
 
@@ -532,7 +545,7 @@ private fun NotificationBody(
         Text(
             text = stringResource(Res.string.setting_notification_setting),
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
@@ -554,7 +567,7 @@ private fun NotificationBody(
             Text(
                 text = stringResource(Res.string.setting_alarm_time),
                 style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
             )
 
@@ -566,7 +579,7 @@ private fun NotificationBody(
                 },
                 textAlign = TextAlign.End,
                 style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier.noRippleClickable { onAlarmTimeClick() },
             )
         }
@@ -581,14 +594,14 @@ private fun NotificationBody(
             Text(
                 text = stringResource(Res.string.setting_alarm_message),
                 style = EbbingTheme.typography.bodyMSB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
             )
 
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_right),
                 contentDescription = stringResource(Res.string.setting_detail_content),
-                tint = EbbingTheme.colors.dark3,
+                tint = EbbingTheme.colors.textDisabled,
                 modifier = Modifier.padding(start = 4.dp),
             )
         }
@@ -627,14 +640,14 @@ private fun InAppReviewRow(
         Text(
             text = stringResource(Res.string.setting_app_review),
             style = EbbingTheme.typography.bodyMSB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
         )
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = stringResource(Res.string.setting_detail_content),
-            tint = EbbingTheme.colors.dark3,
+            tint = EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(start = 4.dp),
         )
     }
@@ -649,7 +662,7 @@ private fun ClearDataDialog(
     val prefix = stringResource(Res.string.setting_clear_dialog_title_prefix)
     val highlight = stringResource(Res.string.setting_clear_dialog_title_highlight)
     val suffix = stringResource(Res.string.setting_clear_dialog_title_suffix)
-    val errorColor = EbbingTheme.colors.error
+    val errorColor = EbbingTheme.colors.statusError
 
     EbbingDialog(
         dialogTop = {
@@ -759,13 +772,13 @@ private fun AlarmMessageBottomSheetContent(
         val placeholderGuide = stringResource(Res.string.setting_alarm_message_placeholder_guide)
         Text(
             text = buildAnnotatedString {
-                withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault, fontWeight = FontWeight.Bold)) {
+                withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal, fontWeight = FontWeight.Bold)) {
                     append(placeholderToken)
                 }
                 append(placeholderGuide)
             },
             style = EbbingTheme.typography.bodySM,
-            color = EbbingTheme.colors.dark3,
+            color = EbbingTheme.colors.textDisabled,
             modifier = Modifier.padding(bottom = 16.dp),
         )
 
@@ -798,14 +811,14 @@ private fun AlarmMessageBottomSheetContent(
             Text(
                 text = errorMessageText,
                 style = EbbingTheme.typography.captionR12,
-                color = EbbingTheme.colors.error,
+                color = EbbingTheme.colors.statusError,
                 modifier = Modifier.weight(1f),
             )
 
             Text(
                 text = stringResource(Res.string.setting_alarm_message_length, sheetState.message.length),
                 style = EbbingTheme.typography.captionR12,
-                color = if (sheetState.isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error,
+                color = if (sheetState.isValidLength) EbbingTheme.colors.textDisabled else EbbingTheme.colors.statusError,
             )
         }
 
@@ -816,7 +829,7 @@ private fun AlarmMessageBottomSheetContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = EbbingTheme.colors.background, // Android fillNormal
+                        color = EbbingTheme.colors.fillNormal,
                         shape = RoundedCornerShape(8.dp),
                     )
                     .padding(12.dp),
@@ -824,13 +837,13 @@ private fun AlarmMessageBottomSheetContent(
                 Text(
                     text = stringResource(Res.string.setting_preview),
                     style = EbbingTheme.typography.captionR12,
-                    color = EbbingTheme.colors.dark3,
+                    color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
                 Text(
                     text = previewMessageText,
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark2, // Android textSub
+                    color = EbbingTheme.colors.textSub,
                 )
             }
 
@@ -841,7 +854,7 @@ private fun AlarmMessageBottomSheetContent(
             Text(
                 text = stringResource(Res.string.setting_restore_default),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier
                     .noRippleClickable { onResetClick() }
                     .padding(vertical = 8.dp),

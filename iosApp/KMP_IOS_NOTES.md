@@ -77,6 +77,20 @@
    - 제거: `FirebaseAnalyticsHelper.kt`, Swift `FirebaseAnalyticsBridge`(커스텀 이벤트의 Firebase 전송). Crashlytics 와 Firebase Analytics userId 설정(`FirebaseErrorBridge`)은 유지.
    - 새 Swift 파일은 `project.pbxproj` 에 직접 4곳 등록했다. XcodeGen 으로 재생성하면 CocoaPods 가 Pods 객체 ID 를 새로 발급해 무관한 변경이 대량으로 생기므로, ID 는 XcodeGen 이 발급하는 값(`143C8A76…`/`0B7ACB05…`)을 그대로 썼다.
 
+9. **업데이트 안내·Remote Config·알림 로그·위젯 로그·탭 복원·네트워크 배너 (Android 패리티)**
+   - Remote Config: pod `FirebaseRemoteConfig ~> 11.6`. Swift `RemoteConfigBridge`(FirebaseErrorBridge.swift)가 `doInitKoinWithFirebase(onFetchRemoteConfig:onGetRemoteConfigString:)` 람다로 값을 넘기고, shared `IosRemoteConfigDataSource`가 받는다. Firebase 미설정(`doInitKoin`)이면 `DefaultRemoteConfigDataSource`(항상 기본값).
+   - **Firebase 콘솔에 만들어야 하는 Remote Config 키** (Android 키 `update_AN_*`에는 Android 버전이 들어 있어 iOS 전용 키를 쓴다):
+     - `ios_update_info` (JSON): `{"minVersion":"1.2.0","noticeMsg":"여러분의 의견을 반영하여 사용성을 개선했습니다.\n지금 바로 업데이트해 보세요!"}` → 소프트 업데이트(닫기 가능) + 설정 버전 행 화살표
+     - `ios_hard_update_info` (JSON, 같은 형식) → 하드 업데이트(닫기 불가)
+     - `ios_app_store_url` (String): `https://apps.apple.com/app/id<APP_ID>` → 다이얼로그/설정의 업데이트 버튼이 연다. 비어 있으면 버튼은 아무것도 안 한다.
+     - 값이 없거나 JSON이 깨지면 Android `GetUpdateInfoResponse()` 기본값(minVersion 1.0.0)을 써서 안내가 뜨지 않는다.
+     - `use_auto_backup`(Boolean)·실험 키(`{experimentKey}_{debug|release}`)는 Android와 같은 키를 그대로 읽는다. 없으면 iOS 기본값(자동 백업 on / CONTROL).
+   - 버전 비교는 `domain/AppUpdatePolicy` (Android HandleAppUpdate·SettingScreen 비교식을 각각 그대로 옮김, `AppUpdatePolicyTest`).
+   - 알림 로그: `SupabaseNotificationLogDataSource` → `notification_analytics` upsert (Android와 같은 컬럼, 플랫폼 컬럼 없음). 알림 on/off·문구 변경 시 별도 스코프에서 조용히 전송.
+   - 위젯 로그: 위젯은 App Group `widget_analytics_queue`에 이벤트를 쌓고(새로고침 `Click_Refresh_{TodoWidget|CalendarWidget}`, 종류별 첫 타임라인 `Click_Set_*`), 앱이 `.active`에서 `handleAppDidBecomeActive()` → `WidgetAnalyticsQueue.drain()`으로 보낸다. 일정 추가(+)는 딥링크 `addtodo?date=…&source=…`를 앱이 처리할 때 `Click_AddTodo_{source}`. 위젯을 모두 지우면 앱이 `widget_installed_<kind>` 표시를 지워 재배치 시 다시 기록.
+   - 탭 하위 화면 저장/복원: `navigation/TabStackSaver` (Android BottomBarTo saveState/restoreState 규칙, `TabStackSaverTest`). 저장 후 홈 이동·위젯 딥링크는 `popToHome()`(저장 안 함).
+   - 네트워크: `IosNetworkMonitor`(NWPathMonitor). 동기화/복원 화면에서 `NetworkBanner`, 오프라인이면 동기화·연동 해제·QR 생성/인식·복원 요청을 `sync_network_required`로 막는다. 자동 백업은 오프라인이면 pending 후 포그라운드 복귀 시 재시도.
+
 ## 검증 원칙
 - 변경 후 `./gradlew :shared:compileKotlinIosSimulatorArm64`로 컴파일 확인.
 - 가능하면 시뮬레이터 시각 검증(위 #6). 라우팅 불가 화면은 컴파일+Android 구조 미러+검증된 빌딩블록 근거로 수용하되 노트에 명시.

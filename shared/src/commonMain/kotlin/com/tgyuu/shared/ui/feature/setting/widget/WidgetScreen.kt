@@ -111,7 +111,7 @@ fun WidgetScreen(
                 Text(
                     text = stringResource(Res.string.setting_change_widget_theme),
                     style = EbbingTheme.typography.headingLSB,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                 )
 
                 if (isLoaded) {
@@ -144,7 +144,7 @@ fun WidgetScreen(
                     Text(
                         text = stringResource(Res.string.setting_change_widget_theme),
                         style = EbbingTheme.typography.headingLSB,
-                        color = EbbingTheme.colors.black,
+                        color = EbbingTheme.colors.textOnBackground,
                     )
 
                     if (isLoaded) {
@@ -189,7 +189,7 @@ private fun ThemeBody(
     Text(
         text = stringResource(Res.string.setting_theme),
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -207,7 +207,7 @@ private fun ThemeBody(
                     modifier = Modifier
                         .size(45.dp)
                         .clip(CircleShape)
-                        .background(colorSchemeFor(theme, darkTheme).primaryDefault)
+                        .background(colorSchemeFor(theme, darkTheme).primaryNormal)
                         .noRippleClickable { onThemeChange(theme) },
                 )
 
@@ -215,8 +215,7 @@ private fun ThemeBody(
                     Image(
                         painter = painterResource(Res.drawable.ic_check),
                         contentDescription = null,
-                        // Android textOnPrimary 대응
-                        colorFilter = ColorFilter.tint(EbbingTheme.colors.white),
+                        colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnPrimary),
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -235,7 +234,7 @@ private fun AlphaBody(
     Text(
         text = stringResource(Res.string.setting_background_alpha),
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -256,14 +255,14 @@ private fun AlphaBody(
         Text(
             text = stringResource(Res.string.setting_alpha_percent, (selectedBackgroundAlpha * 100).roundToInt()),
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
     }
 
     Text(
         text = stringResource(Res.string.setting_content_alpha),
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -284,7 +283,7 @@ private fun AlphaBody(
         Text(
             text = stringResource(Res.string.setting_alpha_percent, (selectedTextAlpha * 100).roundToInt()),
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
     }
 }
@@ -301,7 +300,7 @@ private fun PreviewBody(
     Text(
         text = stringResource(Res.string.setting_preview),
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(top = 32.dp),
     )
 
@@ -337,36 +336,34 @@ private fun WidgetCard(
             modifier = modifier
                 .fillMaxWidth()
                 .background(EbbingTheme.colors.background.copy(alpha = backgroundAlpha), RoundedCornerShape(16.dp))
-                .border(0.5.dp, EbbingTheme.colors.black, RoundedCornerShape(16.dp))
+                .border(0.5.dp, EbbingTheme.colors.textOnBackground, RoundedCornerShape(16.dp))
                 .padding(12.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    // Android fillDisabled 대응
-                    .background(EbbingTheme.colors.light1.copy(alpha = backgroundAlpha), RoundedCornerShape(12.dp))
+                    .background(EbbingTheme.colors.fillDisabled.copy(alpha = backgroundAlpha), RoundedCornerShape(12.dp))
                     .padding(horizontal = 12.dp, vertical = 4.dp),
             ) {
                 val todayTodoLabel = stringResource(Res.string.setting_widget_today_todo)
                 Text(
                     text = buildAnnotatedString {
                         append(todayTodoLabel)
-                        // Android primaryDeep 대응 토큰이 없어 primaryDefault 사용
-                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault.copy(alpha = textAlpha))) {
+                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryDeep.copy(alpha = textAlpha))) {
                             append("0")
                         }
                         append(" /0")
                     },
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.black.copy(alpha = textAlpha),
+                    color = EbbingTheme.colors.textOnBackground.copy(alpha = textAlpha),
                     modifier = Modifier.weight(1f),
                 )
 
                 Image(
                     painter = painterResource(Res.drawable.ic_plus),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.black.copy(alpha = textAlpha)),
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground.copy(alpha = textAlpha)),
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -374,7 +371,7 @@ private fun WidgetCard(
             Text(
                 text = stringResource(Res.string.setting_no_schedule_today),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black.copy(alpha = textAlpha),
+                color = EbbingTheme.colors.textOnBackground.copy(alpha = textAlpha),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -385,7 +382,7 @@ private fun WidgetCard(
         Text(
             text = if (isDarkMode) stringResource(Res.string.setting_dark) else stringResource(Res.string.setting_light),
             style = EbbingTheme.typography.heading14SB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 8.dp, end = 20.dp),

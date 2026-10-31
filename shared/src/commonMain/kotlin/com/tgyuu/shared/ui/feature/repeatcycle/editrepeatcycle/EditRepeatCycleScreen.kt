@@ -84,7 +84,7 @@ fun EditRepeatCycleScreen(
             Column(
                 modifier = Modifier.weight(1f).verticalScroll(scrollState).padding(20.dp).imePadding(),
             ) {
-                Text(text = stringResource(Res.string.repeat_edit_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                Text(text = stringResource(Res.string.repeat_edit_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.textOnBackground)
                 RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
                 RepeatCyclePreviewContent(intervals = state.parsedIntervals)
                 Spacer(modifier = Modifier.height(60.dp))
@@ -108,7 +108,7 @@ fun EditRepeatCycleScreen(
 
             Row(modifier = Modifier.weight(1f).fillMaxWidth().imePadding()) {
                 Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {
-                    Text(text = stringResource(Res.string.repeat_edit_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.black)
+                    Text(text = stringResource(Res.string.repeat_edit_headline), style = EbbingTheme.typography.headingLSB, color = EbbingTheme.colors.textOnBackground)
                     RepeatCycleInputContent(intervals = state.intervals, onIntervalsChange = onIntervalsChange)
                 }
                 Column(modifier = Modifier.weight(1f).padding(20.dp).padding(horizontal = 20.dp)) {

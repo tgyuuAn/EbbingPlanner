@@ -80,14 +80,14 @@ fun RepeatCycleBottomSheetContent(
                         Text(
                             text = stringResource(Res.string.home_daily_repeat_total, dayCountForHeader + 1),
                             style = EbbingTheme.typography.bodySM,
-                            color = EbbingTheme.colors.primaryDefault,
+                            color = EbbingTheme.colors.primaryNormal,
                         )
                     }
                 } else {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(Res.string.repeat_add_title),
-                        tint = EbbingTheme.colors.black,
+                        tint = EbbingTheme.colors.textOnBackground,
                         modifier = Modifier
                             .size(32.dp)
                             .clickable { onAddRepeatCycleClick() },
@@ -104,7 +104,7 @@ fun RepeatCycleBottomSheetContent(
                     .fillMaxWidth()
                     .heightIn(max = 300.dp)
                     .padding(top = 12.dp)
-                    .verticalScrollbar(listState, color = EbbingTheme.colors.light1), // Android fillDisabled
+                    .verticalScrollbar(listState, color = EbbingTheme.colors.fillDisabled),
             ) {
                 items(
                     items = repeatCycleList,
@@ -131,7 +131,7 @@ fun RepeatCycleBottomSheetContent(
                 Text(
                     text = stringResource(Res.string.home_daily_repeat_prompt, selectedDate.monthNumber, selectedDate.dayOfMonth),
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.dark3,
+                    color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(top = 8.dp),
                 )
 
@@ -157,7 +157,7 @@ fun RepeatCycleBottomSheetContent(
                     Text(
                         text = stringResource(Res.string.home_daily_repeat_max, RepeatCycle.MAX_DAILY_REPEAT_DAYS),
                         style = EbbingTheme.typography.bodySM,
-                        color = EbbingTheme.colors.error,
+                        color = EbbingTheme.colors.statusError,
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }

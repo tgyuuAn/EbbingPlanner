@@ -40,7 +40,7 @@ internal fun DelayBottomSheet(
             Text(
                 text = stringResource(Res.string.home_delay_single),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -52,7 +52,7 @@ internal fun DelayBottomSheet(
             Text(
                 text = stringResource(Res.string.home_delay_all),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

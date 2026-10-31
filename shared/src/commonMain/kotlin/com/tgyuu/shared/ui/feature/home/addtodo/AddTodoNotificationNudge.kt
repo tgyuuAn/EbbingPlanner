@@ -194,13 +194,13 @@ private fun NudgeHeader() {
     Text(
         text = stringResource(Res.string.home_notification_nudge),
         style = EbbingTheme.typography.headingLSB,
-        color = EbbingTheme.colors.black,
+        color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(horizontal = 20.dp),
     )
     Text(
         text = stringResource(Res.string.home_notification_header_sub),
         style = EbbingTheme.typography.bodyMM,
-        color = EbbingTheme.colors.dark3,
+        color = EbbingTheme.colors.textDisabled,
         modifier = Modifier.padding(top = 12.dp).padding(horizontal = 20.dp),
     )
 }
@@ -221,7 +221,7 @@ private fun NudgeToggleRow(
         Text(
             text = stringResource(Res.string.home_notification_receive),
             style = EbbingTheme.typography.headingSSB,
-            color = EbbingTheme.colors.dark2,
+            color = EbbingTheme.colors.textSub,
             modifier = Modifier.padding(end = 8.dp),
         )
         EbbingToggle(
@@ -255,7 +255,7 @@ private fun NudgeDetailSection(
                     .padding(vertical = 28.dp)
                     .fillMaxWidth()
                     .height(6.dp)
-                    .background(EbbingTheme.colors.light3),
+                    .background(EbbingTheme.colors.fillTextfield),
             )
         }
 
@@ -268,7 +268,7 @@ private fun NudgeDetailSection(
                 text = stringResource(Res.string.setting_alarm_time),
                 // Android home_alarm_time: heading18B(Bold 18) / textSub
                 style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.textSub,
                 modifier = Modifier.padding(end = 8.dp),
             )
             Text(
@@ -283,7 +283,7 @@ private fun NudgeDetailSection(
                 },
                 // Android: body18M(Medium 18) / primaryNormal — iOS headingSM = Medium 18/22
                 style = EbbingTheme.typography.headingSM,
-                color = EbbingTheme.colors.primaryDefault,
+                color = EbbingTheme.colors.primaryNormal,
                 modifier = Modifier.clickable { onTimeClick() },
             )
         }
@@ -293,14 +293,14 @@ private fun NudgeDetailSection(
             Text(
                 text = stringResource(Res.string.setting_alarm_message),
                 style = EbbingTheme.typography.headingSSB,
-                color = EbbingTheme.colors.dark2,
+                color = EbbingTheme.colors.textSub,
                 modifier = Modifier.padding(bottom = 6.dp),
             )
             // 플레이스홀더 안내: 토큰 볼드 강조, 입력창 위에 위치 (Android 동일)
             Text(
                 text = buildAnnotatedString {
                     if (placeholderDesc.startsWith(placeholderToken)) {
-                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryDefault, fontWeight = FontWeight.Bold)) {
+                        withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal, fontWeight = FontWeight.Bold)) {
                             append(placeholderToken)
                         }
                         append(placeholderDesc.removePrefix(placeholderToken))
@@ -309,7 +309,7 @@ private fun NudgeDetailSection(
                     }
                 },
                 style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.dark3,
+                color = EbbingTheme.colors.textDisabled,
                 modifier = Modifier.padding(bottom = 16.dp),
             )
             EbbingTextInputDefault(
@@ -324,8 +324,8 @@ private fun NudgeDetailSection(
                 else -> ""
             }
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                Text(text = errorText, style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.error, modifier = Modifier.weight(1f))
-                Text(text = stringResource(Res.string.setting_alarm_message_length, state.messageLength), style = EbbingTheme.typography.captionR12, color = if (state.isValidLength) EbbingTheme.colors.dark3 else EbbingTheme.colors.error)
+                Text(text = errorText, style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.statusError, modifier = Modifier.weight(1f))
+                Text(text = stringResource(Res.string.setting_alarm_message_length, state.messageLength), style = EbbingTheme.typography.captionR12, color = if (state.isValidLength) EbbingTheme.colors.textDisabled else EbbingTheme.colors.statusError)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -338,8 +338,8 @@ private fun NudgeDetailSection(
                         .background(EbbingTheme.colors.background, RoundedCornerShape(16.dp))
                         .padding(vertical = 12.dp, horizontal = 16.dp),
                 ) {
-                    Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.dark3, modifier = Modifier.padding(bottom = 4.dp))
-                    Text(text = previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.dark2)
+                    Text(text = stringResource(Res.string.setting_preview), style = EbbingTheme.typography.captionR12, color = EbbingTheme.colors.textDisabled, modifier = Modifier.padding(bottom = 4.dp))
+                    Text(text = previewMessage, style = EbbingTheme.typography.bodyMM, color = EbbingTheme.colors.textSub)
                 }
             }
 
@@ -348,7 +348,7 @@ private fun NudgeDetailSection(
                 Text(
                     text = stringResource(Res.string.home_alarm_reset),
                     style = EbbingTheme.typography.bodySSB,
-                    color = EbbingTheme.colors.dark3,
+                    color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(top = 20.dp).clickable { onResetClick() },
                 )
             }

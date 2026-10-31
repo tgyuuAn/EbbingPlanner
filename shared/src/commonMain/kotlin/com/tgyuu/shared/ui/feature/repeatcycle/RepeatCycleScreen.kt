@@ -107,7 +107,7 @@ fun RepeatCycleScreen(
                     Text(
                         text = stringResource(Res.string.repeat_add_button),
                         style = EbbingTheme.typography.bodyMM,
-                        color = EbbingTheme.colors.primaryDefault,
+                        color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .noRippleClickable { viewModel.onIntent(RepeatCycleIntent.OnAddClick) },
@@ -125,7 +125,7 @@ fun RepeatCycleScreen(
                         text = stringResource(Res.string.repeat_empty_message),
                         style = EbbingTheme.typography.bodySM,
                         textAlign = TextAlign.Center,
-                        color = EbbingTheme.colors.dark3,
+                        color = EbbingTheme.colors.textDisabled,
                     )
                 }
             } else if (isWide) {
@@ -205,7 +205,7 @@ private fun DeleteRepeatCycleDialog(
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
                     append(deletePrefix)
-                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryDefault)) {
+                    withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
                         append(deleteHighlight)
                     }
                     append(deleteSuffix)

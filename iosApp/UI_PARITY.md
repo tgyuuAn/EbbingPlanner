@@ -439,12 +439,12 @@ LOW 35건을 현재 코드 기준으로 Android 원본과 다시 대조했다. �
 - **B2 흐름·내비게이션** (103ef6aa): ViewModel InstanceKeeper 보관, 저장 후 날짜 선택 홈 + 위젯 넛지, 누락 스낵바, 메모 수정 경로, 웹뷰 제목, 탭 스택 정리, 엣지 스와이프 뒤로가기
 - **B3 화면 세부**: 색 토큰 매핑 위반 정리, 타이포, en/ja 문구를 Android 키로 정렬, 분석 이벤트, 알림 넛지·메모·테마·위젯 설정 태블릿 레이아웃, 설정 시간 포맷, 동기화 2단 제거, 리플 없는 클릭, 폰 하단바, Pretendard 폰트
 
-### 남은 차이 (의도적 또는 결정 필요)
-- ⬜ CLEAR_SYNC_FLAG 1회성 연동 해제: Android 2025-08 전용 장치라 iOS 이식 시 기존 iOS 사용자 연동이 모두 끊김 → 이식 안 함
-- ⬜ 업데이트 안내(soft/hard): iOS Remote Config/App Store 조회 미구현
-- ⬜ 알림 설정 서버 로그(notification_analytics), 위젯 이벤트 로그
-- ⬜ 다크 테마 열린 설정 메뉴 하이라이트: Android는 테마별 fillSelected, shared는 primaryLight 25% → 새 토큰 필요
-- ⬜ Android fillDisabled(#A1AABB) 대응 shared 토큰 없음 → light1/dark3로 근사
-- ⬜ shared 테마 팔레트 값 자체가 Android와 다름(예: forest primary) — 기존 결정(shared 토큰 유지)으로 보류, 정렬 여부 결정 필요
-- ⬜ iOS 알림은 64개 한도로 가까운 60일분만 예약(앱 진입 시 보충), 기기 이름은 iOS 16+ 일반 이름
-- ⬜ 탭 하위 화면 저장·복원(Android BottomBarTo restoreState)은 미구현
+### 남은 차이 (2026-10-31 추가 반영 후)
+- ✅ shared 테마 팔레트 값을 Android와 완전히 일치 (5테마 × 라이트/다크, Android 시맨틱 토큰 26개 동일 이름), 예전 토큰 이름 제거
+- ✅ fillDisabled/fillSelected 등 근사치 → 정확한 토큰 (다크 테마 설정 하이라이트 포함)
+- ✅ 업데이트 안내(soft/hard): FirebaseRemoteConfig + iOS 전용 키 `ios_update_info`, `ios_hard_update_info`, `ios_app_store_url` (KMP_IOS_NOTES.md 9번)
+- ✅ 알림 설정 서버 로그(notification_analytics), 위젯 이벤트 로그(App Group 큐 → 앱에서 전송)
+- ✅ 탭 하위 화면 저장·복원, 네트워크 감지(NWPathMonitor) + 동기화 화면 배너/오프라인 차단
+- ⬜ CLEAR_SYNC_FLAG 1회성 연동 해제: 이식 시 기존 iOS 사용자 연동이 모두 끊김 → 의도적으로 미이식
+- ⬜ 플랫폼 제약: iOS 알림 64개 한도(가까운 60일분 예약), 기기 이름은 iOS 16+ 일반 이름, Wi-Fi 설정 직접 열기 불가(앱 설정으로 이동)
+- ⬜ 설정 행 화살표: Android drawable 고정색 #909599 vs shared textDisabled(#8994A8)

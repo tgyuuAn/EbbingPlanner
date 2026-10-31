@@ -40,7 +40,7 @@ internal fun UpdateBottomSheet(
             Text(
                 text = stringResource(Res.string.home_update_info),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -52,7 +52,7 @@ internal fun UpdateBottomSheet(
             Text(
                 text = stringResource(Res.string.home_update_repeat_cycle),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

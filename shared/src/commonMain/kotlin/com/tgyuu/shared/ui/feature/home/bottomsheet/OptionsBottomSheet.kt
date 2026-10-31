@@ -51,7 +51,7 @@ internal fun OptionsBottomSheet(
             Text(
                 text = stringResource(Res.string.home_options_edit),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -63,7 +63,7 @@ internal fun OptionsBottomSheet(
             Text(
                 text = stringResource(Res.string.home_options_delete),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -75,7 +75,7 @@ internal fun OptionsBottomSheet(
             Text(
                 text = stringResource(Res.string.home_options_delay_tomorrow),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -87,7 +87,7 @@ internal fun OptionsBottomSheet(
             Text(
                 text = if (selectedSchedule.memo.isEmpty()) stringResource(Res.string.home_options_add_memo) else stringResource(Res.string.home_options_edit_memo),
                 style = EbbingTheme.typography.bodyMM,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -100,7 +100,7 @@ internal fun OptionsBottomSheet(
                 Text(
                     text = stringResource(Res.string.home_options_delete_memo),
                     style = EbbingTheme.typography.bodyMM,
-                    color = EbbingTheme.colors.black,
+                    color = EbbingTheme.colors.textOnBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier

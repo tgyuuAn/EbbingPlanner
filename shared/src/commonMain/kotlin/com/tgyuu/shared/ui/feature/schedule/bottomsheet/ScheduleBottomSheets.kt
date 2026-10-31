@@ -100,7 +100,7 @@ fun TagEditBottomSheet(
         Text(
             text = stringResource(Res.string.schedule_tag_name_label),
             style = EbbingTheme.typography.heading14SB,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -124,7 +124,7 @@ fun TagEditBottomSheet(
             Text(
                 text = stringResource(Res.string.schedule_tag_color_label),
                 style = EbbingTheme.typography.heading14SB,
-                color = EbbingTheme.colors.black,
+                color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
             )
 
@@ -147,7 +147,7 @@ fun TagEditBottomSheet(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .heightIn(max = 228.dp)
-                    .verticalScrollbar(gridState, color = EbbingTheme.colors.light1),
+                    .verticalScrollbar(gridState, color = EbbingTheme.colors.fillDisabled),
             ) {
                 items(TAG_COLORS) { colorValue ->
                     val baseColor = Color(colorValue)
@@ -191,14 +191,14 @@ fun TagEditBottomSheet(
             Icon(
                 painter = painterResource(Res.drawable.ic_trashcan),
                 contentDescription = null,
-                tint = EbbingTheme.colors.error,
+                tint = EbbingTheme.colors.statusError,
                 modifier = Modifier.size(20.dp),
             )
 
             Text(
                 text = stringResource(Res.string.schedule_tag_delete_label, originName),
                 style = EbbingTheme.typography.bodySM,
-                color = EbbingTheme.colors.error,
+                color = EbbingTheme.colors.statusError,
                 // Android와 동일: 아이콘을 제외한 텍스트만 클릭 영역
                 modifier = Modifier
                     .noRippleClickable { onDelete() }
@@ -344,7 +344,7 @@ private fun BottomSheetOptionItem(
         Text(
             text = text,
             style = EbbingTheme.typography.bodyMM,
-            color = EbbingTheme.colors.black,
+            color = EbbingTheme.colors.textOnBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
