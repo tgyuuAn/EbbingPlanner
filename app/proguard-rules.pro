@@ -10,6 +10,10 @@
 -keep class com.google.android.gms.** { *; }
 -keep class com.google.firebase.** { *; }
 
+# ML Kit ComponentRegistrar는 매니페스트에 적힌 이름으로 리플렉션 생성됨
+# R8 full mode는 멤버 없는 -keep class에 기본 생성자를 남기지 않아 명시적으로 보존
+-keep class * implements com.google.firebase.components.ComponentRegistrar { <init>(); }
+
 # 도메인 모델 클래스 전체 보존 (역직렬화용)
 -keep class com.tgyuu.domain.model.** { *; }
 
