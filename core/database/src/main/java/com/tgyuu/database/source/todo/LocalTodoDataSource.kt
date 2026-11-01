@@ -64,7 +64,7 @@ interface LocalTodoDataSource {
 
     suspend fun softDeleteTodo(todoSchedule: TodoSchedule)
     suspend fun softDeleteTodoByTodoInfo(id: Int)
-    suspend fun softDeleteAllTodos()
+    suspend fun softDeleteAllData()
 
     suspend fun hardDeleteTodo(id: Int)
     suspend fun hardDeleteAllTodos()
@@ -73,5 +73,4 @@ interface LocalTodoDataSource {
     suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync>
     suspend fun getTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun getTodoInfoById(infoId: Int): TodoInfo
-    suspend fun deleteAllTodoInfos()
 }

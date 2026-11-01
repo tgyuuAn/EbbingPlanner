@@ -41,6 +41,13 @@ class TodoRepositoryImplTest {
     }
 
     @Test
+    fun `전체 초기화는 동기화로 삭제가 전달되도록 soft delete로 처리한다`() = runTest {
+        repository.clearData()
+
+        coVerify(exactly = 1) { localTodoDataSource.softDeleteAllData() }
+    }
+
+    @Test
     fun `태그 삭제 시 해당 태그를 최근 사용 이력에서 제거한다`() = runTest {
         val tag = TodoTag(id = 5, name = "T", color = 0, createdAt = LocalDate.now())
 

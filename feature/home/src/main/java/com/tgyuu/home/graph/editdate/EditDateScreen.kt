@@ -47,6 +47,7 @@ import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.editdate.contract.EditDateIntent
 import com.tgyuu.home.graph.editdate.contract.EditDateState
 import com.tgyuu.home.graph.ui.PinnedContent
+import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleCheckContent
@@ -238,7 +239,11 @@ private fun EditDateScreenTablet(
         mutableStateListOf(*List(state.schedules.size) { false }.toTypedArray())
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding(),
+    ) {
         EbbingSubTopBar(
             title = stringResource(R.string.home_edit_todo_title),
             onNavigationClick = onBackClick,
@@ -246,19 +251,9 @@ private fun EditDateScreenTablet(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Row(
-            modifier = modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .imePadding(),
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(20.dp)
-                    .padding(horizontal = 20.dp),
-            ) {
+        TabletFormLayout(
+            scrollState = scrollState,
+            form = {
                 EditDateMainFormContent(
                     state = state,
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
@@ -266,16 +261,8 @@ private fun EditDateScreenTablet(
                     onRestDayChange = onRestDayChange,
                     onPinnedChange = onPinnedChange,
                 )
-
-                Spacer(modifier = Modifier.height(60.dp))
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(20.dp)
-                    .padding(horizontal = 20.dp),
-            ) {
+            },
+            side = {
                 ScheduleCheckContent(
                     schedules = state.schedules,
                     isDoneSchedules = isDoneSchedules,
@@ -284,19 +271,18 @@ private fun EditDateScreenTablet(
                 )
 
                 DescriptionBody()
-            }
-        }
-
-        EbbingSolidButton(
-            label = stringResource(R.string.home_edit_todo_button),
-            onClick = {
-                onSaveClick(isDoneSchedules)
-                focusManager.clearFocus()
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(EbbingTheme.colors.background)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+            button = { buttonModifier ->
+                EbbingSolidButton(
+                    label = stringResource(R.string.home_edit_todo_button),
+                    onClick = {
+                        onSaveClick(isDoneSchedules)
+                        focusManager.clearFocus()
+                    },
+                    modifier = buttonModifier.background(EbbingTheme.colors.background),
+                )
+            },
+            modifier = Modifier.weight(1f),
         )
     }
 }

@@ -58,6 +58,7 @@ import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
 import com.tgyuu.home.graph.ui.ScheduleContent
+import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
 import java.time.DayOfWeek
@@ -317,19 +318,9 @@ private fun AddTodoScreenTablet(
             modifier = Modifier.padding(horizontal = 20.dp),
         )
 
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(20.dp)
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 60.dp),
-            ) {
+        TabletFormLayout(
+            scrollState = scrollState,
+            form = {
                 TodoMainFormContent(
                     state = state,
                     scrollState = scrollState,
@@ -340,29 +331,20 @@ private fun AddTodoScreenTablet(
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     onRestDayChange = onRestDayChange,
                 )
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(20.dp)
-                    .padding(horizontal = 20.dp),
-            ) {
-                ScheduleContent(schedules = state.schedules)
-            }
-        }
-
-        EbbingSolidButton(
-            label = stringResource(R.string.home_add_todo_button),
-            onClick = {
-                onSaveClick()
-                focusManager.clearFocus()
             },
-            enabled = state.isSaveEnabled,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(EbbingTheme.colors.background)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+            side = { ScheduleContent(schedules = state.schedules) },
+            button = { buttonModifier ->
+                EbbingSolidButton(
+                    label = stringResource(R.string.home_add_todo_button),
+                    onClick = {
+                        onSaveClick()
+                        focusManager.clearFocus()
+                    },
+                    enabled = state.isSaveEnabled,
+                    modifier = buttonModifier.background(EbbingTheme.colors.background),
+                )
+            },
+            modifier = Modifier.weight(1f),
         )
     }
 }

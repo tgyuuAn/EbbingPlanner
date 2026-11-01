@@ -10,6 +10,10 @@ class ErrorDataSourceImpl @Inject constructor(
         firebaseCrashlytics.recordException(exception)
     }
 
+    override suspend fun logMessage(message: String) {
+        firebaseCrashlytics.log(message)
+    }
+
     override suspend fun setUserId(userId: String) {
         firebaseCrashlytics.setUserId(userId)
     }

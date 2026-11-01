@@ -1,6 +1,14 @@
 package com.tgyuu.designsystem.component.bottomsheet
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -59,6 +67,64 @@ fun EbbingModalBottomSheet(
         modifier = modifier.fillMaxWidth(),
     ) {
         content()
+    }
+}
+
+/**
+ * 폰은 [EbbingModalBottomSheet], 태블릿은 화면 가운데 다이얼로그로 시트 content를 띄워요.
+ * 시트를 여는 쪽(ShowBottomSheet 이벤트)은 표시 방식을 몰라도 돼요.
+ */
+@Composable
+fun EbbingAdaptiveSheetHost(
+    sheetState: EbbingBottomSheetState,
+    isTablet: Boolean,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val targetPresentation = if (isTablet) SheetPresentation.Dialog else SheetPresentation.BottomSheet
+
+    // 창 크기가 바뀌어 표시 방식이 달라지면 열려 있던 시트를 닫고 전환해요
+    LaunchedEffect(targetPresentation) {
+        if (sheetState.presentation != targetPresentation) {
+            if (sheetState.isVisible) sheetState.hide()
+            sheetState.presentation = targetPresentation
+        }
+    }
+
+    if (!isTablet) {
+        EbbingModalBottomSheet(
+            sheetState = sheetState,
+            modifier = modifier,
+            content = content,
+        )
+        return
+    }
+
+    Box(modifier = modifier) {
+        content()
+    }
+
+    if (sheetState.isDialogVisible) {
+        val scope = rememberCoroutineScope()
+
+        Dialog(
+            onDismissRequest = { scope.launch { sheetState.hide() } },
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(40.dp)
+                    .widthIn(max = 760.dp)
+                    .fillMaxWidth()
+                    .shadow(elevation = 8.dp, shape = RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(EbbingTheme.colors.background)
+                    // 시트 content가 좌우 20dp를 갖고 있어 합쳐서 디자인의 32dp가 돼요
+                    .padding(horizontal = 12.dp, vertical = 28.dp),
+            ) {
+                sheetState.content?.invoke()
+            }
+        }
     }
 }
 

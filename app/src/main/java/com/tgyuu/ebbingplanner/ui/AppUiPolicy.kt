@@ -29,6 +29,11 @@ object AppUiPolicy {
         SyncGraph.RestoreByDeviceIdRoute::class,
     )
 
+    // 태블릿은 하위 화면에서도 내비게이션을 유지해요
+    val tabletNavigationHiddenRoutes = setOf(
+        OnboardingRoute::class,
+    )
+
     val rootRoutes = setOf(
         OnboardingRoute::class,
         HomeGraph.HomeRoute::class,

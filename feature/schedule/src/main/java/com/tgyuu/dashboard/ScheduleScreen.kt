@@ -1,6 +1,5 @@
 package com.tgyuu.dashboard
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -32,6 +31,11 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import com.tgyuu.common.util.isLandscapeWindow
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -286,7 +290,6 @@ private fun PhoneScheduleScreen(
     }
 }
 
-@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 private fun TabletScheduleScreen(
     state: ScheduleState,
@@ -298,10 +301,25 @@ private fun TabletScheduleScreen(
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isLandscape = isLandscapeWindow()
+    val horizontalPadding = if (isLandscape) 48.dp else 60.dp
+
+    if (isLandscape && state.visibleTags.isNotEmpty()) {
+        TabletLandscapeScheduleScreen(
+            state = state,
+            onToggleInfoExpand = onToggleInfoExpand,
+            onScheduleClick = onScheduleClick,
+            onTagThreeDotsClick = onTagThreeDotsClick,
+            onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+            modifier = modifier,
+        )
+        return
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         EbbingMainTopBar(
             title = stringResource(R.string.schedule_top_bar_title),
-            modifier = Modifier.padding(horizontal = 20.dp),
+            modifier = Modifier.padding(horizontal = horizontalPadding),
         )
 
         HorizontalDivider(color = EbbingTheme.colors.fillTextfield, thickness = 1.dp)
@@ -321,7 +339,210 @@ private fun TabletScheduleScreen(
                 onScheduleThreeDotsClick,
                 Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+                horizontalPadding = horizontalPadding,
+            )
+        }
+    }
+}
+
+/** 태블릿 가로 모드: 왼쪽 태그 목록에서 고른 태그의 일정을 오른쪽 상세 패널에 보여줘요 */
+@Composable
+private fun TabletLandscapeScheduleScreen(
+    state: ScheduleState,
+    onToggleInfoExpand: (Int) -> Unit,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
+    onTagThreeDotsClick: (tagName: String, tagColor: Int, tagId: Int) -> Unit,
+    onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var selectedTagId by rememberSaveable { mutableStateOf<Int?>(null) }
+    val selectedTag = state.visibleTags.firstOrNull { it.id == selectedTagId }
+        ?: state.visibleTags.first()
+
+    Row(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+        ) {
+            EbbingMainTopBar(
+                title = stringResource(R.string.schedule_top_bar_title),
+                modifier = Modifier.padding(horizontal = 48.dp),
+            )
+
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                itemsIndexed(items = state.visibleTags, key = { _, tag -> tag.id }) { idx, tag ->
+                    if (idx != 0) {
+                        HorizontalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
+                    }
+
+                    TabletTagRow(
+                        title = tag.name,
+                        tagColor = tag.color,
+                        scheduleCount = state.tagScheduleCountMap[tag.id] ?: 0,
+                        achievementRate = state.tagAchievementRateMap[tag.id] ?: 0f,
+                        isSelected = tag.id == selectedTag.id,
+                        isDefaultTag = tag.id == DefaultTodoTag.id,
+                        isAllDone = state.tagAllDoneMap[tag.id] ?: false,
+                        onClick = { selectedTagId = tag.id },
+                        onThreeDotsClick = { onTagThreeDotsClick(tag.name, tag.color, tag.id) },
+                    )
+                }
+
+                item {
+                    HorizontalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
+                }
+            }
+        }
+
+        VerticalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
+
+        TabletTagDetail(
+            title = selectedTag.name,
+            tagColor = selectedTag.color,
+            scheduleCount = state.tagScheduleCountMap[selectedTag.id] ?: 0,
+            achievementRate = state.tagAchievementRateMap[selectedTag.id] ?: 0f,
+            infos = state.infosByTagMap[selectedTag.id] ?: persistentListOf(),
+            state = state,
+            onToggleInfoExpand = onToggleInfoExpand,
+            onScheduleClick = onScheduleClick,
+            onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+        )
+    }
+}
+
+@Composable
+private fun TabletTagRow(
+    title: String,
+    tagColor: Int,
+    scheduleCount: Int,
+    achievementRate: Float,
+    isSelected: Boolean,
+    isDefaultTag: Boolean,
+    isAllDone: Boolean,
+    onClick: () -> Unit,
+    onThreeDotsClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(if (isSelected) EbbingTheme.colors.fillSelected else EbbingTheme.colors.background)
+            .clickable { onClick() }
+            .padding(horizontal = 48.dp, vertical = 20.dp),
+    ) {
+        TagSummary(
+            title = title,
+            tagColor = tagColor,
+            scheduleCount = scheduleCount,
+            achievementRate = achievementRate,
+            isAllDone = isAllDone,
+            modifier = Modifier.weight(1f),
+        )
+
+        if (!isDefaultTag) {
+            Image(
+                painter = painterResource(R.drawable.ic_3dots),
+                contentDescription = null,
+                modifier = Modifier
+                    .clickable { onThreeDotsClick() }
+                    .padding(8.dp)
+                    .size(24.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun TabletTagDetail(
+    title: String,
+    tagColor: Int,
+    scheduleCount: Int,
+    achievementRate: Float,
+    infos: ImmutableList<TodoInfoUiModel>,
+    state: ScheduleState,
+    onToggleInfoExpand: (Int) -> Unit,
+    onScheduleClick: (TodoScheduleUiModel) -> Unit,
+    onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(start = 24.dp, end = 24.dp, top = 40.dp, bottom = 24.dp),
+        modifier = modifier.background(EbbingTheme.colors.fillTextfield),
+    ) {
+        item {
+            TagSummary(
+                title = title,
+                tagColor = tagColor,
+                scheduleCount = scheduleCount,
+                achievementRate = achievementRate,
+                isAllDone = false,
+                barWidth = 6.dp,
+                modifier = Modifier.padding(bottom = 16.dp),
+            )
+        }
+
+        items(items = infos, key = { it.id }) { info ->
+            TodoInfoItem(
+                title = info.title,
+                scheduleCount = state.infoScheduleCountMap[info.id] ?: 0,
+                achievementRate = state.infoAchievementRateMap[info.id] ?: 0f,
+                isExpanded = info.id in state.expandedInfoIds,
+                isAllDone = state.infoAllDoneMap[info.id] ?: false,
+                schedules = state.schedulesByInfoMap[info.id] ?: persistentListOf(),
+                tagColor = tagColor,
+                onToggleExpand = { onToggleInfoExpand(info.id) },
+                onScheduleClick = onScheduleClick,
+                onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TagSummary(
+    title: String,
+    tagColor: Int,
+    scheduleCount: Int,
+    achievementRate: Float,
+    isAllDone: Boolean,
+    modifier: Modifier = Modifier,
+    barWidth: Dp = 4.dp,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        Spacer(
+            modifier = Modifier
+                .width(barWidth)
+                .height(42.dp)
+                .background(Color(tagColor))
+        )
+
+        Column(modifier = Modifier.padding(start = 12.dp)) {
+            Text(
+                text = title,
+                style = EbbingTheme.typography.heading18B,
+                color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(
+                    R.string.schedule_tag_count_completion,
+                    scheduleCount,
+                    Math.round(achievementRate * 100),
+                ),
+                style = EbbingTheme.typography.body16M,
+                color = if (isAllDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textSub,
             )
         }
     }
@@ -338,6 +559,7 @@ private fun TagList(
     onTagThreeDotsClick: (tagName: String, tagColor: Int, tagId: Int) -> Unit,
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 20.dp,
 ) {
     LazyColumn(modifier = modifier) {
         itemsIndexed(items = state.visibleTags, key = { _, tag -> tag.id }) { idx, tag ->
@@ -366,6 +588,7 @@ private fun TagList(
                 onScheduleClick = onScheduleClick,
                 onTagThreeDotsClick = { onTagThreeDotsClick(tag.name, tag.color, tag.id) },
                 onScheduleThreeDotsClick = onScheduleThreeDotsClick,
+                horizontalPadding = horizontalPadding,
             )
         }
     }
@@ -390,6 +613,7 @@ private fun TagCard(
     onTagThreeDotsClick: () -> Unit,
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    horizontalPadding: Dp = 20.dp,
 ) {
     Column(
         modifier = modifier
@@ -402,7 +626,7 @@ private fun TagCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onToggleTagExpand() }
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(horizontal = horizontalPadding, vertical = 20.dp),
         ) {
             Spacer(
                 modifier = Modifier
@@ -472,7 +696,7 @@ private fun TagCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(EbbingTheme.colors.fillTextfield)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = horizontalPadding - 4.dp)
                     .padding(top = 12.dp, bottom = 8.dp),
             ) {
                 infos.forEach { info ->

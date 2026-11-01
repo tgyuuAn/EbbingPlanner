@@ -13,6 +13,10 @@ class DebugErrorDataSourceImpl @Inject constructor() : ErrorDataSource {
         )
     }
 
+    override suspend fun logMessage(message: String) {
+        Log.w("DebugErrorDataSource", "userId : $userId, message : $message")
+    }
+
     override suspend fun setUserId(userId: String) {
         this.userId = userId
     }
