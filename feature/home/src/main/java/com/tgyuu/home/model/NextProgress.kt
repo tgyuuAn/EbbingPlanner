@@ -14,12 +14,25 @@ package com.tgyuu.home.model
  * @property title 제목 칸에 채워 줄 다음 진도 제목
  * @property subject 진도 앞부분(과목명). 저장 후 안내 토스트에 써요.
  * @property start 다음 진도의 시작 표현("51", "3강"). 진도를 알 수 없으면 null
+ * @property basis 어떤 근거로 추정했는지. 추천 품질 분석용 로그에 남겨요.
  */
 internal data class NextProgress(
     val title: String,
     val subject: String,
     val start: String?,
-)
+    val basis: Basis,
+) {
+    enum class Basis(val logValue: String) {
+        /** 같은 과목의 직전 제목과 비교 */
+        HISTORY("history"),
+        /** 제목 하나의 범위를 같은 크기로 연장 */
+        RANGE("range"),
+        /** 제목 하나의 숫자를 1 증가 */
+        NUMBER("number"),
+        /** 진도를 알 수 없어 제목 그대로 */
+        NONE("none"),
+    }
+}
 
 /** 숫자만 다른 제목을 같은 과목으로 묶기 위한 키. "TOEIC 1-50"과 "toeic 51~100"은 같은 키예요. */
 internal fun progressKey(title: String): String = title.trim()
@@ -58,7 +71,7 @@ private fun suggestFromHistory(
 
     // 범위 자체가 바뀌었으면 마지막 범위 크기로 이어가요. (1-50 → 51-80 다음은 81-110)
     if (changed.size == 2 && changed[1] == changed[0] + 1 && isRange(title, tokens, changed[0])) {
-        return continueRange(title, tokens, changed[0])
+        return continueRange(title, tokens, changed[0], NextProgress.Basis.HISTORY)
     }
 
     val replacements = changed.associateWith { index ->
@@ -66,26 +79,26 @@ private fun suggestFromHistory(
         if (step <= 0) return null
         tokens[index].value + step
     }
-    return buildProgress(title, tokens, replacements)
+    return buildProgress(title, tokens, replacements, NextProgress.Basis.HISTORY)
 }
 
 private fun suggestFromTitle(title: String, tokens: List<NumberToken>): NextProgress {
     // "경제원론 51~"처럼 끝을 비워 둔 범위는 어디까지 했는지 알 수 없어 그대로 이어가요.
     if (OPEN_RANGE_REGEX.containsMatchIn(title)) {
-        return NextProgress(title = title, subject = title, start = null)
+        return NextProgress(title = title, subject = title, start = null, basis = NextProgress.Basis.NONE)
     }
 
     val candidates = tokens.indices.filterNot { isNonProgress(title, tokens, it) }
 
     candidates.lastOrNull { index ->
         index + 1 in candidates && isRange(title, tokens, index)
-    }?.let { return continueRange(title, tokens, it) }
+    }?.let { return continueRange(title, tokens, it, NextProgress.Basis.RANGE) }
 
     val target = candidates.lastOrNull { hasProgressUnit(title, tokens[it]) }
         ?: candidates.lastOrNull()
-        ?: return NextProgress(title = title, subject = title, start = null)
+        ?: return NextProgress(title = title, subject = title, start = null, basis = NextProgress.Basis.NONE)
 
-    return buildProgress(title, tokens, mapOf(target to tokens[target].value + 1))
+    return buildProgress(title, tokens, mapOf(target to tokens[target].value + 1), NextProgress.Basis.NUMBER)
 }
 
 /** tokens[index]와 그 다음 숫자가 "A-B" / "A~B" 범위인지. "3-1"처럼 앞이 크거나 같으면 단원 표기로 봐요. */
@@ -96,7 +109,12 @@ private fun isRange(title: String, tokens: List<NumberToken>, index: Int): Boole
     return RANGE_SEPARATOR_REGEX.matches(separator) && start.value < end.value
 }
 
-private fun continueRange(title: String, tokens: List<NumberToken>, index: Int): NextProgress {
+private fun continueRange(
+    title: String,
+    tokens: List<NumberToken>,
+    index: Int,
+    basis: NextProgress.Basis,
+): NextProgress {
     val start = tokens[index].value
     val end = tokens[index + 1].value
     val nextStart = end + 1
@@ -104,6 +122,7 @@ private fun continueRange(title: String, tokens: List<NumberToken>, index: Int):
         title = title,
         tokens = tokens,
         replacements = mapOf(index to nextStart, index + 1 to nextStart + (end - start)),
+        basis = basis,
         withUnit = false,
     )
 }
@@ -112,6 +131,7 @@ private fun buildProgress(
     title: String,
     tokens: List<NumberToken>,
     replacements: Map<Int, Long>,
+    basis: NextProgress.Basis,
     withUnit: Boolean = true,
 ): NextProgress {
     val nextTitle = StringBuilder(title)
@@ -134,6 +154,7 @@ private fun buildProgress(
         title = nextTitle.toString(),
         subject = title.substring(0, firstToken.range.first).trimEnd().trimEnd { !it.isLetterOrDigit() },
         start = start + unit,
+        basis = basis,
     )
 }
 

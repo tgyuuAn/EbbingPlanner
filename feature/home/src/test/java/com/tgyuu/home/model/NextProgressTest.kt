@@ -73,14 +73,19 @@ class NextProgressTest {
     @Test
     fun `토스트에 쓸 과목명과 시작 진도를 함께 돌려준다`() {
         assertEquals(
-            NextProgress(title = "경제원론 51-100", subject = "경제원론", start = "51"),
+            NextProgress(title = "경제원론 51-100", subject = "경제원론", start = "51", basis = NextProgress.Basis.RANGE),
             suggestNextProgress("경제원론 1-50"),
         )
         assertEquals(
-            NextProgress(title = "민법총론 3강", subject = "민법총론", start = "3강"),
+            NextProgress(title = "민법총론 3강", subject = "민법총론", start = "3강", basis = NextProgress.Basis.NUMBER),
             suggestNextProgress("민법총론 2강"),
         )
         assertNull(suggestNextProgress("영단어").start)
+        assertEquals(NextProgress.Basis.NONE, suggestNextProgress("영단어").basis)
+        assertEquals(
+            NextProgress.Basis.HISTORY,
+            suggestNextProgress("TOEIC 51-100", previousTitle = "TOEIC 1-50").basis,
+        )
     }
 
     @Test

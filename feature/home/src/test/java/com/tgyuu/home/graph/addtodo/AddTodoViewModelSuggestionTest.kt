@@ -1,7 +1,8 @@
 package com.tgyuu.home.graph.addtodo
 
 import androidx.lifecycle.SavedStateHandle
-import com.tgyuu.analytics.NoOpAnalyticsHelper
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.domain.model.TodoSchedule
@@ -28,6 +29,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddTodoViewModelSuggestionTest {
     private lateinit var todoRepository: FakeTodoRepository
+    private val loggedEvents = mutableListOf<AnalyticsEvent>()
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -48,7 +50,13 @@ class AddTodoViewModelSuggestionTest {
         eventBus = EventBus(),
         navigationBus = NavigationBus(),
         alarmScheduler = mockk(relaxed = true),
-        analyticsHelper = NoOpAnalyticsHelper(),
+        analyticsHelper = object : AnalyticsHelper() {
+            override fun logEvent(event: AnalyticsEvent) {
+                loggedEvents += event
+            }
+
+            override fun setUserId(userId: String?) = Unit
+        },
         resourceProvider = object : ResourceProvider {
             override fun getString(resId: Int): String = ""
             override fun getString(resId: Int, vararg formatArgs: Any): String = ""
@@ -131,6 +139,31 @@ class AddTodoViewModelSuggestionTest {
         val suggestions = createViewModel().state.value.suggestions
 
         assertEquals(listOf("JLPT N3 단어 101-150"), suggestions.map { it.title })
+    }
+
+    @Test
+    fun `칩을 누르면 어떤 칩을 눌렀는지 클릭 로그를 남긴다`() = runTest {
+        todoRepository.addTag(name = "태그", color = 0)
+        addTodo(1, "경제원론 1-50", tagId = 1, LocalDate.of(2024, 1, 1), listOf(0, 1, 7, 15))
+        addTodo(2, "민법총론 2강", tagId = 1, LocalDate.of(2024, 1, 2), listOf(0))
+        val viewModel = createViewModel()
+        viewModel.onIntent(AddTodoIntent.OnTitleChange("경"))
+
+        viewModel.onIntent(AddTodoIntent.OnSuggestionClick(viewModel.state.value.visibleSuggestions.first()))
+
+        val click = loggedEvents.filterIsInstance<AnalyticsEvent.Click>().single()
+        assertEquals("NextProgressSuggestion", click.buttonName)
+        assertEquals(
+            mapOf(
+                "suggestion_title" to "경제원론 51-100",
+                "suggestion_index" to 0,
+                "suggestion_count" to 1,
+                "suggestion_basis" to "range",
+                "has_repeat_cycle" to true,
+                "typed_title_length" to 1,
+            ),
+            click.properties,
+        )
     }
 
     @Test

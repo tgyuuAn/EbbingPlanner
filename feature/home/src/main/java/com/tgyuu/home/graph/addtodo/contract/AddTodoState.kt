@@ -72,6 +72,8 @@ data class ProgressSuggestion(
     val title: String,
     val tag: TodoTagUiModel,
     val repeatCycle: RepeatCycleUiModel?,
+    /** 추천 근거(history / range / number / none). 로그용이에요. */
+    val basis: String = "",
 )
 
 @Immutable

@@ -148,8 +148,10 @@ class AddTodoViewModel @Inject constructor(
                 val tag = tagsById[info.tagId] ?: return@mapNotNull null
                 val restDays = runCatching { todoRepository.loadTodoInfoById(info.infoId).restDays }
                     .getOrDefault(emptySet())
+                val nextProgress = suggestNextProgress(info.title, previousTitle)
                 ProgressSuggestion(
-                    title = suggestNextProgress(info.title, previousTitle).title,
+                    title = nextProgress.title,
+                    basis = nextProgress.basis.logValue,
                     tag = tag.toUiModel().let {
                         if (it.id == DefaultTodoTag.id) {
                             it.copy(name = resourceProvider.getString(R.string.tag_unassigned))
@@ -293,8 +295,20 @@ class AddTodoViewModel @Inject constructor(
     }
 
     private fun onSuggestionClick(suggestion: ProgressSuggestion) {
+        val visibleSuggestions = currentState.visibleSuggestions
         analyticsHelper.logEvent(
-            AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "NextProgressSuggestion")
+            AnalyticsEvent.Click(
+                screenName = "AddTodo",
+                buttonName = "NextProgressSuggestion",
+                properties = mapOf(
+                    "suggestion_title" to suggestion.title,
+                    "suggestion_index" to visibleSuggestions.indexOf(suggestion),
+                    "suggestion_count" to visibleSuggestions.size,
+                    "suggestion_basis" to suggestion.basis,
+                    "has_repeat_cycle" to (suggestion.repeatCycle != null),
+                    "typed_title_length" to currentState.title.trim().length,
+                ),
+            )
         )
 
         setState {
