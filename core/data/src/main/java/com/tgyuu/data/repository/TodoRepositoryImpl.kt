@@ -53,6 +53,9 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTags(): List<TodoTag> = localTagDataSource.getTags()
         .map(TodoTagEntity::toDomain)
 
+    override suspend fun loadArchivedTags(): List<TodoTag> = localTagDataSource.getArchivedTags()
+        .map(TodoTagEntity::toDomain)
+
     override suspend fun loadRepeatCycle(id: Int): RepeatCycle =
         localRepeatCycleDataSource.getRepeatCycle(id)!!.toDomain()
 
@@ -174,6 +177,9 @@ class TodoRepositoryImpl @Inject constructor(
         localTagDataSource.softDeleteTag(todoTag)
         localUserConfigDataSource.removeTagUsage(todoTag.id)
     }
+
+    override suspend fun setTagArchived(tagId: Int, isArchived: Boolean) =
+        localTagDataSource.setTagArchived(tagId, isArchived)
 
     override suspend fun clearData() {
         localTodoDataSource.softDeleteAllData()

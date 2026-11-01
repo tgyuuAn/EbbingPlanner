@@ -60,6 +60,7 @@ import com.tgyuu.home.graph.main.contract.HomeIntent.OnAddTodoClick
 import com.tgyuu.home.graph.main.contract.HomeIntent.OnCheckChanged
 import com.tgyuu.home.graph.main.contract.HomeState
 import com.tgyuu.home.graph.main.ui.EbbingTodoList
+import com.tgyuu.home.print.SchedulePrinter
 import com.tgyuu.home.graph.main.ui.bottomsheet.DelayBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
@@ -330,6 +331,7 @@ private fun PhoneHomeScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
+    val printSchedules = rememberPrintSchedules(state)
     val calendarState = rememberCalendarState()
 
     LaunchedEffect(workedDate) {
@@ -427,6 +429,7 @@ private fun PhoneHomeScreen(
                     selectedDate = selectedDate,
                     todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
                     schedulesByTodoInfo = state.schedulesByTodoInfo,
+                    onPrintClick = { printSchedules(selectedDate) },
                     onSelectDate = {
                         if (selectedDate != it) {
                             scope.launch {
@@ -451,6 +454,26 @@ private fun PhoneHomeScreen(
             onClick = { onAddTodoClick(selectedDate) },
             modifier = Modifier.align(Alignment.BottomEnd),
         )
+    }
+}
+
+@Composable
+private fun rememberPrintSchedules(state: HomeState): (LocalDate) -> Unit {
+    val context = LocalContext.current
+    val analyticsHelper = LocalAnalyticsHelper.current
+    val currentState by rememberUpdatedState(state)
+    return remember(context) {
+        { date ->
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = "Home", buttonName = "PrintSchedules")
+            )
+            SchedulePrinter.print(
+                context = context,
+                date = date,
+                schedules = currentState.schedulesByDateMap[date] ?: emptyList(),
+                schedulesByTodoInfo = currentState.schedulesByTodoInfo,
+            )
+        }
     }
 }
 
@@ -493,6 +516,7 @@ private fun TabletPortraitHomeScreen(
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
     var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
+    val printSchedules = rememberPrintSchedules(state)
     val calendarState = rememberCalendarState()
 
     LaunchedEffect(workedDate) {
@@ -557,6 +581,7 @@ private fun TabletPortraitHomeScreen(
                     selectedDate = selectedDate,
                     todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
                     schedulesByTodoInfo = state.schedulesByTodoInfo,
+                    onPrintClick = { printSchedules(selectedDate) },
                     onSelectDate = {
                         if (selectedDate != it) {
                             selectedDate = it
@@ -597,6 +622,7 @@ private fun TabletHomeScreen(
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
     var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
+    val printSchedules = rememberPrintSchedules(state)
     val calendarState = rememberCalendarState()
 
     LaunchedEffect(workedDate) {
@@ -668,6 +694,7 @@ private fun TabletHomeScreen(
                     selectedDate = selectedDate,
                     todoLists = state.schedulesByDateMap[selectedDate] ?: emptyList(),
                     schedulesByTodoInfo = state.schedulesByTodoInfo,
+                    onPrintClick = { printSchedules(selectedDate) },
                     onSelectDate = {
                         if (selectedDate != it) {
                             selectedDate = it

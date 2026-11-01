@@ -223,6 +223,12 @@ class FakeTodoRepository : TodoRepository {
         tags.removeIf { it.id == todoTag.id }
     }
 
+    override suspend fun loadArchivedTags(): List<TodoTag> = emptyList()
+
+    override suspend fun setTagArchived(tagId: Int, isArchived: Boolean) {
+        // No-op for testing
+    }
+
     override suspend fun clearData() {
         schedules.clear()
         tags.clear()

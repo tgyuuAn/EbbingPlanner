@@ -85,7 +85,7 @@ interface TodoSchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.date = :date
-          AND s.isDeleted = 0 AND t.isDeleted = 0
+          AND s.isDeleted = 0 AND t.isDeleted = 0 AND t.isArchived = 0
         ORDER BY s.date
         """
     )
@@ -110,7 +110,7 @@ interface TodoSchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.date >= :date
-          AND s.isDeleted = 0 AND t.isDeleted = 0
+          AND s.isDeleted = 0 AND t.isDeleted = 0 AND t.isArchived = 0
         ORDER BY s.date               
         """
     )
@@ -134,7 +134,7 @@ interface TodoSchedulesDao {
         FROM schedule s
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
-        WHERE s.isDeleted = 0 AND t.isDeleted = 0
+        WHERE s.isDeleted = 0 AND t.isDeleted = 0 AND t.isArchived = 0
         ORDER BY s.date               
         """
     )
@@ -186,7 +186,7 @@ interface TodoSchedulesDao {
         JOIN todo_info  i ON s.infoId = i.id
         JOIN todo_tag   t ON i.tagId  = t.id
         WHERE s.date = :date
-          AND s.isDeleted = 0 AND t.isDeleted = 0
+          AND s.isDeleted = 0 AND t.isDeleted = 0 AND t.isArchived = 0
         ORDER BY s.date
         """
     )
@@ -292,6 +292,7 @@ interface TodoSchedulesDao {
     )
     AND s.isDeleted = 0
     AND t.isDeleted = 0
+    AND t.isArchived = 0
     ORDER BY s.date
     """
     )

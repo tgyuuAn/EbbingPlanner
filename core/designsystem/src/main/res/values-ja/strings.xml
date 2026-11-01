@@ -338,6 +338,14 @@
     <string name="tag_added">新しいタグを追加しました</string>
     <string name="tag_updated">タグを修正しました</string>
     <string name="tag_deleted">タグを削除しました</string>
+    <string name="home_print">印刷</string>
+    <string name="tag_archive">アーカイブ</string>
+    <string name="tag_unarchive">アーカイブ解除</string>
+    <string name="tag_tab_active">使用中</string>
+    <string name="tag_tab_archived">アーカイブ</string>
+    <string name="tag_archived">タグをアーカイブしました。このタグの予定はホームに表示されません</string>
+    <string name="tag_unarchived">タグを元に戻しました</string>
+    <string name="tag_archived_empty_message">アーカイブしたタグはありません。\n勉強し終えたタグをアーカイブするとホームに表示されなくなります。</string>
     <string name="tag_add_button">追加</string>
     <string name="tag_empty_message">登録されたタグがありません。\n右上の＋ボタンを押してタグを追加してみましょう。</string>
 

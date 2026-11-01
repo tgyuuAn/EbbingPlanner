@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.main.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
@@ -26,15 +27,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingTextToggle
 import com.tgyuu.designsystem.component.TodoListCard
@@ -60,6 +64,7 @@ internal fun EbbingTodoList(
     onSortTypeChange: (SortType) -> Unit,
     modifier: Modifier = Modifier,
     calendarNestedScroll: NestedScrollConnection? = null,
+    onPrintClick: (() -> Unit)? = null,
 ) {
     val initialPage = TODO_LIST_PAGE_COUNT / 2
     val pagerState = rememberPagerState(
@@ -87,6 +92,7 @@ internal fun EbbingTodoList(
             totalCount = todoLists.size,
             sortType = sortType,
             onSortTypeChange = onSortTypeChange,
+            onPrintClick = onPrintClick,
             modifier = if (calendarNestedScroll != null) {
                 Modifier
                     .nestedScroll(calendarNestedScroll)
@@ -121,6 +127,7 @@ private fun TodoHeader(
     sortType: SortType,
     onSortTypeChange: (SortType) -> Unit,
     modifier: Modifier = Modifier,
+    onPrintClick: (() -> Unit)? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -155,6 +162,19 @@ private fun TodoHeader(
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f)
         )
+
+        if (onPrintClick != null) {
+            Image(
+                painter = painterResource(R.drawable.ic_print),
+                contentDescription = stringResource(R.string.home_print),
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.strokeIcon),
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(32.dp)
+                    .clickable(onClick = onPrintClick)
+                    .padding(4.dp),
+            )
+        }
 
         EbbingTextToggle(
             firstLabel = SortType.CREATED.displayName(),

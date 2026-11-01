@@ -19,6 +19,8 @@ interface LocalTagDataSource {
     suspend fun hardDeleteAllTags()
 
     suspend fun getTags(): List<TodoTagEntity>
+    suspend fun getArchivedTags(): List<TodoTagEntity>
+    suspend fun setTagArchived(id: Int, isArchived: Boolean)
     suspend fun getTag(id: Int): TodoTagEntity?
     suspend fun getTagsForSync(lastSyncTime: LocalDateTime): List<TodoTagForSync>
 }

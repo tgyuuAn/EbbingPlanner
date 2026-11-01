@@ -7,6 +7,7 @@ data class TodoTag(
     val name: String,
     val color: Int,
     val createdAt: LocalDate,
+    val isArchived: Boolean = false,
 )
 
 val DefaultTodoTag = TodoTag(

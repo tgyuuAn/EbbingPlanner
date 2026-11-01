@@ -5,9 +5,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.tgyuu.database.model.TodoTagEntity
 import com.tgyuu.domain.model.sync.TodoTagForSync
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Dao
@@ -70,11 +70,31 @@ interface TodoTagsDao {
         updatedAt: LocalDateTime,
     )
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateTag(tagEntity: TodoTagEntity)
+    @Query(
+        """
+        UPDATE todo_tag
+        SET name = :name, color = :color, createdAt = :createdAt,
+            isDeleted = :isDeleted, updatedAt = :updatedAt
+        WHERE id = :id
+        """
+    )
+    suspend fun updateTagFromSync(
+        id: Int,
+        name: String,
+        color: Int,
+        createdAt: LocalDate,
+        isDeleted: Boolean,
+        updatedAt: LocalDateTime,
+    )
 
-    @Query("SELECT * FROM todo_tag WHERE isDeleted = 0")
+    @Query("SELECT * FROM todo_tag WHERE isDeleted = 0 AND isArchived = 0")
     suspend fun getTags(): List<TodoTagEntity>
+
+    @Query("SELECT * FROM todo_tag WHERE isDeleted = 0 AND isArchived = 1")
+    suspend fun getArchivedTags(): List<TodoTagEntity>
+
+    @Query("UPDATE todo_tag SET isArchived = :isArchived WHERE id = :id AND id != 1")
+    suspend fun setTagArchived(id: Int, isArchived: Boolean)
 
     @Query("SELECT * FROM todo_tag WHERE id = :id AND isDeleted = 0")
     suspend fun getTag(id: Int): TodoTagEntity?

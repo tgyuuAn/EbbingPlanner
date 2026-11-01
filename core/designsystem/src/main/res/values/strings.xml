@@ -339,6 +339,14 @@
     <string name="tag_added">새로운 태그를 추가하였습니다</string>
     <string name="tag_updated">태그를 수정하였습니다</string>
     <string name="tag_deleted">태그를 삭제하였습니다</string>
+    <string name="home_print">인쇄</string>
+    <string name="tag_archive">보관</string>
+    <string name="tag_unarchive">보관 해제</string>
+    <string name="tag_tab_active">사용 중</string>
+    <string name="tag_tab_archived">보관함</string>
+    <string name="tag_archived">태그를 보관했어요. 이 태그의 일정은 홈에서 숨겨져요</string>
+    <string name="tag_unarchived">태그를 다시 꺼냈어요</string>
+    <string name="tag_archived_empty_message">보관한 태그가 없어요.\n다 공부한 태그를 보관하면 홈에서 숨겨져요.</string>
     <string name="tag_add_button">추가</string>
     <string name="tag_empty_message">등록된 태그가 없어요.\n우측 상단 + 버튼을 눌러 태그를 추가해보세요.</string>
 

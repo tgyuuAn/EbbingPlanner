@@ -46,6 +46,7 @@ import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetListItemDef
 import com.tgyuu.designsystem.component.EbbingOutlinedButton
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.component.EbbingTextToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.tag.graph.main.contract.TagIntent
@@ -70,6 +71,9 @@ internal fun TagRoute(
         onAddClick = { viewModel.onIntent(TagIntent.OnAddClick) },
         onEditClick = { viewModel.onIntent(TagIntent.OnEditClick(it)) },
         onDeleteClick = { viewModel.onIntent(TagIntent.OnDeleteClick(it)) },
+        onArchiveClick = { viewModel.onIntent(TagIntent.OnArchiveClick(it)) },
+        onUnarchiveClick = { viewModel.onIntent(TagIntent.OnUnarchiveClick(it)) },
+        onTabChange = { viewModel.onIntent(TagIntent.OnTabChange(it)) },
     )
 }
 
@@ -80,6 +84,9 @@ private fun TagScreen(
     onAddClick: () -> Unit,
     onEditClick: (TodoTagUiModel) -> Unit,
     onDeleteClick: (TodoTagUiModel) -> Unit,
+    onArchiveClick: (TodoTagUiModel) -> Unit,
+    onUnarchiveClick: (TodoTagUiModel) -> Unit,
+    onTabChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedTag by remember { mutableStateOf<TodoTagUiModel?>(null) }
@@ -121,7 +128,17 @@ private fun TagScreen(
                 },
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
-            if (state.tagList.isEmpty()) {
+            EbbingTextToggle(
+                firstLabel = stringResource(R.string.tag_tab_active),
+                secondLabel = stringResource(R.string.tag_tab_archived),
+                selectedFirst = !state.showArchived,
+                onSelectedChange = { toActive ->
+                    selectedTag = null
+                    onTabChange(!toActive)
+                },
+                modifier = Modifier.padding(start = 20.dp, top = 12.dp),
+            )
+            if (state.visibleTagList.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -129,7 +146,10 @@ private fun TagScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = stringResource(R.string.tag_empty_message),
+                        text = stringResource(
+                            if (state.showArchived) R.string.tag_archived_empty_message
+                            else R.string.tag_empty_message
+                        ),
                         style = EbbingTheme.typography.body14M,
                         textAlign = TextAlign.Center,
                         color = EbbingTheme.colors.textDisabled,
@@ -144,7 +164,7 @@ private fun TagScreen(
                         .imePadding(),
                 ) {
                     items(
-                        items = state.tagList,
+                        items = state.visibleTagList,
                         key = { it.id },
                     ) { tag ->
                         EbbingBottomSheetListItemDefault(
@@ -167,7 +187,7 @@ private fun TagScreen(
                         .imePadding(),
                 ) {
                     items(
-                        items = state.tagList,
+                        items = state.visibleTagList,
                         key = { it.id },
                     ) { tag ->
                         EbbingBottomSheetListItemDefault(
@@ -204,11 +224,31 @@ private fun TagScreen(
                     modifier = Modifier.weight(1f),
                 )
 
-                EbbingSolidButton(
-                    label = stringResource(R.string.tag_edit),
-                    onClick = { onEditClick(selectedTag!!) },
-                    modifier = Modifier.weight(1f),
-                )
+                if (state.showArchived) {
+                    EbbingSolidButton(
+                        label = stringResource(R.string.tag_unarchive),
+                        onClick = {
+                            selectedTag?.let(onUnarchiveClick)
+                            selectedTag = null
+                        },
+                        modifier = Modifier.weight(1f),
+                    )
+                } else {
+                    EbbingOutlinedButton(
+                        label = stringResource(R.string.tag_archive),
+                        onClick = {
+                            selectedTag?.let(onArchiveClick)
+                            selectedTag = null
+                        },
+                        modifier = Modifier.weight(1f),
+                    )
+
+                    EbbingSolidButton(
+                        label = stringResource(R.string.tag_edit),
+                        onClick = { onEditClick(selectedTag!!) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
     }
@@ -239,6 +279,9 @@ private fun PreviewTag() {
             onAddClick = {},
             onEditClick = {},
             onDeleteClick = {},
+            onArchiveClick = {},
+            onUnarchiveClick = {},
+            onTabChange = {},
         )
     }
 }

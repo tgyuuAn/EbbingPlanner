@@ -1,5 +1,6 @@
 package com.tgyuu.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tgyuu.domain.model.TodoTag
@@ -15,12 +16,15 @@ data class TodoTagEntity(
     val createdAt: LocalDate = LocalDate.now(),
     val isDeleted: Boolean = false,
     val updatedAt: LocalDateTime = LocalDateTime.now(),
+    // PoC: 기기 로컬 전용 보관 상태. 동기화 wire(TodoTagForSync)에는 아직 포함하지 않는다.
+    @ColumnInfo(defaultValue = "0") val isArchived: Boolean = false,
 ) {
     fun toDomain() = TodoTag(
         id = id,
         name = name,
         color = color,
         createdAt = createdAt,
+        isArchived = isArchived,
     )
 }
 

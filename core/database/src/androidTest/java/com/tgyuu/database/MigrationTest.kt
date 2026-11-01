@@ -206,4 +206,45 @@ class MigrationTest {
             DatabaseMigrations.MIGRATION_4_TO_5
         )
     }
+
+    @Test
+    fun `마이그레이션_5에서6_기존태그는_보관되지않은상태로_유지된다`() {
+        helper.createDatabase(testDbName, 5).apply {
+            execSQL(
+                """
+                INSERT INTO todo_tag (id, name, color, createdAt, isDeleted, updatedAt)
+                VALUES (2, '영어', 0, '2024-06-01', 0, '2024-06-01T00:00:00')
+                """.trimIndent()
+            )
+            close()
+        }
+
+        val db = helper.runMigrationsAndValidate(
+            name = testDbName,
+            version = 6,
+            validateDroppedTables = true,
+            DatabaseMigrations.MIGRATION_5_TO_6
+        )
+
+        val cursor = db.query("SELECT isArchived FROM todo_tag WHERE id = 2")
+        cursor.moveToFirst()
+        assert(cursor.getInt(0) == 0) { "기존 태그는 보관되지 않은 상태여야 합니다" }
+        cursor.close()
+    }
+
+    @Test
+    fun `마이그레이션_1에서6_전체`() {
+        helper.createDatabase(testDbName, 1).close()
+
+        helper.runMigrationsAndValidate(
+            name = testDbName,
+            version = 6,
+            validateDroppedTables = true,
+            DatabaseMigrations.MIGRATION_1_TO_2,
+            DatabaseMigrations.MIGRATION_2_TO_3,
+            DatabaseMigrations.MIGRATION_3_TO_4,
+            DatabaseMigrations.MIGRATION_4_TO_5,
+            DatabaseMigrations.MIGRATION_5_TO_6
+        )
+    }
 }

@@ -21,6 +21,7 @@ interface TodoRepository {
     suspend fun loadUpcomingSchedules(date: LocalDate): List<TodoSchedule>
     suspend fun loadAllSchedules(): List<TodoSchedule>
     suspend fun loadTags(): List<TodoTag>
+    suspend fun loadArchivedTags(): List<TodoTag>
     suspend fun loadRepeatCycle(id: Int): RepeatCycle
     suspend fun loadRepeatCycles(): List<RepeatCycle>
     fun subscribeSchedulesByDate(date: LocalDate): Flow<List<TodoSchedule>>
@@ -77,6 +78,7 @@ interface TodoRepository {
 
     suspend fun updateTag(todoTag: TodoTag)
     suspend fun deleteTag(todoTag: TodoTag)
+    suspend fun setTagArchived(tagId: Int, isArchived: Boolean)
 
     suspend fun clearData()
 }

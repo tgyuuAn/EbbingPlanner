@@ -21,7 +21,7 @@ import com.tgyuu.database.model.TodoTagEntity
         TodoInfoEntity::class,
         RepeatCycleEntity::class,
     ],
-    version = 5,
+    version = 6,
 )
 @TypeConverters(EbbingConverters::class)
 internal abstract class EbbingDatabase : RoomDatabase() {

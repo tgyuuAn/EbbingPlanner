@@ -338,6 +338,14 @@
     <string name="tag_added">A new tag has been added</string>
     <string name="tag_updated">The tag has been updated</string>
     <string name="tag_deleted">The tag has been deleted</string>
+    <string name="home_print">Print</string>
+    <string name="tag_archive">Archive</string>
+    <string name="tag_unarchive">Unarchive</string>
+    <string name="tag_tab_active">Active</string>
+    <string name="tag_tab_archived">Archived</string>
+    <string name="tag_archived">Tag archived. Its schedules are hidden from Home</string>
+    <string name="tag_unarchived">Tag restored</string>
+    <string name="tag_archived_empty_message">No archived tags.\nArchive tags you have finished studying to hide them from Home.</string>
     <string name="tag_add_button">Add</string>
     <string name="tag_empty_message">No tags yet.\nTap the + button in the top right to add one.</string>
 

@@ -37,6 +37,9 @@ class TagViewModel @Inject constructor(
             TagIntent.OnAddClick -> onAddClick()
             is TagIntent.OnDeleteClick -> onDeleteClick(intent.tag)
             is TagIntent.OnEditClick -> onEditClick(intent.tag)
+            is TagIntent.OnArchiveClick -> onArchiveClick(intent.tag)
+            is TagIntent.OnUnarchiveClick -> onUnarchiveClick(intent.tag)
+            is TagIntent.OnTabChange -> setState { copy(showArchived = intent.showArchived) }
         }
     }
 
@@ -72,18 +75,57 @@ class TagViewModel @Inject constructor(
         )
     }
 
+    private suspend fun onArchiveClick(tag: TodoTagUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "ArchiveTag")
+        )
+        todoRepository.setTagArchived(tag.id, isArchived = true)
+        setState {
+            copy(
+                tagList = tagList.filterNot { it.id == tag.id }.toImmutableList(),
+                archivedTagList = (archivedTagList + tag).toImmutableList(),
+            )
+        }
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_archived)))
+    }
+
+    private suspend fun onUnarchiveClick(tag: TodoTagUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "UnarchiveTag")
+        )
+        todoRepository.setTagArchived(tag.id, isArchived = false)
+        setState {
+            copy(
+                tagList = (tagList + tag).sortedBy { it.id }.toImmutableList(),
+                archivedTagList = archivedTagList.filterNot { it.id == tag.id }.toImmutableList(),
+            )
+        }
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_unarchived)))
+    }
+
     companion object {
         private const val SCREEN_NAME = "Tag"
     }
 
     internal fun loadTags() = viewModelScope.launch {
         val tagList = todoRepository.loadTags()
-        setState { copy(tagList = tagList.toUiModels()) }
+        val archivedTagList = todoRepository.loadArchivedTags()
+        setState {
+            copy(
+                tagList = tagList.toUiModels(),
+                archivedTagList = archivedTagList.toUiModels(),
+            )
+        }
     }
 
     private suspend fun deleteTag(tag: TodoTagUiModel) {
         todoRepository.deleteTag(tag.toDomainModel())
-        setState { copy(tagList = tagList.filterNot { it.id == tag.id }.toImmutableList()) }
+        setState {
+            copy(
+                tagList = tagList.filterNot { it.id == tag.id }.toImmutableList(),
+                archivedTagList = archivedTagList.filterNot { it.id == tag.id }.toImmutableList(),
+            )
+        }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_deleted)))
     }
 }

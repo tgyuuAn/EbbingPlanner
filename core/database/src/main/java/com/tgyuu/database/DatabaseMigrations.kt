@@ -75,5 +75,14 @@ class DatabaseMigrations {
                 )
             }
         }
+
+        val MIGRATION_5_TO_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // 다 공부한 태그를 숨기는 보관(아카이브) 상태 추가
+                database.execSQL(
+                    "ALTER TABLE todo_tag ADD COLUMN isArchived INTEGER NOT NULL DEFAULT 0"
+                )
+            }
+        }
     }
 }

@@ -9,4 +9,9 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 data class TagState(
     val tagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
-) : UiState
+    val archivedTagList: ImmutableList<TodoTagUiModel> = persistentListOf(),
+    val showArchived: Boolean = false,
+) : UiState {
+    val visibleTagList: ImmutableList<TodoTagUiModel>
+        get() = if (showArchived) archivedTagList else tagList
+}
