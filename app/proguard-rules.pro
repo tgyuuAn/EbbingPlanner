@@ -41,3 +41,7 @@
 
 # Glance FontWeight 리플렉션 보존 (EbbingWidgetFontWeight.SemiBold)
 -keep class androidx.glance.text.FontWeight { *; }
+
+# WorkManager InputMerger는 WorkSpec에 저장된 클래스명으로 리플렉션 생성됨
+# 생성자가 제거되면 Glance 세션 워커가 실행되지 않아 위젯이 로딩 화면에 머묾
+-keep class * extends androidx.work.InputMerger { <init>(); }
