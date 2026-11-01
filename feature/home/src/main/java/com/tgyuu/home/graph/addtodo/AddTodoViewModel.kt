@@ -29,6 +29,7 @@ import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.contract.ProgressSuggestion
 import com.tgyuu.home.model.hasFinalConsonant
+import com.tgyuu.home.model.progressKey
 import com.tgyuu.home.model.sortedByUsageOrder
 import com.tgyuu.home.model.suggestNextProgress
 import com.tgyuu.home.model.toUiModel
@@ -66,6 +67,9 @@ class AddTodoViewModel @Inject constructor(
         repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider),
     )
 ) {
+
+    /** 최근에 만든 일정 제목. 저장 후 토스트에서 직전 진도와 비교할 때 써요. */
+    private var recentTitles: List<String> = emptyList()
 
     init {
         analyticsHelper.logEvent(
@@ -121,22 +125,31 @@ class AddTodoViewModel @Inject constructor(
         val tagsById = todoRepository.loadTags().associateBy { it.id }
         val repeatCycles = DefaultRepeatCycles + todoRepository.loadRepeatCycles()
 
-        val suggestions = todoRepository.loadAllSchedules()
+        val recentTodos = todoRepository.loadAllSchedules()
             .groupBy { it.infoId }
             .values
             .sortedWith(
                 compareByDescending<List<TodoSchedule>> { it.first().infoCreatedAt }
                     .thenByDescending { it.first().infoId }
             )
-            .distinctBy { suggestNextProgress(it.first().title).title }
+        recentTitles = recentTodos.map { it.first().title }
+
+        val suggestions = recentTodos
+            // 같은 과목(숫자만 다른 제목)은 가장 최근 일정 하나만 추천하고, 직전 제목과 비교해 진도 간격을 구해요.
+            .groupBy { progressKey(it.first().title) }
+            .values
             .take(MAX_SUGGESTION_COUNT)
-            .mapNotNull { schedules ->
+            .mapNotNull { sameSubject ->
+                val schedules = sameSubject.first()
                 val info = schedules.first()
+                val previousTitle = sameSubject.drop(1)
+                    .map { it.first().title }
+                    .firstOrNull { it.trim() != info.title.trim() }
                 val tag = tagsById[info.tagId] ?: return@mapNotNull null
                 val restDays = runCatching { todoRepository.loadTodoInfoById(info.infoId).restDays }
                     .getOrDefault(emptySet())
                 ProgressSuggestion(
-                    title = suggestNextProgress(info.title).title,
+                    title = suggestNextProgress(info.title, previousTitle).title,
                     tag = tag.toUiModel().let {
                         if (it.id == DefaultTodoTag.id) {
                             it.copy(name = resourceProvider.getString(R.string.tag_unassigned))
@@ -412,7 +425,10 @@ class AddTodoViewModel @Inject constructor(
 
     /** 다음 진도를 알 수 있는 제목이면, 다음에 어디서부터 추천할지 알려줘요. */
     private fun savedSnackBarMessage(title: String): String {
-        val nextProgress = suggestNextProgress(title)
+        val previousTitle = recentTitles.firstOrNull {
+            progressKey(it) == progressKey(title) && it.trim() != title.trim()
+        }
+        val nextProgress = suggestNextProgress(title, previousTitle)
         val start = nextProgress.start
         if (start == null || nextProgress.subject.isEmpty()) {
             return resourceProvider.getString(R.string.home_snackbar_todo_added)

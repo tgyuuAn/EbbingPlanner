@@ -3,12 +3,16 @@ package com.tgyuu.home.model
 /**
  * 지난 일정 제목에서 이어서 학습할 다음 진도를 추정해요.
  *
- * - 범위: "경제원론 1-50" → "경제원론 51~" (끝은 사용자가 이어서 입력)
- * - 단일 숫자: "민법총론 2강" → "민법총론 3강"
- * - 숫자 없음: "영단어" → "영단어"
+ * 1. 같은 과목의 직전 제목이 있으면, 두 제목에서 바뀐 숫자만 같은 간격으로 이어가요.
+ *    - "N3 단어 1-50" → "N3 단어 51-100" 다음은 "N3 단어 101-150" (N3는 그대로)
+ *    - "Day 1" → "Day 3" 다음은 "Day 5"
+ * 2. 직전 제목이 없으면 제목 하나로 추정해요.
+ *    - 범위는 같은 크기로 이어가요: "경제원론 1-50" → "경제원론 51-100", "DAY 01-03" → "DAY 04-06"
+ *    - 숫자 하나는 1 늘려요: "민법총론 2강" → "민법총론 3강", "수능특강 3-1" → "수능특강 3-2"
+ *    - 연도·급수·월·시간·분량·분모처럼 진도가 아닌 숫자는 건드리지 않아요.
  *
  * @property title 제목 칸에 채워 줄 다음 진도 제목
- * @property subject 진도를 뺀 과목명. 저장 후 안내 토스트에 써요.
+ * @property subject 진도 앞부분(과목명). 저장 후 안내 토스트에 써요.
  * @property start 다음 진도의 시작 표현("51", "3강"). 진도를 알 수 없으면 null
  */
 internal data class NextProgress(
@@ -17,44 +21,148 @@ internal data class NextProgress(
     val start: String?,
 )
 
-private val RANGE_REGEX = Regex("""(\d+)\s*[-~]\s*(\d+)""")
-private val OPEN_RANGE_REGEX = Regex("""\d+\s*~\s*$""")
-private val NUMBER_REGEX = Regex("""\d+""")
-private val UNIT_REGEX = Regex("""^[^\s\d]*""")
+/** 숫자만 다른 제목을 같은 과목으로 묶기 위한 키. "TOEIC 1-50"과 "toeic 51~100"은 같은 키예요. */
+internal fun progressKey(title: String): String = title.trim()
+    .lowercase()
+    .replace(NUMBER_REGEX, "#")
+    .replace(Regex("""\s*[-~]\s*"""), "-")
+    .replace(Regex("""\s+"""), " ")
 
-internal fun suggestNextProgress(title: String): NextProgress {
-    val trimmed = title.trim()
+internal fun suggestNextProgress(title: String, previousTitle: String? = null): NextProgress {
+    val latest = title.trim()
+    val tokens = numberTokens(latest)
 
-    RANGE_REGEX.findAll(trimmed).lastOrNull()?.let { match ->
-        val end = match.groupValues[2].toLongOrNull() ?: return trimmed.asSameProgress()
-        val prefix = trimmed.substring(0, match.range.first)
-        val next = (end + 1).toString()
-        return NextProgress(
-            title = "$prefix$next~",
-            subject = prefix.trimEnd(),
-            start = next,
-        )
+    if (previousTitle != null && progressKey(previousTitle) == progressKey(latest)) {
+        suggestFromHistory(latest, tokens, numberTokens(previousTitle.trim()))?.let { return it }
     }
-
-    // "경제원론 51~"처럼 끝을 비워 둔 범위는 어디까지 했는지 알 수 없어 그대로 이어가요.
-    if (OPEN_RANGE_REGEX.containsMatchIn(trimmed)) return trimmed.asSameProgress()
-
-    NUMBER_REGEX.findAll(trimmed).lastOrNull()?.let { match ->
-        val number = match.value.toLongOrNull() ?: return trimmed.asSameProgress()
-        val next = (number + 1).toString().padStart(match.value.length, '0')
-        val suffix = trimmed.substring(match.range.last + 1)
-        val unit = UNIT_REGEX.find(suffix)?.value.orEmpty()
-        return NextProgress(
-            title = trimmed.replaceRange(match.range, next),
-            subject = trimmed.substring(0, match.range.first).trimEnd(),
-            start = next + unit,
-        )
-    }
-
-    return trimmed.asSameProgress()
+    return suggestFromTitle(latest, tokens)
 }
 
-private fun String.asSameProgress() = NextProgress(title = this, subject = this, start = null)
+private data class NumberToken(val value: Long, val range: IntRange) {
+    val width: Int get() = range.last - range.first + 1
+}
+
+private fun numberTokens(title: String): List<NumberToken> =
+    NUMBER_REGEX.findAll(title).mapNotNull { match ->
+        match.value.toLongOrNull()?.let { NumberToken(it, match.range) }
+    }.toList()
+
+private fun suggestFromHistory(
+    title: String,
+    tokens: List<NumberToken>,
+    previousTokens: List<NumberToken>,
+): NextProgress? {
+    if (tokens.size != previousTokens.size) return null
+    val changed = tokens.indices.filter { tokens[it].value != previousTokens[it].value }
+    if (changed.isEmpty()) return null
+
+    // 범위 자체가 바뀌었으면 마지막 범위 크기로 이어가요. (1-50 → 51-80 다음은 81-110)
+    if (changed.size == 2 && changed[1] == changed[0] + 1 && isRange(title, tokens, changed[0])) {
+        return continueRange(title, tokens, changed[0])
+    }
+
+    val replacements = changed.associateWith { index ->
+        val step = tokens[index].value - previousTokens[index].value
+        if (step <= 0) return null
+        tokens[index].value + step
+    }
+    return buildProgress(title, tokens, replacements)
+}
+
+private fun suggestFromTitle(title: String, tokens: List<NumberToken>): NextProgress {
+    // "경제원론 51~"처럼 끝을 비워 둔 범위는 어디까지 했는지 알 수 없어 그대로 이어가요.
+    if (OPEN_RANGE_REGEX.containsMatchIn(title)) {
+        return NextProgress(title = title, subject = title, start = null)
+    }
+
+    val candidates = tokens.indices.filterNot { isNonProgress(title, tokens, it) }
+
+    candidates.lastOrNull { index ->
+        index + 1 in candidates && isRange(title, tokens, index)
+    }?.let { return continueRange(title, tokens, it) }
+
+    val target = candidates.lastOrNull { hasProgressUnit(title, tokens[it]) }
+        ?: candidates.lastOrNull()
+        ?: return NextProgress(title = title, subject = title, start = null)
+
+    return buildProgress(title, tokens, mapOf(target to tokens[target].value + 1))
+}
+
+/** tokens[index]와 그 다음 숫자가 "A-B" / "A~B" 범위인지. "3-1"처럼 앞이 크거나 같으면 단원 표기로 봐요. */
+private fun isRange(title: String, tokens: List<NumberToken>, index: Int): Boolean {
+    val start = tokens[index]
+    val end = tokens.getOrNull(index + 1) ?: return false
+    val separator = title.substring(start.range.last + 1, end.range.first)
+    return RANGE_SEPARATOR_REGEX.matches(separator) && start.value < end.value
+}
+
+private fun continueRange(title: String, tokens: List<NumberToken>, index: Int): NextProgress {
+    val start = tokens[index].value
+    val end = tokens[index + 1].value
+    val nextStart = end + 1
+    return buildProgress(
+        title = title,
+        tokens = tokens,
+        replacements = mapOf(index to nextStart, index + 1 to nextStart + (end - start)),
+        withUnit = false,
+    )
+}
+
+private fun buildProgress(
+    title: String,
+    tokens: List<NumberToken>,
+    replacements: Map<Int, Long>,
+    withUnit: Boolean = true,
+): NextProgress {
+    val nextTitle = StringBuilder(title)
+    // 뒤에서부터 바꿔야 앞쪽 인덱스가 밀리지 않아요.
+    replacements.keys.sortedDescending().forEach { index ->
+        val token = tokens[index]
+        nextTitle.replace(
+            token.range.first,
+            token.range.last + 1,
+            replacements.getValue(index).toString().padStart(token.width, '0'),
+        )
+    }
+
+    val firstIndex = replacements.keys.min()
+    val firstToken = tokens[firstIndex]
+    val start = replacements.getValue(firstIndex).toString().padStart(firstToken.width, '0')
+    val unit = if (withUnit) UNIT_REGEX.find(title.substring(firstToken.range.last + 1))?.value.orEmpty() else ""
+
+    return NextProgress(
+        title = nextTitle.toString(),
+        subject = title.substring(0, firstToken.range.first).trimEnd().trimEnd { !it.isLetterOrDigit() },
+        start = start + unit,
+    )
+}
+
+/** 연도, JLPT 급수, 월·분·시간 같은 단위, "10/20"의 분모처럼 진도가 아닌 숫자. */
+private fun isNonProgress(title: String, tokens: List<NumberToken>, index: Int): Boolean {
+    val token = tokens[index]
+    val before = title.substring(0, token.range.first)
+    val after = title.substring(token.range.last + 1)
+
+    return (token.width == 4 && token.value in 1900..2099) ||
+        LEVEL_PREFIX_REGEX.containsMatchIn(before) ||
+        NON_PROGRESS_UNIT_REGEX.containsMatchIn(after) ||
+        before.endsWith("/")
+}
+
+private fun hasProgressUnit(title: String, token: NumberToken): Boolean =
+    PROGRESS_PREFIX_REGEX.containsMatchIn(title.substring(0, token.range.first)) ||
+        PROGRESS_UNIT_REGEX.containsMatchIn(title.substring(token.range.last + 1))
+
+private val NUMBER_REGEX = Regex("""\d+""")
+private val RANGE_SEPARATOR_REGEX = Regex("""\s*[-~]\s*""")
+private val OPEN_RANGE_REGEX = Regex("""\d+\s*~\s*$""")
+private val UNIT_REGEX = Regex("""^[^\s\d]*""")
+private val LEVEL_PREFIX_REGEX = Regex("""(^|[^A-Za-z])[Nn]$""")
+private val NON_PROGRESS_UNIT_REGEX = Regex("""^\s*(월|분|시간|초|년|급|문제|개|명|원|%)""")
+private val PROGRESS_PREFIX_REGEX = Regex(
+    """(?i)(p\.?|page|day|ch\.?|chapter|part|unit|lesson|lec|챕터|단원|제)\s*$"""
+)
+private val PROGRESS_UNIT_REGEX = Regex("""^\s*(강|장|회|과|편|번|단원|챕터|주차|일차|p\b)""")
 
 /** 마지막 글자에 받침이 있으면 true. 한글이 아니면 숫자 읽기 기준으로 판단해요. */
 internal fun String.hasFinalConsonant(): Boolean {

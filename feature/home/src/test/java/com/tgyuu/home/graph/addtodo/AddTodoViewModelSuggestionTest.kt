@@ -92,7 +92,7 @@ class AddTodoViewModelSuggestionTest {
 
         val suggestions = createViewModel().state.value.suggestions
 
-        assertEquals(listOf("민법총론 3강", "경제원론 51~"), suggestions.map { it.title })
+        assertEquals(listOf("민법총론 3강", "경제원론 51-100"), suggestions.map { it.title })
         assertNull(suggestions[0].repeatCycle)
         assertEquals(-2, suggestions[1].repeatCycle?.id)
         assertEquals(1, suggestions[1].tag.id)
@@ -108,7 +108,7 @@ class AddTodoViewModelSuggestionTest {
         viewModel.onIntent(AddTodoIntent.OnSuggestionClick(viewModel.state.value.suggestions.first()))
 
         with(viewModel.state.value) {
-            assertEquals("경제원론 51~", title)
+            assertEquals("경제원론 51-100", title)
             assertEquals(2, tag?.id)
             assertEquals(-2, repeatCycle?.id)
             assertTrue(isTagFromLast)
@@ -120,6 +120,17 @@ class AddTodoViewModelSuggestionTest {
 
         assertFalse(viewModel.state.value.isTagFromLast)
         assertTrue(viewModel.state.value.isRepeatCycleFromLast)
+    }
+
+    @Test
+    fun `같은 과목은 최신 일정 하나만 추천하고 직전 일정과의 진도 간격을 따른다`() = runTest {
+        todoRepository.addTag(name = "일본어", color = 0)
+        addTodo(1, "JLPT N3 단어 1-50", tagId = 1, LocalDate.of(2024, 1, 1), listOf(0))
+        addTodo(2, "JLPT N3 단어 51-100", tagId = 1, LocalDate.of(2024, 1, 2), listOf(0))
+
+        val suggestions = createViewModel().state.value.suggestions
+
+        assertEquals(listOf("JLPT N3 단어 101-150"), suggestions.map { it.title })
     }
 
     @Test
