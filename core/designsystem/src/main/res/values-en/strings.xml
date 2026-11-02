@@ -338,7 +338,7 @@
     <string name="tag_added">A new tag has been added</string>
     <string name="tag_updated">The tag has been updated</string>
     <string name="tag_deleted">The tag has been deleted</string>
-    <string name="home_print">Print</string>
+    <string name="home_print">Export as PDF</string>
     <string name="tag_archive">Archive</string>
     <string name="tag_unarchive">Unarchive</string>
     <string name="tag_tab_active">Active</string>

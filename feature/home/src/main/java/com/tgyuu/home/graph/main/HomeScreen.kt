@@ -461,18 +461,21 @@ private fun PhoneHomeScreen(
 private fun rememberPrintSchedules(state: HomeState): (LocalDate) -> Unit {
     val context = LocalContext.current
     val analyticsHelper = LocalAnalyticsHelper.current
+    val scope = rememberCoroutineScope()
     val currentState by rememberUpdatedState(state)
-    return remember(context) {
+    return remember(context, scope) {
         { date ->
             analyticsHelper.logEvent(
-                AnalyticsEvent.Click(screenName = "Home", buttonName = "PrintSchedules")
+                AnalyticsEvent.Click(screenName = "Home", buttonName = "ExportSchedulesPdf")
             )
-            SchedulePrinter.print(
-                context = context,
-                date = date,
-                schedules = currentState.schedulesByDateMap[date] ?: emptyList(),
-                schedulesByTodoInfo = currentState.schedulesByTodoInfo,
-            )
+            scope.launch {
+                SchedulePrinter.sharePdf(
+                    context = context,
+                    date = date,
+                    schedules = currentState.schedulesByDateMap[date] ?: emptyList(),
+                    schedulesByTodoInfo = currentState.schedulesByTodoInfo,
+                )
+            }
         }
     }
 }

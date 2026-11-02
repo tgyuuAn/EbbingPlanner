@@ -339,7 +339,7 @@
     <string name="tag_added">새로운 태그를 추가하였습니다</string>
     <string name="tag_updated">태그를 수정하였습니다</string>
     <string name="tag_deleted">태그를 삭제하였습니다</string>
-    <string name="home_print">인쇄</string>
+    <string name="home_print">PDF로 내보내기</string>
     <string name="tag_archive">보관</string>
     <string name="tag_unarchive">보관 해제</string>
     <string name="tag_tab_active">사용 중</string>
