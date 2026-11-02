@@ -12,7 +12,10 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.datastore)
     implementation(projects.core.common)
+    implementation(projects.core.deviceInfo)
 
     implementation(libs.kotlinx.datetime)
     implementation(libs.koin.core)
+
+    testImplementation(libs.mockk)
 }

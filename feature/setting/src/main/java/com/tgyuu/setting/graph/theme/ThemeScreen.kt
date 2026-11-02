@@ -65,7 +65,10 @@ import com.tgyuu.domain.model.Theme
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
 import com.tgyuu.setting.graph.ui.animateEbbingColors
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 @Composable
 internal fun ThemeRoute(viewModel: ThemeViewModel = koinViewModel()) {
@@ -338,129 +341,24 @@ private fun ThemePreviewCard(
     isDarkMode: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = modifier
-                .background(EbbingTheme.colors.background, shape = RoundedCornerShape(12.dp))
-                .border(
-                    color = EbbingTheme.colors.textOnBackground,
-                    width = 0.5.dp,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .wrapContentHeight()
-                .animateContentSize(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = FastOutSlowInEasing,
-                    )
-                )
-                .padding(20.dp)
-        ) {
-            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
-                VerticalDivider(
-                    thickness = 8.dp,
-                    color = Color(DefaultTodoTag.color),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .animateContentSize(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        )
-                        .padding(end = 8.dp),
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(EbbingTheme.colors.fillNormal)
-                            .padding(vertical = 12.dp, horizontal = 16.dp)
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "에빙 플래너 미리보기",
-                                style = EbbingTheme.typography.body16M,
-                                color = EbbingTheme.colors.textOnBackground,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(bottom = 4.dp),
-                            )
-
-                            Text(
-                                text = "에빙 플래너 미리보기",
-                                style = EbbingTheme.typography.body16M,
-                                color = EbbingTheme.colors.textSub,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(bottom = 4.dp),
-                            )
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                            ) {
-                                EbbingCheck(
-                                    checked = true,
-                                    colorValue = DefaultTodoTag.color,
-                                    onCheckedChange = {},
-                                    modifier = Modifier.size(20.dp),
-                                )
-
-                                Text(
-                                    text = "우선도 : 0",
-                                    style = EbbingTheme.typography.heading14SB,
-                                    color = EbbingTheme.colors.textSub,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.End,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f),
-                                )
-                            }
-                        }
-
-                        Image(
-                            painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_3dots),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    EbbingCheck(
-                        checked = true,
-                        colorValue = DefaultTodoTag.color,
-                        onCheckedChange = { },
-                        modifier = Modifier.size(20.dp),
-                    )
-                }
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(end = 32.dp, top = 4.dp, bottom = 4.dp),
-            ) {
-                Image(
-                    painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_memo),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textSub),
-                    modifier = Modifier.size(16.dp),
-                )
-
-                Text(
-                    text = "에빙 플래너 미리보기",
-                    style = EbbingTheme.typography.heading14SB,
-                    color = EbbingTheme.colors.textSub,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+    val previewText = stringResource(R.string.setting_ebbing_planner_preview)
+    val sampleTodos = remember(previewText) {
+        val today = LocalDate.now()
+        List(3) { index ->
+            TodoScheduleUiModel(
+                id = index + 1,
+                infoId = 1,
+                title = ClickableText.from(previewText),
+                tagId = 1,
+                name = previewText,
+                color = DefaultTodoTag.color,
+                date = today.plus(index, DateTimeUnit.DAY),
+                memo = ClickableText.from(previewText),
+                isPinned = true,
+                isDone = index == 0,
+                createdAt = today,
+                infoCreatedAt = today,
+            )
         }
     }
 

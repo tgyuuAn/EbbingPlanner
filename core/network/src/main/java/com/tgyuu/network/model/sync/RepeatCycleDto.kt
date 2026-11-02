@@ -3,6 +3,8 @@ package com.tgyuu.network.model.sync
 import com.tgyuu.domain.model.sync.RepeatCycleForSync
 import com.tgyuu.network.util.toLocalDateTimeFromUtc
 import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -20,7 +22,7 @@ data class RepeatCycleDto(
         id = id,
         intervals = intervals,
         isDeleted = isDeleted,
-        updatedAt = updatedAt.toLocalDateTimeFromUtc(),
+        updatedAt = updatedAt.toLocalDateTimeFromUtc().toKotlinLocalDateTime(),
     )
 }
 
@@ -29,5 +31,5 @@ fun RepeatCycleForSync.toDto(uuid: String) = RepeatCycleDto(
     uuid = uuid,
     intervals = intervals,
     isDeleted = isDeleted,
-    updatedAt = updatedAt.toUtcIsoString(),
+    updatedAt = updatedAt.toJavaLocalDateTime().toUtcIsoString(),
 )

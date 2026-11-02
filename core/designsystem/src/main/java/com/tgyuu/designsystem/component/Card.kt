@@ -95,14 +95,16 @@ fun TodoListCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(EbbingTheme.colors.fillTextfield)
-                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                EbbingCheck(
+                    checked = todo.isDone,
+                    colorValue = todo.color,
+                    onCheckedChange = { onCheckedChange(todo) },
+                    modifier = Modifier.size(20.dp),
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.weight(1f),
                 ) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -121,23 +123,11 @@ fun TodoListCard(
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
                             modifier = Modifier.padding(end = 24.dp),
                         ) {
-                            FlowRow(modifier = Modifier.weight(1f)) {
-                                todosWithSameInfo.forEach {
-                                    EbbingCheck(
-                                        checked = it.isDone,
-                                        colorValue = it.color,
-                                        onCheckedChange = {},
-                                        modifier = Modifier.size(20.dp),
-                                    )
-                                }
-                            }
-
-                            Text(
-                                text = "우선도 : ${todo.priority}",
-                                style = EbbingTheme.typography.heading14SB,
-                                color = EbbingTheme.colors.textSub,
-                                maxLines = 1,
-                                textAlign = TextAlign.End,
+                            EbbingClickableText(
+                                clickableText = todo.title,
+                                style = EbbingTheme.typography.heading16B,
+                                color = titleColor,
+                                maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f, fill = false),
                             )
@@ -163,12 +153,65 @@ fun TodoListCard(
                             color = EbbingTheme.colors.textDisabled,
                         )
 
-                EbbingCheck(
-                    checked = todo.isDone,
-                    colorValue = todo.color,
-                    onCheckedChange = { onCheckedChange(todo) },
-                    modifier = Modifier.size(20.dp),
-                )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(1.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            orderedSchedules.forEach { schedule ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            if (schedule.isDone) Color(todo.color) else Color.Transparent
+                                        )
+                                        .border(1.25.dp, Color(todo.color), CircleShape),
+                                )
+                            }
+                        }
+                    }
+
+                    EbbingVisibleAnimation(todo.memo.originalText.isNotEmpty()) {
+                        var memoExpanded by remember(todo.id) { mutableStateOf(false) }
+                        var memoOverflow by remember(todo.id) { mutableStateOf(false) }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(EbbingTheme.colors.fillTextfield)
+                                .then(
+                                    if (memoOverflow) Modifier.clickable { memoExpanded = !memoExpanded }
+                                    else Modifier
+                                )
+                                .animateContentSize()
+                                .heightIn(min = 28.dp)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                        ) {
+                            EbbingClickableText(
+                                clickableText = todo.memo,
+                                style = EbbingTheme.typography.body14M,
+                                color = subColor,
+                                maxLines = if (memoExpanded) Int.MAX_VALUE else 1,
+                                overflow = TextOverflow.Ellipsis,
+                                onTextLayout = { if (!memoExpanded) memoOverflow = it.hasVisualOverflow },
+                                modifier = Modifier.weight(1f),
+                            )
+
+                            if (memoOverflow || memoExpanded) {
+                                Icon(
+                                    imageVector = if (memoExpanded) Icons.Default.KeyboardArrowUp
+                                    else Icons.Default.KeyboardArrowDown,
+                                    contentDescription = null,
+                                    tint = EbbingTheme.colors.strokeIcon,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             // 우상단 3-dots (수정 옵션)

@@ -1,5 +1,6 @@
 package com.tgyuu.home.graph.edittodo
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,13 +24,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.tgyuu.common.now
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.R
@@ -41,8 +41,8 @@ import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
+import com.tgyuu.common.now
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 
 @Composable
 internal fun EditTodoRoute(
@@ -65,6 +65,7 @@ internal fun EditTodoRoute(
                         SelectedDateBottomSheet(
                             originSelectedDate = state.selectedDate,
                             schedulesByDateMap = state.schedulesByDateMap,
+                            startFromMonday = state.mondayStart,
                             updateSelectedDate = {
                                 viewModel.onIntent(EditTodoIntent.OnSelectedDateChange(it))
                             },
@@ -108,61 +109,54 @@ private fun EditTodoScreen(
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-    ) {
-        EbbingSubTopBar(
-            title = "일정 수정",
-            onNavigationClick = onBackClick,
-            rightComponent = {
-                Text(
-                    text = "저장",
-                    style = EbbingTheme.typography.body16M,
-                    color = if (state.isSaveEnabled) EbbingTheme.colors.primaryNormal else EbbingTheme.colors.textDisabled,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .throttledClickable(
-                            throttleTime = 1500L,
-                            enabled = state.isSaveEnabled
-                        ) {
-                            onSaveClick()
-                            focusManager.clearFocus()
-                        },
-                )
-            },
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
+    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(20.dp)
+            modifier = modifier
+                .fillMaxSize()
                 .imePadding(),
         ) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        SpanStyle(
-                            textDecoration = TextDecoration.Underline,
-                            color = EbbingTheme.colors.textPrimary,
-                        )
-                    ) {
-                        append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
-                    }
-                    append(" 에\n진행하는 걸로 바꿀래요")
-                },
-                style = EbbingTheme.typography.heading24B,
-                color = EbbingTheme.colors.textOnBackground,
-                modifier = Modifier.clickable { onSelectedDateChangeClick() },
+            EbbingSubTopBar(
+                title = stringResource(R.string.home_edit_todo_title),
+                onNavigationClick = onBackClick,
+                rightComponent = {},
+                modifier = Modifier.padding(horizontal = 20.dp),
             )
 
-            TitleContent(
-                scrollState = scrollState,
-                title = state.title,
-                onTitleChange = onTitleChange,
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(20.dp),
+            ) {
+                val monthDayText = stringResource(
+                    R.string.home_month_day,
+                    state.selectedDate.monthNumber,
+                    state.selectedDate.dayOfMonth,
+                )
+                val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            SpanStyle(
+                                textDecoration = TextDecoration.Underline,
+                                color = EbbingTheme.colors.textPrimary,
+                            )
+                        ) {
+                            append(monthDayText)
+                        }
+                        append(editTodoHeaderSuffix)
+                    },
+                    style = EbbingTheme.typography.heading24B,
+                    color = EbbingTheme.colors.textOnBackground,
+                    modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                )
 
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+                TitleContent(
+                    scrollState = scrollState,
+                    title = state.title,
+                    onTitleChange = onTitleChange,
+                )
+
                 TagContent(
                     tag = state.tag,
                     onTagDropDownClick = onTagDropDownClick,
@@ -174,17 +168,70 @@ private fun EditTodoScreen(
                 )
 
                 Spacer(modifier = Modifier.height(60.dp))
-            } else {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(40.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        TagContent(
-                            tag = state.tag,
-                            onTagDropDownClick = onTagDropDownClick,
-                        )
-                    }
+            }
+
+            EbbingSolidButton(
+                label = stringResource(R.string.home_edit_todo_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(EbbingTheme.colors.background)
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            )
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .imePadding(),
+        ) {
+            EbbingSubTopBar(
+                title = stringResource(R.string.home_edit_todo_title),
+                onNavigationClick = onBackClick,
+                rightComponent = {},
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
+
+            TabletFormLayout(
+                scrollState = scrollState,
+                form = {
+                    val monthDayText = stringResource(
+                        R.string.home_month_day,
+                        state.selectedDate.monthNumber,
+                        state.selectedDate.dayOfMonth,
+                    )
+                    val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                SpanStyle(
+                                    textDecoration = TextDecoration.Underline,
+                                    color = EbbingTheme.colors.textPrimary,
+                                )
+                            ) {
+                                append(monthDayText)
+                            }
+                            append(editTodoHeaderSuffix)
+                        },
+                        style = EbbingTheme.typography.heading24B,
+                        color = EbbingTheme.colors.textOnBackground,
+                        modifier = Modifier.clickable { onSelectedDateChangeClick() },
+                    )
+
+                    TitleContent(
+                        scrollState = scrollState,
+                        title = state.title,
+                        onTitleChange = onTitleChange,
+                    )
+
+                    TagContent(
+                        tag = state.tag,
+                        onTagDropDownClick = onTagDropDownClick,
+                    )
 
                     PinnedContent(
                         isPinned = state.isPinned,

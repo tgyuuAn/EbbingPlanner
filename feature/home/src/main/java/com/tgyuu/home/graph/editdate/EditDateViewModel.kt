@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -41,6 +43,8 @@ class EditDateViewModel(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
     private var originSchedules: List<TodoSchedule> = emptyList()
@@ -155,6 +159,13 @@ class EditDateViewModel(
 
     @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "EditDate",
+                buttonName = "Save",
+            )
+        )
+
         val tagId = currentState.tagId ?: run {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
             return
@@ -168,7 +179,7 @@ class EditDateViewModel(
         originSchedules.forEach { alarmScheduler.cancelDailyExact(it.date) }
 
         val infoId = originSchedules.firstOrNull()?.infoId ?: run {
-            eventBus.sendEvent(EbbingEvent.ShowSnackBar("일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요"))
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_loading_schedule_info)))
             return
         }
 

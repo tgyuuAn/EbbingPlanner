@@ -1,12 +1,14 @@
 package com.tgyuu.sync.graph.main
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.BottomSheetContent
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
-import com.tgyuu.common.now
+import com.tgyuu.common.isNetworkError
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.model.Timer
@@ -21,14 +23,17 @@ import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlin.time.ExperimentalTime
+import java.time.Duration
+import java.time.ZonedDateTime
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
+
+private const val EBBINGPLANNER_SCHEME = "ebbingplanner://"
 
 class SyncMainViewModel(
     private val syncRepository: SyncRepository,
@@ -36,13 +41,15 @@ class SyncMainViewModel(
     private val navigationBus: NavigationBus,
     private val errorBus: ErrorBus,
     internal val eventBus: EventBus,
+    private val analyticsHelper: AnalyticsHelper,
+    private val timer: Timer,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<SyncMainState, SyncIntent>(SyncMainState()) {
     private var timerJob: Job? = null
     private var pollingJob: Job? = null
     private var disconnectPollingJob: Job? = null
     private val isProcessing = AtomicBoolean(false)
 
-    @OptIn(ExperimentalTime::class)
     internal suspend fun loadInitData() = coroutineScope {
         val linkCode = syncRepository.getLinkCode()
         if (linkCode != null) {
@@ -97,13 +104,13 @@ class SyncMainViewModel(
             val connectedUuid = syncRepository.getConnectedUuid()
             suspendRunCatching {
                 syncRepository.getServerLastUpdatedAt()
-            }.onSuccess { serverLastUpdatedAt ->
-                val now = LocalDateTime.now()
-                val isSyncUpEnabled = serverLastUpdatedAt == null ||
-                        (now.toInstant(TimeZone.currentSystemDefault()) -
-                                serverLastUpdatedAt.toInstant(TimeZone.currentSystemDefault()))
-                            .inWholeMilliseconds >= SYNC_UP_COOL_TIME
-
+            }.onSuccess { serverSyncInfo ->
+                val serverLastUpdatedAt = serverSyncInfo?.lastUpdatedAt
+                val connectedDeviceName = if (connectedUuid != null) {
+                    serverSyncInfo?.connectedDeviceName
+                } else {
+                    syncRepository.getStoredPeer()?.deviceName
+                }
                 setState {
                     copy(
                         serverLastUpdatedAt = serverLastUpdatedAt,
@@ -181,32 +188,49 @@ class SyncMainViewModel(
     }
 
     private suspend fun onBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
+        )
         navigationBus.navigate(NavigationEvent.Up)
     }
 
     private fun onSyncUpClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Sync")
+        )
         syncUpData()
     }
 
-    private suspend fun onConnectClick() {
-        navigationBus.navigate(NavigationEvent.To(SyncGraph.ConnectRoute))
-    }
-
     private fun onDisconnectClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Disconnect")
+        )
         disconnectAnother()
     }
 
     private fun onSyncDialogBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SYNC_DIALOG, buttonName = "Back")
+        )
     }
 
     private fun onSyncDialogSyncClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SYNC_DIALOG, buttonName = "Sync")
+        )
         syncUpData()
     }
 
     private fun onDisconnectDialogBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = DISCONNECT_DIALOG, buttonName = "Back")
+        )
     }
 
     private fun onDisconnectDialogDisconnectClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = DISCONNECT_DIALOG, buttonName = "Disconnect")
+        )
         disconnectAnother()
     }
 

@@ -2,6 +2,7 @@ package com.tgyuu.analytics
 
 import com.amplitude.android.Amplitude
 import com.amplitude.core.events.BaseEvent
+import com.tgyuu.deviceinfo.DeviceInfoProvider
 
 class AmplitudeAnalyticsHelper constructor(
     private val amplitude: Amplitude,

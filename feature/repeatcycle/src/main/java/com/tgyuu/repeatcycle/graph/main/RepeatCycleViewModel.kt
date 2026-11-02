@@ -1,6 +1,8 @@
 package com.tgyuu.repeatcycle.graph.main
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -22,6 +24,8 @@ class RepeatCycleViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<RepeatCycleState, RepeatCycleIntent>(RepeatCycleState()) {
 
     override suspend fun processIntent(intent: RepeatCycleIntent) {
@@ -34,20 +38,32 @@ class RepeatCycleViewModel(
     }
 
     private suspend fun onBackClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "Back")
+        )
         navigationBus.navigate(NavigationEvent.Up)
     }
 
     private suspend fun onAddClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddRepeatCycle")
+        )
         navigationBus.navigate(
             NavigationEvent.To(RepeatCycleGraph.AddRepeatCycleRoute)
         )
     }
 
     private suspend fun onDeleteClick(repeatCycle: RepeatCycleUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteRepeatCycle")
+        )
         deleteRepeatCycle(repeatCycle)
     }
 
     private suspend fun onEditClick(repeatCycle: RepeatCycleUiModel) {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditRepeatCycle")
+        )
         navigationBus.navigate(
             NavigationEvent.To(RepeatCycleGraph.EditRepeatCycleRoute(repeatCycle.id))
         )

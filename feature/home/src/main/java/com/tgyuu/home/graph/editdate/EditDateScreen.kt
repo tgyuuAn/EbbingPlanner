@@ -34,7 +34,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.now
-import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
@@ -206,12 +205,6 @@ private fun EditDateScreenPhone(
                 onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
             )
 
-            HorizontalDivider(
-                color = EbbingTheme.colors.fillNormal,
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-
             DescriptionBody()
 
             Spacer(modifier = Modifier.height(60.dp))
@@ -279,12 +272,6 @@ private fun EditDateScreenTablet(
                     onCheckSchedule = { idx -> isDoneSchedules[idx] = !isDoneSchedules[idx] },
                 )
 
-                HorizontalDivider(
-                    color = EbbingTheme.colors.fillNormal,
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-
                 DescriptionBody()
             },
             button = { buttonModifier ->
@@ -312,7 +299,7 @@ private fun EditDateMainFormContent(
 ) {
     val monthDayText = stringResource(
         R.string.home_month_day,
-        state.selectedDate.monthValue,
+        state.selectedDate.monthNumber,
         state.selectedDate.dayOfMonth,
     )
     val editDateHeaderSuffix = stringResource(R.string.home_edit_date_header_suffix)
@@ -324,7 +311,7 @@ private fun EditDateMainFormContent(
                     color = EbbingTheme.colors.textPrimary,
                 )
             ) {
-                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
+                append(monthDayText)
             }
             append(editDateHeaderSuffix)
         },

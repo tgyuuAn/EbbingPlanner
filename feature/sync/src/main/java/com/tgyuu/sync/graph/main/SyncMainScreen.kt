@@ -40,11 +40,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.toFormattedString
+import kotlinx.datetime.toKotlinLocalDateTime
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSubTopBar
@@ -57,7 +61,6 @@ import com.tgyuu.sync.graph.main.ui.dialog.CameraPermissionDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmDisconnectDialog
 import com.tgyuu.sync.graph.main.ui.dialog.ConfirmSyncUpDialog
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDateTime
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -278,78 +281,13 @@ internal fun SyncMainScreen(
 }
 
 @Composable
-internal fun UuidBody(
-    uuid: String,
-    lastSyncedAt: LocalDateTime?,
-    lastUpdatedAt: LocalDateTime?,
+private fun QrCardSection(
+    state: SyncMainState,
+    onClickGenerateCode: () -> Unit,
+    onScanQrClick: () -> Unit,
 ) {
     Text(
-        text = "해당 디바이스의 고유 ID :",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier.padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = uuid,
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp)
-    )
-
-    Text(
-        text = "해당 기기의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp)
-    )
-
-    Text(
-        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp)
-    )
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.fillNormal,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
-}
-
-@Composable
-internal fun LinkedUuidBody(
-    linkedUuid: String,
-    lastSyncedAt: LocalDateTime?,
-    lastUpdatedAt: LocalDateTime?,
-) {
-    Text(
-        text = "연동 되어있는 ID :",
+        text = stringResource(R.string.sync_new_device_section),
         style = EbbingTheme.typography.heading14SB,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.padding(bottom = 16.dp),
@@ -466,40 +404,9 @@ private fun SectionDivider() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = lastSyncedAt?.toFormattedString() ?: "기록 없음",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp)
-    )
-
-    Text(
-        text = "서버에 저장된 해당 ID의 마지막 업데이트 시점 : ",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.textOnBackground,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-    )
-
-    Text(
-        text = lastUpdatedAt?.toFormattedString() ?: "기록이 없거나 네트워크가 없음",
-        style = EbbingTheme.typography.caption14R,
-        color = EbbingTheme.colors.primaryNormal,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp)
-    )
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.fillNormal,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
+            .padding(vertical = 26.dp)
+            .height(6.dp)
+            .background(EbbingTheme.colors.fillTextfield),
     )
 }
 
@@ -587,7 +494,7 @@ private fun LastSyncSection(
             .padding(vertical = 4.dp),
     ) {
         Text(
-            text = state.localLastSyncedAt?.toLocalDateTime()?.toFormattedString()
+            text = state.localLastSyncedAt?.toLocalDateTime()?.toKotlinLocalDateTime()?.toFormattedString()
                 ?: stringResource(R.string.sync_no_record),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
@@ -600,54 +507,11 @@ private fun LastSyncSection(
         )
     }
 
-    if (isConnected) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 17.dp)
-                .clickable { onDisconnectClick() },
-        ) {
-            Text(
-                text = "연동 해제하기",
-                style = EbbingTheme.typography.heading18B,
-                color = EbbingTheme.colors.textSub,
-                modifier = Modifier.weight(1f),
-            )
-
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_right),
-                contentDescription = "상세 내용",
-                modifier = Modifier.padding(start = 4.dp),
-            )
-        }
-    } else {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 17.dp)
-                .clickable { onConnectClick() },
-        ) {
-            Text(
-                text = "다른 기기와 연동하기",
-                style = EbbingTheme.typography.heading18B,
-                color = EbbingTheme.colors.textSub,
-                modifier = Modifier.weight(1f),
-            )
-
-            Image(
-                painter = painterResource(R.drawable.ic_arrow_right),
-                contentDescription = "상세 내용",
-                modifier = Modifier.padding(start = 4.dp),
-            )
-        }
-    }
-
-    HorizontalDivider(
-        color = EbbingTheme.colors.fillNormal,
-        thickness = 1.dp,
-        modifier = Modifier.padding(vertical = 16.dp)
+    Text(
+        text = stringResource(R.string.sync_manual_hint),
+        style = EbbingTheme.typography.caption12R,
+        color = EbbingTheme.colors.textSub,
+        modifier = Modifier.padding(top = 8.dp),
     )
 }
 

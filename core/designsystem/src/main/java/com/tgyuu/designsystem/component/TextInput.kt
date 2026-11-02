@@ -131,10 +131,10 @@ fun EbbingTextInputDropDown(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .height(52.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .height(48.dp)
+            .clip(RoundedCornerShape(6.dp))
             .background(EbbingTheme.colors.fillTextfield)
-            .padding(horizontal = 16.dp, vertical = 14.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .clickable { onDropDownClick() },
     ) {
         if (color != null) {

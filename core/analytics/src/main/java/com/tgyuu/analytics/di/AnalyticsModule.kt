@@ -22,9 +22,9 @@ val analyticsModule = module {
         )
     }
 
-    single<AnalyticsHelper>(named("debug")) { DebugAnalyticsHelper() }
+    single<AnalyticsHelper>(named("debug")) { DebugAnalyticsHelper(get()) }
 
-    single<AnalyticsHelper>(named("release")) { AmplitudeAnalyticsHelper(get()) }
+    single<AnalyticsHelper>(named("release")) { AmplitudeAnalyticsHelper(get(), get()) }
 
     single<AnalyticsHelper> {
         if (BuildConfig.DEBUG) {

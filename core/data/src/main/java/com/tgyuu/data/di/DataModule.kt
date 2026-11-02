@@ -21,5 +21,6 @@ val dataModule = module {
         SyncRepositoryImpl(get(), get(), get(), get(), get(), get(), get(), get())
     } bind SyncRepository::class
     single { ErrorRepositoryImpl(get()) } bind ErrorRepository::class
+    single { FeatureFlagRepositoryImpl(get()) } bind FeatureFlagRepository::class
     single { Timer() }
 }

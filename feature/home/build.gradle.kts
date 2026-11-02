@@ -26,4 +26,6 @@ dependencies {
 
     implementation(libs.accompanist.permission)
     implementation(libs.kotlinx.datetime)
+
+    testImplementation(libs.mockk)
 }

@@ -32,7 +32,7 @@ interface LocalTodoDataSource {
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 
@@ -41,7 +41,7 @@ interface LocalTodoDataSource {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 
@@ -58,7 +58,7 @@ interface LocalTodoDataSource {
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek> = emptySet(),
     )
 

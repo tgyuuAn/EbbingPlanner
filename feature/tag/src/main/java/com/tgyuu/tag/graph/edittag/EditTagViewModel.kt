@@ -2,6 +2,8 @@ package com.tgyuu.tag.graph.edittag
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -18,7 +20,9 @@ class EditTagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
+    private val analyticsHelper: AnalyticsHelper,
     private val savedStateHandle: SavedStateHandle,
+    private val resourceProvider: ResourceProvider,
 ) : BaseViewModel<EditTagState, EditTagIntent>(EditTagState()) {
 
     init {
@@ -72,6 +76,13 @@ class EditTagViewModel(
     }
 
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "EditTag",
+                buttonName = "Save",
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_required_fields)))
             return

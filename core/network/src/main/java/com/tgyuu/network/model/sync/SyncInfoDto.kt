@@ -1,9 +1,20 @@
 package com.tgyuu.network.model.sync
 
-import com.google.firebase.Timestamp
-import com.tgyuu.network.toLocalDateTimeOrNull
-import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
-data class SyncInfoDto(val lastUpdatedAt: Timestamp? = null) {
-    fun toDomain(): LocalDateTime? = lastUpdatedAt?.toLocalDateTimeOrNull()
+@Serializable
+data class SyncInfoDto(
+    val uuid: String = "",
+    @SerialName("connected_uuid") val connectedUuid: String? = null,
+    @SerialName("last_updated_at") val lastUpdatedAt: String? = null,
+    @SerialName("device_name") val deviceName: String = "",
+) {
+    fun toLastUpdatedAt(): ZonedDateTime? = lastUpdatedAt?.let { value ->
+        runCatching {
+            ZonedDateTime.parse(value).withZoneSameInstant(ZoneId.systemDefault())
+        }.getOrNull()
+    }
 }

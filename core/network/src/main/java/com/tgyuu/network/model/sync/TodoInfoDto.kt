@@ -3,10 +3,12 @@ package com.tgyuu.network.model.sync
 import com.tgyuu.domain.model.sync.TodoInfoForSync
 import com.tgyuu.network.util.toLocalDateTimeFromUtc
 import com.tgyuu.network.util.toUtcIsoString
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.EncodeDefault
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Serializable
 data class TodoInfoDto(
@@ -24,7 +26,7 @@ data class TodoInfoDto(
         title = title,
         tagId = tagId,
         createdAt = LocalDate.parse(createdAt),
-        updatedAt = updatedAt.toLocalDateTimeFromUtc(),
+        updatedAt = updatedAt.toLocalDateTimeFromUtc().toKotlinLocalDateTime(),
         restDays = restDays,
     )
 }
@@ -35,6 +37,6 @@ fun TodoInfoForSync.toDto(uuid: String) = TodoInfoDto(
     title = title,
     tagId = tagId,
     createdAt = createdAt.toString(),
-    updatedAt = updatedAt.toUtcIsoString(),
+    updatedAt = updatedAt.toJavaLocalDateTime().toUtcIsoString(),
     restDays = restDays,
 )

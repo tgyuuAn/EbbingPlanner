@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -113,7 +114,7 @@ private fun TagScreen(
                 onNavigationClick = onBackClick,
                 rightComponent = {
                     Text(
-                        text = "추가",
+                        text = stringResource(R.string.tag_add_button),
                         style = EbbingTheme.typography.body16M,
                         color = EbbingTheme.colors.primaryNormal,
                         modifier = Modifier
@@ -131,7 +132,7 @@ private fun TagScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "등록된 태그가 없어요.\n우측 상단 추가 버튼을 눌러 태그를 추가해보세요.",
+                        text = stringResource(R.string.tag_empty_message),
                         style = EbbingTheme.typography.body14M,
                         textAlign = TextAlign.Center,
                         color = EbbingTheme.colors.textDisabled,
@@ -207,7 +208,7 @@ private fun TagScreen(
                 )
 
                 EbbingSolidButton(
-                    label = "수정",
+                    label = stringResource(R.string.tag_edit),
                     onClick = { selectedTag?.let(onEditClick) },
                     modifier = Modifier.weight(1f),
                 )

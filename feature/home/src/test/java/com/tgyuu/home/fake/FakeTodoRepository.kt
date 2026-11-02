@@ -1,5 +1,6 @@
 package com.tgyuu.home.fake
 
+import kotlinx.datetime.toLocalDateTime
 import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.model.TodoInfo
 import com.tgyuu.domain.model.TodoSchedule
@@ -152,7 +153,7 @@ class FakeTodoRepository : TodoRepository {
         tagId: Int,
         dates: List<kotlinx.datetime.LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<DayOfWeek>,
     ) {
         schedules.removeIf { it.infoId == infoId }
@@ -167,7 +168,7 @@ class FakeTodoRepository : TodoRepository {
                     color = 0,
                     date = date,
                     memo = "",
-                    priority = priority ?: 0,
+                    isPinned = isPinned,
                     isDone = isDone,
                     createdAt = kotlin.time.Clock.System.now()
                         .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date,
@@ -203,8 +204,7 @@ class FakeTodoRepository : TodoRepository {
     override suspend fun toggleDone(id: Int) {
         val index = schedules.indexOfFirst { it.id == id }
         if (index != -1) {
-            val schedule = schedules[index]
-            schedules[index] = schedule.copy(isDone = !schedule.isDone)
+            schedules[index] = schedules[index].copy(isDone = !schedules[index].isDone)
         }
     }
 

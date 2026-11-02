@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -34,6 +33,7 @@ import com.tgyuu.common.util.MemoryAnimationController
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.designsystem.component.bottomsheet.rememberEbbingBottomSheetState
 import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.ebbingplanner.backup.AutoBackupManager
 import com.tgyuu.ebbingplanner.ui.EbbingApp
 import com.tgyuu.ebbingplanner.ui.HandleAppUpdate
 import com.tgyuu.ebbingplanner.ui.rememberEbbingAppState
@@ -52,6 +52,7 @@ import com.tgyuu.navigation.NavigationEvent.BottomBarTo
 import com.tgyuu.navigation.NavigationEvent.To
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.sync.network.NetworkMonitor
+import com.tgyuu.sync.network.NetworkState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -65,9 +66,7 @@ class MainActivity : ComponentActivity() {
     private val eventBus: EventBus by inject()
     private val networkMonitor: NetworkMonitor by inject()
     private val analyticsHelper: AnalyticsHelper by inject()
-
-    @Inject
-    lateinit var autoBackupManager: AutoBackupManager
+    private val autoBackupManager: AutoBackupManager by inject()
 
     private var isInitialized = true
 

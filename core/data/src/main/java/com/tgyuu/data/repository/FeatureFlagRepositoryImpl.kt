@@ -2,9 +2,8 @@ package com.tgyuu.data.repository
 
 import com.tgyuu.domain.repository.FeatureFlagRepository
 import com.tgyuu.network.source.FeatureFlagDataSource
-import javax.inject.Inject
 
-class FeatureFlagRepositoryImpl @Inject constructor(
+class FeatureFlagRepositoryImpl(
     private val featureFlagDataSource: FeatureFlagDataSource,
 ) : FeatureFlagRepository {
     override suspend fun fetchAndAwait() = featureFlagDataSource.fetchAndAwait()

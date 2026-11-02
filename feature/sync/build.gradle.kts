@@ -22,4 +22,12 @@ dependencies {
     implementation(projects.core.analytics)
 
     implementation(libs.kotlinx.datetime)
+    implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+    implementation(libs.qrose)
+    implementation(libs.accompanist.permission)
+
+    testImplementation(libs.mockk)
 }

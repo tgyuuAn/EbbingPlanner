@@ -32,4 +32,6 @@ dependencies {
     implementation(libs.firebase.config)
     implementation(libs.firebase.storage)
     implementation(libs.koin.core)
+    implementation(libs.supabase.postgrest)
+    implementation(libs.ktor.client.android)
 }

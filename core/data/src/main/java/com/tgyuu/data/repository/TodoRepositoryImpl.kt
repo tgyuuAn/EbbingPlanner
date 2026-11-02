@@ -83,7 +83,7 @@ class TodoRepositoryImpl constructor(
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
@@ -98,7 +98,7 @@ class TodoRepositoryImpl constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = localTodoDataSource.insertTodos(
         title = title,
@@ -140,7 +140,7 @@ class TodoRepositoryImpl constructor(
         tagId: Int,
         dates: List<kotlinx.datetime.LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = localTodoDataSource.replaceSchedules(
         infoId = infoId,
@@ -148,7 +148,7 @@ class TodoRepositoryImpl constructor(
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 

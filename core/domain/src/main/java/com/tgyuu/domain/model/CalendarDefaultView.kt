@@ -1,9 +1,9 @@
 package com.tgyuu.domain.model
 
-enum class CalendarDefaultView(val displayName: String) {
-    MONTHLY("달 단위"),
-    WEEKLY("주 단위"),
-    DAILY("일 단위");
+enum class CalendarDefaultView {
+    MONTHLY,
+    WEEKLY,
+    DAILY;
 
     companion object {
         fun create(value: String): CalendarDefaultView =

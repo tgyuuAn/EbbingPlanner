@@ -9,17 +9,6 @@ sealed class Experiment<V>(
     fun parseVariant(value: String): V =
         variants.find { it.key.equals(value, ignoreCase = true) } ?: defaultVariant
 
-    data object SaveButtonPosition : Experiment<SaveButtonPosition.Variant>(
-        key = "experiment_save_button_position",
-        variants = Variant.entries.toTypedArray(),
-        defaultVariant = Variant.CONTROL,
-    ) {
-        enum class Variant(override val key: String) : ExperimentVariant {
-            CONTROL(CONTROL_KEY),
-            TREATMENT(TREATMENT_KEY),
-        }
-    }
-
     companion object {
         val ALL: List<Experiment<*>> = emptyList()
     }

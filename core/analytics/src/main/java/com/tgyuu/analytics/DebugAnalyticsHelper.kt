@@ -1,8 +1,10 @@
 package com.tgyuu.analytics
 
 import android.util.Log
+import com.tgyuu.deviceinfo.DeviceInfoProvider
 
 class DebugAnalyticsHelper constructor(
+    private val deviceInfoProvider: DeviceInfoProvider,
     private var userId: String = "",
 ) : AnalyticsHelper() {
     override fun logEvent(event: AnalyticsEvent) {

@@ -27,16 +27,16 @@ internal fun ConfirmDeleteRemainingDialog(
             val prefix = stringResource(
                 R.string.home_delete_remaining_confirm_prefix,
                 schedule.title.originalText,
-                schedule.date.monthValue,
+                schedule.date.monthNumber,
                 schedule.date.dayOfMonth,
             )
             val deleteWord = stringResource(R.string.home_delete)
             val suffix = stringResource(R.string.home_delete_confirm_suffix)
             EbbingDialogDefaultTop(
                 title = buildAnnotatedString {
-                    append("${schedule.title.originalText} 와 연계된 ${schedule.date.monthNumber}월 ${schedule.date.dayOfMonth}일 이후 일정을 모두 ")
+                    append(prefix)
                     withStyle(style = SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
-                        append("삭제")
+                        append(deleteWord)
                     }
                     append(suffix)
                 },

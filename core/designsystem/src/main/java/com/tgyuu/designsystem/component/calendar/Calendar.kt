@@ -30,6 +30,7 @@ fun EbbingCalendar(
     showSyncButton: Boolean = true,
     startFromMonday: Boolean = false,
     showWeekOnly: Boolean = false,
+    showViewToggle: Boolean = false,
     onSelectDate: (LocalDate) -> Unit = {},
     onGotoTodayClick: () -> Unit = {},
     onSyncClick: () -> Unit = {},
@@ -135,7 +136,8 @@ fun EbbingCalendar(
 
         CalendarHeader(startFromMonday = startFromMonday)
 
-        if (showWeekOnly) {
+        Box(modifier = Modifier.fillMaxWidth().animateContentSize()) {
+            if (showWeekOnly) {
             HorizontalPager(
                 state = weekPagerState,
                 modifier = Modifier.fillMaxWidth(),
@@ -182,6 +184,7 @@ fun EbbingCalendar(
                     },
                 )
             }
+        }
         }
     }
 }

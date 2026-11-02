@@ -22,6 +22,7 @@ class ExperimentRepositoryImpl constructor(
 
         Experiment.ALL.forEach { experiment ->
             val remoteVariant = remoteVariants[experiment.key]
+            val variantToAssign = remoteVariant ?: experiment.defaultVariant.key
 
             localDataSource.saveAssignment(
                 experimentKey = experiment.key,

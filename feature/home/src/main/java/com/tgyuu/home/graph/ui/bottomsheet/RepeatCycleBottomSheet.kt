@@ -123,7 +123,11 @@ internal fun RepeatCycleBottomSheet(
 
             Column {
                 Text(
-                    text = "${selectedDate.monthNumber}월 ${selectedDate.dayOfMonth}일부터 언제까지 반복할까요?",
+                    text = stringResource(
+                        R.string.home_daily_repeat_prompt,
+                        selectedDate.monthNumber,
+                        selectedDate.dayOfMonth,
+                    ),
                     style = EbbingTheme.typography.body16M,
                     color = EbbingTheme.colors.textDisabled,
                     modifier = Modifier.padding(top = 8.dp),
@@ -179,9 +183,18 @@ internal fun RepeatCycleBottomSheet(
                         val dayCount = selectedDate.until(endDate, DateTimeUnit.DAY).toInt()
                         val intervals = (0..dayCount).toList()
                         val endDateText = if (endDate.year != selectedDate.year) {
-                            "${endDate.year}년 ${endDate.monthNumber}월 ${endDate.dayOfMonth}일"
+                            context.getString(
+                                R.string.home_end_date_with_year,
+                                endDate.year,
+                                endDate.monthNumber,
+                                endDate.dayOfMonth,
+                            )
                         } else {
-                            "${endDate.monthNumber}월 ${endDate.dayOfMonth}일"
+                            context.getString(
+                                R.string.home_month_day,
+                                endDate.monthNumber,
+                                endDate.dayOfMonth,
+                            )
                         }
                         val dailyCycle = RepeatCycleUiModel(
                             id = RepeatCycle.DAILY_REPEAT_ID,

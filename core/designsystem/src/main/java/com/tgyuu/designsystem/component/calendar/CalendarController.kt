@@ -28,7 +28,6 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingTextToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.number
 
 @Composable
 internal fun CalendarController(
@@ -44,7 +43,8 @@ internal fun CalendarController(
 ) {
     val controllerDescription = stringResource(R.string.ds_cd_calendar_controller)
     val today = LocalDate.now()
-    val isOnToday = YearMonth.from(currentDate) == YearMonth.from(today) &&
+    val isOnToday = currentDate.year == today.year &&
+        currentDate.monthNumber == today.monthNumber &&
         (selectedDate == null || selectedDate == today)
 
     Row(
@@ -55,28 +55,9 @@ internal fun CalendarController(
             .height(40.dp)
             .semantics { contentDescription = controllerDescription },
     ) {
-        val today = LocalDate.now()
-        val isOnToday = currentDate.year == today.year &&
-            currentDate.monthNumber == today.monthNumber &&
-            (selectedDate == null || selectedDate == today)
-
-        IconButton(onClick = onGotoTodayClick) {
-            if (!isOnToday) {
-                Image(
-                    painter = painterResource(R.drawable.ic_return),
-                    contentDescription = "이전 달",
-                    colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
-                    modifier = Modifier.size(16.dp),
-                )
-            } else {
-                Spacer(modifier = Modifier.size(16.dp))
-            }
-        }
-
         Text(
-            text = "${currentDate.year}년 ${currentDate.monthNumber}월",
-            textAlign = TextAlign.Center,
-            style = EbbingTheme.typography.heading18B,
+            text = stringResource(R.string.ds_year_month, currentDate.year, currentDate.monthNumber),
+            style = EbbingTheme.typography.heading20B,
             color = EbbingTheme.colors.textOnBackground,
         )
 

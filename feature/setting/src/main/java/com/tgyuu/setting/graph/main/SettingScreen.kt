@@ -36,8 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -83,13 +81,11 @@ private val SettingItemVerticalPadding = 16.dp
 private val SettingDividerBottomPadding = 16.dp
 private val SettingDividerThickness = 6.dp
 
-private val SettingItemVerticalPadding = 16.dp
-private val SettingDividerBottomPadding = 16.dp
-private val SettingDividerThickness = 6.dp
-
 @Composable
 internal fun SettingRoute(
     viewModel: SettingViewModel = koinViewModel(),
+    isListPane: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -347,101 +343,6 @@ private fun PhoneSettingScreen(
 }
 
 @Composable
-private fun TabletSettingScreen(
-    state: SettingState,
-    onNoticeClick: () -> Unit,
-    onAlarmTimeClick: () -> Unit,
-    onAlarmMessageClick: () -> Unit,
-    onTagManageClick: () -> Unit,
-    onRepeatCycleManageClick: () -> Unit,
-    onSyncClick: () -> Unit,
-    onClearClick: () -> Unit,
-    onAppThemeManageClick: () -> Unit,
-    onWidgetManageClick: () -> Unit,
-    onPrivacyAndPolicyClick: () -> Unit,
-    onTermsOfUseClick: () -> Unit,
-    onNotificationToggleClick: () -> Unit,
-    onStartDayClick: () -> Unit,
-    onInAppReviewClick: () -> Unit,
-    onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        EbbingMainTopBar(
-            title = "설정",
-            modifier = Modifier.padding(horizontal = 20.dp),
-        )
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            val leftScrollState = rememberScrollState()
-            val rightScrollState = rememberScrollState()
-
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(leftScrollState)
-                    .weight(1f)
-                    .padding(horizontal = 20.dp),
-            ) {
-                NotificationBody(
-                    notificationEnabled = state.notificationEnabled,
-                    alarmTime = "${state.alarmHour}:${state.alarmMinute}",
-                    onNotificationToggleClick = onNotificationToggleClick,
-                    onAlarmTimeClick = onAlarmTimeClick,
-                    onAlarmMessageClick = onAlarmMessageClick,
-                )
-
-                CalendarStartDayBody(
-                    mondayStart = state.mondayStart,
-                    onStartDayClick = onStartDayClick,
-                )
-
-                TagRepeatCycleBody(
-                    onTagManageClick = onTagManageClick,
-                    onRepeatCycleManageClick = onRepeatCycleManageClick,
-                )
-
-                DataBody(
-                    onSyncClick = onSyncClick,
-                    onClearClick = onClearClick,
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .verticalScroll(rightScrollState)
-                    .weight(1f)
-                    .padding(horizontal = 20.dp),
-            ) {
-                ThemeBody(
-                    onThemeManageClick = onAppThemeManageClick,
-                    onWidgetAlphaManageClick = onWidgetManageClick,
-                )
-
-                InquiryBody()
-
-                AnnouncementBody(
-                    onNoticeClick = onNoticeClick,
-                    onPrivacyPolicy = onPrivacyAndPolicyClick,
-                    onTermsClick = onTermsOfUseClick,
-                )
-
-                InAppReviewRow(onInAppReviewClick = onInAppReviewClick)
-
-                UpdateBody(
-                    updateInfo = state.updateInfo,
-                    hardUpdateInfo = state.hardUpdateInfo,
-                    onUpdateClick = onUpdateClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = SettingItemVerticalPadding),
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun NotificationBody(
     notificationEnabled: Boolean,
     alarmTime: String,
@@ -476,7 +377,7 @@ private fun NotificationBody(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "알림 설정",
+            text = stringResource(R.string.setting_notification_setting),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -509,7 +410,7 @@ private fun NotificationBody(
                 .padding(vertical = SettingItemVerticalPadding),
         ) {
             Text(
-                text = "알림 시간",
+                text = stringResource(R.string.setting_alarm_time),
                 style = EbbingTheme.typography.heading16SB,
                 color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
@@ -541,7 +442,7 @@ private fun NotificationBody(
                 .clickable { onAlarmMessageClick() },
         ) {
             Text(
-                text = "알림 메시지",
+                text = stringResource(R.string.setting_alarm_message),
                 style = EbbingTheme.typography.heading16SB,
                 color = EbbingTheme.colors.textOnBackground,
                 modifier = Modifier.weight(1f),
@@ -557,7 +458,7 @@ private fun NotificationBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -583,7 +484,7 @@ private fun CalendarStartDayBody(
             .padding(vertical = SettingItemVerticalPadding),
     ) {
         Text(
-            text = "달력 시작 요일",
+            text = stringResource(R.string.setting_calendar_start_day),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -608,7 +509,7 @@ private fun CalendarStartDayBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary,
@@ -631,11 +532,12 @@ private fun TagRepeatCycleBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.TAG)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onTagManageClick() },
     ) {
         Text(
-            text = "태그 관리",
+            text = stringResource(R.string.setting_tag_manage),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -652,11 +554,12 @@ private fun TagRepeatCycleBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.REPEAT_CYCLE)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onRepeatCycleManageClick() },
     ) {
         Text(
-            text = "반복 주기 관리",
+            text = stringResource(R.string.setting_repeat_cycle_manage),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -671,7 +574,7 @@ private fun TagRepeatCycleBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -699,11 +602,12 @@ private fun DataBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.SYNC)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onSyncClick() },
     ) {
         Text(
-            text = "다른 기기와 동기화 하기",
+            text = stringResource(R.string.setting_use_on_other_device),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -780,7 +684,7 @@ private fun DataBody(
             .clickable { onClearClick() },
     ) {
         Text(
-            text = "데이터 초기화 하기",
+            text = stringResource(R.string.setting_clear_data),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -795,7 +699,7 @@ private fun DataBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -826,7 +730,7 @@ private fun InquiryBody() {
             },
     ) {
         Text(
-            text = "문의하기",
+            text = stringResource(R.string.setting_contact_us),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -841,7 +745,7 @@ private fun InquiryBody() {
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -858,7 +762,7 @@ private fun InAppReviewRow(onInAppReviewClick: () -> Unit) {
             .clickable { onInAppReviewClick() },
     ) {
         Text(
-            text = "앱 리뷰 작성",
+            text = stringResource(R.string.setting_app_review),
             style = EbbingTheme.typography.heading16SB,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f),
@@ -950,7 +854,7 @@ private fun AnnouncementBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary
@@ -973,6 +877,7 @@ private fun ThemeBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.THEME)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onThemeManageClick() },
     ) {
@@ -994,6 +899,7 @@ private fun ThemeBody(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .settingMenuHighlight(SettingMenu.WIDGET)
             .padding(vertical = SettingItemVerticalPadding)
             .clickable { onWidgetAlphaManageClick() },
     ) {
@@ -1013,7 +919,7 @@ private fun ThemeBody(
 
     HorizontalDivider(
         modifier = Modifier
-            .ignoreHorizontalPadding()
+            .ignoreHorizontalPadding(LocalSettingHorizontalPadding.current)
             .padding(bottom = SettingDividerBottomPadding),
         thickness = SettingDividerThickness,
         color = EbbingTheme.colors.strokeSecondary

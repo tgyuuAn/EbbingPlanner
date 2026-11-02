@@ -26,16 +26,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.tgyuu.common.now
-import com.tgyuu.common.util.clickable
+import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.EbbingTextToggle
 import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
@@ -75,7 +76,7 @@ internal fun EbbingTodoList(
         val newPage = pagerState.currentPage
         val delta = newPage - prevPage
         if (delta != 0) {
-            onSelectDate(selectedDate.plus(delta.toLong(), DateTimeUnit.DAY))
+            onSelectDate(selectedDate.plus(delta, DateTimeUnit.DAY))
             prevPage = newPage
         }
     }
@@ -131,49 +132,41 @@ private fun TodoHeader(
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp)
     ) {
-        val dateText = if (displayDate == LocalDate.now()) "오늘"
-        else "${displayDate.monthNumber}월 ${displayDate.dayOfMonth}일"
+        val weekday = displayDate.dayOfWeek.getDisplayName(JavaTextStyle.SHORT, Locale.getDefault())
+        val dateText = stringResource(
+            R.string.home_list_date,
+            displayDate.monthNumber,
+            displayDate.dayOfMonth,
+            weekday,
+        )
         Text(
             text = buildAnnotatedString {
-                append("$dateText 할 일 ")
-                withStyle(SpanStyle(color = EbbingTheme.colors.primaryNormal)) {
-                    append(count.toString())
+                append(dateText)
+                append(" ")
+                withStyle(SpanStyle(color = EbbingTheme.colors.textPrimary)) {
+                    append(completedCount.toString())
+                }
+                withStyle(
+                    SpanStyle(
+                        color = EbbingTheme.colors.textDisabled,
+                        fontWeight = FontWeight.Medium,
+                    )
+                ) {
+                    append("/$totalCount")
                 }
             },
-            style = EbbingTheme.typography.heading16B,
+            style = EbbingTheme.typography.heading18B,
             color = EbbingTheme.colors.textOnBackground,
             modifier = Modifier.weight(1f)
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable { onSortTypeClick() }
-                .padding(end = 16.dp)
-        ) {
-            Text(
-                text = sortType.displayName,
-                style = EbbingTheme.typography.heading16B,
-                color = EbbingTheme.colors.textOnBackground
-            )
-            Image(
-                painter = painterResource(com.tgyuu.designsystem.R.drawable.ic_arrow_down),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
-                modifier = Modifier.size(20.dp)
-            )
-        }
-
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = null,
-            tint = EbbingTheme.colors.background,
-            modifier = Modifier
-                .size(28.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(EbbingTheme.colors.primaryNormal)
-                .clickable { onAddTodoClick() }
-                .padding(4.dp)
+        EbbingTextToggle(
+            firstLabel = SortType.CREATED.displayName(),
+            secondLabel = SortType.BY_TAG.displayName(),
+            selectedFirst = sortType == SortType.CREATED,
+            onSelectedChange = { toLatest ->
+                onSortTypeChange(if (toLatest) SortType.CREATED else SortType.BY_TAG)
+            },
         )
     }
 }
@@ -225,8 +218,11 @@ private fun TodoPage(
         }
     } else {
         Text(
-            text = "${date.monthNumber}월 ${date.dayOfMonth}일 스케줄이 없어요.\n" +
-                    "우측 상단 + 버튼을 눌러 새로운 스케줄을 만들어보세요.",
+            text = stringResource(
+                R.string.home_empty_schedule,
+                date.monthNumber,
+                date.dayOfMonth,
+            ),
             style = EbbingTheme.typography.body14M,
             textAlign = TextAlign.Center,
             color = EbbingTheme.colors.textDisabled,

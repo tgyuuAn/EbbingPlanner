@@ -30,6 +30,8 @@ import com.tgyuu.common.getDisplayName
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 internal fun ConfirmDelayDialog(
@@ -49,11 +51,19 @@ internal fun ConfirmDelayDialog(
     }
 
     val dateText = if (displayedExpectedDate != null) {
-        "${schedule.date.monthNumber}월 ${schedule.date.dayOfMonth}일(${
-            schedule.date.dayOfWeek.toKorean()
-        }) → " + "${displayedExpectedDate.monthNumber}월 ${displayedExpectedDate.dayOfMonth}일(${
-            displayedExpectedDate.dayOfWeek.toKorean()
-        })"
+        val fromText = stringResource(
+            R.string.home_delay_date_part,
+            schedule.date.monthNumber,
+            schedule.date.dayOfMonth,
+            schedule.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN),
+        )
+        val toText = stringResource(
+            R.string.home_delay_date_part,
+            displayedExpectedDate.monthNumber,
+            displayedExpectedDate.dayOfMonth,
+            displayedExpectedDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN),
+        )
+        stringResource(R.string.home_delay_date_transition, fromText, toText)
     } else {
         ""
     }

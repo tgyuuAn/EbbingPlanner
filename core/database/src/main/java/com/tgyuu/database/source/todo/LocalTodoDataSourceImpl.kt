@@ -1,5 +1,6 @@
 package com.tgyuu.database.source.todo
 
+import com.tgyuu.database.dao.ScheduleUpdateParams
 import com.tgyuu.database.dao.TodoSchedulesDao
 import com.tgyuu.database.dao.TodoWithSchedulesDao
 import com.tgyuu.database.model.TodoScheduleEntity
@@ -52,7 +53,7 @@ class LocalTodoDataSourceImpl constructor(
         title: String,
         tagId: Int,
         dates: List<LocalDate>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
@@ -67,7 +68,7 @@ class LocalTodoDataSourceImpl constructor(
         tagId: Int,
         dates: List<LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = todoWithSchedulesDao.insertTodoWithSchedules(
         title = title,
@@ -109,7 +110,7 @@ class LocalTodoDataSourceImpl constructor(
         tagId: Int,
         dates: List<kotlinx.datetime.LocalDate>,
         isDoneSchedules: List<Boolean>,
-        priority: Int?,
+        isPinned: Boolean,
         restDays: Set<kotlinx.datetime.DayOfWeek>,
     ) = todoWithSchedulesDao.replaceSchedules(
         infoId = infoId,
@@ -117,7 +118,7 @@ class LocalTodoDataSourceImpl constructor(
         tagId = tagId,
         dates = dates,
         isDoneSchedules = isDoneSchedules,
-        priority = priority,
+        isPinned = isPinned,
         restDays = restDays,
     )
 
@@ -148,11 +149,17 @@ class LocalTodoDataSourceImpl constructor(
     override suspend fun getTodoInfoEntity(id: Int) =
         todoSchedulesDao.loadTodoInfoEntity(id)
 
-    override suspend fun updateSchedules(schedules: List<TodoSchedule>) {
-        schedules.forEach { schedule ->
-            todoSchedulesDao.updateTodoSchedule(schedule.toEntity())
-        }
-    }
+    override suspend fun updateSchedules(schedules: List<TodoSchedule>) =
+        todoWithSchedulesDao.updateSchedules(
+            schedules.map { schedule ->
+                ScheduleUpdateParams(
+                    id = schedule.id,
+                    date = schedule.date,
+                    memo = schedule.memo,
+                    isPinned = schedule.isPinned,
+                    isDone = schedule.isDone,
+                )
+            }
+        )
 
-    override suspend fun deleteAllTodoInfos() = todoSchedulesDao.hardDeleteAllTodoInfos()
 }

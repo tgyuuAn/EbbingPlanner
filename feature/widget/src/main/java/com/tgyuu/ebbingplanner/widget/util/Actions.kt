@@ -11,12 +11,17 @@ import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
+import com.tgyuu.common.now
+import com.tgyuu.domain.repository.ConfigRepository
+import com.tgyuu.domain.repository.TodoRepository
 import com.tgyuu.ebbingplanner.widget.calendar.CalendarWidget
 import com.tgyuu.ebbingplanner.widget.todaytodo.TodayTodoWidgetReceiver
 import com.tgyuu.ebbingplanner.widget.util.CheckTodoAction.Companion.TODO_ID
-import com.tgyuu.common.now
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 const val KEY_DESTINATION = "destination"
 const val KEY_SELECTED_DATE = "selectedDate"
@@ -24,24 +29,20 @@ const val ADD_TODO = "addTodo"
 const val ADD_TODO_ACTION = "addTodoAction"
 const val OPEN_HOME = "openHome"
 const val KEY_WIDGET_SOURCE = "widgetSource"
-const val ACTION_OPEN_ADD_TODO = "com.tgyuu.ebbingplanner.OPEN_ADD_TODO"
 
 internal val destinationKey = ActionParameters.Key<String>(KEY_DESTINATION)
 internal val todoIdKey = ActionParameters.Key<Int>(TODO_ID)
 internal val selectedDateKey = ActionParameters.Key<String>(KEY_SELECTED_DATE)
 internal val widgetSourceKey = ActionParameters.Key<String>(KEY_WIDGET_SOURCE)
 
-class RefreshAction : ActionCallback {
+class RefreshAction : ActionCallback, KoinComponent {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
         parameters: ActionParameters
     ) {
-        val entryPoint = EntryPointAccessors.fromApplication(
-            context.applicationContext, WidgetUpdateEntryPoint::class.java
-        )
         WidgetUpdater.updateAllWidgets(
-            context, entryPoint.todoRepository(), entryPoint.configRepository()
+            context, get<TodoRepository>(), get<ConfigRepository>()
         )
     }
 
@@ -50,14 +51,7 @@ class RefreshAction : ActionCallback {
     }
 }
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface WidgetUpdateEntryPoint {
-    fun todoRepository(): TodoRepository
-    fun configRepository(): ConfigRepository
-}
-
-class CheckTodoAction : ActionCallback {
+class CheckTodoAction : ActionCallback, KoinComponent {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
@@ -65,14 +59,11 @@ class CheckTodoAction : ActionCallback {
     ) {
         val todoId: Int = parameters[todoIdKey] ?: return
 
-        val entryPoint = EntryPointAccessors.fromApplication(
-            context.applicationContext, WidgetUpdateEntryPoint::class.java
-        )
-        val todoRepository = entryPoint.todoRepository()
+        val todoRepository = get<TodoRepository>()
         todoRepository.toggleDone(todoId)
 
         WidgetUpdater.updateAllWidgets(
-            context, todoRepository, entryPoint.configRepository()
+            context, todoRepository, get<ConfigRepository>()
         )
     }
 
@@ -111,8 +102,6 @@ class SelectDateAction : ActionCallback {
     }
 }
 
-const val ACTION_OPEN_ADD_TODO = "com.tgyuu.ebbingplanner.OPEN_ADD_TODO"
-
 class AddTodoFromWidgetAction : ActionCallback {
     override suspend fun onAction(
         context: Context,
@@ -137,6 +126,8 @@ class AddTodoFromWidgetAction : ActionCallback {
         context.startActivity(activityIntent)
     }
 }
+
+const val ACTION_OPEN_ADD_TODO = "com.tgyuu.ebbingplanner.OPEN_ADD_TODO"
 
 internal fun openHomeAction(context: Context, date: LocalDate): Action =
     actionStartActivity(

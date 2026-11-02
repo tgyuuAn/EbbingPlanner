@@ -11,6 +11,8 @@ import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.now
 import com.tgyuu.common.toFormattedString
+import com.tgyuu.common.ui.resource.ResourceProvider
+import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.calendar.totalDaysInMonth
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
 import com.tgyuu.domain.model.SortType
@@ -461,9 +463,29 @@ class HomeViewModel(
 
         return grouped.mapValues { (_, list) ->
             val sorted = when (sortType) {
-                SortType.CREATED -> list.sortedWith(compareBy({ it.isDone }, { it.createdAt }))
-                SortType.NAME -> list.sortedWith(compareBy({ it.isDone }, { it.title }))
-                SortType.PRIORITY -> list.sortedWith(compareBy({ it.isDone }, { -it.priority }))
+                SortType.CREATED -> list.sortedWith(
+                    compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.createdAt }
+                )
+
+                // 태그별 정책:
+                //  1) 그룹(태그) 순서 = 그 날 고정(isPinned) 일정이 많은 태그일수록 위로 (동수는 태그명)
+                //  2) 그룹 내부 = 고정 일정을 최상단, 이후 미완료 > 생성순
+                SortType.BY_TAG -> {
+                    val withinGroup = compareByDescending<TodoSchedule> { it.isPinned }
+                        .thenBy { it.isDone }
+                        .thenBy { it.createdAt }
+
+                    list.groupBy { it.tagId }
+                        .entries
+                        .sortedWith(
+                            compareByDescending<Map.Entry<Int, List<TodoSchedule>>> { entry ->
+                                entry.value.count { it.isPinned }
+                            }.thenBy { entry -> entry.value.first().name }
+                        )
+                        .flatMap { entry -> entry.value.sortedWith(withinGroup) }
+                }
             }
             sorted.toUiModels()
         }.toImmutableMap()

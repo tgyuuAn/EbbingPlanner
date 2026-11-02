@@ -364,7 +364,7 @@ private fun TodoMainFormContent(
 ) {
     val monthDayText = stringResource(
         R.string.home_month_day,
-        state.selectedDate.monthValue,
+        state.selectedDate.monthNumber,
         state.selectedDate.dayOfMonth,
     )
     val addTodoHeaderSuffix = stringResource(R.string.home_add_todo_header_suffix)
@@ -376,7 +376,7 @@ private fun TodoMainFormContent(
                     color = EbbingTheme.colors.textPrimary,
                 )
             ) {
-                append("${state.selectedDate.monthNumber}월 ${state.selectedDate.dayOfMonth}일")
+                append(monthDayText)
             }
             append(addTodoHeaderSuffix)
         },

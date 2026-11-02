@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.alarm.AlarmScheduler
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
@@ -46,21 +48,38 @@ class AddTodoViewModel(
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
     private val alarmScheduler: AlarmScheduler,
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel<AddTodoState, AddTodoIntent>(AddTodoState()) {
+) : BaseViewModel<AddTodoState, AddTodoIntent>(
+    AddTodoState(
+        selectedDate = (savedStateHandle.get<String>("selectedDate")
+            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")).toLocalDateOrThrow(),
+        tag = DefaultTodoTag.toUiModel(),
+        repeatCycle = DefaultRepeatCycles.first().toUiModel(resourceProvider),
+    )
+) {
 
     init {
-        val dateStr = savedStateHandle.get<String>("selectedDate")
-            ?: throw IllegalArgumentException("선택된 날짜가 없습니다.")
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddTodo",
+            )
+        )
 
         setState {
             copy(
-                selectedDate = dateStr.toLocalDateOrThrow(),
-                tag = DefaultTodoTag.toUiModel(),
-                repeatCycle = DefaultRepeatCycles.first().toUiModel(),
+                tag = tag?.copy(name = resourceProvider.getString(R.string.tag_unassigned))
             )
         }
+
         initNotificationState()
+        initLastSelected()
+
+        viewModelScope.launch {
+            configRepository.getMondayStart()
+                .collect { setState { copy(mondayStart = it) } }
+        }
     }
 
     private fun initLastSelected() = viewModelScope.launch {
@@ -91,7 +110,10 @@ class AddTodoViewModel(
 
     private fun initNotificationState() = viewModelScope.launch {
         val (hour, minute) = configRepository.getAlarmTime()
-        val message = configRepository.getAlarmMessage()
+        val defaultMessage = resourceProvider.getString(R.string.default_alarm_message)
+        val placeholderToken = resourceProvider.getString(R.string.alarm_placeholder_token)
+        val storedMessage = configRepository.getAlarmMessage()
+        val message = if (storedMessage == DEFAULT_ALARM_MESSAGE) defaultMessage else storedMessage
 
         setState {
             copy(
@@ -101,6 +123,7 @@ class AddTodoViewModel(
                     defaultMessage = defaultMessage,
                     message = message,
                     originMessage = message,
+                    placeholderToken = placeholderToken,
                 )
             )
         }
@@ -235,6 +258,13 @@ class AddTodoViewModel(
 
     @OptIn(ExperimentalTime::class)
     private suspend fun onSaveClick() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "AddTodo",
+                buttonName = "Save",
+            )
+        )
+
         if (!currentState.isSaveEnabled) {
             eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_required_fields)))
             return

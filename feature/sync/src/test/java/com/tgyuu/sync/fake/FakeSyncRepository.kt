@@ -28,7 +28,7 @@ class FakeSyncRepository : SyncRepository {
         ConnectInfo(
             uuid = "other-uuid-5678",
             connectCode = "testcode123",
-            connectCodeExpirationTime = LocalDateTime.now().plusMinutes(10),
+            connectCodeExpirationTime = Clock.System.now().plus(10, DateTimeUnit.MINUTE, TimeZone.currentSystemDefault()).toLocalDateTime(TimeZone.currentSystemDefault()),
         ),
     )
 

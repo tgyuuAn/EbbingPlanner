@@ -10,8 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -235,11 +234,13 @@ private fun ScheduleCheckCard(
             }
         }
 
-        EbbingCheck(
-            checked = isChecked,
-            colorValue = colorValue,
-            onCheckedChange = { onCheckSchedule(idx) },
-            modifier = Modifier.padding(start = 12.dp).size(20.dp),
-        )
+        if (showDivider) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(EbbingTheme.colors.strokeOutline),
+            )
+        }
     }
 }

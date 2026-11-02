@@ -1,6 +1,8 @@
 package com.tgyuu.setting.graph.theme
 
 import androidx.lifecycle.viewModelScope
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
@@ -20,7 +22,11 @@ class ThemeViewModel(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
-) : BaseViewModel<ThemeState, ThemeIntent>(ThemeState()) {
+    private val analyticsHelper: AnalyticsHelper,
+    private val resourceProvider: ResourceProvider,
+) : BaseViewModel<ThemeState, ThemeIntent>(
+    ThemeState()
+) {
 
     init {
         analyticsHelper.logEvent(
@@ -53,6 +59,13 @@ class ThemeViewModel(
     }
 
     private fun updateTheme() {
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "Theme",
+                buttonName = "Apply",
+            )
+        )
+
         viewModelScope.launch {
             currentState.selectTheme?.let { select ->
                 suspendRunCatching {
@@ -60,7 +73,9 @@ class ThemeViewModel(
                 }.onSuccess {
                     setState { copy(originTheme = select) }
                     navigationBus.navigate(NavigationEvent.Up)
-                    eventBus.sendEvent(EbbingEvent.ShowSnackBar("앱 테마를 변경하였습니다"))
+                    eventBus.sendEvent(
+                        EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_app_theme_changed))
+                    )
                 }.onFailure {
                     eventBus.sendEvent(
                         EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.setting_theme_change_failed))
