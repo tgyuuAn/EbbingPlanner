@@ -39,8 +39,8 @@ class FakeConfigRepository : ConfigRepository {
     override suspend fun getAlarmTime(): Pair<Int, Int> = Pair(9, 0)
     override suspend fun updateAlarmMessage(message: String) {}
     override suspend fun getAlarmMessage(): String = ConfigRepository.DEFAULT_ALARM_MESSAGE
-    override suspend fun getSoftUpdateInfo(): UpdateInfo = UpdateInfo("1.0.0", "")
-    override suspend fun getHardUpdateInfo(): UpdateInfo = UpdateInfo("1.0.0", "")
+    override suspend fun getSoftUpdateInfo(): UpdateInfo = UpdateInfo("1.0.0")
+    override suspend fun getHardUpdateInfo(): UpdateInfo = UpdateInfo("1.0.0")
     override suspend fun getClearSyncFlag(): Boolean = false
     override suspend fun consumeInAppReview(): Boolean = false
     override suspend fun markFirstTodoAdded(): Boolean = false

@@ -439,6 +439,7 @@
     <string name="update_view_notes">See what\'s new</string>
     <string name="update_close">Close</string>
     <string name="update_button">Update</string>
+    <string name="update_default_notice">We\'ve improved usability based on your feedback.\nUpdate now!</string>
     <string name="exit_confirm_snackbar">Press back again to exit the app</string>
     <string name="notification_content_title">Ebbing Planner reminder</string>
     <string name="home_add_todo_button">Add task</string>

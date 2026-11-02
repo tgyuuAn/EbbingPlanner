@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -85,7 +86,7 @@ private fun SoftUpdateDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = stringResource(DesignR.string.update_title),
-                subText = updateInfo.noticeMsg,
+                subText = updateInfo.localizedNoticeMsg(),
                 descriptionComposable = {
                     Text(
                         text = stringResource(DesignR.string.update_view_notes),
@@ -120,7 +121,7 @@ private fun HardUpdateDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = stringResource(DesignR.string.update_title),
-                subText = updateInfo.noticeMsg,
+                subText = updateInfo.localizedNoticeMsg(),
                 descriptionComposable = {
                     Text(
                         text = stringResource(DesignR.string.update_view_notes),
@@ -143,6 +144,12 @@ private fun HardUpdateDialog(
             )
         },
     )
+}
+
+@Composable
+private fun UpdateInfo.localizedNoticeMsg(): String {
+    val language = LocalConfiguration.current.locales[0].language
+    return noticeMsg(language) ?: stringResource(DesignR.string.update_default_notice)
 }
 
 private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {

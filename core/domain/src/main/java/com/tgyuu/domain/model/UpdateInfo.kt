@@ -7,5 +7,7 @@ data class UpdateState(
 
 data class UpdateInfo(
     val minVersion: String,
-    val noticeMsg: String,
-)
+    val noticeMsgs: Map<String, String> = emptyMap(),
+) {
+    fun noticeMsg(language: String): String? = noticeMsgs[language]?.takeIf { it.isNotBlank() }
+}
