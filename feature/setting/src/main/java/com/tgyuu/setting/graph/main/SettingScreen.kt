@@ -64,7 +64,7 @@ import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingToggle
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.UpdateInfo
+import com.tgyuu.designsystem.model.UpdateInfoUiModel
 import com.tgyuu.setting.BuildConfig
 import com.tgyuu.setting.graph.main.contract.SettingIntent
 import com.tgyuu.setting.graph.main.contract.SettingSideEffect
@@ -928,8 +928,8 @@ private fun ThemeBody(
 
 @Composable
 private fun UpdateBody(
-    updateInfo: UpdateInfo?,
-    hardUpdateInfo: UpdateInfo?,
+    updateInfo: UpdateInfoUiModel?,
+    hardUpdateInfo: UpdateInfoUiModel?,
     onUpdateClick: (isImmediateUpdate: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -961,7 +961,7 @@ private fun UpdateBody(
     }
 }
 
-private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {
+private fun shouldUpdate(context: Context, info: UpdateInfoUiModel?): Boolean {
     if (info == null) return false
 
     val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -1012,7 +1012,7 @@ private fun getVersionInfo(
 
 private fun isShowUpdateButton(
     context: Context,
-    info: UpdateInfo?,
+    info: UpdateInfoUiModel?,
 ): Boolean {
     if (info == null) return false
 

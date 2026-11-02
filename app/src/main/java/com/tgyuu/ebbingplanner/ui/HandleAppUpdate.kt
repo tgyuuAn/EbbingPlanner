@@ -13,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,13 +25,13 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.domain.model.UpdateState
+import com.tgyuu.designsystem.model.UpdateInfoUiModel
+import com.tgyuu.designsystem.model.UpdateStateUiModel
 import com.tgyuu.designsystem.R as DesignR
 
 @Composable
 internal fun HandleAppUpdate(
-    updateState: UpdateState,
+    updateState: UpdateStateUiModel,
     onClickUpdateInfo: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -76,7 +75,7 @@ internal fun HandleAppUpdate(
 
 @Composable
 private fun SoftUpdateDialog(
-    updateInfo: UpdateInfo,
+    updateInfo: UpdateInfoUiModel,
     onDismissRequest: () -> Unit,
     onClickUpdateInfo: () -> Unit,
     onUpdateClick: () -> Unit,
@@ -112,7 +111,7 @@ private fun SoftUpdateDialog(
 
 @Composable
 private fun HardUpdateDialog(
-    updateInfo: UpdateInfo,
+    updateInfo: UpdateInfoUiModel,
     onClickUpdateInfo: () -> Unit,
     onUpdateClick: () -> Unit,
 ) {
@@ -146,13 +145,7 @@ private fun HardUpdateDialog(
     )
 }
 
-@Composable
-private fun UpdateInfo.localizedNoticeMsg(): String {
-    val language = LocalConfiguration.current.locales[0].language
-    return noticeMsg(language) ?: stringResource(DesignR.string.update_default_notice)
-}
-
-private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {
+private fun shouldUpdate(context: Context, info: UpdateInfoUiModel?): Boolean {
     if (info == null) return false
 
     val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0)
