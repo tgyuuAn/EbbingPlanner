@@ -38,8 +38,8 @@ internal data class NextProgress(
 internal fun progressKey(title: String): String = title.trim()
     .lowercase()
     .replace(NUMBER_REGEX, "#")
-    .replace(Regex("""\s*[-~]\s*"""), "-")
-    .replace(Regex("""\s+"""), " ")
+    .replace(RANGE_SEPARATOR_REGEX, "-")
+    .replace(WHITESPACE_REGEX, " ")
 
 internal fun suggestNextProgress(title: String, previousTitle: String? = null): NextProgress {
     val latest = title.trim()
@@ -177,6 +177,7 @@ private fun hasProgressUnit(title: String, token: NumberToken): Boolean =
 private val NUMBER_REGEX = Regex("""\d+""")
 private val RANGE_SEPARATOR_REGEX = Regex("""\s*[-~]\s*""")
 private val OPEN_RANGE_REGEX = Regex("""\d+\s*~\s*$""")
+private val WHITESPACE_REGEX = Regex("""\s+""")
 private val UNIT_REGEX = Regex("""^[^\s\d]*""")
 private val LEVEL_PREFIX_REGEX = Regex("""(^|[^A-Za-z])[Nn]$""")
 private val NON_PROGRESS_UNIT_REGEX = Regex("""^\s*(월|분|시간|초|년|급|문제|개|명|원|%)""")

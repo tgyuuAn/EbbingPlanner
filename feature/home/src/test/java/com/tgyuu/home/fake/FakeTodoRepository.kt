@@ -135,6 +135,24 @@ class FakeTodoRepository : TodoRepository {
         )
     }
 
+    override suspend fun loadRecentTodoInfos(limit: Int): List<TodoInfo> =
+        schedules.groupBy { it.infoId }
+            .values
+            .sortedWith(
+                compareByDescending<List<TodoSchedule>> { it.first().infoCreatedAt }
+                    .thenByDescending { it.first().infoId }
+            )
+            .take(limit)
+            .map { infoSchedules ->
+                val schedule = infoSchedules.first()
+                TodoInfo(
+                    id = schedule.infoId,
+                    title = schedule.title,
+                    tagId = schedule.tagId,
+                    restDays = todoInfos[schedule.infoId]?.restDays.orEmpty(),
+                )
+            }
+
     fun setRestDays(infoId: Int, restDays: Set<DayOfWeek>) {
         val existing = todoInfos[infoId] ?: TodoInfo(
             id = infoId,

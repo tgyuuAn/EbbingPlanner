@@ -58,6 +58,9 @@ interface TodoRepository {
     suspend fun loadTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun loadTodoInfoById(infoId: Int): TodoInfo
 
+    /** 살아 있는 회차가 있는 할 일을 최근에 만든 순으로 limit개만 불러와요. */
+    suspend fun loadRecentTodoInfos(limit: Int): List<TodoInfo>
+
     suspend fun replaceSchedules(
         infoId: Int,
         title: String,

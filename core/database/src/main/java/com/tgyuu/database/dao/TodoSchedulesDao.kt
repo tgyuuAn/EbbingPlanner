@@ -254,6 +254,24 @@ interface TodoSchedulesDao {
     )
     suspend fun getTodoInfoById(infoId: Int): TodoInfo
 
+    /** 살아 있는 회차가 있는 할 일을 최근에 만든 순으로 limit개만 불러와요. */
+    @Query(
+        """
+    SELECT
+        i.id,
+        i.title,
+        i.tagId,
+        i.rest_days AS restDays
+    FROM todo_info i
+    JOIN todo_tag t ON i.tagId = t.id
+    WHERE t.isDeleted = 0
+      AND EXISTS (SELECT 1 FROM schedule s WHERE s.infoId = i.id AND s.isDeleted = 0)
+    ORDER BY i.createdAt DESC, i.id DESC
+    LIMIT :limit
+    """
+    )
+    suspend fun loadRecentTodoInfos(limit: Int): List<TodoInfo>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTodoSchedule(todoScheduleEntity: TodoScheduleEntity)
 

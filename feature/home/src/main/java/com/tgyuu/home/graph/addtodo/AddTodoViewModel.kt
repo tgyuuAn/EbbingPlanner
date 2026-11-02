@@ -21,7 +21,6 @@ import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.DefaultTodoTag
 import com.tgyuu.domain.model.RepeatCycle
-import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
@@ -125,29 +124,21 @@ class AddTodoViewModel @Inject constructor(
         val tagsById = todoRepository.loadTags().associateBy { it.id }
         val repeatCycles = DefaultRepeatCycles + todoRepository.loadRepeatCycles()
 
-        val recentTodos = todoRepository.loadAllSchedules()
-            .groupBy { it.infoId }
-            .values
-            .sortedWith(
-                compareByDescending<List<TodoSchedule>> { it.first().infoCreatedAt }
-                    .thenByDescending { it.first().infoId }
-            )
-        recentTitles = recentTodos.map { it.first().title }
+        // 전체 일정 대신 최근 할 일만 읽어서, 데이터가 많아도 화면 진입 비용이 일정해요.
+        val recentInfos = todoRepository.loadRecentTodoInfos(RECENT_TODO_LIMIT)
+        recentTitles = recentInfos.map { it.title }
 
-        val suggestions = recentTodos
+        val suggestions = recentInfos
             // 같은 과목(숫자만 다른 제목)은 가장 최근 일정 하나만 추천하고, 직전 제목과 비교해 진도 간격을 구해요.
-            .groupBy { progressKey(it.first().title) }
+            .groupBy { progressKey(it.title) }
             .values
             .take(MAX_SUGGESTION_COUNT)
             .mapNotNull { sameSubject ->
-                val schedules = sameSubject.first()
-                val info = schedules.first()
+                val info = sameSubject.first()
                 val previousTitle = sameSubject.drop(1)
-                    .map { it.first().title }
+                    .map { it.title }
                     .firstOrNull { it.trim() != info.title.trim() }
                 val tag = tagsById[info.tagId] ?: return@mapNotNull null
-                val restDays = runCatching { todoRepository.loadTodoInfoById(info.infoId).restDays }
-                    .getOrDefault(emptySet())
                 val nextProgress = suggestNextProgress(info.title, previousTitle)
                 ProgressSuggestion(
                     title = nextProgress.title,
@@ -160,8 +151,8 @@ class AddTodoViewModel @Inject constructor(
                         }
                     },
                     repeatCycle = inferRepeatCycle(
-                        dates = schedules.map { it.date },
-                        restDays = restDays,
+                        dates = todoRepository.loadSchedulesByTodoInfo(info.id).map { it.date },
+                        restDays = info.restDays,
                         candidates = repeatCycles,
                     )?.toUiModel(resourceProvider),
                 )
@@ -537,5 +528,6 @@ class AddTodoViewModel @Inject constructor(
 
     private companion object {
         const val MAX_SUGGESTION_COUNT = 5
+        const val RECENT_TODO_LIMIT = 50
     }
 }
