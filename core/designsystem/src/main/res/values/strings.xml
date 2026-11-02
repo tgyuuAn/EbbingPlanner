@@ -440,6 +440,7 @@
     <string name="update_view_notes">업데이트 내용 보러가기</string>
     <string name="update_close">닫기</string>
     <string name="update_button">업데이트</string>
+    <string name="update_default_notice">여러분의 의견을 반영하여 사용성을 개선했습니다.\n지금 바로 업데이트해 보세요!</string>
     <string name="exit_confirm_snackbar">뒤로 가기를 한 번 더 누르면 앱이 종료돼요</string>
     <string name="notification_content_title">에빙 플래너 일정 알림</string>
     <string name="home_add_todo_button">일정 등록하기</string>

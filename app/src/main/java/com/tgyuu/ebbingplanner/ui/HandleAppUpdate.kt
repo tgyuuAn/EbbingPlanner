@@ -25,13 +25,13 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.foundation.EbbingTheme
-import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.domain.model.UpdateState
+import com.tgyuu.designsystem.model.UpdateInfoUiModel
+import com.tgyuu.designsystem.model.UpdateStateUiModel
 import com.tgyuu.designsystem.R as DesignR
 
 @Composable
 internal fun HandleAppUpdate(
-    updateState: UpdateState,
+    updateState: UpdateStateUiModel,
     onClickUpdateInfo: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -75,7 +75,7 @@ internal fun HandleAppUpdate(
 
 @Composable
 private fun SoftUpdateDialog(
-    updateInfo: UpdateInfo,
+    updateInfo: UpdateInfoUiModel,
     onDismissRequest: () -> Unit,
     onClickUpdateInfo: () -> Unit,
     onUpdateClick: () -> Unit,
@@ -85,7 +85,7 @@ private fun SoftUpdateDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = stringResource(DesignR.string.update_title),
-                subText = updateInfo.noticeMsg,
+                subText = updateInfo.localizedNoticeMsg(),
                 descriptionComposable = {
                     Text(
                         text = stringResource(DesignR.string.update_view_notes),
@@ -111,7 +111,7 @@ private fun SoftUpdateDialog(
 
 @Composable
 private fun HardUpdateDialog(
-    updateInfo: UpdateInfo,
+    updateInfo: UpdateInfoUiModel,
     onClickUpdateInfo: () -> Unit,
     onUpdateClick: () -> Unit,
 ) {
@@ -120,7 +120,7 @@ private fun HardUpdateDialog(
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = stringResource(DesignR.string.update_title),
-                subText = updateInfo.noticeMsg,
+                subText = updateInfo.localizedNoticeMsg(),
                 descriptionComposable = {
                     Text(
                         text = stringResource(DesignR.string.update_view_notes),
@@ -145,7 +145,7 @@ private fun HardUpdateDialog(
     )
 }
 
-private fun shouldUpdate(context: Context, info: UpdateInfo?): Boolean {
+private fun shouldUpdate(context: Context, info: UpdateInfoUiModel?): Boolean {
     if (info == null) return false
 
     val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0)
