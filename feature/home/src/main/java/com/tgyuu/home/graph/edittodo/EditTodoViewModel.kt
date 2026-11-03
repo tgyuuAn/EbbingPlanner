@@ -139,6 +139,7 @@ class EditTodoViewModel @Inject constructor(
 
             is EditTodoIntent.OnTagChange -> onTagChange(intent.tag)
             EditTodoIntent.OnAddTagClick -> onAddTagClick()
+            EditTodoIntent.OnAddTagPopupClick -> navigationBus.navigate(NavigationEvent.To(TagGraph.AddTagPopupRoute))
             EditTodoIntent.OnSaveClick -> onSaveClick()
         }
     }
