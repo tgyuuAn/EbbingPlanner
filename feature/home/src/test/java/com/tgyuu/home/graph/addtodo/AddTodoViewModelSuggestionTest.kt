@@ -6,7 +6,9 @@ import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.domain.model.TodoSchedule
+import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.home.fake.FakeConfigRepository
+import com.tgyuu.home.fake.FakeExperimentRepository
 import com.tgyuu.home.fake.FakeTodoRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.navigation.NavigationBus
@@ -44,7 +46,7 @@ class AddTodoViewModelSuggestionTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(): AddTodoViewModel = AddTodoViewModel(
+    private fun createViewModel(variant: String = "TREATMENT"): AddTodoViewModel = AddTodoViewModel(
         todoRepository = todoRepository,
         configRepository = FakeConfigRepository(),
         eventBus = EventBus(),
@@ -61,6 +63,9 @@ class AddTodoViewModelSuggestionTest {
             override fun getString(resId: Int): String = ""
             override fun getString(resId: Int, vararg formatArgs: Any): String = ""
         },
+        experimentRepository = FakeExperimentRepository(
+            mapOf(Experiment.NextProgressSuggestion.key to variant)
+        ),
         savedStateHandle = SavedStateHandle(mapOf("selectedDate" to "2024-01-01")),
     )
 
@@ -156,6 +161,7 @@ class AddTodoViewModelSuggestionTest {
         assertEquals("NextProgressSuggestion", click.buttonName)
         assertEquals(
             mapOf(
+                "variant" to "TREATMENT",
                 "suggestion_title" to "경제원론 51-",
                 "suggestion_index" to 0,
                 "suggestion_count" to 1,
@@ -177,7 +183,10 @@ class AddTodoViewModelSuggestionTest {
 
         val show = loggedEvents.filterIsInstance<AnalyticsEvent.Action>()
             .single { it.actionName == "show_next_progress_suggestion" }
-        assertEquals(mapOf("suggestion_count" to 2, "suggestion_bases" to "none,range"), show.properties)
+        assertEquals(
+            mapOf("variant" to "TREATMENT", "suggestion_count" to 2, "suggestion_bases" to "none,range"),
+            show.properties,
+        )
     }
 
     @Test
@@ -204,6 +213,7 @@ class AddTodoViewModelSuggestionTest {
             .single { it.actionName == "save_todo" }
         assertEquals(
             mapOf(
+                "variant" to "TREATMENT",
                 "had_suggestions" to true,
                 "from_suggestion" to true,
                 "suggestion_basis" to "range",
@@ -213,6 +223,28 @@ class AddTodoViewModelSuggestionTest {
             ),
             save.properties,
         )
+    }
+
+    @Test
+    fun `CONTROL 실험군은 진도 없이 과목명만 추천하고 로그에 실험군을 남긴다`() = runTest {
+        todoRepository.addTag(name = "태그", color = 0)
+        addTodo(1, "경제원론 1-50", tagId = 1, LocalDate.of(2024, 1, 1), listOf(0))
+        addTodo(2, "Statistics Ch.2", tagId = 1, LocalDate.of(2024, 1, 2), listOf(0))
+        addTodo(3, "영단어", tagId = 1, LocalDate.of(2024, 1, 3), listOf(0))
+        val viewModel = createViewModel(variant = "control")
+
+        assertEquals(
+            listOf("영단어", "Statistics Ch.", "경제원론"),
+            viewModel.state.value.suggestions.map { it.title },
+        )
+
+        viewModel.onIntent(AddTodoIntent.OnSuggestionClick(viewModel.state.value.suggestions.last()))
+        viewModel.onIntent(AddTodoIntent.OnSaveClick)
+
+        val save = loggedEvents.filterIsInstance<AnalyticsEvent.Action>()
+            .single { it.actionName == "save_todo" }
+        assertEquals("CONTROL", save.properties?.get("variant"))
+        assertEquals(false, save.properties?.get("title_edited"))
     }
 
     @Test

@@ -77,11 +77,23 @@ class NextProgressTest {
     @Test
     fun `토스트에 쓸 과목명과 시작 진도를 함께 돌려준다`() {
         assertEquals(
-            NextProgress(title = "경제원론 51-", subject = "경제원론", start = "51", basis = NextProgress.Basis.RANGE),
+            NextProgress(
+                title = "경제원론 51-",
+                subject = "경제원론",
+                start = "51",
+                basis = NextProgress.Basis.RANGE,
+                baseTitle = "경제원론",
+            ),
             suggestNextProgress("경제원론 1-50"),
         )
         assertEquals(
-            NextProgress(title = "민법총론 3강", subject = "민법총론", start = "3강", basis = NextProgress.Basis.NUMBER),
+            NextProgress(
+                title = "민법총론 3강",
+                subject = "민법총론",
+                start = "3강",
+                basis = NextProgress.Basis.NUMBER,
+                baseTitle = "민법총론",
+            ),
             suggestNextProgress("민법총론 2강"),
         )
         assertNull(suggestNextProgress("영단어").start)
@@ -90,6 +102,15 @@ class NextProgressTest {
             NextProgress.Basis.HISTORY,
             suggestNextProgress("TOEIC 51-100", previousTitle = "TOEIC 1-50").basis,
         )
+    }
+
+    @Test
+    fun `진도를 뺀 앞부분을 돌려준다`() {
+        assertEquals("TOEIC", suggestNextProgress("TOEIC 101-120", previousTitle = "TOEIC 51-100").baseTitle)
+        assertEquals("Statistics Ch.", suggestNextProgress("Statistics Ch.2").baseTitle)
+        assertEquals("2024 기출", suggestNextProgress("2024 기출 1회").baseTitle)
+        assertEquals("영단어", suggestNextProgress("영단어").baseTitle)
+        assertEquals("3강", suggestNextProgress("3강").baseTitle)
     }
 
     @Test

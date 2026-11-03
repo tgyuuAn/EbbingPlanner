@@ -13,6 +13,7 @@ package com.tgyuu.home.model
  *
  * @property title 제목 칸에 채워 줄 다음 진도 제목
  * @property subject 진도 앞부분(과목명). 저장 후 안내 토스트에 써요.
+ * @property baseTitle 지난 제목에서 진도를 뺀 앞부분("TOEIC", "Statistics Ch."). 진도 없이 추천하는 실험군에서 써요.
  * @property start 다음 진도의 시작 표현("51", "3강"). 진도를 알 수 없으면 null
  * @property basis 어떤 근거로 추정했는지. 추천 품질 분석용 로그에 남겨요.
  */
@@ -21,6 +22,7 @@ internal data class NextProgress(
     val subject: String,
     val start: String?,
     val basis: Basis,
+    val baseTitle: String = title,
 ) {
     enum class Basis(val logValue: String) {
         /** 같은 과목의 직전 제목과 비교 */
@@ -135,6 +137,7 @@ private fun continueRange(
         subject = subjectBefore(title, start),
         start = nextStart,
         basis = basis,
+        baseTitle = baseTitleBefore(title, start),
     )
 }
 
@@ -165,8 +168,12 @@ private fun buildProgress(
         subject = subjectBefore(title, firstToken),
         start = start + unit,
         basis = basis,
+        baseTitle = baseTitleBefore(title, firstToken),
     )
 }
+
+private fun baseTitleBefore(title: String, token: NumberToken): String =
+    title.substring(0, token.range.first).trimEnd().ifEmpty { title }
 
 private fun subjectBefore(title: String, token: NumberToken): String =
     title.substring(0, token.range.first).trimEnd().trimEnd { !it.isLetterOrDigit() }

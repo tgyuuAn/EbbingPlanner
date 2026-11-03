@@ -24,6 +24,9 @@ import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.experiment.domain.model.Experiment
+import com.tgyuu.experiment.domain.model.Experiment.NextProgressSuggestion.Variant
+import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
 import com.tgyuu.home.graph.addtodo.contract.ProgressSuggestion
@@ -57,6 +60,7 @@ class AddTodoViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
     private val resourceProvider: ResourceProvider,
+    private val experimentRepository: ExperimentRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(
     AddTodoState(
@@ -123,6 +127,8 @@ class AddTodoViewModel @Inject constructor(
     private fun initSuggestions() = viewModelScope.launch {
         val tagsById = todoRepository.loadTags().associateBy { it.id }
         val repeatCycles = DefaultRepeatCycles + todoRepository.loadRepeatCycles()
+        val variant = experimentRepository.getVariant(Experiment.NextProgressSuggestion)
+        setState { copy(suggestionVariant = variant) }
 
         // 전체 일정 대신 최근 할 일만 읽어서, 데이터가 많아도 화면 진입 비용이 일정해요.
         val recentInfos = todoRepository.loadRecentTodoInfos(RECENT_TODO_LIMIT)
@@ -141,7 +147,11 @@ class AddTodoViewModel @Inject constructor(
                 val tag = tagsById[info.tagId] ?: return@mapNotNull null
                 val nextProgress = suggestNextProgress(info.title, previousTitle)
                 ProgressSuggestion(
-                    title = nextProgress.title,
+                    // 실험: TREATMENT는 다음 진도까지, CONTROL은 진도 없이 과목명만 추천해요.
+                    title = when (variant) {
+                        Variant.TREATMENT -> nextProgress.title
+                        Variant.CONTROL -> nextProgress.baseTitle
+                    },
                     basis = nextProgress.basis.logValue,
                     tag = tag.toUiModel().let {
                         if (it.id == DefaultTodoTag.id) {
@@ -168,6 +178,7 @@ class AddTodoViewModel @Inject constructor(
                     screenName = "AddTodo",
                     actionName = "show_next_progress_suggestion",
                     properties = mapOf(
+                        "variant" to variant.key,
                         "suggestion_count" to suggestions.size,
                         "suggestion_bases" to suggestions.joinToString(",") { it.basis },
                     ),
@@ -307,6 +318,7 @@ class AddTodoViewModel @Inject constructor(
                 screenName = "AddTodo",
                 buttonName = "NextProgressSuggestion",
                 properties = mapOf(
+                    "variant" to currentState.suggestionVariant.key,
                     "suggestion_title" to suggestion.title,
                     "suggestion_index" to visibleSuggestions.indexOf(suggestion),
                     "suggestion_count" to visibleSuggestions.size,
@@ -456,6 +468,7 @@ class AddTodoViewModel @Inject constructor(
                 actionName = "save_todo",
                 actionResult = "success",
                 properties = mapOf(
+                    "variant" to state.suggestionVariant.key,
                     "had_suggestions" to state.suggestions.isNotEmpty(),
                     "from_suggestion" to (selected != null),
                     "suggestion_basis" to selected?.basis,
@@ -474,7 +487,8 @@ class AddTodoViewModel @Inject constructor(
         }
         val nextProgress = suggestNextProgress(title, previousTitle)
         val start = nextProgress.start
-        if (start == null || nextProgress.subject.isEmpty()) {
+        // 진도 없이 추천하는 CONTROL에서는 다음 진도를 안내하지 않아요.
+        if (currentState.suggestionVariant == Variant.CONTROL || start == null || nextProgress.subject.isEmpty()) {
             return resourceProvider.getString(R.string.home_snackbar_todo_added)
         }
 

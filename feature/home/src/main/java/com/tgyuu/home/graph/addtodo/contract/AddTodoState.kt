@@ -7,6 +7,7 @@ import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.experiment.domain.model.Experiment
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -32,6 +33,9 @@ data class AddTodoState(
     val isRepeatCycleFromLast: Boolean = false,
     /** 마지막으로 누른 추천 칩. 저장 로그에서 칩으로 만든 일정인지, 제목을 고쳤는지 보려고 남겨요. */
     val selectedSuggestion: ProgressSuggestion? = null,
+    /** 다음 진도 추천 실험군. 칩 제목과 로그에 써요. */
+    val suggestionVariant: Experiment.NextProgressSuggestion.Variant =
+        Experiment.NextProgressSuggestion.defaultVariant,
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
     val isModified = title.isNotEmpty() || isPinned || restDays.isNotEmpty()
