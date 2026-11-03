@@ -29,6 +29,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import com.tgyuu.common.util.isLandscapeWindow
@@ -65,7 +67,9 @@ import com.tgyuu.dashboard.contract.ScheduleIntent
 import com.tgyuu.dashboard.contract.ScheduleState
 import com.tgyuu.dashboard.ui.bottomsheet.ScheduleDeleteBottomSheet
 import com.tgyuu.dashboard.ui.bottomsheet.ScheduleDelayBottomSheet
+import com.tgyuu.dashboard.ui.bottomsheet.ScheduleOptionActions
 import com.tgyuu.dashboard.ui.bottomsheet.ScheduleOptionsBottomSheet
+import com.tgyuu.dashboard.ui.bottomsheet.ScheduleOptionsDropdownItems
 import com.tgyuu.dashboard.ui.bottomsheet.ScheduleUpdateBottomSheet
 import com.tgyuu.dashboard.ui.bottomsheet.TagEditBottomSheet
 import com.tgyuu.designsystem.R
@@ -75,6 +79,8 @@ import com.tgyuu.designsystem.component.EbbingDialogBottom
 import com.tgyuu.designsystem.component.EbbingDialogDefaultTop
 import com.tgyuu.designsystem.component.EbbingMainTopBar
 import com.tgyuu.designsystem.component.EbbingRoundSolidButton
+import com.tgyuu.designsystem.component.ScheduleEditMenu
+import com.tgyuu.designsystem.component.ScheduleEditMenuAnchor
 import com.tgyuu.designsystem.component.calendar.toShortLabel
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoInfoUiModel
@@ -114,6 +120,69 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
         )
     }
 
+    val optionActions = ScheduleOptionActions(
+        onClickUpdate = { s ->
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditSchedule")
+            )
+            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
+                ScheduleUpdateBottomSheet(
+                    selectedSchedule = s,
+                    onClickUpdateInfo = {
+                        viewModel.onIntent(ScheduleIntent.OnUpdateInfoClick(it))
+                    },
+                    onClickUpdateDate = {
+                        viewModel.onIntent(ScheduleIntent.OnUpdateDateClick(it))
+                    },
+                )
+            })
+        },
+        onClickDelete = { s ->
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteSchedule")
+            )
+            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
+                ScheduleDeleteBottomSheet(
+                    selectedSchedule = s,
+                    onClickDeleteSingle = {
+                        viewModel.onIntent(ScheduleIntent.OnDeleteSingleClick(it))
+                    },
+                    onClickDeleteRemaining = {
+                        viewModel.onIntent(ScheduleIntent.OnDeleteRemainingClick(it))
+                    },
+                )
+            })
+        },
+        onClickDelay = { s ->
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DelaySchedule")
+            )
+            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
+                ScheduleDelayBottomSheet(
+                    selectedSchedule = s,
+                    onClickDelaySingle = {
+                        viewModel.onIntent(ScheduleIntent.OnDelaySingleClick(it))
+                    },
+                    onClickDelayAll = {
+                        viewModel.onIntent(ScheduleIntent.OnDelayAllClick(it))
+                    },
+                )
+            })
+        },
+        onClickMemo = {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddMemo")
+            )
+            viewModel.onIntent(ScheduleIntent.OnMemoClick(it))
+        },
+        onClickDeleteMemo = {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteMemo")
+            )
+            viewModel.onIntent(ScheduleIntent.OnDeleteMemoClick(it))
+        },
+    )
+
     ScheduleScreen(
         state = state,
         onToggleTagExpand = { viewModel.onIntent(ScheduleIntent.OnToggleTagExpand(it)) },
@@ -147,68 +216,23 @@ internal fun ScheduleRoute(viewModel: ScheduleViewModel = hiltViewModel()) {
                 ScheduleIntent.OnShowBottomSheet {
                     ScheduleOptionsBottomSheet(
                         selectedSchedule = schedule,
-                        onClickUpdate = { s ->
-                            analyticsHelper.logEvent(
-                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "EditSchedule")
-                            )
-                            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
-                                ScheduleUpdateBottomSheet(
-                                    selectedSchedule = s,
-                                    onClickUpdateInfo = {
-                                        viewModel.onIntent(ScheduleIntent.OnUpdateInfoClick(it))
-                                    },
-                                    onClickUpdateDate = {
-                                        viewModel.onIntent(ScheduleIntent.OnUpdateDateClick(it))
-                                    },
-                                )
-                            })
-                        },
-                        onClickDelete = { s ->
-                            analyticsHelper.logEvent(
-                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteSchedule")
-                            )
-                            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
-                                ScheduleDeleteBottomSheet(
-                                    selectedSchedule = s,
-                                    onClickDeleteSingle = {
-                                        viewModel.onIntent(ScheduleIntent.OnDeleteSingleClick(it))
-                                    },
-                                    onClickDeleteRemaining = {
-                                        viewModel.onIntent(ScheduleIntent.OnDeleteRemainingClick(it))
-                                    },
-                                )
-                            })
-                        },
-                        onClickDelay = { s ->
-                            analyticsHelper.logEvent(
-                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DelaySchedule")
-                            )
-                            viewModel.onIntent(ScheduleIntent.OnReplaceBottomSheet {
-                                ScheduleDelayBottomSheet(
-                                    selectedSchedule = s,
-                                    onClickDelaySingle = {
-                                        viewModel.onIntent(ScheduleIntent.OnDelaySingleClick(it))
-                                    },
-                                    onClickDelayAll = {
-                                        viewModel.onIntent(ScheduleIntent.OnDelayAllClick(it))
-                                    },
-                                )
-                            })
-                        },
-                        onClickMemo = {
-                            analyticsHelper.logEvent(
-                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "AddMemo")
-                            )
-                            viewModel.onIntent(ScheduleIntent.OnMemoClick(it))
-                        },
-                        onClickDeleteMemo = {
-                            analyticsHelper.logEvent(
-                                AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "DeleteMemo")
-                            )
-                            viewModel.onIntent(ScheduleIntent.OnDeleteMemoClick(it))
-                        },
+                        actions = optionActions,
                     )
                 }
+            )
+        },
+        editMenu = ScheduleEditMenu(
+            title = stringResource(R.string.schedule_options_title),
+            onOpen = {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = SCREEN_NAME, buttonName = "OptionSchedule")
+                )
+            },
+        ) { schedule, dismiss ->
+            ScheduleOptionsDropdownItems(
+                selectedSchedule = schedule,
+                actions = optionActions,
+                onDismiss = dismiss,
             )
         },
     )
@@ -224,6 +248,7 @@ private fun ScheduleScreen(
     onTagThreeDotsClick: (tagName: String, tagColor: Int, tagId: Int) -> Unit,
     onScheduleThreeDotsClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    editMenu: ScheduleEditMenu? = null,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
 
@@ -239,16 +264,19 @@ private fun ScheduleScreen(
             modifier
         )
     } else {
-        TabletScheduleScreen(
-            state,
-            onToggleTagExpand,
-            onToggleInfoExpand,
-            onScheduleClick,
-            onNavigateToAddTodo,
-            onTagThreeDotsClick,
-            onScheduleThreeDotsClick,
-            modifier
-        )
+        // 태블릿은 일정 미트볼이 바텀시트 대신 드롭다운을 띄워요
+        CompositionLocalProvider(LocalScheduleEditMenu provides editMenu) {
+            TabletScheduleScreen(
+                state,
+                onToggleTagExpand,
+                onToggleInfoExpand,
+                onScheduleClick,
+                onNavigateToAddTodo,
+                onTagThreeDotsClick,
+                onScheduleThreeDotsClick,
+                modifier
+            )
+        }
     }
 }
 
@@ -302,7 +330,7 @@ private fun TabletScheduleScreen(
     modifier: Modifier = Modifier,
 ) {
     val isLandscape = isLandscapeWindow()
-    val horizontalPadding = if (isLandscape) 48.dp else 60.dp
+    val horizontalPadding = if (isLandscape) TabletLandscapeHorizontalPadding else 60.dp
 
     if (isLandscape && state.visibleTags.isNotEmpty()) {
         TabletLandscapeScheduleScreen(
@@ -346,6 +374,9 @@ private fun TabletScheduleScreen(
     }
 }
 
+/** 태블릿 가로 모드 좌측 패널 좌우 여백. 세로(60dp)보다 좁게 둬요 */
+private val TabletLandscapeHorizontalPadding = 32.dp
+
 /** 태블릿 가로 모드: 왼쪽 태그 목록에서 고른 태그의 일정을 오른쪽 상세 패널에 보여줘요 */
 @Composable
 private fun TabletLandscapeScheduleScreen(
@@ -368,7 +399,7 @@ private fun TabletLandscapeScheduleScreen(
         ) {
             EbbingMainTopBar(
                 title = stringResource(R.string.schedule_top_bar_title),
-                modifier = Modifier.padding(horizontal = 48.dp),
+                modifier = Modifier.padding(horizontal = TabletLandscapeHorizontalPadding),
             )
 
             LazyColumn(modifier = Modifier.weight(1f)) {
@@ -434,7 +465,7 @@ private fun TabletTagRow(
             .fillMaxWidth()
             .background(if (isSelected) EbbingTheme.colors.fillSelected else EbbingTheme.colors.background)
             .clickable { onClick() }
-            .padding(horizontal = 48.dp, vertical = 20.dp),
+            .padding(horizontal = TabletLandscapeHorizontalPadding, vertical = 20.dp),
     ) {
         TagSummary(
             title = title,
@@ -868,6 +899,8 @@ private fun TodoInfoItem(
 
 // ── Level 3: Schedule Card ──
 
+private val LocalScheduleEditMenu = staticCompositionLocalOf<ScheduleEditMenu?> { null }
+
 @Composable
 private fun ScheduleCard(
     index: Int,
@@ -925,14 +958,19 @@ private fun ScheduleCard(
                 .padding(horizontal = 8.dp),
         )
 
-        Image(
-            painter = painterResource(R.drawable.ic_3dots),
-            contentDescription = null,
-            modifier = Modifier
-                .clickable { onThreeDotsClick() }
-                .padding(4.dp)
-                .size(20.dp),
-        )
+        ScheduleEditMenuAnchor(
+            schedule = schedule,
+            editMenu = LocalScheduleEditMenu.current,
+            onClick = onThreeDotsClick,
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_3dots),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(4.dp)
+                    .size(20.dp),
+            )
+        }
 
         Spacer(modifier = Modifier.width(4.dp))
 

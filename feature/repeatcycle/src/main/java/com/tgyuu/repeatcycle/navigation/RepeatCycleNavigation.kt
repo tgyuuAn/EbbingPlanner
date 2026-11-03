@@ -1,7 +1,9 @@
 package com.tgyuu.repeatcycle.navigation
 
 import androidx.navigation.NavGraphBuilder
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import com.tgyuu.navigation.RepeatCycleBaseRoute
 import com.tgyuu.navigation.RepeatCycleGraph
@@ -17,6 +19,12 @@ fun NavGraphBuilder.repeatCycleGraph() {
 
         composable<RepeatCycleGraph.AddRepeatCycleRoute> {
             AddRepeatCycleRoute()
+        }
+
+        dialog<RepeatCycleGraph.AddRepeatCyclePopupRoute>(
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            AddRepeatCycleRoute(isPopup = true)
         }
 
         composable<RepeatCycleGraph.EditRepeatCycleRoute> {

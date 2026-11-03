@@ -36,6 +36,7 @@ import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.component.EbbingTabletFormPopup
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
@@ -44,11 +45,13 @@ import com.tgyuu.tag.ui.bottomsheet.ColorBottomSheet
 
 @Composable
 internal fun AddTagRoute(
+    isPopup: Boolean = false,
     viewModel: AddTagViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AddTagScreen(
+        isPopup = isPopup,
         state = state,
         onBackClick = { viewModel.onIntent(AddTagIntent.OnBackClick) },
         onSaveClick = { viewModel.onIntent(AddTagIntent.OnSaveClick) },
@@ -74,8 +77,44 @@ private fun AddTagScreen(
     onNameChange: (String) -> Unit,
     onColorDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isPopup: Boolean = false,
 ) {
     val focusManager = LocalFocusManager.current
+
+    if (isPopup) {
+        EbbingTabletFormPopup(modifier = modifier) {
+            Text(
+                text = stringResource(R.string.tag_add_headline),
+                style = EbbingTheme.typography.heading24B,
+                color = EbbingTheme.colors.textOnBackground,
+            )
+
+            NameContent(
+                name = state.name,
+                onNameChange = onNameChange,
+            )
+
+            ColorContent(
+                colorValue = state.colorValue,
+                onColorDropDownClick = onColorDropDownClick,
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            EbbingSolidButton(
+                label = stringResource(R.string.tag_register_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+            )
+        }
+        return
+    }
 
     Column(modifier = modifier.fillMaxSize().imePadding()) {
         EbbingSubTopBar(
