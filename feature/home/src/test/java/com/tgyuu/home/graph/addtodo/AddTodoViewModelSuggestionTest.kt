@@ -100,7 +100,7 @@ class AddTodoViewModelSuggestionTest {
 
         val suggestions = createViewModel().state.value.suggestions
 
-        assertEquals(listOf("민법총론 3강", "경제원론 51-100"), suggestions.map { it.title })
+        assertEquals(listOf("민법총론 3강", "경제원론 51-"), suggestions.map { it.title })
         assertNull(suggestions[0].repeatCycle)
         assertEquals(-2, suggestions[1].repeatCycle?.id)
         assertEquals(1, suggestions[1].tag.id)
@@ -116,7 +116,7 @@ class AddTodoViewModelSuggestionTest {
         viewModel.onIntent(AddTodoIntent.OnSuggestionClick(viewModel.state.value.suggestions.first()))
 
         with(viewModel.state.value) {
-            assertEquals("경제원론 51-100", title)
+            assertEquals("경제원론 51-", title)
             assertEquals(2, tag?.id)
             assertEquals(-2, repeatCycle?.id)
             assertTrue(isTagFromLast)
@@ -138,7 +138,7 @@ class AddTodoViewModelSuggestionTest {
 
         val suggestions = createViewModel().state.value.suggestions
 
-        assertEquals(listOf("JLPT N3 단어 101-150"), suggestions.map { it.title })
+        assertEquals(listOf("JLPT N3 단어 101-"), suggestions.map { it.title })
     }
 
     @Test
@@ -151,11 +151,12 @@ class AddTodoViewModelSuggestionTest {
 
         viewModel.onIntent(AddTodoIntent.OnSuggestionClick(viewModel.state.value.visibleSuggestions.first()))
 
-        val click = loggedEvents.filterIsInstance<AnalyticsEvent.Click>().single()
+        val click = loggedEvents.filterIsInstance<AnalyticsEvent.Click>()
+            .single { it.buttonName == "NextProgressSuggestion" }
         assertEquals("NextProgressSuggestion", click.buttonName)
         assertEquals(
             mapOf(
-                "suggestion_title" to "경제원론 51-100",
+                "suggestion_title" to "경제원론 51-",
                 "suggestion_index" to 0,
                 "suggestion_count" to 1,
                 "suggestion_basis" to "range",
@@ -163,6 +164,54 @@ class AddTodoViewModelSuggestionTest {
                 "typed_title_length" to 1,
             ),
             click.properties,
+        )
+    }
+
+    @Test
+    fun `추천 칩이 뜨면 노출 로그를 남긴다`() = runTest {
+        todoRepository.addTag(name = "태그", color = 0)
+        addTodo(1, "경제원론 1-50", tagId = 1, LocalDate.of(2024, 1, 1), listOf(0))
+        addTodo(2, "영단어", tagId = 1, LocalDate.of(2024, 1, 2), listOf(0))
+
+        createViewModel()
+
+        val show = loggedEvents.filterIsInstance<AnalyticsEvent.Action>()
+            .single { it.actionName == "show_next_progress_suggestion" }
+        assertEquals(mapOf("suggestion_count" to 2, "suggestion_bases" to "none,range"), show.properties)
+    }
+
+    @Test
+    fun `추천 칩이 없으면 노출 로그를 남기지 않는다`() = runTest {
+        createViewModel()
+
+        assertTrue(
+            loggedEvents.filterIsInstance<AnalyticsEvent.Action>()
+                .none { it.actionName == "show_next_progress_suggestion" }
+        )
+    }
+
+    @Test
+    fun `칩으로 만든 일정을 저장하면 칩 사용 여부와 제목 수정 여부를 남긴다`() = runTest {
+        todoRepository.addTag(name = "태그", color = 0)
+        addTodo(1, "경제원론 1-50", tagId = 1, LocalDate.of(2024, 1, 1), listOf(0, 1, 7, 15))
+        val viewModel = createViewModel()
+        viewModel.onIntent(AddTodoIntent.OnSuggestionClick(viewModel.state.value.suggestions.first()))
+        viewModel.onIntent(AddTodoIntent.OnTitleChange("경제원론 51-80"))
+
+        viewModel.onIntent(AddTodoIntent.OnSaveClick)
+
+        val save = loggedEvents.filterIsInstance<AnalyticsEvent.Action>()
+            .single { it.actionName == "save_todo" }
+        assertEquals(
+            mapOf(
+                "had_suggestions" to true,
+                "from_suggestion" to true,
+                "suggestion_basis" to "range",
+                "title_edited" to true,
+                "tag_from_last" to true,
+                "repeat_cycle_from_last" to true,
+            ),
+            save.properties,
         )
     }
 

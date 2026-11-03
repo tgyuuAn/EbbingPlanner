@@ -30,6 +30,8 @@ data class AddTodoState(
     val suggestions: ImmutableList<ProgressSuggestion> = persistentListOf(),
     val isTagFromLast: Boolean = false,
     val isRepeatCycleFromLast: Boolean = false,
+    /** 마지막으로 누른 추천 칩. 저장 로그에서 칩으로 만든 일정인지, 제목을 고쳤는지 보려고 남겨요. */
+    val selectedSuggestion: ProgressSuggestion? = null,
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
     val isModified = title.isNotEmpty() || isPinned || restDays.isNotEmpty()

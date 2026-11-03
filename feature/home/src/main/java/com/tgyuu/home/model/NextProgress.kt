@@ -4,10 +4,10 @@ package com.tgyuu.home.model
  * 지난 일정 제목에서 이어서 학습할 다음 진도를 추정해요.
  *
  * 1. 같은 과목의 직전 제목이 있으면, 두 제목에서 바뀐 숫자만 같은 간격으로 이어가요.
- *    - "N3 단어 1-50" → "N3 단어 51-100" 다음은 "N3 단어 101-150" (N3는 그대로)
+ *    - "N3 단어 1-50" → "N3 단어 51-100" 다음은 "N3 단어 101-" (N3는 그대로)
  *    - "Day 1" → "Day 3" 다음은 "Day 5"
  * 2. 직전 제목이 없으면 제목 하나로 추정해요.
- *    - 범위는 같은 크기로 이어가요: "경제원론 1-50" → "경제원론 51-100", "DAY 01-03" → "DAY 04-06"
+ *    - 범위는 시작점만 이어가고 끝은 비워요: "경제원론 1-50" → "경제원론 51-", "DAY 01-03" → "DAY 04-"
  *    - 숫자 하나는 1 늘려요: "민법총론 2강" → "민법총론 3강", "수능특강 3-1" → "수능특강 3-2"
  *    - 연도·급수·월·시간·분량·분모처럼 진도가 아닌 숫자는 건드리지 않아요.
  *
@@ -25,7 +25,7 @@ internal data class NextProgress(
     enum class Basis(val logValue: String) {
         /** 같은 과목의 직전 제목과 비교 */
         HISTORY("history"),
-        /** 제목 하나의 범위를 같은 크기로 연장 */
+        /** 제목 하나의 범위를 이어서 시작 */
         RANGE("range"),
         /** 제목 하나의 숫자를 1 증가 */
         NUMBER("number"),
@@ -34,11 +34,15 @@ internal data class NextProgress(
     }
 }
 
-/** 숫자만 다른 제목을 같은 과목으로 묶기 위한 키. "TOEIC 1-50"과 "toeic 51~100"은 같은 키예요. */
+/**
+ * 숫자만 다른 제목을 같은 과목으로 묶기 위한 키.
+ * "TOEIC 1-50", "toeic 51~100", 끝을 비운 "TOEIC 101-"는 모두 같은 키예요.
+ */
 internal fun progressKey(title: String): String = title.trim()
     .lowercase()
     .replace(NUMBER_REGEX, "#")
     .replace(RANGE_SEPARATOR_REGEX, "-")
+    .replace(OPEN_RANGE_KEY_REGEX, "#-#")
     .replace(WHITESPACE_REGEX, " ")
 
 internal fun suggestNextProgress(title: String, previousTitle: String? = null): NextProgress {
@@ -83,7 +87,7 @@ private fun suggestFromHistory(
 }
 
 private fun suggestFromTitle(title: String, tokens: List<NumberToken>): NextProgress {
-    // "경제원론 51~"처럼 끝을 비워 둔 범위는 어디까지 했는지 알 수 없어 그대로 이어가요.
+    // "경제원론 51-"처럼 끝을 비워 둔 범위는 어디까지 했는지 알 수 없어 그대로 이어가요.
     if (OPEN_RANGE_REGEX.containsMatchIn(title)) {
         return NextProgress(title = title, subject = title, start = null, basis = NextProgress.Basis.NONE)
     }
@@ -109,21 +113,28 @@ private fun isRange(title: String, tokens: List<NumberToken>, index: Int): Boole
     return RANGE_SEPARATOR_REGEX.matches(separator) && start.value < end.value
 }
 
+/**
+ * 범위는 끝을 비워 두고 시작점만 이어가요. 끝나는 지점은 매번 달라서 사용자가 채워요.
+ * 구분자는 원래 쓴 것을 따르고, 끝에 붙은 단위는 끝과 함께 비워요. (1-50 → 51-, 1~10번 → 11~)
+ */
 private fun continueRange(
     title: String,
     tokens: List<NumberToken>,
     index: Int,
     basis: NextProgress.Basis,
 ): NextProgress {
-    val start = tokens[index].value
-    val end = tokens[index + 1].value
-    val nextStart = end + 1
-    return buildProgress(
-        title = title,
-        tokens = tokens,
-        replacements = mapOf(index to nextStart, index + 1 to nextStart + (end - start)),
+    val start = tokens[index]
+    val end = tokens[index + 1]
+    val separator = title.substring(start.range.last + 1, end.range.first).trim()
+    val nextStart = (end.value + 1).toString().padStart(start.width, '0')
+    val afterEnd = title.substring(end.range.last + 1)
+    val rest = afterEnd.substring(UNIT_REGEX.find(afterEnd)?.value?.length ?: 0)
+
+    return NextProgress(
+        title = title.substring(0, start.range.first) + nextStart + separator + rest,
+        subject = subjectBefore(title, start),
+        start = nextStart,
         basis = basis,
-        withUnit = false,
     )
 }
 
@@ -132,7 +143,6 @@ private fun buildProgress(
     tokens: List<NumberToken>,
     replacements: Map<Int, Long>,
     basis: NextProgress.Basis,
-    withUnit: Boolean = true,
 ): NextProgress {
     val nextTitle = StringBuilder(title)
     // 뒤에서부터 바꿔야 앞쪽 인덱스가 밀리지 않아요.
@@ -148,15 +158,18 @@ private fun buildProgress(
     val firstIndex = replacements.keys.min()
     val firstToken = tokens[firstIndex]
     val start = replacements.getValue(firstIndex).toString().padStart(firstToken.width, '0')
-    val unit = if (withUnit) UNIT_REGEX.find(title.substring(firstToken.range.last + 1))?.value.orEmpty() else ""
+    val unit = UNIT_REGEX.find(title.substring(firstToken.range.last + 1))?.value.orEmpty()
 
     return NextProgress(
         title = nextTitle.toString(),
-        subject = title.substring(0, firstToken.range.first).trimEnd().trimEnd { !it.isLetterOrDigit() },
+        subject = subjectBefore(title, firstToken),
         start = start + unit,
         basis = basis,
     )
 }
+
+private fun subjectBefore(title: String, token: NumberToken): String =
+    title.substring(0, token.range.first).trimEnd().trimEnd { !it.isLetterOrDigit() }
 
 /** 연도, JLPT 급수, 월·분·시간 같은 단위, "10/20"의 분모처럼 진도가 아닌 숫자. */
 private fun isNonProgress(title: String, tokens: List<NumberToken>, index: Int): Boolean {
@@ -176,7 +189,8 @@ private fun hasProgressUnit(title: String, token: NumberToken): Boolean =
 
 private val NUMBER_REGEX = Regex("""\d+""")
 private val RANGE_SEPARATOR_REGEX = Regex("""\s*[-~]\s*""")
-private val OPEN_RANGE_REGEX = Regex("""\d+\s*~\s*$""")
+private val OPEN_RANGE_REGEX = Regex("""\d+\s*[-~]\s*$""")
+private val OPEN_RANGE_KEY_REGEX = Regex("""#-(?!#)""")
 private val WHITESPACE_REGEX = Regex("""\s+""")
 private val UNIT_REGEX = Regex("""^[^\s\d]*""")
 private val LEVEL_PREFIX_REGEX = Regex("""(^|[^A-Za-z])[Nn]$""")

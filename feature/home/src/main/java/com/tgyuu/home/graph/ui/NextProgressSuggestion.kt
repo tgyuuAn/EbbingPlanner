@@ -118,7 +118,7 @@ internal fun FieldLabel(
             Text(
                 text = stringResource(R.string.home_from_last_todo),
                 style = EbbingTheme.typography.heading12SB,
-                color = EbbingTheme.colors.textDisabled,
+                color = EbbingTheme.colors.textSub,
             )
         }
     }

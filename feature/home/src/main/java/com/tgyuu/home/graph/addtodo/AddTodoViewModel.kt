@@ -157,8 +157,23 @@ class AddTodoViewModel @Inject constructor(
                     )?.toUiModel(resourceProvider),
                 )
             }
+            // 끝을 비운 진도("101-")와 닫힌 진도("51-100")가 같은 추천을 만들 수 있어요.
+            .distinctBy { it.title }
 
         setState { copy(suggestions = suggestions.toImmutableList()) }
+
+        if (suggestions.isNotEmpty()) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "AddTodo",
+                    actionName = "show_next_progress_suggestion",
+                    properties = mapOf(
+                        "suggestion_count" to suggestions.size,
+                        "suggestion_bases" to suggestions.joinToString(",") { it.basis },
+                    ),
+                )
+            )
+        }
     }
 
     /** 일정에는 반복 주기가 저장되지 않아서, 회차 날짜를 다시 만들어 보고 일치하는 주기를 찾아요. */
@@ -309,6 +324,7 @@ class AddTodoViewModel @Inject constructor(
                 isTagFromLast = true,
                 repeatCycle = suggestion.repeatCycle ?: repeatCycle,
                 isRepeatCycleFromLast = suggestion.repeatCycle != null,
+                selectedSuggestion = suggestion,
             )
         }
     }
@@ -388,6 +404,8 @@ class AddTodoViewModel @Inject constructor(
             restDays = currentState.restDays.toSet(),
         )
 
+        logTodoSaved()
+
         runCatching {
             configRepository.recordTagUsage(tag.id)
             currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
@@ -424,6 +442,27 @@ class AddTodoViewModel @Inject constructor(
                     showWidgetNudge = isFirstTodo,
                 ),
                 popUpTo = true,
+            )
+        )
+    }
+
+    /** 다음 진도 추천이 실제 일정 등록으로 이어졌는지 보려는 로그예요. */
+    private fun logTodoSaved() {
+        val state = currentState
+        val selected = state.selectedSuggestion
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Action(
+                screenName = "AddTodo",
+                actionName = "save_todo",
+                actionResult = "success",
+                properties = mapOf(
+                    "had_suggestions" to state.suggestions.isNotEmpty(),
+                    "from_suggestion" to (selected != null),
+                    "suggestion_basis" to selected?.basis,
+                    "title_edited" to (selected != null && state.title.trim() != selected.title),
+                    "tag_from_last" to state.isTagFromLast,
+                    "repeat_cycle_from_last" to state.isRepeatCycleFromLast,
+                ),
             )
         )
     }

@@ -14,13 +14,14 @@ class NextProgressTest {
     @CsvSource(
         delimiter = '|',
         value = [
-            // 범위는 같은 크기로 이어가고, 단위와 앞자리 0을 유지해요.
-            "경제원론 1-50 | 경제원론 51-100",
-            "수학의 정석 p.120-135 | 수학의 정석 p.136-151",
-            "토익 RC Part5 1~30 | 토익 RC Part5 31~60",
-            "회계원리 Ch3 연습문제 1~10번 | 회계원리 Ch3 연습문제 11~20번",
-            "해커스 토익 LC 1-2강 | 해커스 토익 LC 3-4강",
-            "영단어 DAY 01-03 | 영단어 DAY 04-06",
+            // 범위는 시작점만 이어가고 끝은 비워요. 구분자와 앞자리 0은 유지하고, 끝에 붙은 단위는 함께 비워요.
+            "경제원론 1-50 | 경제원론 51-",
+            "수학의 정석 p.120-135 | 수학의 정석 p.136-",
+            "토익 RC Part5 1~30 | 토익 RC Part5 31~",
+            "회계원리 Ch3 연습문제 1~10번 | 회계원리 Ch3 연습문제 11~",
+            "해커스 토익 LC 1-2강 | 해커스 토익 LC 3-",
+            "영단어 DAY 01-03 | 영단어 DAY 04-",
+            "TOEIC 1-50 단어 | TOEIC 51- 단어",
             // 숫자 하나는 1 늘려요. 앞이 크거나 같은 "3-1"은 범위가 아니라 단원 표기예요.
             "민법총론 2강 | 민법총론 3강",
             "C++ 기초 2강 | C++ 기초 3강",
@@ -39,6 +40,7 @@ class NextProgressTest {
             "영단어 | 영단어",
             // 끝을 비운 범위는 어디까지 했는지 몰라 그대로 둬요.
             "경제원론 51~ | 경제원론 51~",
+            "경제원론 51- | 경제원론 51-",
         ],
     )
     fun `제목 하나로 다음 진도를 추정한다`(title: String, expected: String) {
@@ -50,14 +52,14 @@ class NextProgressTest {
         delimiter = '|',
         value = [
             // 바뀐 숫자만 같은 간격으로 이어가요. 고정된 숫자(N3, 2024)는 그대로예요.
-            "JLPT N3 단어 1-50 | JLPT N3 단어 51-100 | JLPT N3 단어 101-150",
+            "JLPT N3 단어 1-50 | JLPT N3 단어 51-100 | JLPT N3 단어 101-",
             "2024 기출 1회 | 2024 기출 2회 | 2024 기출 3회",
             "Day 1 | Day 3 | Day 5",
             "3월 모의고사 | 4월 모의고사 | 5월 모의고사",
-            // 범위 크기가 바뀌었으면 마지막 범위 크기를 따라가요.
-            "경제원론 1-50 | 경제원론 51-80 | 경제원론 81-110",
+            // 범위는 마지막 끝 다음부터 시작해요.
+            "경제원론 1-50 | 경제원론 51-80 | 경제원론 81-",
             // 구분자나 대소문자가 달라도 같은 과목으로 봐요.
-            "toeic 1~50 | TOEIC 51-100 | TOEIC 101-150",
+            "toeic 1~50 | TOEIC 51-100 | TOEIC 101-",
         ],
     )
     fun `직전 제목과 비교해 바뀐 숫자만 이어간다`(previous: String, latest: String, expected: String) {
@@ -68,12 +70,14 @@ class NextProgressTest {
     fun `진도가 줄었거나 과목이 다르면 제목 하나로 추정한다`() {
         assertEquals("Day 4", suggestNextProgress("Day 3", previousTitle = "Day 5").title)
         assertEquals("민법총론 3강", suggestNextProgress("민법총론 2강", previousTitle = "경제원론 1-50").title)
+        // 끝을 비운 채 저장했으면 어디까지 했는지 몰라 그대로 이어가요.
+        assertEquals("TOEIC 101-", suggestNextProgress("TOEIC 101-", previousTitle = "TOEIC 51-100").title)
     }
 
     @Test
     fun `토스트에 쓸 과목명과 시작 진도를 함께 돌려준다`() {
         assertEquals(
-            NextProgress(title = "경제원론 51-100", subject = "경제원론", start = "51", basis = NextProgress.Basis.RANGE),
+            NextProgress(title = "경제원론 51-", subject = "경제원론", start = "51", basis = NextProgress.Basis.RANGE),
             suggestNextProgress("경제원론 1-50"),
         )
         assertEquals(
@@ -91,6 +95,7 @@ class NextProgressTest {
     @Test
     fun `숫자만 다른 제목은 같은 과목 키를 갖는다`() {
         assertEquals(progressKey("TOEIC 1-50"), progressKey("toeic  51 ~ 100"))
+        assertEquals(progressKey("TOEIC 1-50"), progressKey("TOEIC 101-"))
         assertFalse(progressKey("TOEIC 1-50") == progressKey("TOEFL 1-50"))
     }
 
