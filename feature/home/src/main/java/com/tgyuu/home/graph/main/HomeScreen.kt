@@ -39,7 +39,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import android.app.Activity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.analytics.AnalyticsEvent
@@ -75,13 +75,16 @@ import com.tgyuu.home.graph.main.ui.dialog.DialogType.ConfirmDeleteSingle
 import com.tgyuu.home.graph.main.ui.dialog.InAppReviewDialog
 import com.tgyuu.home.graph.main.ui.dialog.WidgetNudgeDialog
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 @Composable
 internal fun HomeRoute(
     workedDate: LocalDate,
     showWidgetNudge: Boolean = false,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -157,9 +160,7 @@ internal fun HomeRoute(
                                                         schedule = delayedSchedule,
                                                         restDays = restDays,
                                                         expectedDateExcludingRestDays = expectedDateExcludingRestDays,
-                                                        expectedDateIncludingRestDays = delayedSchedule.date.plusDays(
-                                                            1
-                                                        )
+                                                        expectedDateIncludingRestDays = delayedSchedule.date.plus(1, DateTimeUnit.DAY)
                                                     )
                                                     isShowDialog = true
                                                 }

@@ -20,5 +20,5 @@ android {
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.analytics)
-    implementation(projects.core.experiment.domain)
+    implementation(libs.kotlinx.datetime)
 }

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.BasePreview
@@ -41,11 +41,12 @@ import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun EditTodoRoute(
-    viewModel: EditTodoViewModel = hiltViewModel()
+    viewModel: EditTodoViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -129,7 +130,7 @@ private fun EditTodoScreen(
             ) {
                 val monthDayText = stringResource(
                     R.string.home_month_day,
-                    state.selectedDate.monthValue,
+                    state.selectedDate.monthNumber,
                     state.selectedDate.dayOfMonth,
                 )
                 val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)
@@ -200,7 +201,7 @@ private fun EditTodoScreen(
                 form = {
                     val monthDayText = stringResource(
                         R.string.home_month_day,
-                        state.selectedDate.monthValue,
+                        state.selectedDate.monthNumber,
                         state.selectedDate.dayOfMonth,
                     )
                     val editTodoHeaderSuffix = stringResource(R.string.home_edit_todo_header_suffix)

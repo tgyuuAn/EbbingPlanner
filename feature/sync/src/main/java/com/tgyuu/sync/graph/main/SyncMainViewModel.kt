@@ -23,7 +23,6 @@ import com.tgyuu.sync.graph.main.contract.SyncIntent
 import com.tgyuu.sync.graph.main.contract.SyncMainState
 import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -33,12 +32,10 @@ import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.inject.Inject
 
 private const val EBBINGPLANNER_SCHEME = "ebbingplanner://"
 
-@HiltViewModel
-class SyncMainViewModel @Inject constructor(
+class SyncMainViewModel(
     private val syncRepository: SyncRepository,
     private val networkMonitor: NetworkMonitor,
     private val navigationBus: NavigationBus,

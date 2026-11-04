@@ -18,11 +18,8 @@ import com.tgyuu.sync.graph.restore.contract.RestoreIntent
 import com.tgyuu.sync.graph.restore.contract.RestoreState
 import com.tgyuu.sync.network.NetworkMonitor
 import com.tgyuu.sync.network.NetworkState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@HiltViewModel
-class RestoreViewModel @Inject constructor(
+class RestoreViewModel(
     private val syncRepository: SyncRepository,
     private val networkMonitor: NetworkMonitor,
     private val navigationBus: NavigationBus,

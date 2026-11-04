@@ -1,0 +1,174 @@
+package com.tgyuu.shared.ui.feature.home.editdate
+import androidx.lifecycle.viewModelScope
+
+import com.tgyuu.shared.base.BaseViewModel
+import com.tgyuu.shared.domain.AlarmRescheduler
+import com.tgyuu.shared.common.loadRepeatCyclesByUsage
+import com.tgyuu.shared.domain.repository.ConfigRepository
+import com.tgyuu.shared.domain.repository.ExperimentRepository
+import com.tgyuu.shared.domain.model.DefaultRepeatCycles
+import com.tgyuu.shared.domain.model.TodoSchedule
+import com.tgyuu.shared.domain.repository.TodoRepository
+import com.tgyuu.shared.ui.model.RepeatCycleUiModel
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import ebbingplanner.shared.generated.resources.Res
+import ebbingplanner.shared.generated.resources.home_snackbar_required_fields
+import org.jetbrains.compose.resources.getString
+import ebbingplanner.shared.generated.resources.home_snackbar_all_rest_days
+import ebbingplanner.shared.generated.resources.home_snackbar_date_repeat_changed
+import ebbingplanner.shared.generated.resources.home_snackbar_loading_schedule_info
+import ebbingplanner.shared.generated.resources.home_snackbar_no_schedule_to_save
+import ebbingplanner.shared.generated.resources.snack_todo_update_failed
+import com.tgyuu.shared.designsystem.model.toDisplayName
+
+class EditDateViewModel(
+    private val infoId: Int,
+    private val todoRepository: TodoRepository,
+    private val onNavigateBack: () -> Unit,
+    private val onNavigateToHome: (LocalDate) -> Unit = {},
+    private val onNavigateToAddRepeatCycle: () -> Unit = {},
+    private val onShowSnackbar: (String) -> Unit = {},
+    private val experimentRepository: ExperimentRepository? = null,
+    private val configRepository: ConfigRepository,
+    private val alarmRescheduler: AlarmRescheduler? = null,
+) : BaseViewModel<EditDateState, EditDateIntent>(EditDateState()) {
+
+    private var originSchedules: List<TodoSchedule> = emptyList()
+
+    init {
+        loadInitialData()
+        safeScope.launch {
+            configRepository.getMondayStart().collect { setState { copy(mondayStart = it) } }
+        }
+    }
+
+    private fun loadInitialData() {
+        safeScope.launch {
+            // Set default repeat cycle
+            val defaultRepeatCycle = DefaultRepeatCycles.first().toUiModel()
+            setState {
+                copy(repeatCycle = defaultRepeatCycle)
+            }
+
+            val result = todoRepository.loadSchedulesByTodoInfo(infoId)
+            val todoInfo = todoRepository.loadTodoInfoById(infoId)
+
+            result.firstOrNull()?.let {
+                setState {
+                    copy(
+                        title = it.title,
+                        originTagColor = it.color,
+                        tagId = it.tagId,
+                        selectedDate = it.date,
+                        restDays = todoInfo.restDays.toImmutableSet(),
+                        isPinned = it.isPinned,
+                    )
+                }
+            }
+
+            originSchedules = result
+            loadRepeatCycles()
+        }
+    }
+
+    // Android loadRepeatCycles() 대응: 화면에 다시 들어올 때마다 목록을 새로 불러와 방금 추가한 항목이 보이게 해요
+    fun refreshRepeatCycles() {
+        safeScope.launch { loadRepeatCycles() }
+    }
+
+    private suspend fun loadRepeatCycles() {
+        val models = todoRepository.loadRepeatCyclesByUsage(configRepository)
+            .map { it.toUiModel() }.toImmutableList()
+        setState {
+            copy(repeatCycleList = models)
+        }
+    }
+
+    // Android 대응: 반복주기 추가 화면 복귀 시 방금 추가한 주기 자동 선택(recentAddedRepeatCycleId는 읽으면 소비됨).
+    fun loadNewRepeatCycle() {
+        val id = todoRepository.recentAddedRepeatCycleId?.toInt() ?: return
+        safeScope.launch {
+            val cycleModel = todoRepository.loadRepeatCycle(id).toUiModel()
+            setState { copy(repeatCycle = cycleModel) }
+        }
+    }
+
+    override suspend fun processIntent(intent: EditDateIntent) {
+        when (intent) {
+            EditDateIntent.OnBackClick -> onNavigateBack()
+            is EditDateIntent.OnSelectedDateChange -> setState { copy(selectedDate = intent.selectedDate) }
+            is EditDateIntent.OnRepeatCycleChange -> setState { copy(repeatCycle = intent.repeatCycle) }
+            EditDateIntent.OnAddRepeatCycleClick -> onNavigateToAddRepeatCycle()
+            is EditDateIntent.OnRestDayChange -> onRestDayChange(intent.restDay)
+            is EditDateIntent.OnPinnedChange -> setState { copy(isPinned = intent.isPinned) }
+            is EditDateIntent.OnSaveClick -> onSaveClick(intent.isDoneSchedules)
+        }
+    }
+
+    private fun onRestDayChange(restDay: DayOfWeek) {
+        val origin = currentState.restDays.toMutableSet()
+        val newRestDays = if (origin.contains(restDay)) {
+            origin - restDay
+        } else {
+            origin + restDay
+        }
+
+        if (newRestDays.size == DayOfWeek.entries.size) {
+            viewModelScope.launch { onShowSnackbar(getString(Res.string.home_snackbar_all_rest_days)) }
+            return
+        }
+
+        setState { copy(restDays = newRestDays.toImmutableSet()) }
+    }
+
+    private suspend fun onSaveClick(isDoneSchedules: List<Boolean>) {
+        if (currentState.schedules.isEmpty()) {
+            onShowSnackbar(getString(Res.string.home_snackbar_no_schedule_to_save))
+            return
+        }
+
+        val tagId = currentState.tagId ?: run {
+            onShowSnackbar(getString(Res.string.home_snackbar_loading_schedule_info))
+            return
+        }
+
+        try {
+            // Android EditDateViewModel과 동일: 같은 infoId를 유지한 채 한 트랜잭션으로 일정 교체
+            // (기존 일정 soft delete + updatedAt 갱신 → 동기화 시 삭제가 서버/연동 기기에 반영됨)
+            val newDates = currentState.schedules
+            todoRepository.replaceSchedules(
+                infoId = originSchedules.firstOrNull()?.infoId ?: infoId,
+                title = currentState.title,
+                tagId = tagId,
+                dates = newDates,
+                isDoneSchedules = isDoneSchedules,
+                isPinned = currentState.isPinned,
+                restDays = currentState.restDays.toSet(),
+            )
+
+            alarmRescheduler?.rescheduleDates(originSchedules.map { it.date } + newDates)
+
+            // 저장 완료 후 부가 기록 실패가 완료 흐름을 막지 않도록 격리
+            runCatching {
+                currentState.repeatCycle?.let { configRepository.recordRepeatCycleUsage(it.id) }
+            }
+
+            onShowSnackbar(getString(Res.string.home_snackbar_date_repeat_changed))
+            onNavigateToHome(currentState.selectedDate)
+        } catch (e: Exception) {
+            onShowSnackbar(getString(Res.string.snack_todo_update_failed))
+        }
+    }
+
+    private suspend fun com.tgyuu.shared.domain.model.RepeatCycle.toUiModel(): RepeatCycleUiModel {
+        return RepeatCycleUiModel(
+            id = id,
+            intervals = intervals.toImmutableList(),
+            displayName = toDisplayName(),
+        )
+    }
+}

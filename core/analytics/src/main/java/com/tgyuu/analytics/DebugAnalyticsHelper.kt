@@ -2,9 +2,8 @@ package com.tgyuu.analytics
 
 import android.util.Log
 import com.tgyuu.deviceinfo.DeviceInfoProvider
-import javax.inject.Inject
 
-class DebugAnalyticsHelper @Inject constructor(
+class DebugAnalyticsHelper constructor(
     private val deviceInfoProvider: DeviceInfoProvider,
     private var userId: String = "",
 ) : AnalyticsHelper() {

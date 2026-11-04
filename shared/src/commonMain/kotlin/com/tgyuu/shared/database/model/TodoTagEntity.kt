@@ -1,0 +1,42 @@
+package com.tgyuu.shared.database.model
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.tgyuu.shared.common.now
+import com.tgyuu.shared.domain.model.TodoTag
+import com.tgyuu.shared.domain.model.sync.TodoTagForSync
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+
+@Entity(tableName = "todo_tag")
+data class TodoTagEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val name: String,
+    val color: Int,
+    val createdAt: LocalDate = LocalDate.now(),
+    val isDeleted: Boolean = false,
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
+) {
+    fun toDomain() = TodoTag(
+        id = id,
+        name = name,
+        color = color,
+        createdAt = createdAt,
+    )
+}
+
+fun TodoTag.toEntity() = TodoTagEntity(
+    id = this.id,
+    name = this.name,
+    color = this.color,
+    createdAt = this.createdAt,
+)
+
+fun TodoTagForSync.toEntity() = TodoTagEntity(
+    id = this.id,
+    name = this.name,
+    color = this.color,
+    createdAt = this.createdAt,
+    isDeleted = this.isDeleted,
+    updatedAt = this.updatedAt,
+)

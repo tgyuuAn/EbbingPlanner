@@ -1,0 +1,79 @@
+package com.tgyuu.shared.ui.feature.setting
+
+import androidx.compose.runtime.Immutable
+import com.tgyuu.shared.base.UiIntent
+import com.tgyuu.shared.base.UiState
+
+@Immutable
+data class SettingState(
+    val isLoading: Boolean = false,
+    val appVersion: String = "1.0.0",
+    val isNotificationEnabled: Boolean = true,
+    val alarmHour: Int = 18,
+    val alarmMinute: Int = 30,
+    val alarmMessage: String = "",
+    val alarmMessageBottomSheet: AlarmMessageBottomSheetState = AlarmMessageBottomSheetState(),
+    val mondayStart: Boolean = false,
+    val autoBackupFeatureEnabled: Boolean = false,
+    val autoBackupEnabled: Boolean = true,
+    val lastSyncTime: String? = null,
+    /** Android UpdateBody: 소프트 업데이트 대상이면 버전 행에 업데이트 버튼(화살표)을 보여줘요 */
+    val isUpdateButtonVisible: Boolean = false,
+) : UiState
+
+@Immutable
+data class AlarmMessageBottomSheetState(
+    /** 로케일별 기본 문구(default_alarm_message). VM이 리소스로 채운다 (Android 동일) */
+    val defaultMessage: String = "",
+    val message: String = defaultMessage,
+    val originMessage: String = "",
+    /** 로케일별 플레이스홀더 토큰(alarm_placeholder_token) */
+    val placeholderToken: String = "{할일}",
+) {
+    val placeholderCount: Int = Regex.escape(placeholderToken).toRegex().findAll(message).count()
+
+    val isValidPlaceholder: Boolean = placeholderCount <= 1
+
+    val isValidLength: Boolean = message.length <= 50
+
+    val isValid: Boolean = isValidPlaceholder && isValidLength
+
+    val isChanged: Boolean = message != originMessage
+
+    val canApply: Boolean = isValid && isChanged
+
+    val shouldShowResetButton: Boolean = message != defaultMessage
+}
+
+sealed class SettingIntent : UiIntent {
+    data object OnBackClick : SettingIntent()
+    data object OnTagManageClick : SettingIntent()
+    data object OnRepeatCycleManageClick : SettingIntent()
+    data object OnSyncClick : SettingIntent()
+    data object OnRestoreByDeviceIdClick : SettingIntent()
+    data object OnClearDataClick : SettingIntent()
+    data object OnClearDataConfirm : SettingIntent()
+    data object OnThemeClick : SettingIntent()
+    data class OnNotificationToggle(val enabled: Boolean) : SettingIntent()
+    /** 화면 RESUMED 진입 시 OS 알림 권한 재확인 */
+    data object OnResume : SettingIntent()
+    /** 알람 시간 시트 열기 (Android onAlarmTimeClick: 열 때 NotificationNudge_Time 로깅) */
+    data object OnAlarmTimeOpen : SettingIntent()
+    data class OnUpdateAlarmTime(val hour: Int, val minute: Int) : SettingIntent()
+    data object OnAlarmMessageOpen : SettingIntent()
+    data class OnAlarmMessageChange(val message: String) : SettingIntent()
+    data object OnAlarmMessageReset : SettingIntent()
+    data object OnApplyAlarmMessage : SettingIntent()
+    data object OnInAppReviewClick : SettingIntent()
+    data object OnPrivacyPolicyClick : SettingIntent()
+    data object OnTermsOfUseClick : SettingIntent()
+    data object OnWidgetClick : SettingIntent()
+    /** 시작 요일 시트 열기 (Android onStartDayClick: 열 때 StartDay 로깅) */
+    data object OnStartDayOpen : SettingIntent()
+    data class OnUpdateStartDay(val mondayStart: Boolean) : SettingIntent()
+    data object OnAutoBackupToggleClick : SettingIntent()
+    data object OnNoticeClick : SettingIntent()
+    data object OnInquiryClick : SettingIntent()
+    /** 버전 행 업데이트 버튼 (Android OnUpdateClick: 인앱 업데이트 → iOS 는 App Store) */
+    data object OnUpdateClick : SettingIntent()
+}

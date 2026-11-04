@@ -2,19 +2,10 @@ package com.tgyuu.deviceinfo.di
 
 import com.tgyuu.deviceinfo.DeviceInfoProvider
 import com.tgyuu.deviceinfo.DeviceInfoProviderImpl
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class DeviceInfoModule {
-
-    @Binds
-    @Singleton
-    abstract fun bindsDeviceInfoProvider(
-        impl: DeviceInfoProviderImpl,
-    ): DeviceInfoProvider
+val deviceInfoModule = module {
+    single { DeviceInfoProviderImpl(androidContext()) } bind DeviceInfoProvider::class
 }

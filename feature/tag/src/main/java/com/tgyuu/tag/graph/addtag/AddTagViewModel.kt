@@ -12,11 +12,8 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.tag.graph.addtag.contract.AddTagIntent
 import com.tgyuu.tag.graph.addtag.contract.AddTagState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@HiltViewModel
-class AddTagViewModel @Inject constructor(
+class AddTagViewModel(
     private val todoRepository: TodoRepository,
     private val eventBus: EventBus,
     private val navigationBus: NavigationBus,
@@ -34,12 +31,7 @@ class AddTagViewModel @Inject constructor(
 
     override suspend fun processIntent(intent: AddTagIntent) {
         when (intent) {
-            AddTagIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTag", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            AddTagIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             is AddTagIntent.OnNameChange -> onNameChange(intent.name)
             is AddTagIntent.OnColorDropDownClick -> eventBus.sendEvent(
                 EbbingEvent.ShowBottomSheet(intent.content)
@@ -74,10 +66,20 @@ class AddTagViewModel @Inject constructor(
             return
         }
 
-        todoRepository.addTag(
+        val existingTags = todoRepository.loadTags()
+        if (existingTags.any { it.name.equals(currentState.name.trim(), ignoreCase = true) }) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("이미 존재하는 태그 이름입니다"))
+            return
+        }
+
+        val newId = todoRepository.addTag(
             name = currentState.name.trim(),
             color = currentState.colorValue,
         )
+        if (newId <= 0L) {
+            eventBus.sendEvent(EbbingEvent.ShowSnackBar("태그 추가에 실패했습니다"))
+            return
+        }
         eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.tag_added)))
         navigationBus.navigate(NavigationEvent.Up)
     }

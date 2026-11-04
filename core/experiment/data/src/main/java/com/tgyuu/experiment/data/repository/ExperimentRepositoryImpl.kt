@@ -6,11 +6,9 @@ import com.tgyuu.experiment.data.datasource.ExperimentRemoteDataSource
 import com.tgyuu.experiment.domain.model.Experiment
 import com.tgyuu.experiment.domain.model.ExperimentVariant
 import com.tgyuu.experiment.domain.repository.ExperimentRepository
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ExperimentRepositoryImpl @Inject constructor(
+
+class ExperimentRepositoryImpl constructor(
     private val remoteDataSource: ExperimentRemoteDataSource,
     private val localDataSource: ExperimentLocalDataSource,
     private val memoryDataSource: ExperimentMemoryDataSource,
@@ -24,8 +22,8 @@ class ExperimentRepositoryImpl @Inject constructor(
 
         Experiment.ALL.forEach { experiment ->
             val remoteVariant = remoteVariants[experiment.key]
-
             val variantToAssign = remoteVariant ?: experiment.defaultVariant.key
+
             localDataSource.saveAssignment(
                 experimentKey = experiment.key,
                 variantName = variantToAssign,

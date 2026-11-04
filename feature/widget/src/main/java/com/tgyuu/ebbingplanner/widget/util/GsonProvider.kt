@@ -8,29 +8,27 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import kotlinx.datetime.LocalDate
 import java.lang.reflect.Type
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 object GsonProvider {
     val gson: Gson = GsonBuilder()
         .registerTypeAdapter(
             LocalDate::class.java,
             object : JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
-                private val fmt = DateTimeFormatter.ISO_LOCAL_DATE
                 override fun serialize(
                     src: LocalDate,
                     typeOfSrc: Type,
                     context: JsonSerializationContext
                 ) =
-                    JsonPrimitive(src.format(fmt))
+                    JsonPrimitive(src.toString())
 
                 override fun deserialize(
                     json: JsonElement,
                     typeOfT: Type,
                     context: JsonDeserializationContext
                 ) =
-                    LocalDate.parse(json.asString, fmt)
+                    LocalDate.parse(json.asString)
             }
         ).create()
 }

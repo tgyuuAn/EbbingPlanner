@@ -1,4 +1,4 @@
-package com.puzzle.setting.graph.webview
+package com.tgyuu.setting.graph.webview
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.tgyuu.common.util.EbbingWebView
+import org.koin.androidx.compose.koinViewModel
 import com.tgyuu.designsystem.component.EbbingSubTopBar
 import com.tgyuu.navigation.NavigationEvent
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 internal fun WebViewRoute(
     title: String,
     url: String,
-    viewModel: WebViewViewModel = hiltViewModel(),
+    viewModel: WebViewViewModel = koinViewModel(),
 ) {
     val scope = rememberCoroutineScope()
 

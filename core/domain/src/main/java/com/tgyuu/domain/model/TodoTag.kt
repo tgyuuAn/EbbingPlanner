@@ -1,6 +1,7 @@
 package com.tgyuu.domain.model
 
-import java.time.LocalDate
+import com.tgyuu.common.now
+import kotlinx.datetime.LocalDate
 
 data class TodoTag(
     val id: Int,

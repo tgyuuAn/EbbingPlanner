@@ -2,6 +2,7 @@ package com.tgyuu.home.graph.main
 
 import com.tgyuu.analytics.NoOpAnalyticsHelper
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.now
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.domain.model.TodoSchedule
 import com.tgyuu.home.fake.FakeConfigRepository
@@ -17,12 +18,15 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.DayOfWeek
-import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
@@ -66,10 +70,10 @@ class HomeViewModelTest {
     @Test
     fun `붙어있는 일정들을 함께 미룰 때 뒤에서부터 처리된다`() = runTest {
         // given: 연속된 3일의 일정 (1/1, 1/2, 1/3)
-        val baseDate = LocalDate.of(2024, 1, 1)
+        val baseDate = LocalDate(2024, 1, 1)
         val schedule1 = createSchedule(id = 1, infoId = 100, date = baseDate)
-        val schedule2 = createSchedule(id = 2, infoId = 100, date = baseDate.plusDays(1))
-        val schedule3 = createSchedule(id = 3, infoId = 100, date = baseDate.plusDays(2))
+        val schedule2 = createSchedule(id = 2, infoId = 100, date = baseDate.plus(1, DateTimeUnit.DAY))
+        val schedule3 = createSchedule(id = 3, infoId = 100, date = baseDate.plus(2, DateTimeUnit.DAY))
 
         todoRepository.addSchedules(schedule1, schedule2, schedule3)
 
@@ -79,16 +83,16 @@ class HomeViewModelTest {
         // then: 3개 일정이 모두 +1일씩 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
         assertEquals(3, updatedSchedules.count {
-            (it.id == 1 && it.date == baseDate.plusDays(1)) ||
-            (it.id == 2 && it.date == baseDate.plusDays(2)) ||
-            (it.id == 3 && it.date == baseDate.plusDays(3))
+            (it.id == 1 && it.date == baseDate.plus(1, DateTimeUnit.DAY)) ||
+            (it.id == 2 && it.date == baseDate.plus(2, DateTimeUnit.DAY)) ||
+            (it.id == 3 && it.date == baseDate.plus(3, DateTimeUnit.DAY))
         })
     }
 
     @Test
     fun `단일 일정만 있을 때도 정상적으로 미뤄진다`() = runTest {
         // given: 단일 일정
-        val baseDate = LocalDate.of(2024, 1, 1)
+        val baseDate = LocalDate(2024, 1, 1)
         val schedule = createSchedule(id = 1, infoId = 100, date = baseDate)
         todoRepository.addSchedules(schedule)
 
@@ -97,18 +101,18 @@ class HomeViewModelTest {
 
         // then: 1개 일정이 +1일 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
-        assertEquals(baseDate.plusDays(1), updatedSchedules[0].date)
+        assertEquals(baseDate.plus(1, DateTimeUnit.DAY), updatedSchedules[0].date)
     }
 
     @Test
     fun `중간 일정부터 미루면 이후 일정만 처리된다`() = runTest {
         // given: 5개 일정 (1/1, 1/3, 1/5, 1/7, 1/9)
-        val baseDate = LocalDate.of(2024, 1, 1)
+        val baseDate = LocalDate(2024, 1, 1)
         val schedule1 = createSchedule(id = 1, infoId = 100, date = baseDate)
-        val schedule2 = createSchedule(id = 2, infoId = 100, date = baseDate.plusDays(2))
-        val schedule3 = createSchedule(id = 3, infoId = 100, date = baseDate.plusDays(4))
-        val schedule4 = createSchedule(id = 4, infoId = 100, date = baseDate.plusDays(6))
-        val schedule5 = createSchedule(id = 5, infoId = 100, date = baseDate.plusDays(8))
+        val schedule2 = createSchedule(id = 2, infoId = 100, date = baseDate.plus(2, DateTimeUnit.DAY))
+        val schedule3 = createSchedule(id = 3, infoId = 100, date = baseDate.plus(4, DateTimeUnit.DAY))
+        val schedule4 = createSchedule(id = 4, infoId = 100, date = baseDate.plus(6, DateTimeUnit.DAY))
+        val schedule5 = createSchedule(id = 5, infoId = 100, date = baseDate.plus(8, DateTimeUnit.DAY))
 
         todoRepository.addSchedules(schedule1, schedule2, schedule3, schedule4, schedule5)
 
@@ -118,16 +122,16 @@ class HomeViewModelTest {
         // then: 이전 2개는 그대로, 이후 3개는 +1일씩 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
         assertEquals(2, updatedSchedules.count {
-            (it.id == 1 && it.date == baseDate) || (it.id == 2 && it.date == baseDate.plusDays(2))
+            (it.id == 1 && it.date == baseDate) || (it.id == 2 && it.date == baseDate.plus(2, DateTimeUnit.DAY))
         })
     }
 
     @Test
     fun `미래 날짜만 알람이 재스케줄링된다`() = runTest {
         // given: 과거, 오늘, 미래 일정
-        val yesterday = LocalDate.now().minusDays(1)
+        val yesterday = LocalDate.now().minus(1, DateTimeUnit.DAY)
         val today = LocalDate.now()
-        val tomorrow = LocalDate.now().plusDays(1)
+        val tomorrow = LocalDate.now().plus(1, DateTimeUnit.DAY)
 
         val schedule1 = createSchedule(id = 1, infoId = 100, date = yesterday)
         val schedule2 = createSchedule(id = 2, infoId = 100, date = today)
@@ -143,17 +147,17 @@ class HomeViewModelTest {
         assertEquals(3, updatedSchedules.count {
             (it.id == 1 && it.date == today) ||
             (it.id == 2 && it.date == tomorrow) ||
-            (it.id == 3 && it.date == tomorrow.plusDays(1))
+            (it.id == 3 && it.date == tomorrow.plus(1, DateTimeUnit.DAY))
         })
     }
 
     @Test
     fun `여러 날짜가 띄엄띄엄 있어도 모두 미뤄진다`() = runTest {
         // given: 불규칙한 간격의 일정들
-        val baseDate = LocalDate.of(2024, 1, 1)
+        val baseDate = LocalDate(2024, 1, 1)
         val schedule1 = createSchedule(id = 1, infoId = 100, date = baseDate)
-        val schedule2 = createSchedule(id = 2, infoId = 100, date = baseDate.plusDays(5))
-        val schedule3 = createSchedule(id = 3, infoId = 100, date = baseDate.plusDays(10))
+        val schedule2 = createSchedule(id = 2, infoId = 100, date = baseDate.plus(5, DateTimeUnit.DAY))
+        val schedule3 = createSchedule(id = 3, infoId = 100, date = baseDate.plus(10, DateTimeUnit.DAY))
 
         todoRepository.addSchedules(schedule1, schedule2, schedule3)
 
@@ -163,16 +167,16 @@ class HomeViewModelTest {
         // then: 3개 일정이 모두 +1일씩 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
         assertEquals(3, updatedSchedules.count {
-            (it.id == 1 && it.date == baseDate.plusDays(1)) ||
-            (it.id == 2 && it.date == baseDate.plusDays(6)) ||
-            (it.id == 3 && it.date == baseDate.plusDays(11))
+            (it.id == 1 && it.date == baseDate.plus(1, DateTimeUnit.DAY)) ||
+            (it.id == 2 && it.date == baseDate.plus(6, DateTimeUnit.DAY)) ||
+            (it.id == 3 && it.date == baseDate.plus(11, DateTimeUnit.DAY))
         })
     }
 
     @Test
     fun `쉬는 요일이 있을 때 해당 요일을 건너뛰고 미룬다`() = runTest {
         // given: 월요일 일정, 쉬는 요일 = 화요일
-        val monday = LocalDate.of(2024, 1, 1)  // 월요일
+        val monday = LocalDate(2024, 1, 1)  // 월요일
         val schedule = createSchedule(id = 1, infoId = 100, date = monday)
 
         todoRepository.addSchedules(schedule)
@@ -183,13 +187,13 @@ class HomeViewModelTest {
 
         // then: 화요일(1/2)을 건너뛰고 수요일(1/3)로 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
-        assertEquals(monday.plusDays(2), updatedSchedules[0].date)  // 1/3 (수요일)
+        assertEquals(monday.plus(2, DateTimeUnit.DAY), updatedSchedules[0].date)  // 1/3 (수요일)
     }
 
     @Test
     fun `여러 쉬는 요일을 건너뛰고 미룬다`() = runTest {
         // given: 금요일 일정, 쉬는 요일 = 토요일, 일요일
-        val friday = LocalDate.of(2024, 1, 5)  // 금요일
+        val friday = LocalDate(2024, 1, 5)  // 금요일
         val schedule = createSchedule(id = 1, infoId = 100, date = friday)
 
         todoRepository.addSchedules(schedule)
@@ -203,13 +207,13 @@ class HomeViewModelTest {
 
         // then: 토요일(1/6), 일요일(1/7)을 건너뛰고 월요일(1/8)로 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
-        assertEquals(friday.plusDays(3), updatedSchedules[0].date)  // 1/8 (월요일)
+        assertEquals(friday.plus(3, DateTimeUnit.DAY), updatedSchedules[0].date)  // 1/8 (월요일)
     }
 
     @Test
     fun `쉬는 요일이 없으면 바로 다음날로 미룬다`() = runTest {
         // given: 월요일 일정, 쉬는 요일 없음
-        val monday = LocalDate.of(2024, 1, 1)
+        val monday = LocalDate(2024, 1, 1)
         val schedule = createSchedule(id = 1, infoId = 100, date = monday)
 
         todoRepository.addSchedules(schedule)
@@ -220,16 +224,16 @@ class HomeViewModelTest {
 
         // then: 화요일(1/2)로 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
-        assertEquals(monday.plusDays(1), updatedSchedules[0].date)
+        assertEquals(monday.plus(1, DateTimeUnit.DAY), updatedSchedules[0].date)
     }
 
     @Test
     fun `연속된 일정을 쉬는 요일 고려해서 모두 미룬다`() = runTest {
         // given: 월, 화, 수 일정, 쉬는 요일 = 수요일
-        val monday = LocalDate.of(2024, 1, 1)
+        val monday = LocalDate(2024, 1, 1)
         val schedule1 = createSchedule(id = 1, infoId = 100, date = monday)            // 1/1 (월)
-        val schedule2 = createSchedule(id = 2, infoId = 100, date = monday.plusDays(1)) // 1/2 (화)
-        val schedule3 = createSchedule(id = 3, infoId = 100, date = monday.plusDays(2)) // 1/3 (수)
+        val schedule2 = createSchedule(id = 2, infoId = 100, date = monday.plus(1, DateTimeUnit.DAY)) // 1/2 (화)
+        val schedule3 = createSchedule(id = 3, infoId = 100, date = monday.plus(2, DateTimeUnit.DAY)) // 1/3 (수)
 
         todoRepository.addSchedules(schedule1, schedule2, schedule3)
         todoRepository.setRestDays(infoId = 100, restDays = setOf(DayOfWeek.WEDNESDAY))
@@ -239,13 +243,13 @@ class HomeViewModelTest {
 
         // then: 1/3 (수) 일정이 쉬는 요일을 건너뛰고 1/4 (목)로 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules().sortedBy { it.date }
-        assertEquals(monday.plusDays(3), updatedSchedules[1].date)  // 1/4 (목)
+        assertEquals(monday.plus(3, DateTimeUnit.DAY), updatedSchedules[1].date)  // 1/4 (목)
     }
 
     @Test
     fun `단일 일정 미루기도 쉬는 요일을 건너뛴다`() = runTest {
         // given: 월요일 일정, 쉬는 요일 = 화요일, 수요일
-        val monday = LocalDate.of(2024, 1, 1)
+        val monday = LocalDate(2024, 1, 1)
         val schedule = createSchedule(id = 1, infoId = 100, date = monday)
 
         todoRepository.addSchedules(schedule)
@@ -259,7 +263,7 @@ class HomeViewModelTest {
 
         // then: 화요일(1/2), 수요일(1/3)을 건너뛰고 목요일(1/4)로 미뤄짐
         val updatedSchedules = todoRepository.loadAllSchedules()
-        assertEquals(monday.plusDays(3), updatedSchedules[0].date)  // 1/4 (목요일)
+        assertEquals(monday.plus(3, DateTimeUnit.DAY), updatedSchedules[0].date)  // 1/4 (목요일)
     }
 
     private fun createSchedule(

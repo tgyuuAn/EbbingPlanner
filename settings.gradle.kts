@@ -23,6 +23,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "EbbingPlanner"
 include(":app")
+include(":shared")
 
 include(":core:domain")
 include(":core:data")

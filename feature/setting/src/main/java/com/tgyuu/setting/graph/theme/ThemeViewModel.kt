@@ -15,13 +15,10 @@ import com.tgyuu.navigation.NavigationBus
 import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.setting.graph.theme.contract.ThemeIntent
 import com.tgyuu.setting.graph.theme.contract.ThemeState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class ThemeViewModel @Inject constructor(
+class ThemeViewModel(
     private val configRepository: ConfigRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
@@ -52,12 +49,7 @@ class ThemeViewModel @Inject constructor(
     override suspend fun processIntent(intent: ThemeIntent) {
         when (intent) {
             is ThemeIntent.OnThemeChange -> setTheme(intent.theme)
-            ThemeIntent.OnBackClick -> {
-                analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "Theme", buttonName = "Back")
-                )
-                navigationBus.navigate(NavigationEvent.Up)
-            }
+            ThemeIntent.OnBackClick -> navigationBus.navigate(NavigationEvent.Up)
             ThemeIntent.OnUpdateClick -> updateTheme()
         }
     }

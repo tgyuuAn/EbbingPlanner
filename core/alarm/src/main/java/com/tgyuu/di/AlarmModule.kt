@@ -3,34 +3,16 @@ package com.tgyuu.di
 import android.app.AlarmManager
 import android.content.Context
 import com.tgyuu.alarm.AlarmInitializer
+import com.tgyuu.alarm.AlarmRescheduler
+import com.tgyuu.alarm.AlarmScheduler
 import com.tgyuu.common.initializer.Initializer
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import dagger.multibindings.IntoSet
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AlarmModule {
-
-    @Provides
-    @Singleton
-    fun provideAlarmManager(
-        @ApplicationContext context: Context
-    ): AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class AlarmBindsModule {
-
-    @Binds
-    @IntoSet
-    abstract fun bindAlarmInitializer(
-        impl: AlarmInitializer,
-    ): Initializer
+val alarmModule = module {
+    single<AlarmManager> { androidContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager }
+    single { AlarmScheduler(androidContext(), get()) }
+    single { AlarmRescheduler(get(), get(), get()) }
+    single { AlarmInitializer(get()) } bind Initializer::class
 }

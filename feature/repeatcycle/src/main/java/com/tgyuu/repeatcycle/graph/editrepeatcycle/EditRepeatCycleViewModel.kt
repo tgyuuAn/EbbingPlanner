@@ -15,12 +15,9 @@ import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleIntent
 import com.tgyuu.repeatcycle.graph.editrepeatcycle.contract.EditRepeatCycleState
 import com.tgyuu.repeatcycle.util.parsingIntervals
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EditRepeatCycleViewModel @Inject constructor(
+class EditRepeatCycleViewModel(
     private val todoRepository: TodoRepository,
     private val navigationBus: NavigationBus,
     private val eventBus: EventBus,
