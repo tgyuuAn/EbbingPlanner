@@ -19,6 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.tgyuu.analytics.AnalyticsEvent
+import com.tgyuu.analytics.LocalAnalyticsHelper
+import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.component.EbbingDialog
 import com.tgyuu.designsystem.component.EbbingDialogBottom
@@ -73,6 +76,9 @@ internal fun HandleAppUpdate(
     }
 }
 
+private const val SOFT_UPDATE_SCREEN_NAME = "SoftUpdateDialog"
+private const val HARD_UPDATE_SCREEN_NAME = "HardUpdateDialog"
+
 @Composable
 private fun SoftUpdateDialog(
     updateInfo: UpdateInfo,
@@ -80,8 +86,21 @@ private fun SoftUpdateDialog(
     onClickUpdateInfo: () -> Unit,
     onUpdateClick: () -> Unit,
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+    val logProperties = mapOf("min_version" to updateInfo.minVersion)
+    TrackScreenViewEvent(key = Unit, screenName = SOFT_UPDATE_SCREEN_NAME, properties = logProperties)
+
     EbbingDialog(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = SOFT_UPDATE_SCREEN_NAME,
+                    actionName = "dismiss",
+                    properties = logProperties,
+                )
+            )
+            onDismissRequest()
+        },
         dialogTop = {
             EbbingDialogDefaultTop(
                 title = stringResource(DesignR.string.update_title),
@@ -93,7 +112,16 @@ private fun SoftUpdateDialog(
                         style = EbbingTheme.typography.body14M,
                         textDecoration = TextDecoration.Underline,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.clickable { onClickUpdateInfo() },
+                        modifier = Modifier.clickable {
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(
+                                    screenName = SOFT_UPDATE_SCREEN_NAME,
+                                    buttonName = "UpdateNotes",
+                                    properties = logProperties,
+                                )
+                            )
+                            onClickUpdateInfo()
+                        },
                     )
                 },
             )
@@ -102,8 +130,26 @@ private fun SoftUpdateDialog(
             EbbingDialogBottom(
                 leftButtonText = stringResource(DesignR.string.update_close),
                 rightButtonText = stringResource(DesignR.string.update_button),
-                onLeftButtonClick = onDismissRequest,
-                onRightButtonClick = onUpdateClick,
+                onLeftButtonClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = SOFT_UPDATE_SCREEN_NAME,
+                            buttonName = "Close",
+                            properties = logProperties,
+                        )
+                    )
+                    onDismissRequest()
+                },
+                onRightButtonClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = SOFT_UPDATE_SCREEN_NAME,
+                            buttonName = "Update",
+                            properties = logProperties,
+                        )
+                    )
+                    onUpdateClick()
+                },
             )
         },
     )
@@ -115,6 +161,10 @@ private fun HardUpdateDialog(
     onClickUpdateInfo: () -> Unit,
     onUpdateClick: () -> Unit,
 ) {
+    val analyticsHelper = LocalAnalyticsHelper.current
+    val logProperties = mapOf("min_version" to updateInfo.minVersion)
+    TrackScreenViewEvent(key = Unit, screenName = HARD_UPDATE_SCREEN_NAME, properties = logProperties)
+
     EbbingDialog(
         onDismissRequest = {},
         dialogTop = {
@@ -128,7 +178,16 @@ private fun HardUpdateDialog(
                         style = EbbingTheme.typography.body14M,
                         textDecoration = TextDecoration.Underline,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.clickable { onClickUpdateInfo() },
+                        modifier = Modifier.clickable {
+                            analyticsHelper.logEvent(
+                                AnalyticsEvent.Click(
+                                    screenName = HARD_UPDATE_SCREEN_NAME,
+                                    buttonName = "UpdateNotes",
+                                    properties = logProperties,
+                                )
+                            )
+                            onClickUpdateInfo()
+                        },
                     )
                 },
             )
@@ -136,7 +195,16 @@ private fun HardUpdateDialog(
         dialogBottom = {
             EbbingSolidButton(
                 label = stringResource(DesignR.string.update_button),
-                onClick = onUpdateClick,
+                onClick = {
+                    analyticsHelper.logEvent(
+                        AnalyticsEvent.Click(
+                            screenName = HARD_UPDATE_SCREEN_NAME,
+                            buttonName = "Update",
+                            properties = logProperties,
+                        )
+                    )
+                    onUpdateClick()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp, bottom = 20.dp),

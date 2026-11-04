@@ -191,6 +191,7 @@ private fun AddTodoScreen(
                 isShowExitDialog = false
                 onBackClick()
             },
+            logProperties = mapOf("variant" to state.suggestionVariant.key),
         )
     }
 

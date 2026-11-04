@@ -22,10 +22,11 @@ val LocalAnalyticsHelper = staticCompositionLocalOf<AnalyticsHelper> {
 fun TrackScreenViewEvent(
     key: Any?,
     screenName: String?,
+    properties: Map<String, Any?>? = null,
     analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
 ) = LaunchedEffect(key) {
     if (screenName != null) {
-        analyticsHelper.logEvent(AnalyticsEvent.View(screenName = screenName))
+        analyticsHelper.logEvent(AnalyticsEvent.View(screenName = screenName, properties = properties))
     }
 }
 
