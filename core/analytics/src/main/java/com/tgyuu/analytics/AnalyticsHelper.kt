@@ -29,6 +29,7 @@ fun TrackNavigationDestination(navController: NavHostController) {
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val route = destination.route.orEmpty()
             val screenName = mapScreenName(route)
+            if (!shouldTrackNavigationView(screenName)) return@OnDestinationChangedListener
 
             analyticsHelper.logEvent(AnalyticsEvent.View(screenName = screenName))
         }

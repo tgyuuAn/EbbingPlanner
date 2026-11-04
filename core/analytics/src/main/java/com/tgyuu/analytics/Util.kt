@@ -24,6 +24,27 @@ private val screenNameMap = mapOf(
 )
 
 /**
+ * ViewModel이 화면 진입 로그(View)를 직접 남기는 화면.
+ * 네비게이션 추적까지 남기면 진입 한 번에 같은 이벤트가 두 번 쌓여서, 네비게이션 추적에서는 빼요.
+ * ViewModel 로그는 진입마다 한 번만 남고 실험군 같은 속성을 붙일 수 있어요.
+ */
+private val screensLoggedByViewModel = setOf(
+    "AddTodo",
+    "EditTodo",
+    "EditDate",
+    "AddMemo",
+    "EditMemo",
+    "AddTag",
+    "EditTag",
+    "AddRepeatCycle",
+    "EditRepeatCycle",
+    "Theme",
+)
+
+/** 네비게이션 추적으로 화면 진입 로그를 남길지. ViewModel이 직접 남기는 화면은 빼요. */
+fun shouldTrackNavigationView(screenName: String): Boolean = screenName !in screensLoggedByViewModel
+
+/**
  * 주어진 네비게이션 route 문자열에서 화면 이름만 추출하고,
  * 매핑 테이블을 통해 분석용 화면 이름으로 변환합니다.
  *

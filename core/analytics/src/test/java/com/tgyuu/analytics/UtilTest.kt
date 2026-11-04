@@ -20,4 +20,17 @@ class UtilTest {
         // then
         assertEquals(expected, result)
     }
+
+    @ParameterizedTest
+    @CsvSource(
+        "AddTodo, false",
+        "EditTag, false",
+        "Theme, false",
+        "Home, true",
+        "WidgetTheme, true",
+        "RestoreByDeviceIdRoute, true",
+    )
+    fun `ViewModel이 진입 로그를 남기는 화면은 네비게이션 추적에서 뺀다`(screenName: String, expected: Boolean) {
+        assertEquals(expected, shouldTrackNavigationView(screenName))
+    }
 }
