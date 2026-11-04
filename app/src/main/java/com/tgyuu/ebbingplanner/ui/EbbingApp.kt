@@ -54,6 +54,8 @@ import com.tgyuu.setting.graph.main.SettingMenu
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.CompositionLocalProvider
 import com.tgyuu.designsystem.component.LocalSubTopBarBackVisible
+import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavBackStackEntry
 import kotlin.reflect.KClass
 
 @Composable
@@ -228,10 +230,13 @@ private fun TabletContent(
                     }
 
                     // 설정 목록이 왼쪽에 고정돼 있어, 오른쪽 첫 단계 화면은 상단바 뒤로가기를 숨겨요
-                    val isSettingPaneRoot = showNavigation &&
-                        selectedTopLevel == TopLevelDestination.SETTING &&
-                        currentDestination.isSettingPaneRoot()
-                    CompositionLocalProvider(LocalSubTopBarBackVisible provides !isSettingPaneRoot) {
+                    val isSettingPane = showNavigation && selectedTopLevel == TopLevelDestination.SETTING
+                    val subTopBarBackVisible: (LifecycleOwner) -> Boolean = remember(isSettingPane) {
+                        { owner ->
+                            !(isSettingPane && (owner as? NavBackStackEntry)?.destination.isSettingPaneRoot())
+                        }
+                    }
+                    CompositionLocalProvider(LocalSubTopBarBackVisible provides subTopBarBackVisible) {
                         content(Modifier.weight(1f))
                     }
                 }

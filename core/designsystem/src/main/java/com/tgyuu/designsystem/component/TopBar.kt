@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -52,10 +54,11 @@ fun EbbingMainTopBar(
 }
 
 /**
- * 하위 화면 상단바의 뒤로가기 표시 여부.
- * 태블릿 가로 설정처럼 목록이 옆에 고정돼 있어 뒤로갈 필요가 없는 곳에서 false로 내려줘요.
+ * 하위 화면 상단바의 뒤로가기 표시 여부. 화면(LifecycleOwner, 보통 NavBackStackEntry)마다 판단해요.
+ * 태블릿 가로 설정처럼 목록이 옆에 고정돼 있어 뒤로갈 필요가 없는 화면에서 false를 돌려줘요.
+ * 현재 목적지가 아닌 각 화면 기준이라, 화면 전환 중 사라지는 화면의 뒤로가기가 깜빡이지 않아요.
  */
-val LocalSubTopBarBackVisible = compositionLocalOf { true }
+val LocalSubTopBarBackVisible = compositionLocalOf<(LifecycleOwner) -> Boolean> { { true } }
 
 @Composable
 fun EbbingSubTopBar(
@@ -69,7 +72,7 @@ fun EbbingSubTopBar(
             .fillMaxWidth()
             .height(60.dp),
     ) {
-        if (LocalSubTopBarBackVisible.current) {
+        if (LocalSubTopBarBackVisible.current(LocalLifecycleOwner.current)) {
             Image(
                 painter = painterResource(R.drawable.ic_arrow_left),
                 contentDescription = stringResource(R.string.ds_cd_back),
