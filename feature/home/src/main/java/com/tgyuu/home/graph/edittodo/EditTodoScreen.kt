@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -25,6 +24,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.designsystem.BasePreview
@@ -38,8 +39,10 @@ import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.edittodo.contract.EditTodoIntent
 import com.tgyuu.home.graph.edittodo.contract.EditTodoState
 import com.tgyuu.home.graph.ui.PinnedContent
+import com.tgyuu.home.graph.ui.SelectDropdownContent
 import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.TagContent
+import com.tgyuu.home.graph.ui.TagDropdownItems
 import com.tgyuu.home.graph.ui.TitleContent
 import java.time.LocalDate
 
@@ -49,9 +52,25 @@ internal fun EditTodoRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(viewModel) {
+    // 태블릿은 태그 추가를 이 화면 위 팝업으로 열어서, 닫히고 다시 RESUMED가 될 때도 새로 불러와요
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.loadNewTag()
         viewModel.loadTags()
+    }
+
+    val tagDropdown: SelectDropdownContent = { dismiss ->
+        TagDropdownItems(
+            tagList = state.tagList,
+            selectedTag = state.tag,
+            onTagClick = {
+                dismiss()
+                viewModel.onIntent(EditTodoIntent.OnTagChange(it))
+            },
+            onAddTagClick = {
+                dismiss()
+                viewModel.onIntent(EditTodoIntent.OnAddTagPopupClick)
+            },
+        )
     }
 
     EditTodoScreen(
@@ -90,6 +109,7 @@ internal fun EditTodoRoute(
             )
         },
         onSaveClick = { viewModel.onIntent(EditTodoIntent.OnSaveClick) },
+        tagDropdown = tagDropdown,
     )
 }
 
@@ -103,6 +123,7 @@ private fun EditTodoScreen(
     onTagDropDownClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tagDropdown: SelectDropdownContent? = null,
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
@@ -230,6 +251,7 @@ private fun EditTodoScreen(
                     TagContent(
                         tag = state.tag,
                         onTagDropDownClick = onTagDropDownClick,
+                        dropdown = tagDropdown,
                     )
 
                     PinnedContent(

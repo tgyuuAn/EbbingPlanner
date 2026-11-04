@@ -153,6 +153,8 @@
     <string name="home_update_info">予定情報を編集</string>
     <string name="home_update_repeat_cycle">関連する予定の繰り返し周期を再設定</string>
     <string name="home_options_title">編集</string>
+    <string name="home_dropdown_add_tag">新しいタグを追加</string>
+    <string name="home_dropdown_add_repeat_cycle">新しい繰り返し周期を追加</string>
     <string name="home_options_subtitle">%1$sの予定をどうしますか？</string>
     <string name="home_options_edit">編集する</string>
     <string name="home_options_delete">削除する</string>

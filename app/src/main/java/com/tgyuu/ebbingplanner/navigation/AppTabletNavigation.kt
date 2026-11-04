@@ -24,6 +24,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.ebbingplanner.navigation.TopLevelDestination.HOME
@@ -144,7 +145,8 @@ private fun TabletNavigationItem(
 
         Text(
             text = stringResource(destination.titleRes),
-            style = EbbingTheme.typography.heading14SB,
+            // 디자인 Heading/12_SB(태블릿 토큰 14/18). 태블릿 heading14SB(16sp)보다 2sp 작아요
+            style = EbbingTheme.typography.heading14SB.copy(fontSize = 14.sp, lineHeight = 18.sp),
             color = labelColor,
             maxLines = 1,
         )

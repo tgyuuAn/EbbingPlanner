@@ -48,9 +48,11 @@ internal fun RepeatCycleBottomSheet(
     startFromMonday: Boolean = false,
     updateRepeatCycle: (RepeatCycleUiModel) -> Unit,
     onAddRepeatCycleClick: () -> Unit,
+    startWithEndDatePicker: Boolean = false,
 ) {
     var newRepeatCycle by remember(openKey) { mutableStateOf(originRepeatCycle) }
-    var showEndDatePicker by remember(openKey) { mutableStateOf(false) }
+    // 태블릿 드롭다운에서 '매일'을 고르면 종료일 선택 단계부터 팝업으로 열어요
+    var showEndDatePicker by remember(openKey) { mutableStateOf(startWithEndDatePicker) }
     var dailyEndDate by remember(openKey) { mutableStateOf<LocalDate?>(null) }
     val listState = rememberLazyListState()
     val context = LocalContext.current

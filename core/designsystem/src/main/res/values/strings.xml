@@ -154,6 +154,8 @@
     <string name="home_update_info">일정 정보 수정하기</string>
     <string name="home_update_repeat_cycle">연관된 일정 반복 주기 재설정하기</string>
     <string name="home_options_title">편집</string>
+    <string name="home_dropdown_add_tag">새 태그 추가</string>
+    <string name="home_dropdown_add_repeat_cycle">새 반복 주기 추가</string>
     <string name="home_options_subtitle">%1$s 일정을 어떻게 할까요?</string>
     <string name="home_options_edit">수정하기</string>
     <string name="home_options_delete">삭제하기</string>

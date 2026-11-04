@@ -26,6 +26,7 @@ import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
+import com.tgyuu.designsystem.component.EbbingTabletFormPopup
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.R
 import com.tgyuu.memo.graph.addmemo.AddRepeatCycleViewModel
@@ -35,10 +36,14 @@ import com.tgyuu.repeatcycle.ui.PreviewContent
 import com.tgyuu.repeatcycle.ui.RepeatCycleContent
 
 @Composable
-internal fun AddRepeatCycleRoute(viewModel: AddRepeatCycleViewModel = hiltViewModel()) {
+internal fun AddRepeatCycleRoute(
+    isPopup: Boolean = false,
+    viewModel: AddRepeatCycleViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     AddRepeatCycleScreen(
+        isPopup = isPopup,
         state = state,
         onBackClick = { viewModel.onIntent(AddRepeatCycleIntent.OnBackClick) },
         onSaveClick = { viewModel.onIntent(AddRepeatCycleIntent.OnSaveClick) },
@@ -53,12 +58,46 @@ private fun AddRepeatCycleScreen(
     onSaveClick: () -> Unit,
     onRepeatCycleChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    isPopup: Boolean = false,
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+    if (isPopup) {
+        EbbingTabletFormPopup(modifier = modifier) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(scrollState),
+            ) {
+                Text(
+                    text = stringResource(R.string.repeat_add_headline),
+                    style = EbbingTheme.typography.heading24B,
+                    color = EbbingTheme.colors.textOnBackground,
+                )
+
+                RepeatCycleContent(
+                    repeatCycle = state.intervals,
+                    onRepeatCycleChange = onRepeatCycleChange,
+                )
+
+                PreviewContent(preview = state.previewRepeatCycle)
+            }
+
+            EbbingSolidButton(
+                label = stringResource(R.string.repeat_register_button),
+                onClick = {
+                    onSaveClick()
+                    focusManager.clearFocus()
+                },
+                enabled = state.isSaveEnabled,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+            )
+        }
+    } else if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
         Column(modifier = modifier.fillMaxSize()) {
             EbbingSubTopBar(
                 title = stringResource(R.string.repeat_add_title),

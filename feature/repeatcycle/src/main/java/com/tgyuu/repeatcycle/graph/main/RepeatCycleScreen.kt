@@ -16,17 +16,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
@@ -83,9 +78,7 @@ private fun RepeatCycleScreen(
 ) {
     var selectedRepeatCycle by remember { mutableStateOf<RepeatCycleUiModel?>(null) }
     val listState = rememberLazyListState()
-    val gridListState = rememberLazyGridState()
     var isShowDialog by remember { mutableStateOf(false) }
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
     if (isShowDialog && selectedRepeatCycle != null) {
         DeleteDialog(
@@ -133,7 +126,7 @@ private fun RepeatCycleScreen(
                         color = EbbingTheme.colors.textDisabled,
                     )
                 }
-            } else if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+            } else {
                 LazyColumn(
                     state = listState,
                     contentPadding = PaddingValues(bottom = 100.dp),
@@ -150,30 +143,6 @@ private fun RepeatCycleScreen(
                             checked = repeatCycle.id == selectedRepeatCycle?.id,
                             onChecked = { selectedRepeatCycle = repeatCycle },
                             modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-            } else {
-                LazyVerticalGrid(
-                    state = gridListState,
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    contentPadding = PaddingValues(bottom = 100.dp),
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .imePadding(),
-                ) {
-                    items(
-                        items = state.repeatCycleList,
-                        key = { it.id },
-                    ) { tag ->
-                        EbbingBottomSheetListItemDefault(
-                            label = tag.displayName,
-                            checked = tag.id == selectedRepeatCycle?.id,
-                            onChecked = { selectedRepeatCycle = tag },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp)
                         )
                     }
                 }

@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,6 +51,7 @@ import com.tgyuu.analytics.AnalyticsEvent
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.common.util.clickable
+import com.tgyuu.common.util.isLandscapeWindow
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingSubTopBar
@@ -300,74 +302,99 @@ private fun NotificationScreenTablet(
             },
         )
 
-        Row(
-            modifier = modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .imePadding(),
-        ) {
-            Column(
-                modifier = Modifier
+        val isLandscape = isLandscapeWindow()
+        val summaryContent: @Composable ColumnScope.() -> Unit = {
+            NotificationHeader()
+
+            NotificationToggleSection(
+                checked = state.notificationEnabled,
+                analyticsHelper = analyticsHelper,
+                onToggleClick = { desiredOn ->
+                    if (!desiredOn) {
+                        onNotificationToggleClick()
+                        return@NotificationToggleSection
+                    }
+
+                    if (permissionState == null) {
+                        onNotificationToggleClick()
+                        return@NotificationToggleSection
+                    }
+
+                    when (val status = permissionState.status) {
+                        PermissionStatus.Granted -> onNotificationToggleClick()
+                        is PermissionStatus.Denied -> {
+                            pendingNotificationEnable = true
+                            if (status.shouldShowRationale) {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                        data = Uri.fromParts("package", context.packageName, null)
+                                    }
+                                )
+                            } else {
+                                permissionState.launchPermissionRequest()
+                            }
+                        }
+                    }
+                },
+            )
+        }
+        val detailContent: @Composable ColumnScope.() -> Unit = {
+            AnimatedVisibility(
+                visible = state.notificationEnabled,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically(),
+            ) {
+                NotificationDetailSection(
+                    state = state,
+                    analyticsHelper = analyticsHelper,
+                    onTimeClick = { isShowTimeDialog = true },
+                    onMessageChange = onMessageChange,
+                    onResetClick = onResetClick,
+                    // 세로는 폰처럼 한 칼럼이라 토글과 상세 사이를 구분선으로 나눠요
+                    showDivider = !isLandscape,
+                )
+            }
+        }
+
+        if (isLandscape) {
+            Row(
+                modifier = modifier
                     .weight(1f)
+                    .fillMaxWidth()
+                    .imePadding(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(scrollState)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    summaryContent()
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(20.dp)
+                        .padding(horizontal = 20.dp),
+                ) {
+                    detailContent()
+                }
+            }
+        } else {
+            // 세로는 폭이 좁아 두 칸으로 나누지 않고, 알림 시간·메시지를 토글 아래로 이어 붙여요
+            Column(
+                modifier = modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .imePadding()
                     .verticalScroll(scrollState)
                     .padding(20.dp)
                     .padding(horizontal = 20.dp),
             ) {
-                NotificationHeader()
-
-                NotificationToggleSection(
-                    checked = state.notificationEnabled,
-                    analyticsHelper = analyticsHelper,
-                    onToggleClick = { desiredOn ->
-                        if (!desiredOn) {
-                            onNotificationToggleClick()
-                            return@NotificationToggleSection
-                        }
-
-                        if (permissionState == null) {
-                            onNotificationToggleClick()
-                            return@NotificationToggleSection
-                        }
-
-                        when (val status = permissionState.status) {
-                            PermissionStatus.Granted -> onNotificationToggleClick()
-                            is PermissionStatus.Denied -> {
-                                pendingNotificationEnable = true
-                                if (status.shouldShowRationale) {
-                                    context.startActivity(
-                                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                            data = Uri.fromParts("package", context.packageName, null)
-                                        }
-                                    )
-                                } else {
-                                    permissionState.launchPermissionRequest()
-                                }
-                            }
-                        }
-                    },
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(20.dp)
-                    .padding(horizontal = 20.dp),
-            ) {
-                AnimatedVisibility(
-                    visible = state.notificationEnabled,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically(),
-                ) {
-                    NotificationDetailSection(
-                        state = state,
-                        analyticsHelper = analyticsHelper,
-                        onTimeClick = { isShowTimeDialog = true },
-                        onMessageChange = onMessageChange,
-                        onResetClick = onResetClick,
-                        showDivider = false,
-                    )
-                }
+                summaryContent()
+                detailContent()
             }
         }
 
