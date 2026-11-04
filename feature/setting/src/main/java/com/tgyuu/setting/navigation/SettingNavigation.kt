@@ -5,6 +5,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.puzzle.setting.graph.webview.WebViewRoute
+import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.navigation.SettingBaseRoute
 import com.tgyuu.navigation.SettingGraph
 import com.tgyuu.navigation.SettingGraph.SettingRoute
@@ -15,6 +16,7 @@ import com.tgyuu.setting.graph.widget.WidgetRoute
 fun NavGraphBuilder.settingGraph() {
     navigation<SettingBaseRoute>(startDestination = SettingRoute) {
         composable<SettingRoute> {
+            TrackScreenViewEvent(key = Unit, screenName = "Setting")
             SettingRoute()
         }
 
@@ -27,6 +29,7 @@ fun NavGraphBuilder.settingGraph() {
         }
 
         composable<SettingGraph.WebViewRoute> { backStackEntry ->
+            TrackScreenViewEvent(key = Unit, screenName = "WebView")
             val webView = backStackEntry.toRoute<SettingGraph.WebViewRoute>()
             WebViewRoute(
                 title = webView.title,

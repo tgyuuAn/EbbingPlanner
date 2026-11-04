@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.common.suspendRunCatching
+import com.tgyuu.designsystem.model.UpdateInfoUiModel
+import com.tgyuu.designsystem.model.UpdateStateUiModel
+import com.tgyuu.designsystem.model.toUiModel
 import com.tgyuu.domain.model.ErrorBus
 import com.tgyuu.domain.model.Theme
-import com.tgyuu.domain.model.UpdateInfo
-import com.tgyuu.domain.model.UpdateState
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.SyncRepository
 import com.tgyuu.domain.repository.TodoRepository
@@ -33,18 +34,18 @@ class MainViewModel @Inject constructor(
     private val errorBus: ErrorBus,
     private val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
-    private val softUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
-    private val hardUpdateInfo = MutableStateFlow<UpdateInfo?>(null)
+    private val softUpdateInfo = MutableStateFlow<UpdateInfoUiModel?>(null)
+    private val hardUpdateInfo = MutableStateFlow<UpdateInfoUiModel?>(null)
 
-    val updateState: StateFlow<UpdateState> = combine(
+    val updateState: StateFlow<UpdateStateUiModel> = combine(
         softUpdateInfo,
         hardUpdateInfo
     ) { soft, hard ->
-        UpdateState(soft = soft, hard = hard)
+        UpdateStateUiModel(soft = soft, hard = hard)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = UpdateState()
+        initialValue = UpdateStateUiModel()
     )
 
     val theme: StateFlow<Theme> = configRepository.getAppTheme()
@@ -83,13 +84,13 @@ class MainViewModel @Inject constructor(
     private suspend fun getSoftUpdateInfo() {
         suspendRunCatching {
             configRepository.getSoftUpdateInfo()
-        }.onSuccess { softUpdateInfo.value = it }
+        }.onSuccess { softUpdateInfo.value = it.toUiModel() }
     }
 
     private suspend fun getHardUpdateInfo() {
         suspendRunCatching {
             configRepository.getHardUpdateInfo()
-        }.onSuccess { hardUpdateInfo.value = it }
+        }.onSuccess { hardUpdateInfo.value = it.toUiModel() }
     }
 
     private suspend fun insertDefaultTag() {

@@ -54,6 +54,7 @@ fun TodoListCard(
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onEditScheduleClick: (TodoScheduleUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    editMenu: ScheduleEditMenu? = null,
 ) {
     val titleColor =
         if (todo.isDone) EbbingTheme.colors.textDisabled else EbbingTheme.colors.textOnBackground
@@ -214,16 +215,20 @@ fun TodoListCard(
                 }
             }
 
-            // 우상단 3-dots (수정 옵션)
-            Image(
-                painter = painterResource(R.drawable.ic_3dots),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(EbbingTheme.colors.strokeIcon),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(20.dp)
-                    .clickable { onEditScheduleClick(todo) },
-            )
+            // 우상단 3-dots (수정 옵션). editMenu가 있으면(태블릿) 바텀시트 대신 아래에 드롭다운을 띄워요
+            ScheduleEditMenuAnchor(
+                schedule = todo,
+                editMenu = editMenu,
+                onClick = { onEditScheduleClick(todo) },
+                modifier = Modifier.align(Alignment.TopEnd),
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_3dots),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(EbbingTheme.colors.strokeIcon),
+                    modifier = Modifier.size(20.dp),
+                )
+            }
         }
 
         Box(modifier = Modifier.matchParentSize()) {

@@ -19,7 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,11 +48,13 @@ import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.graph.addtodo.contract.ProgressSuggestion
 import com.tgyuu.home.graph.ui.bottomsheet.RepeatCycleBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.SelectedDateBottomSheet
 import com.tgyuu.home.graph.ui.bottomsheet.TagBottomSheet
 import com.tgyuu.home.graph.ui.dialog.ConfirmExitDialog
 import com.tgyuu.home.graph.notification.NotificationScreen
+import com.tgyuu.home.graph.ui.NextProgressSuggestionContent
 import com.tgyuu.home.graph.ui.PinnedContent
 import com.tgyuu.home.graph.ui.RepeatCycleContent
 import com.tgyuu.home.graph.ui.RestDayContent
@@ -61,6 +62,14 @@ import com.tgyuu.home.graph.ui.ScheduleContent
 import com.tgyuu.home.graph.ui.TabletFormLayout
 import com.tgyuu.home.graph.ui.TagContent
 import com.tgyuu.home.graph.ui.TitleContent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
+import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.home.graph.ui.SelectDropdownContent
+import com.tgyuu.home.graph.ui.RepeatCycleDropdownItems
+import com.tgyuu.home.graph.ui.TagDropdownItems
 import java.time.DayOfWeek
 import java.time.LocalDate
 
@@ -71,11 +80,70 @@ internal fun AddTodoRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     var repeatCycleSheetKey by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(viewModel) {
+    // 태블릿은 태그·반복 주기 추가를 이 화면 위 팝업으로 열어서, 닫히고 다시 RESUMED가 될 때도 새로 불러와요
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.loadNewTag()
         viewModel.loadNewRepeatCycle()
         viewModel.loadTags()
         viewModel.loadRepeatCycles()
+    }
+
+    val openRepeatCycleSheet: (startWithEndDatePicker: Boolean) -> Unit = { startWithEndDatePicker ->
+        repeatCycleSheetKey++
+        viewModel.onIntent(
+            AddTodoIntent.OnRepeatCycleDropDownClick(
+                {
+                    RepeatCycleBottomSheet(
+                        repeatCycleList = state.repeatCycleList,
+                        originRepeatCycle = state.repeatCycle,
+                        selectedDate = state.selectedDate,
+                        openKey = repeatCycleSheetKey,
+                        startFromMonday = state.mondayStart,
+                        startWithEndDatePicker = startWithEndDatePicker,
+                        onAddRepeatCycleClick = {
+                            viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
+                        },
+                        updateRepeatCycle = {
+                            viewModel.onIntent(
+                                AddTodoIntent.OnRepeatCycleChange(it)
+                            )
+                        },
+                    )
+                }
+            )
+        )
+    }
+
+    val tagDropdown: SelectDropdownContent = { dismiss ->
+        TagDropdownItems(
+            tagList = state.tagList,
+            selectedTag = state.tag,
+            onTagClick = {
+                dismiss()
+                viewModel.onIntent(AddTodoIntent.OnTagChange(it))
+            },
+            onAddTagClick = {
+                dismiss()
+                viewModel.onIntent(AddTodoIntent.OnAddTagPopupClick)
+            },
+        )
+    }
+
+    val repeatCycleDropdown: SelectDropdownContent = { dismiss ->
+        RepeatCycleDropdownItems(
+            repeatCycleList = state.repeatCycleList,
+            selectedRepeatCycle = state.repeatCycle,
+            onRepeatCycleClick = { cycle ->
+                dismiss()
+                // '매일'은 종료일을 더 골라야 해서 한 단계 더 들어가는 팝업으로 열어요
+                if (cycle.id == RepeatCycle.DAILY_REPEAT_ID) openRepeatCycleSheet(true)
+                else viewModel.onIntent(AddTodoIntent.OnRepeatCycleChange(cycle))
+            },
+            onAddRepeatCycleClick = {
+                dismiss()
+                viewModel.onIntent(AddTodoIntent.OnAddRepeatCyclePopupClick)
+            },
+        )
     }
 
     EbbingPageTransitionAnimation(state.page) { page ->
@@ -102,6 +170,7 @@ internal fun AddTodoRoute(
                     )
                 },
                 onTitleChange = { viewModel.onIntent(AddTodoIntent.OnTitleChange(it)) },
+                onSuggestionClick = { viewModel.onIntent(AddTodoIntent.OnSuggestionClick(it)) },
                 onPinnedChange = { viewModel.onIntent(AddTodoIntent.OnPinnedChange(it)) },
                 onTagDropDownClick = {
                     viewModel.onIntent(
@@ -117,30 +186,9 @@ internal fun AddTodoRoute(
                         )
                     )
                 },
-                onRepeatCycleDropDownClick = {
-                    repeatCycleSheetKey++
-                    viewModel.onIntent(
-                        AddTodoIntent.OnRepeatCycleDropDownClick(
-                            {
-                                RepeatCycleBottomSheet(
-                                    repeatCycleList = state.repeatCycleList,
-                                    originRepeatCycle = state.repeatCycle,
-                                    selectedDate = state.selectedDate,
-                                    openKey = repeatCycleSheetKey,
-                                    startFromMonday = state.mondayStart,
-                                    onAddRepeatCycleClick = {
-                                        viewModel.onIntent(AddTodoIntent.OnAddRepeatCycleClick)
-                                    },
-                                    updateRepeatCycle = {
-                                        viewModel.onIntent(
-                                            AddTodoIntent.OnRepeatCycleChange(it)
-                                        )
-                                    },
-                                )
-                            }
-                        )
-                    )
-                },
+                onRepeatCycleDropDownClick = { openRepeatCycleSheet(false) },
+                tagDropdown = tagDropdown,
+                repeatCycleDropdown = repeatCycleDropdown,
                 onRestDayChange = { viewModel.onIntent(AddTodoIntent.OnRestDayChange(it)) },
                 onSaveClick = { viewModel.onIntent(AddTodoIntent.OnSaveClick) },
             )
@@ -166,12 +214,15 @@ private fun AddTodoScreen(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tagDropdown: SelectDropdownContent? = null,
+    repeatCycleDropdown: SelectDropdownContent? = null,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     var isShowExitDialog by remember { mutableStateOf(false) }
@@ -187,6 +238,7 @@ private fun AddTodoScreen(
                 isShowExitDialog = false
                 onBackClick()
             },
+            logProperties = mapOf("variant" to state.suggestionVariant.key),
         )
     }
 
@@ -199,6 +251,7 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
+            onSuggestionClick = onSuggestionClick,
             onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -215,11 +268,14 @@ private fun AddTodoScreen(
             },
             onSelectedDateChangeClick = onSelectedDateChangeClick,
             onTitleChange = onTitleChange,
+            onSuggestionClick = onSuggestionClick,
             onPinnedChange = onPinnedChange,
             onTagDropDownClick = onTagDropDownClick,
             onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
             onRestDayChange = onRestDayChange,
             onSaveClick = onSaveClick,
+            tagDropdown = tagDropdown,
+            repeatCycleDropdown = repeatCycleDropdown,
             modifier = modifier,
         )
     }
@@ -231,6 +287,7 @@ private fun AddTodoScreenPhone(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
@@ -266,6 +323,7 @@ private fun AddTodoScreenPhone(
                 scrollState = scrollState,
                 onSelectedDateChangeClick = onSelectedDateChangeClick,
                 onTitleChange = onTitleChange,
+                onSuggestionClick = onSuggestionClick,
                 onTagDropDownClick = onTagDropDownClick,
                 onPinnedChange = onPinnedChange,
                 onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
@@ -296,11 +354,14 @@ private fun AddTodoScreenTablet(
     onBackClick: () -> Unit,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onTagDropDownClick: () -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
     onSaveClick: () -> Unit,
+    tagDropdown: SelectDropdownContent?,
+    repeatCycleDropdown: SelectDropdownContent?,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -326,10 +387,17 @@ private fun AddTodoScreenTablet(
                     scrollState = scrollState,
                     onSelectedDateChangeClick = onSelectedDateChangeClick,
                     onTitleChange = onTitleChange,
+                    onSuggestionClick = onSuggestionClick,
                     onTagDropDownClick = onTagDropDownClick,
                     onPinnedChange = onPinnedChange,
                     onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
                     onRestDayChange = onRestDayChange,
+                    tagDropdown = tagDropdown,
+                    repeatCycleDropdown = repeatCycleDropdown,
+                    // 태블릿은 날짜 헤더 두 줄 사이를 4dp 더 띄워요 (디자인 QA)
+                    headerStyle = EbbingTheme.typography.heading24B.let {
+                        it.copy(lineHeight = (it.lineHeight.value + 4).sp)
+                    },
                 )
             },
             side = { ScheduleContent(schedules = state.schedules) },
@@ -355,10 +423,14 @@ private fun TodoMainFormContent(
     scrollState: ScrollState,
     onSelectedDateChangeClick: () -> Unit,
     onTitleChange: (String) -> Unit,
+    onSuggestionClick: (ProgressSuggestion) -> Unit,
     onTagDropDownClick: () -> Unit,
     onPinnedChange: (Boolean) -> Unit,
     onRepeatCycleDropDownClick: () -> Unit,
     onRestDayChange: (DayOfWeek) -> Unit,
+    tagDropdown: SelectDropdownContent? = null,
+    repeatCycleDropdown: SelectDropdownContent? = null,
+    headerStyle: TextStyle = EbbingTheme.typography.heading24B,
 ) {
     val monthDayText = stringResource(
         R.string.home_month_day,
@@ -378,7 +450,7 @@ private fun TodoMainFormContent(
             }
             append(addTodoHeaderSuffix)
         },
-        style = EbbingTheme.typography.heading24B,
+        style = headerStyle,
         color = EbbingTheme.colors.textOnBackground,
         modifier = Modifier.clickable { onSelectedDateChangeClick() },
     )
@@ -389,14 +461,23 @@ private fun TodoMainFormContent(
         onTitleChange = onTitleChange,
     )
 
+    NextProgressSuggestionContent(
+        suggestions = state.visibleSuggestions,
+        onSuggestionClick = onSuggestionClick,
+    )
+
     TagContent(
         tag = state.tag,
+        isFromLast = state.isTagFromLast,
         onTagDropDownClick = onTagDropDownClick,
+        dropdown = tagDropdown,
     )
 
     RepeatCycleContent(
         repeatCycle = state.repeatCycle,
+        isFromLast = state.isRepeatCycleFromLast,
         onRepeatCycleDropDownClick = onRepeatCycleDropDownClick,
+        dropdown = repeatCycleDropdown,
     )
 
     RestDayContent(
@@ -430,6 +511,7 @@ private fun PreviewAddTodo() {
             onSaveClick = {},
             onBackClick = {},
             onTitleChange = {},
+            onSuggestionClick = {},
             onPinnedChange = {},
             onTagDropDownClick = {},
             onRepeatCycleDropDownClick = {},

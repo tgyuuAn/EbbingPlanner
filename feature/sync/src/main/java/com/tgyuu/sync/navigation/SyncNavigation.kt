@@ -3,6 +3,7 @@ package com.tgyuu.sync.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.navigation.SyncBaseRoute
 import com.tgyuu.navigation.SyncGraph
 import com.tgyuu.sync.graph.main.SyncMainRoute
@@ -11,6 +12,7 @@ import com.tgyuu.sync.graph.restore.RestoreByDeviceIdRoute
 fun NavGraphBuilder.syncNavigation() {
     navigation<SyncBaseRoute>(startDestination = SyncGraph.SyncMainRoute) {
         composable<SyncGraph.SyncMainRoute> {
+            TrackScreenViewEvent(key = Unit, screenName = "SyncMain")
             SyncMainRoute()
         }
 

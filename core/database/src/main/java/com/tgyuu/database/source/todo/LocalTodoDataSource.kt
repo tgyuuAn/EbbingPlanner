@@ -73,4 +73,5 @@ interface LocalTodoDataSource {
     suspend fun getTodoInfosForSync(lastSyncTime: LocalDateTime): List<TodoInfoForSync>
     suspend fun getTodoInfosByTagId(tagId: Int): List<TodoInfo>
     suspend fun getTodoInfoById(infoId: Int): TodoInfo
+    suspend fun getRecentTodoInfos(limit: Int): List<TodoInfo>
 }

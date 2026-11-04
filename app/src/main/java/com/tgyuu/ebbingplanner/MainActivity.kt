@@ -26,7 +26,6 @@ import androidx.navigation.navOptions
 import com.tgyuu.analytics.AnalyticsHelper
 import com.tgyuu.analytics.LocalAnalyticsHelper
 import com.tgyuu.ebbingplanner.backup.AutoBackupManager
-import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.toFormattedString

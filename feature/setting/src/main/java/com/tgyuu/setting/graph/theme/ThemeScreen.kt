@@ -20,11 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowWidthSizeClass
 import com.tgyuu.common.util.EbbingVisibleAnimation
 import com.tgyuu.common.util.clickable
 import com.tgyuu.designsystem.BasePreview
@@ -93,28 +91,17 @@ private fun ThemeScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
-        PhoneThemeLayout(
-            state = state,
-            scrollState = scrollState,
-            focusManager = focusManager,
-            onBackClick = onBackClick,
-            onSaveClick = onSaveClick,
-            onThemeChange = onThemeChange,
-            modifier = modifier
-        )
-    } else {
-        TabletThemeLayout(
-            state = state,
-            focusManager = focusManager,
-            onBackClick = onBackClick,
-            onSaveClick = onSaveClick,
-            onThemeChange = onThemeChange,
-            modifier = modifier
-        )
-    }
+    // 태블릿도 폰과 같은 1단 배치를 써요 (디자인 QA)
+    PhoneThemeLayout(
+        state = state,
+        scrollState = scrollState,
+        focusManager = focusManager,
+        onBackClick = onBackClick,
+        onSaveClick = onSaveClick,
+        onThemeChange = onThemeChange,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -157,77 +144,6 @@ private fun PhoneThemeLayout(
             }
 
             Spacer(modifier = Modifier.height(60.dp))
-        }
-
-        EbbingSolidButton(
-            label = stringResource(R.string.setting_apply),
-            onClick = {
-                onSaveClick()
-                focusManager.clearFocus()
-            },
-            enabled = state.isSaveEnabled,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(EbbingTheme.colors.background)
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-        )
-    }
-}
-
-@Composable
-private fun TabletThemeLayout(
-    state: ThemeState,
-    focusManager: androidx.compose.ui.focus.FocusManager,
-    onBackClick: () -> Unit,
-    onSaveClick: () -> Unit,
-    onThemeChange: (Theme) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-    ) {
-        EbbingSubTopBar(
-            title = stringResource(R.string.setting_theme_change),
-            onNavigationClick = onBackClick,
-            rightComponent = {},
-        )
-
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .imePadding()
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(20.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.setting_change_app_theme),
-                    style = EbbingTheme.typography.heading24B,
-                    color = EbbingTheme.colors.textOnBackground,
-                )
-
-                state.selectTheme?.let {
-                    ThemeBody(
-                        selectedTheme = state.selectTheme,
-                        onThemeChange = onThemeChange,
-                    )
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(20.dp),
-            ) {
-                state.selectTheme?.let {
-                    PreviewBody(theme = state.selectTheme)
-                }
-            }
         }
 
         EbbingSolidButton(

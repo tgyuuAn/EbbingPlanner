@@ -2,6 +2,7 @@ package com.tgyuu.designsystem.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +36,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.tgyuu.common.util.clickable
@@ -62,11 +65,24 @@ fun EbbingTextInputDefault(
     val focusManager = LocalFocusManager.current
     var lastDoneTime by remember { mutableLongStateOf(0L) }
     var isFocused by remember { mutableStateOf(false) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue(value, TextRange(value.length))) }
+    var lastValue by remember { mutableStateOf(value) }
+
+    // 추천 칩 선택처럼 바깥에서 값이 바뀌면 이어서 입력할 수 있게 커서를 끝으로 옮겨요.
+    if (value != lastValue) {
+        lastValue = value
+        if (value != textFieldValue.text) {
+            textFieldValue = TextFieldValue(value, TextRange(value.length))
+        }
+    }
 
     BasicTextField(
-        value = value,
+        value = textFieldValue,
         onValueChange = { input ->
-            limit?.let { if (input.length <= limit) onValueChange(input) } ?: onValueChange(input)
+            if (limit != null && input.text.length > limit) return@BasicTextField
+            val textChanged = input.text != textFieldValue.text
+            textFieldValue = input
+            if (textChanged) onValueChange(input.text)
         },
         singleLine = true,
         readOnly = readOnly,
@@ -127,13 +143,20 @@ fun EbbingTextInputDropDown(
     modifier: Modifier = Modifier,
     hint: String = "",
     color: Int? = null,
+    expanded: Boolean = false,
 ) {
+    val shape = RoundedCornerShape(6.dp)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .height(48.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(EbbingTheme.colors.fillTextfield)
+            .clip(shape)
+            .background(if (expanded) EbbingTheme.colors.background else EbbingTheme.colors.fillTextfield)
+            .then(
+                if (expanded) Modifier.border(1.dp, EbbingTheme.colors.strokePrimary, shape)
+                else Modifier
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .clickable { onDropDownClick() },
     ) {

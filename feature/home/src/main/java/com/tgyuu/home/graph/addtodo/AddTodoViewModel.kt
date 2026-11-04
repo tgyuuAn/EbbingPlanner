@@ -10,6 +10,8 @@ import com.tgyuu.common.base.BaseViewModel
 import com.tgyuu.common.event.EbbingEvent
 import com.tgyuu.common.event.EbbingEvent.ShowBottomSheet
 import com.tgyuu.common.event.EventBus
+import com.tgyuu.common.generateDailySchedules
+import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.common.toFormattedString
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.common.ui.resource.ResourceProvider
@@ -18,12 +20,20 @@ import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.DefaultRepeatCycles
 import com.tgyuu.domain.model.DefaultTodoTag
+import com.tgyuu.domain.model.RepeatCycle
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.TodoRepository
+import com.tgyuu.experiment.domain.model.Experiment
+import com.tgyuu.experiment.domain.model.Experiment.NextProgressSuggestion.Variant
+import com.tgyuu.experiment.domain.repository.ExperimentRepository
 import com.tgyuu.home.graph.addtodo.contract.AddTodoIntent
 import com.tgyuu.home.graph.addtodo.contract.AddTodoState
+import com.tgyuu.home.graph.addtodo.contract.ProgressSuggestion
+import com.tgyuu.home.model.hasFinalConsonant
+import com.tgyuu.home.model.progressKey
 import com.tgyuu.home.model.sortedByUsageOrder
+import com.tgyuu.home.model.suggestNextProgress
 import com.tgyuu.home.model.toUiModel
 import com.tgyuu.home.model.toUiModels
 import com.tgyuu.navigation.HomeGraph.HomeRoute
@@ -32,8 +42,10 @@ import com.tgyuu.navigation.NavigationEvent
 import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.navigation.TagGraph
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -49,6 +61,7 @@ class AddTodoViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val analyticsHelper: AnalyticsHelper,
     private val resourceProvider: ResourceProvider,
+    private val experimentRepository: ExperimentRepository,
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddTodoState, AddTodoIntent>(
     AddTodoState(
@@ -59,13 +72,10 @@ class AddTodoViewModel @Inject constructor(
     )
 ) {
 
-    init {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.View(
-                screenName = "AddTodo",
-            )
-        )
+    /** 최근에 만든 일정 제목. 저장 후 토스트에서 직전 진도와 비교할 때 써요. */
+    private var recentTitles: List<String> = emptyList()
 
+    init {
         setState {
             copy(
                 tag = tag?.copy(name = resourceProvider.getString(R.string.tag_unassigned))
@@ -74,6 +84,7 @@ class AddTodoViewModel @Inject constructor(
 
         initNotificationState()
         initLastSelected()
+        initSuggestions()
 
         viewModelScope.launch {
             configRepository.getMondayStart()
@@ -104,6 +115,107 @@ class AddTodoViewModel @Inject constructor(
             }
         lastRepeatCycle?.let {
             setState { copy(repeatCycle = it.toUiModel(resourceProvider)) }
+        }
+    }
+
+    /** 최근에 만든 일정부터 다음 진도를 추정해 '다음 진도 추천' 칩으로 보여줘요. */
+    private fun initSuggestions() = viewModelScope.launch {
+        val variant = loadSuggestionVariant()
+        setState { copy(suggestionVariant = variant) }
+
+        // 진입 로그도 실험군별로 나눠 볼 수 있게, 실험군을 정한 뒤에 남겨요.
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddTodo",
+                properties = mapOf("variant" to variant.key),
+            )
+        )
+
+        val tagsById = todoRepository.loadTags().associateBy { it.id }
+        val repeatCycles = DefaultRepeatCycles + todoRepository.loadRepeatCycles()
+
+        // 전체 일정 대신 최근 할 일만 읽어서, 데이터가 많아도 화면 진입 비용이 일정해요.
+        val recentInfos = todoRepository.loadRecentTodoInfos(RECENT_TODO_LIMIT)
+        recentTitles = recentInfos.map { it.title }
+
+        val suggestions = recentInfos
+            // 같은 과목(숫자만 다른 제목)은 가장 최근 일정 하나만 추천하고, 직전 제목과 비교해 진도 간격을 구해요.
+            .groupBy { progressKey(it.title) }
+            .values
+            .take(MAX_SUGGESTION_COUNT)
+            .mapNotNull { sameSubject ->
+                val info = sameSubject.first()
+                val previousTitle = sameSubject.drop(1)
+                    .map { it.title }
+                    .firstOrNull { it.trim() != info.title.trim() }
+                val tag = tagsById[info.tagId] ?: return@mapNotNull null
+                val nextProgress = suggestNextProgress(info.title, previousTitle)
+                ProgressSuggestion(
+                    // 실험: TREATMENT는 다음 진도까지, CONTROL은 진도 없이 과목명만 추천해요.
+                    title = when (variant) {
+                        Variant.TREATMENT -> nextProgress.title
+                        Variant.CONTROL -> nextProgress.baseTitle
+                    },
+                    basis = nextProgress.basis.logValue,
+                    tag = tag.toUiModel().let {
+                        if (it.id == DefaultTodoTag.id) {
+                            it.copy(name = resourceProvider.getString(R.string.tag_unassigned))
+                        } else {
+                            it
+                        }
+                    },
+                    repeatCycle = inferRepeatCycle(
+                        dates = todoRepository.loadSchedulesByTodoInfo(info.id).map { it.date },
+                        restDays = info.restDays,
+                        candidates = repeatCycles,
+                    )?.toUiModel(resourceProvider),
+                )
+            }
+            // 끝을 비운 진도("101-")와 닫힌 진도("51-100")가 같은 추천을 만들 수 있어요.
+            .distinctBy { it.title }
+
+        setState { copy(suggestions = suggestions.toImmutableList()) }
+
+        if (suggestions.isNotEmpty()) {
+            analyticsHelper.logEvent(
+                AnalyticsEvent.Action(
+                    screenName = "AddTodo",
+                    actionName = "show_next_progress_suggestion",
+                    properties = mapOf(
+                        "variant" to variant.key,
+                        "suggestion_count" to suggestions.size,
+                        "suggestion_bases" to suggestions.joinToString(",") { it.basis },
+                    ),
+                )
+            )
+        }
+    }
+
+    /**
+     * 실험군은 보통 앱 시작 때 받아 둔 값을 바로 읽어요.
+     * 업데이트 후 첫 실행처럼 아직 못 받았으면 Remote Config 응답을 기다리게 되는데,
+     * 진입 로그와 칩이 늦어지지 않도록 잠깐만 기다리고 기본값(CONTROL)을 써요.
+     */
+    private suspend fun loadSuggestionVariant(): Variant =
+        withTimeoutOrNull(VARIANT_TIMEOUT_MILLIS) {
+            experimentRepository.getVariant(Experiment.NextProgressSuggestion)
+        } ?: Experiment.NextProgressSuggestion.defaultVariant
+
+    /** 일정에는 반복 주기가 저장되지 않아서, 회차 날짜를 다시 만들어 보고 일치하는 주기를 찾아요. */
+    private fun inferRepeatCycle(
+        dates: List<LocalDate>,
+        restDays: Set<DayOfWeek>,
+        candidates: List<RepeatCycle>,
+    ): RepeatCycle? {
+        val sortedDates = dates.sorted()
+        val baseDate = sortedDates.firstOrNull() ?: return null
+        return candidates.firstOrNull { cycle ->
+            val generated = if (cycle.id == RepeatCycle.DAILY_REPEAT_ID) {
+                generateDailySchedules(baseDate, cycle.intervals, restDays)
+            } else {
+                generateValidSchedules(baseDate, cycle.intervals, restDays)
+            }
+            generated == sortedDates
         }
     }
 
@@ -165,7 +277,11 @@ class AddTodoViewModel @Inject constructor(
         when (intent) {
             AddTodoIntent.OnBackClick -> {
                 analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "Back")
+                    AnalyticsEvent.Click(
+                        screenName = "AddTodo",
+                        buttonName = "Back",
+                        properties = mapOf("variant" to currentState.suggestionVariant.key),
+                    )
                 )
                 navigationBus.navigate(NavigationEvent.Up)
             }
@@ -176,6 +292,7 @@ class AddTodoViewModel @Inject constructor(
 
             is AddTodoIntent.OnSelectedDateChange -> onSelectedDateChange(intent.selectedDate)
             is AddTodoIntent.OnTitleChange -> onTitleChange(intent.title)
+            is AddTodoIntent.OnSuggestionClick -> onSuggestionClick(intent.suggestion)
             is AddTodoIntent.OnPinnedChange -> onPinnedChange(intent.isPinned)
             is AddTodoIntent.OnRepeatCycleDropDownClick -> eventBus.sendEvent(
                 ShowBottomSheet(intent.content)
@@ -191,6 +308,10 @@ class AddTodoViewModel @Inject constructor(
             AddTodoIntent.OnAddTagClick -> onAddTagClick()
             AddTodoIntent.OnSaveClick -> onSaveClick()
             AddTodoIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
+            AddTodoIntent.OnAddTagPopupClick -> navigationBus.navigate(NavigationEvent.To(TagGraph.AddTagPopupRoute))
+            AddTodoIntent.OnAddRepeatCyclePopupClick -> navigationBus.navigate(
+                NavigationEvent.To(RepeatCycleGraph.AddRepeatCyclePopupRoute)
+            )
 
             // Notification 관련 Intent
             AddTodoIntent.OnNotificationToggleClick -> onNotificationToggleClick()
@@ -212,6 +333,36 @@ class AddTodoViewModel @Inject constructor(
         setState { copy(title = title) }
     }
 
+    private fun onSuggestionClick(suggestion: ProgressSuggestion) {
+        val visibleSuggestions = currentState.visibleSuggestions
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Click(
+                screenName = "AddTodo",
+                buttonName = "NextProgressSuggestion",
+                properties = mapOf(
+                    "variant" to currentState.suggestionVariant.key,
+                    "suggestion_title" to suggestion.title,
+                    "suggestion_index" to visibleSuggestions.indexOf(suggestion),
+                    "suggestion_count" to visibleSuggestions.size,
+                    "suggestion_basis" to suggestion.basis,
+                    "has_repeat_cycle" to (suggestion.repeatCycle != null),
+                    "typed_title_length" to currentState.title.trim().length,
+                ),
+            )
+        )
+
+        setState {
+            copy(
+                title = suggestion.title,
+                tag = suggestion.tag,
+                isTagFromLast = true,
+                repeatCycle = suggestion.repeatCycle ?: repeatCycle,
+                isRepeatCycleFromLast = suggestion.repeatCycle != null,
+                selectedSuggestion = suggestion,
+            )
+        }
+    }
+
     private fun onPinnedChange(isPinned: Boolean) {
         setState { copy(isPinned = isPinned) }
     }
@@ -219,13 +370,13 @@ class AddTodoViewModel @Inject constructor(
     private suspend fun onTagChange(todoTag: TodoTagUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
 
-        setState { copy(tag = todoTag) }
+        setState { copy(tag = todoTag, isTagFromLast = false) }
     }
 
     private suspend fun onRepeatCycleChange(repeatCycle: RepeatCycleUiModel) {
         eventBus.sendEvent(EbbingEvent.HideBottomSheet)
         eventBus.awaitBottomSheetHidden()
-        setState { copy(repeatCycle = repeatCycle) }
+        setState { copy(repeatCycle = repeatCycle, isRepeatCycleFromLast = false) }
     }
 
     private suspend fun onRestDayChange(restDay: DayOfWeek) {
@@ -260,6 +411,7 @@ class AddTodoViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "AddTodo",
                 buttonName = "Save",
+                properties = mapOf("variant" to currentState.suggestionVariant.key),
             )
         )
 
@@ -286,6 +438,8 @@ class AddTodoViewModel @Inject constructor(
             isPinned = currentState.isPinned,
             restDays = currentState.restDays.toSet(),
         )
+
+        logTodoSaved()
 
         runCatching {
             configRepository.recordTagUsage(tag.id)
@@ -315,7 +469,7 @@ class AddTodoViewModel @Inject constructor(
         val isFirstTodo = runCatching { configRepository.markFirstTodoAdded() }.getOrDefault(false)
         runCatching { configRepository.incrementTodoRegisteredCount() }
 
-        eventBus.sendEvent(EbbingEvent.ShowSnackBar(resourceProvider.getString(R.string.home_snackbar_todo_added)))
+        eventBus.sendEvent(EbbingEvent.ShowSnackBar(savedSnackBarMessage(currentState.title)))
         navigationBus.navigate(
             NavigationEvent.To(
                 route = HomeRoute(
@@ -325,6 +479,48 @@ class AddTodoViewModel @Inject constructor(
                 popUpTo = true,
             )
         )
+    }
+
+    /** 다음 진도 추천이 실제 일정 등록으로 이어졌는지 보려는 로그예요. */
+    private fun logTodoSaved() {
+        val state = currentState
+        val selected = state.selectedSuggestion
+        analyticsHelper.logEvent(
+            AnalyticsEvent.Action(
+                screenName = "AddTodo",
+                actionName = "save_todo",
+                actionResult = "success",
+                properties = mapOf(
+                    "variant" to state.suggestionVariant.key,
+                    "had_suggestions" to state.suggestions.isNotEmpty(),
+                    "from_suggestion" to (selected != null),
+                    "suggestion_basis" to selected?.basis,
+                    "title_edited" to (selected != null && state.title.trim() != selected.title),
+                    "tag_from_last" to state.isTagFromLast,
+                    "repeat_cycle_from_last" to state.isRepeatCycleFromLast,
+                ),
+            )
+        )
+    }
+
+    /** 다음 진도를 알 수 있는 제목이면, 다음에 어디서부터 추천할지 알려줘요. */
+    private fun savedSnackBarMessage(title: String): String {
+        val previousTitle = recentTitles.firstOrNull {
+            progressKey(it) == progressKey(title) && it.trim() != title.trim()
+        }
+        val nextProgress = suggestNextProgress(title, previousTitle)
+        val start = nextProgress.start
+        // 진도 없이 추천하는 CONTROL에서는 다음 진도를 안내하지 않아요.
+        if (currentState.suggestionVariant == Variant.CONTROL || start == null || nextProgress.subject.isEmpty()) {
+            return resourceProvider.getString(R.string.home_snackbar_todo_added)
+        }
+
+        val resId = if (nextProgress.subject.hasFinalConsonant()) {
+            R.string.home_snackbar_next_progress_eul
+        } else {
+            R.string.home_snackbar_next_progress_reul
+        }
+        return resourceProvider.getString(resId, nextProgress.subject, start)
     }
 
     private fun onNotificationToggleClick() {
@@ -406,4 +602,9 @@ class AddTodoViewModel @Inject constructor(
         saveTodoAndNavigateHome()
     }
 
+    private companion object {
+        const val MAX_SUGGESTION_COUNT = 5
+        const val RECENT_TODO_LIMIT = 50
+        const val VARIANT_TIMEOUT_MILLIS = 500L
+    }
 }

@@ -1,12 +1,12 @@
 package com.tgyuu.setting.graph.main.contract
 
 import com.tgyuu.common.base.UiState
-import com.tgyuu.domain.model.UpdateInfo
+import com.tgyuu.designsystem.model.UpdateInfoUiModel
 import java.time.ZonedDateTime
 
 data class SettingState(
-    val updateInfo: UpdateInfo? = null,
-    val hardUpdateInfo: UpdateInfo? = null,
+    val updateInfo: UpdateInfoUiModel? = null,
+    val hardUpdateInfo: UpdateInfoUiModel? = null,
     val notificationEnabled: Boolean = true,
     val alarmHour: String = "",
     val alarmMinute: String = "",

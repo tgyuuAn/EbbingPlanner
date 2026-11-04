@@ -38,6 +38,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import android.app.Activity
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,6 +50,8 @@ import com.tgyuu.common.util.isLandscapeWindow
 import com.tgyuu.common.util.throttledClickable
 import com.tgyuu.designsystem.BasePreview
 import com.tgyuu.designsystem.EbbingPreview
+import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.ScheduleEditMenu
 import com.tgyuu.designsystem.component.calendar.EbbingCalendar
 import com.tgyuu.designsystem.component.calendar.rememberCalendarState
 import com.tgyuu.domain.model.CalendarDefaultView
@@ -63,6 +66,8 @@ import com.tgyuu.home.graph.main.ui.EbbingTodoList
 import com.tgyuu.home.graph.main.ui.bottomsheet.DelayBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.DeleteBottomSheet
 import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsBottomSheet
+import com.tgyuu.home.graph.main.ui.bottomsheet.OptionsDropdownItems
+import com.tgyuu.home.graph.main.ui.bottomsheet.ScheduleOptionActions
 import com.tgyuu.home.graph.main.ui.bottomsheet.UpdateBottomSheet
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayAllDialog
 import com.tgyuu.home.graph.main.ui.dialog.ConfirmDelayDialog
@@ -124,6 +129,121 @@ internal fun HomeRoute(
         )
     }
 
+    val analyticsHelper = LocalAnalyticsHelper.current
+    val optionActions = ScheduleOptionActions(
+        onClickDelay = { delayedSchedule ->
+            scope.launch {
+                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                viewModel.eventBus.awaitBottomSheetHidden()
+                viewModel.onIntent(
+                    HomeIntent.OnDelayScheduleClick {
+                        DelayBottomSheet(
+                            selectedSchedule = delayedSchedule,
+                            onClickDelaySingle = {
+                                scope.launch {
+                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                    val (restDays, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
+                                        delayedSchedule.infoId,
+                                        delayedSchedule.date
+                                    )
+                                    dialogType = DialogType.ConfirmDelay(
+                                        schedule = delayedSchedule,
+                                        restDays = restDays,
+                                        expectedDateExcludingRestDays = expectedDateExcludingRestDays,
+                                        expectedDateIncludingRestDays = delayedSchedule.date.plusDays(
+                                            1
+                                        )
+                                    )
+                                    isShowDialog = true
+                                }
+                            },
+                            onClickDelayAll = {
+                                scope.launch {
+                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                    val (restDays, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
+                                        delayedSchedule.infoId,
+                                        delayedSchedule.date
+                                    )
+                                    dialogType = DialogType.ConfirmDelayAll(
+                                        schedule = delayedSchedule,
+                                        restDays = restDays,
+                                    )
+                                    isShowDialog = true
+                                }
+                            },
+                        )
+                    }
+                )
+            }
+        },
+        onClickDelete = { deletedSchedule ->
+            scope.launch {
+                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                viewModel.eventBus.awaitBottomSheetHidden()
+                viewModel.onIntent(
+                    HomeIntent.OnDeleteScheduleClick {
+                        DeleteBottomSheet(
+                            selectedSchedule = deletedSchedule,
+                            onClickDeleteSingle = {
+                                scope.launch {
+                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                    dialogType =
+                                        ConfirmDeleteSingle(deletedSchedule)
+                                    isShowDialog = true
+                                }
+                            },
+                            onClickDeleteRemaining = {
+                                scope.launch {
+                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                                    dialogType =
+                                        ConfirmDeleteRemaining(deletedSchedule)
+                                    isShowDialog = true
+                                }
+                            },
+                        )
+                    }
+                )
+            }
+        },
+        onClickUpdate = { updatedSchedule ->
+            scope.launch {
+                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                viewModel.eventBus.awaitBottomSheetHidden()
+                viewModel.onIntent(
+                    HomeIntent.OnUpdateScheduleClick {
+                        UpdateBottomSheet(
+                            selectedSchedule = updatedSchedule,
+                            onClickUpdateDate = {
+                                viewModel.onIntent(
+                                    HomeIntent.OnUpdateDateClick(
+                                        updatedSchedule
+                                    )
+                                )
+                            },
+                            onClickUpdateInfo = {
+                                viewModel.onIntent(
+                                    HomeIntent.OnUpdateInfoClick(
+                                        updatedSchedule
+                                    )
+                                )
+                            },
+                        )
+                    }
+                )
+            }
+        },
+        onClickMemo = { selectedSchedule ->
+            viewModel.onIntent(HomeIntent.OnMemoClick(selectedSchedule))
+        },
+        onClickDeleteMemo = { selectedSchedule ->
+            scope.launch {
+                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
+                dialogType = DialogType.ConfirmDeleteMemo(selectedSchedule)
+                isShowDialog = true
+            }
+        }
+    )
+
     HomeScreen(
         workedDate = workedDate,
         state = state,
@@ -138,119 +258,23 @@ internal fun HomeRoute(
                 HomeIntent.OnEditScheduleClick {
                     OptionsBottomSheet(
                         selectedSchedule = schedule,
-                        onClickDelay = { delayedSchedule ->
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                viewModel.eventBus.awaitBottomSheetHidden()
-                                viewModel.onIntent(
-                                    HomeIntent.OnDelayScheduleClick {
-                                        DelayBottomSheet(
-                                            selectedSchedule = delayedSchedule,
-                                            onClickDelaySingle = {
-                                                scope.launch {
-                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                                    val (restDays, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
-                                                        delayedSchedule.infoId,
-                                                        delayedSchedule.date
-                                                    )
-                                                    dialogType = DialogType.ConfirmDelay(
-                                                        schedule = delayedSchedule,
-                                                        restDays = restDays,
-                                                        expectedDateExcludingRestDays = expectedDateExcludingRestDays,
-                                                        expectedDateIncludingRestDays = delayedSchedule.date.plusDays(
-                                                            1
-                                                        )
-                                                    )
-                                                    isShowDialog = true
-                                                }
-                                            },
-                                            onClickDelayAll = {
-                                                scope.launch {
-                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                                    val (restDays, expectedDateExcludingRestDays) = viewModel.calculateDelayInfo(
-                                                        delayedSchedule.infoId,
-                                                        delayedSchedule.date
-                                                    )
-                                                    dialogType = DialogType.ConfirmDelayAll(
-                                                        schedule = delayedSchedule,
-                                                        restDays = restDays,
-                                                    )
-                                                    isShowDialog = true
-                                                }
-                                            },
-                                        )
-                                    }
-                                )
-                            }
-                        },
-                        onClickDelete = { deletedSchedule ->
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                viewModel.eventBus.awaitBottomSheetHidden()
-                                viewModel.onIntent(
-                                    HomeIntent.OnDeleteScheduleClick {
-                                        DeleteBottomSheet(
-                                            selectedSchedule = deletedSchedule,
-                                            onClickDeleteSingle = {
-                                                scope.launch {
-                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                                    dialogType =
-                                                        ConfirmDeleteSingle(deletedSchedule)
-                                                    isShowDialog = true
-                                                }
-                                            },
-                                            onClickDeleteRemaining = {
-                                                scope.launch {
-                                                    viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                                    dialogType =
-                                                        ConfirmDeleteRemaining(deletedSchedule)
-                                                    isShowDialog = true
-                                                }
-                                            },
-                                        )
-                                    }
-                                )
-                            }
-                        },
-                        onClickUpdate = { updatedSchedule ->
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                viewModel.eventBus.awaitBottomSheetHidden()
-                                viewModel.onIntent(
-                                    HomeIntent.OnUpdateScheduleClick {
-                                        UpdateBottomSheet(
-                                            selectedSchedule = updatedSchedule,
-                                            onClickUpdateDate = {
-                                                viewModel.onIntent(
-                                                    HomeIntent.OnUpdateDateClick(
-                                                        updatedSchedule
-                                                    )
-                                                )
-                                            },
-                                            onClickUpdateInfo = {
-                                                viewModel.onIntent(
-                                                    HomeIntent.OnUpdateInfoClick(
-                                                        updatedSchedule
-                                                    )
-                                                )
-                                            },
-                                        )
-                                    }
-                                )
-                            }
-                        },
-                        onClickMemo = { selectedSchedule ->
-                            viewModel.onIntent(HomeIntent.OnMemoClick(selectedSchedule))
-                        },
-                        onClickDeleteMemo = { selectedSchedule ->
-                            scope.launch {
-                                viewModel.eventBus.sendEvent(EbbingEvent.HideBottomSheet)
-                                dialogType = DialogType.ConfirmDeleteMemo(selectedSchedule)
-                                isShowDialog = true
-                            }
-                        }
+                        actions = optionActions,
                     )
                 }
+            )
+        },
+        editMenu = ScheduleEditMenu(
+            title = stringResource(R.string.home_options_title),
+            onOpen = {
+                analyticsHelper.logEvent(
+                    AnalyticsEvent.Click(screenName = "Home", buttonName = "OptionSchedule")
+                )
+            },
+        ) { schedule, dismiss ->
+            OptionsDropdownItems(
+                selectedSchedule = schedule,
+                actions = optionActions,
+                onDismiss = dismiss,
             )
         },
     )
@@ -267,7 +291,8 @@ private fun HomeScreen(
     onSyncClick: () -> Unit,
     onCurrentDateChanged: (LocalDate) -> Unit,
     onCalendarViewChanged: (CalendarDefaultView) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    editMenu: ScheduleEditMenu? = null,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
@@ -295,6 +320,7 @@ private fun HomeScreen(
             onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
             onCalendarViewChanged = onCalendarViewChanged,
+            editMenu = editMenu,
             modifier = modifier
         )
     } else {
@@ -308,6 +334,7 @@ private fun HomeScreen(
             onCurrentDateChanged = onCurrentDateChanged,
             onSyncClick = onSyncClick,
             onCalendarViewChanged = onCalendarViewChanged,
+            editMenu = editMenu,
             modifier = modifier
         )
     }
@@ -489,7 +516,8 @@ private fun TabletPortraitHomeScreen(
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
     onCalendarViewChanged: (CalendarDefaultView) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    editMenu: ScheduleEditMenu? = null,
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
     var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
@@ -566,6 +594,7 @@ private fun TabletPortraitHomeScreen(
                     onCheckedChange = onCheckedChange,
                     onSortTypeChange = onSortTypeChange,
                     onEditScheduleClick = onEditScheduleClick,
+                    editMenu = editMenu,
                     // 리스트 내부 좌우 여백(20dp)을 포함해 캘린더와 같은 60dp 라인에 맞춰요
                     modifier = Modifier
                         .fillMaxWidth()
@@ -593,7 +622,8 @@ private fun TabletHomeScreen(
     onCurrentDateChanged: (LocalDate) -> Unit,
     onSyncClick: () -> Unit,
     onCalendarViewChanged: (CalendarDefaultView) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    editMenu: ScheduleEditMenu? = null,
 ) {
     val analyticsHelper = LocalAnalyticsHelper.current
     var selectedDate by rememberSaveable(workedDate) { mutableStateOf(workedDate) }
@@ -677,6 +707,7 @@ private fun TabletHomeScreen(
                     onCheckedChange = onCheckedChange,
                     onSortTypeChange = onSortTypeChange,
                     onEditScheduleClick = onEditScheduleClick,
+                    editMenu = editMenu,
                     modifier = Modifier
                         .weight(TABLET_LIST_WEIGHT)
                         .padding(top = 20.dp),

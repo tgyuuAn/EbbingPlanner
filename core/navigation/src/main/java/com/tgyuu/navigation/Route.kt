@@ -69,6 +69,10 @@ sealed interface TagGraph : Route {
     @Serializable
     data object AddTagRoute : TagGraph
 
+    /** 태블릿 일정 등록 드롭다운에서 여는 태그 추가 팝업 */
+    @Serializable
+    data object AddTagPopupRoute : TagGraph
+
     @Serializable
     data class EditTagRoute(val tagId: Int) : TagGraph
 }
@@ -82,6 +86,10 @@ sealed interface RepeatCycleGraph : Route {
 
     @Serializable
     data object AddRepeatCycleRoute : Route
+
+    /** 태블릿 일정 등록 드롭다운에서 여는 반복 주기 추가 팝업 */
+    @Serializable
+    data object AddRepeatCyclePopupRoute : Route
 
     @Serializable
     data class EditRepeatCycleRoute(val repeatCycleId: Int? = null) : Route

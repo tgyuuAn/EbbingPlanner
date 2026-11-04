@@ -153,6 +153,8 @@
     <string name="home_update_info">予定情報を編集</string>
     <string name="home_update_repeat_cycle">関連する予定の繰り返し周期を再設定</string>
     <string name="home_options_title">編集</string>
+    <string name="home_dropdown_add_tag">新しいタグを追加</string>
+    <string name="home_dropdown_add_repeat_cycle">新しい繰り返し周期を追加</string>
     <string name="home_options_subtitle">%1$sの予定をどうしますか？</string>
     <string name="home_options_edit">編集する</string>
     <string name="home_options_delete">削除する</string>
@@ -207,6 +209,10 @@
     <string name="home_snackbar_all_rest_days">すべての曜日を休みにすることはできません</string>
     <string name="home_snackbar_required_fields">必須項目を入力してください</string>
     <string name="home_snackbar_todo_added">新しい予定を追加しました</string>
+    <string name="home_next_progress_title">次の進度のおすすめ</string>
+    <string name="home_from_last_todo">前回の予定から引き継ぎ</string>
+    <string name="home_snackbar_next_progress_eul">次に「%1$s」と入力すると、%2$sからおすすめします。</string>
+    <string name="home_snackbar_next_progress_reul">次に「%1$s」と入力すると、%2$sからおすすめします。</string>
     <string name="home_snackbar_loading_schedule_info">予定情報を読み込んでいます。しばらくしてからもう一度お試しください</string>
     <string name="home_snackbar_no_schedule_to_save">保存する予定がありません</string>
     <string name="home_snackbar_date_repeat_changed">この予定の日付と繰り返し周期を変更しました</string>
@@ -439,6 +445,7 @@
     <string name="update_view_notes">アップデート内容を見る</string>
     <string name="update_close">閉じる</string>
     <string name="update_button">アップデート</string>
+    <string name="update_default_notice">皆さまのご意見をもとに使いやすさを改善しました。\n今すぐアップデートしてみてください！</string>
     <string name="exit_confirm_snackbar">もう一度戻るを押すとアプリが終了します</string>
     <string name="notification_content_title">エビングプランナーの予定通知</string>
     <string name="home_add_todo_button">予定を登録</string>

@@ -154,6 +154,8 @@
     <string name="home_update_info">일정 정보 수정하기</string>
     <string name="home_update_repeat_cycle">연관된 일정 반복 주기 재설정하기</string>
     <string name="home_options_title">편집</string>
+    <string name="home_dropdown_add_tag">새 태그 추가</string>
+    <string name="home_dropdown_add_repeat_cycle">새 반복 주기 추가</string>
     <string name="home_options_subtitle">%1$s 일정을 어떻게 할까요?</string>
     <string name="home_options_edit">수정하기</string>
     <string name="home_options_delete">삭제하기</string>
@@ -208,6 +210,10 @@
     <string name="home_snackbar_all_rest_days">모든 요일을 휴식할 수는 없습니다</string>
     <string name="home_snackbar_required_fields">필수 항목을 작성해주세요</string>
     <string name="home_snackbar_todo_added">새로운 일정을 추가하였습니다</string>
+    <string name="home_next_progress_title">다음 진도 추천</string>
+    <string name="home_from_last_todo">지난번 일정에서 가져옴</string>
+    <string name="home_snackbar_next_progress_eul">다음에 \'%1$s\'을 입력하면 %2$s부터 추천해 드릴게요.</string>
+    <string name="home_snackbar_next_progress_reul">다음에 \'%1$s\'를 입력하면 %2$s부터 추천해 드릴게요.</string>
     <string name="home_snackbar_loading_schedule_info">일정 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요</string>
     <string name="home_snackbar_no_schedule_to_save">저장할 일정이 없습니다</string>
     <string name="home_snackbar_date_repeat_changed">해당 일정의 날짜 및 반복 주기를 변경하였습니다</string>
@@ -440,6 +446,7 @@
     <string name="update_view_notes">업데이트 내용 보러가기</string>
     <string name="update_close">닫기</string>
     <string name="update_button">업데이트</string>
+    <string name="update_default_notice">여러분의 의견을 반영하여 사용성을 개선했습니다.\n지금 바로 업데이트해 보세요!</string>
     <string name="exit_confirm_snackbar">뒤로 가기를 한 번 더 누르면 앱이 종료돼요</string>
     <string name="notification_content_title">에빙 플래너 일정 알림</string>
     <string name="home_add_todo_button">일정 등록하기</string>

@@ -14,5 +14,6 @@ sealed class EditTodoIntent : UiIntent {
     data class OnTagDropDownClick(val content: BottomSheetContent) : EditTodoIntent()
     data class OnTagChange(val tag: TodoTagUiModel) : EditTodoIntent()
     data object OnAddTagClick : EditTodoIntent()
+    data object OnAddTagPopupClick : EditTodoIntent()
     data object OnSaveClick : EditTodoIntent()
 }

@@ -1,12 +1,14 @@
 package com.tgyuu.setting.graph.main
 
-import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.foundation.EbbingTheme
@@ -31,13 +33,24 @@ fun SettingListPane(
     }
 }
 
+/** 열려 있는 메뉴 행을 강조해요. 목록의 좌우 여백까지 덮어 패널 폭을 꽉 채워요 */
 internal fun Modifier.settingMenuHighlight(menu: SettingMenu): Modifier = composed {
     if (LocalSelectedSettingMenu.current == menu) {
-        background(EbbingTheme.colors.fillSelected)
+        val color = EbbingTheme.colors.fillSelected
+        val horizontalPadding = LocalSettingHorizontalPadding.current
+
+        drawBehind {
+            val extend = horizontalPadding.toPx()
+            drawRect(
+                color = color,
+                topLeft = Offset(-extend, 0f),
+                size = Size(size.width + extend * 2, size.height),
+            )
+        }
     } else {
         this
     }
 }
 
-internal val SettingTabletListPanePadding: Dp = 48.dp
+internal val SettingTabletListPanePadding: Dp = 32.dp
 internal val SettingTabletPortraitPadding: Dp = 60.dp

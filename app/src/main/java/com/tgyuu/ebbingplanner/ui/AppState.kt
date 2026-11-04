@@ -9,7 +9,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.tgyuu.analytics.TrackNavigationDestination
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetState
 import com.tgyuu.navigation.Route
 import com.tgyuu.navigation.SettingGraph
@@ -21,8 +20,6 @@ fun rememberEbbingAppState(
     networkMonitor: NetworkMonitor,
     bottomSheetState: EbbingBottomSheetState,
 ): EbbingAppState {
-    TrackNavigationDestination(navController)
-
     return remember(
         navController,
         networkMonitor,
