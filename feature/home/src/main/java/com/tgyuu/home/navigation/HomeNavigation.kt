@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.common.toLocalDateOrThrow
 import com.tgyuu.home.graph.addtodo.AddTodoRoute
 import com.tgyuu.home.graph.editdate.EditDateRoute
@@ -17,6 +18,7 @@ import java.time.LocalDate
 fun NavGraphBuilder.homeGraph() {
     navigation<HomeBaseRoute>(startDestination = HomeGraph.HomeRoute()) {
         composable<HomeRoute> { backStackEntry ->
+            TrackScreenViewEvent(key = Unit, screenName = "Home")
             val route = backStackEntry.toRoute<HomeRoute>()
             val workedDate = route.workedDate?.toLocalDateOrThrow() ?: LocalDate.now()
 
