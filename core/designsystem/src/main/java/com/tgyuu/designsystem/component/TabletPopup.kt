@@ -1,14 +1,12 @@
 package com.tgyuu.designsystem.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,19 +26,23 @@ fun EbbingTabletFormPopup(
 ) {
     val shape = RoundedCornerShape(12.dp)
 
-    Column(
+    BoxWithConstraints(
         modifier = modifier
             .imePadding()
-            .padding(20.dp)
-            // 디자인: 960×1440 화면에서 760×1120 (약 80%)
-            .fillMaxWidth(0.8f)
-            .fillMaxHeight(0.8f)
-            .widthIn(max = 760.dp)
-            .heightIn(max = 1120.dp)
-            .shadow(elevation = 8.dp, shape = shape)
-            .clip(shape)
-            .background(EbbingTheme.colors.background)
-            .padding(32.dp),
-        content = content,
-    )
+            .padding(20.dp),
+    ) {
+        // 디자인: 960×1440 화면에서 760×1120 (약 80%). 큰 화면에서는 최대 크기에서 멈춰요
+        val popupWidth = minOf(maxWidth * 0.8f, 760.dp)
+        val popupHeight = minOf(maxHeight * 0.8f, 1120.dp)
+
+        Column(
+            modifier = Modifier
+                .size(width = popupWidth, height = popupHeight)
+                .shadow(elevation = 8.dp, shape = shape)
+                .clip(shape)
+                .background(EbbingTheme.colors.background)
+                .padding(32.dp),
+            content = content,
+        )
+    }
 }
