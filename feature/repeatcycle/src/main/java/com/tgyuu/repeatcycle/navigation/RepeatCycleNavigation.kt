@@ -5,6 +5,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
+import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.navigation.RepeatCycleBaseRoute
 import com.tgyuu.navigation.RepeatCycleGraph
 import com.tgyuu.repeatcycle.graph.addrepeatcycle.AddRepeatCycleRoute
@@ -14,6 +15,7 @@ import com.tgyuu.repeatcycle.graph.main.RepeatCycleRoute
 fun NavGraphBuilder.repeatCycleGraph() {
     navigation<RepeatCycleBaseRoute>(startDestination = RepeatCycleGraph.AddRepeatCycleRoute) {
         composable<RepeatCycleGraph.RepeatCycleRoute> {
+            TrackScreenViewEvent(key = Unit, screenName = "RepeatCycle")
             RepeatCycleRoute()
         }
 

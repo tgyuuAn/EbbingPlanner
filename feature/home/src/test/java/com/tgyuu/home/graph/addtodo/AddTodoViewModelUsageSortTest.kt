@@ -5,6 +5,7 @@ import com.tgyuu.analytics.NoOpAnalyticsHelper
 import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.home.fake.FakeConfigRepository
+import com.tgyuu.home.fake.FakeExperimentRepository
 import com.tgyuu.home.fake.FakeTodoRepository
 import com.tgyuu.navigation.NavigationBus
 import io.mockk.mockk
@@ -53,6 +54,7 @@ class AddTodoViewModelUsageSortTest {
             override fun getString(resId: Int): String = ""
             override fun getString(resId: Int, vararg formatArgs: Any): String = ""
         },
+        experimentRepository = FakeExperimentRepository(),
         savedStateHandle = SavedStateHandle(mapOf("selectedDate" to "2024-01-01")),
     )
 

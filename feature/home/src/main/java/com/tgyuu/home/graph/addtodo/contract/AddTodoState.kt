@@ -7,6 +7,7 @@ import com.tgyuu.common.generateValidSchedules
 import com.tgyuu.designsystem.model.RepeatCycleUiModel
 import com.tgyuu.designsystem.model.TodoTagUiModel
 import com.tgyuu.domain.model.RepeatCycle
+import com.tgyuu.experiment.domain.model.Experiment
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -27,9 +28,28 @@ data class AddTodoState(
     val restDays: ImmutableSet<DayOfWeek> = persistentSetOf(),
     val notificationState: NotificationState = NotificationState(),
     val mondayStart: Boolean = false,
+    val suggestions: ImmutableList<ProgressSuggestion> = persistentListOf(),
+    val isTagFromLast: Boolean = false,
+    val isRepeatCycleFromLast: Boolean = false,
+    /** 마지막으로 누른 추천 칩. 저장 로그에서 칩으로 만든 일정인지, 제목을 고쳤는지 보려고 남겨요. */
+    val selectedSuggestion: ProgressSuggestion? = null,
+    /** 다음 진도 추천 실험군. 칩 제목과 로그에 써요. */
+    val suggestionVariant: Experiment.NextProgressSuggestion.Variant =
+        Experiment.NextProgressSuggestion.defaultVariant,
 ) : UiState {
     val isSaveEnabled = title.isNotEmpty()
     val isModified = title.isNotEmpty() || isPinned || restDays.isNotEmpty()
+
+    /** 입력 중인 제목과 겹치는 칩만 보여주고, 이미 칩 그대로 채워졌으면 숨겨요. */
+    val visibleSuggestions: List<ProgressSuggestion>
+        get() {
+            val query = title.trim()
+            if (query.isEmpty()) return suggestions
+            return suggestions.filter {
+                it.title != query && it.title.contains(query, ignoreCase = true)
+            }
+        }
+
     val schedules: List<LocalDate>
         get() = repeatCycle?.let {
             if (it.id == RepeatCycle.DAILY_REPEAT_ID) {
@@ -52,6 +72,15 @@ data class AddTodoState(
         NOTIFICATION
     }
 }
+
+@Immutable
+data class ProgressSuggestion(
+    val title: String,
+    val tag: TodoTagUiModel,
+    val repeatCycle: RepeatCycleUiModel?,
+    /** 추천 근거(history / range / number / none). 로그용이에요. */
+    val basis: String = "",
+)
 
 @Immutable
 data class NotificationState(

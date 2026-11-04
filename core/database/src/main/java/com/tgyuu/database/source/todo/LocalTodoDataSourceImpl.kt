@@ -163,4 +163,7 @@ class LocalTodoDataSourceImpl @Inject constructor(
 
     override suspend fun getTodoInfoById(infoId: Int): TodoInfo =
         todoSchedulesDao.getTodoInfoById(infoId)
+
+    override suspend fun getRecentTodoInfos(limit: Int): List<TodoInfo> =
+        todoSchedulesDao.loadRecentTodoInfos(limit)
 }

@@ -134,6 +134,9 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun loadTodoInfoById(infoId: Int): TodoInfo =
         localTodoDataSource.getTodoInfoById(infoId)
 
+    override suspend fun loadRecentTodoInfos(limit: Int): List<TodoInfo> =
+        localTodoDataSource.getRecentTodoInfos(limit)
+
     override suspend fun replaceSchedules(
         infoId: Int,
         title: String,
