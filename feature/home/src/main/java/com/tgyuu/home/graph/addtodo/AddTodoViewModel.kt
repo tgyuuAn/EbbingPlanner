@@ -45,6 +45,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -75,12 +76,6 @@ class AddTodoViewModel @Inject constructor(
     private var recentTitles: List<String> = emptyList()
 
     init {
-        analyticsHelper.logEvent(
-            AnalyticsEvent.View(
-                screenName = "AddTodo",
-            )
-        )
-
         setState {
             copy(
                 tag = tag?.copy(name = resourceProvider.getString(R.string.tag_unassigned))
@@ -125,10 +120,19 @@ class AddTodoViewModel @Inject constructor(
 
     /** 최근에 만든 일정부터 다음 진도를 추정해 '다음 진도 추천' 칩으로 보여줘요. */
     private fun initSuggestions() = viewModelScope.launch {
+        val variant = loadSuggestionVariant()
+        setState { copy(suggestionVariant = variant) }
+
+        // 진입 로그도 실험군별로 나눠 볼 수 있게, 실험군을 정한 뒤에 남겨요.
+        analyticsHelper.logEvent(
+            AnalyticsEvent.View(
+                screenName = "AddTodo",
+                properties = mapOf("variant" to variant.key),
+            )
+        )
+
         val tagsById = todoRepository.loadTags().associateBy { it.id }
         val repeatCycles = DefaultRepeatCycles + todoRepository.loadRepeatCycles()
-        val variant = experimentRepository.getVariant(Experiment.NextProgressSuggestion)
-        setState { copy(suggestionVariant = variant) }
 
         // 전체 일정 대신 최근 할 일만 읽어서, 데이터가 많아도 화면 진입 비용이 일정해요.
         val recentInfos = todoRepository.loadRecentTodoInfos(RECENT_TODO_LIMIT)
@@ -186,6 +190,16 @@ class AddTodoViewModel @Inject constructor(
             )
         }
     }
+
+    /**
+     * 실험군은 보통 앱 시작 때 받아 둔 값을 바로 읽어요.
+     * 업데이트 후 첫 실행처럼 아직 못 받았으면 Remote Config 응답을 기다리게 되는데,
+     * 진입 로그와 칩이 늦어지지 않도록 잠깐만 기다리고 기본값(CONTROL)을 써요.
+     */
+    private suspend fun loadSuggestionVariant(): Variant =
+        withTimeoutOrNull(VARIANT_TIMEOUT_MILLIS) {
+            experimentRepository.getVariant(Experiment.NextProgressSuggestion)
+        } ?: Experiment.NextProgressSuggestion.defaultVariant
 
     /** 일정에는 반복 주기가 저장되지 않아서, 회차 날짜를 다시 만들어 보고 일치하는 주기를 찾아요. */
     private fun inferRepeatCycle(
@@ -263,7 +277,11 @@ class AddTodoViewModel @Inject constructor(
         when (intent) {
             AddTodoIntent.OnBackClick -> {
                 analyticsHelper.logEvent(
-                    AnalyticsEvent.Click(screenName = "AddTodo", buttonName = "Back")
+                    AnalyticsEvent.Click(
+                        screenName = "AddTodo",
+                        buttonName = "Back",
+                        properties = mapOf("variant" to currentState.suggestionVariant.key),
+                    )
                 )
                 navigationBus.navigate(NavigationEvent.Up)
             }
@@ -389,6 +407,7 @@ class AddTodoViewModel @Inject constructor(
             AnalyticsEvent.Click(
                 screenName = "AddTodo",
                 buttonName = "Save",
+                properties = mapOf("variant" to currentState.suggestionVariant.key),
             )
         )
 
@@ -582,5 +601,6 @@ class AddTodoViewModel @Inject constructor(
     private companion object {
         const val MAX_SUGGESTION_COUNT = 5
         const val RECENT_TODO_LIMIT = 50
+        const val VARIANT_TIMEOUT_MILLIS = 500L
     }
 }

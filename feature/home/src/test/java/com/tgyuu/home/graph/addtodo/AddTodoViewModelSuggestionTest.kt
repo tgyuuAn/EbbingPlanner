@@ -248,6 +248,21 @@ class AddTodoViewModelSuggestionTest {
     }
 
     @Test
+    fun `화면 진입·저장 버튼·뒤로가기 로그에도 실험군을 남긴다`() = runTest {
+        val viewModel = createViewModel(variant = "treatment")
+        viewModel.onIntent(AddTodoIntent.OnTitleChange("영단어"))
+
+        viewModel.onIntent(AddTodoIntent.OnSaveClick)
+        viewModel.onIntent(AddTodoIntent.OnBackClick)
+
+        val view = loggedEvents.filterIsInstance<AnalyticsEvent.View>().single { it.screenName == "AddTodo" }
+        val clicks = loggedEvents.filterIsInstance<AnalyticsEvent.Click>().associateBy { it.buttonName }
+        assertEquals(mapOf("variant" to "TREATMENT"), view.properties)
+        assertEquals(mapOf("variant" to "TREATMENT"), clicks.getValue("Save").properties)
+        assertEquals(mapOf("variant" to "TREATMENT"), clicks.getValue("Back").properties)
+    }
+
+    @Test
     fun `입력한 제목과 겹치는 칩만 남긴다`() = runTest {
         todoRepository.addTag(name = "태그", color = 0)
         addTodo(1, "경제원론 1-50", tagId = 1, LocalDate.of(2024, 1, 1), listOf(0))
