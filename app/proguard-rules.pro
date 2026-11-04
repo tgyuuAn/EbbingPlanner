@@ -10,6 +10,10 @@
 -keep class com.google.android.gms.** { *; }
 -keep class com.google.firebase.** { *; }
 
+# ML Kit ComponentRegistrar는 매니페스트에 적힌 이름으로 리플렉션 생성됨
+# R8 full mode는 멤버 없는 -keep class에 기본 생성자를 남기지 않아 명시적으로 보존
+-keep class * implements com.google.firebase.components.ComponentRegistrar { <init>(); }
+
 # 도메인 모델 클래스 전체 보존 (역직렬화용)
 -keep class com.tgyuu.domain.model.** { *; }
 
@@ -37,3 +41,7 @@
 
 # Glance FontWeight 리플렉션 보존 (EbbingWidgetFontWeight.SemiBold)
 -keep class androidx.glance.text.FontWeight { *; }
+
+# WorkManager InputMerger는 WorkSpec에 저장된 클래스명으로 리플렉션 생성됨
+# 생성자가 제거되면 Glance 세션 워커가 실행되지 않아 위젯이 로딩 화면에 머묾
+-keep class * extends androidx.work.InputMerger { <init>(); }

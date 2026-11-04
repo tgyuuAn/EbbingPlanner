@@ -76,11 +76,11 @@ class FakeConfigRepository : ConfigRepository {
     override suspend fun getAlarmMessage(): String = alarmMessage
 
     override suspend fun getSoftUpdateInfo(): UpdateInfo {
-        return UpdateInfo(minVersion = "1.0.0", noticeMsg = "")
+        return UpdateInfo(minVersion = "1.0.0")
     }
 
     override suspend fun getHardUpdateInfo(): UpdateInfo {
-        return UpdateInfo(minVersion = "1.0.0", noticeMsg = "")
+        return UpdateInfo(minVersion = "1.0.0")
     }
 
     override suspend fun getClearSyncFlag(): Boolean = false

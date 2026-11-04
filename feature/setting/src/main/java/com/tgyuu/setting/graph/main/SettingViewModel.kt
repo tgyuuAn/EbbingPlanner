@@ -11,6 +11,7 @@ import com.tgyuu.common.event.EventBus
 import com.tgyuu.common.suspendRunCatching
 import com.tgyuu.common.ui.resource.ResourceProvider
 import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.model.toUiModel
 import com.tgyuu.domain.repository.ConfigRepository
 import com.tgyuu.domain.repository.ConfigRepository.Companion.DEFAULT_ALARM_MESSAGE
 import com.tgyuu.domain.repository.FeatureFlag
@@ -81,13 +82,13 @@ class SettingViewModel @Inject constructor(
             launch {
                 suspendRunCatching {
                     configRepository.getSoftUpdateInfo()
-                }.onSuccess { setState { copy(updateInfo = it) } }
+                }.onSuccess { setState { copy(updateInfo = it.toUiModel()) } }
             }
 
             launch {
                 suspendRunCatching {
                     configRepository.getHardUpdateInfo()
-                }.onSuccess { setState { copy(hardUpdateInfo = it) } }
+                }.onSuccess { setState { copy(hardUpdateInfo = it.toUiModel()) } }
             }
 
             launch {

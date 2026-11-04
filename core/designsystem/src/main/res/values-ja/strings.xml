@@ -443,6 +443,7 @@
     <string name="update_view_notes">アップデート内容を見る</string>
     <string name="update_close">閉じる</string>
     <string name="update_button">アップデート</string>
+    <string name="update_default_notice">皆さまのご意見をもとに使いやすさを改善しました。\n今すぐアップデートしてみてください！</string>
     <string name="exit_confirm_snackbar">もう一度戻るを押すとアプリが終了します</string>
     <string name="notification_content_title">エビングプランナーの予定通知</string>
     <string name="home_add_todo_button">予定を登録</string>
