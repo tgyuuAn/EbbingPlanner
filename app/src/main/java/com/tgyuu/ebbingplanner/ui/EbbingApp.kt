@@ -52,6 +52,8 @@ import com.tgyuu.navigation.TagGraph
 import com.tgyuu.setting.graph.main.SettingListPane
 import com.tgyuu.setting.graph.main.SettingMenu
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.CompositionLocalProvider
+import com.tgyuu.designsystem.component.LocalSubTopBarBackVisible
 import kotlin.reflect.KClass
 
 @Composable
@@ -225,7 +227,13 @@ private fun TabletContent(
                         VerticalDivider(color = EbbingTheme.colors.strokeNormal, thickness = 1.dp)
                     }
 
-                    content(Modifier.weight(1f))
+                    // 설정 목록이 왼쪽에 고정돼 있어, 오른쪽 첫 단계 화면은 상단바 뒤로가기를 숨겨요
+                    val isSettingPaneRoot = showNavigation &&
+                        selectedTopLevel == TopLevelDestination.SETTING &&
+                        currentDestination.isSettingPaneRoot()
+                    CompositionLocalProvider(LocalSubTopBarBackVisible provides !isSettingPaneRoot) {
+                        content(Modifier.weight(1f))
+                    }
                 }
             } else {
                 Column(Modifier.fillMaxSize()) {
@@ -280,6 +288,17 @@ private fun NavDestination?.toSettingMenu(): SettingMenu? = when {
     isRouteInHierarchy(SettingGraph.WidgetRoute::class) -> SettingMenu.WIDGET
     else -> null
 }
+
+/** 태블릿 가로 설정에서 목록을 눌러 바로 여는 오른쪽 패널 화면 (태그 추가·수정처럼 한 단계 더 들어간 화면은 제외) */
+private fun NavDestination?.isSettingPaneRoot(): Boolean = listOf(
+    TagGraph.TagRoute::class,
+    RepeatCycleGraph.RepeatCycleRoute::class,
+    SyncGraph.SyncMainRoute::class,
+    SyncGraph.RestoreByDeviceIdRoute::class,
+    SettingGraph.ThemeRoute::class,
+    SettingGraph.WidgetRoute::class,
+    SettingGraph.WebViewRoute::class,
+).any { isRouteInHierarchy(it) }
 
 internal fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     this?.hierarchy?.any {

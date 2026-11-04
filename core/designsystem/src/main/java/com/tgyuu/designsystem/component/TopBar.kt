@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +51,12 @@ fun EbbingMainTopBar(
     }
 }
 
+/**
+ * 하위 화면 상단바의 뒤로가기 표시 여부.
+ * 태블릿 가로 설정처럼 목록이 옆에 고정돼 있어 뒤로갈 필요가 없는 곳에서 false로 내려줘요.
+ */
+val LocalSubTopBarBackVisible = compositionLocalOf { true }
+
 @Composable
 fun EbbingSubTopBar(
     title: String,
@@ -62,14 +69,16 @@ fun EbbingSubTopBar(
             .fillMaxWidth()
             .height(60.dp),
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_arrow_left),
-            contentDescription = stringResource(R.string.ds_cd_back),
-            colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .clickable { onNavigationClick() }
-        )
+        if (LocalSubTopBarBackVisible.current) {
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_left),
+                contentDescription = stringResource(R.string.ds_cd_back),
+                colorFilter = ColorFilter.tint(EbbingTheme.colors.textOnBackground),
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .clickable { onNavigationClick() }
+            )
+        }
 
         Text(
             text = title,
