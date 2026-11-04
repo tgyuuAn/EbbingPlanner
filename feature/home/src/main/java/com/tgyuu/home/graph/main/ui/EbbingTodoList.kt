@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.R
 import com.tgyuu.designsystem.component.EbbingTextToggle
+import com.tgyuu.designsystem.component.ScheduleEditMenu
 import com.tgyuu.designsystem.component.TodoListCard
 import com.tgyuu.designsystem.foundation.EbbingTheme
 import com.tgyuu.designsystem.model.TodoScheduleUiModel
@@ -60,6 +61,7 @@ internal fun EbbingTodoList(
     onSortTypeChange: (SortType) -> Unit,
     modifier: Modifier = Modifier,
     calendarNestedScroll: NestedScrollConnection? = null,
+    editMenu: ScheduleEditMenu? = null,
 ) {
     val initialPage = TODO_LIST_PAGE_COUNT / 2
     val pagerState = rememberPagerState(
@@ -108,6 +110,7 @@ internal fun EbbingTodoList(
                 schedulesByTodoInfo = schedulesByTodoInfo,
                 onCheckedChange = onCheckedChange,
                 onEdit = onEditScheduleClick,
+                editMenu = editMenu,
             )
         }
     }
@@ -175,6 +178,7 @@ private fun TodoPage(
     schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onEdit: (TodoScheduleUiModel) -> Unit,
+    editMenu: ScheduleEditMenu?,
 ) {
     val listState = rememberLazyListState()
 
@@ -201,12 +205,12 @@ private fun TodoPage(
                         )
                     }
                     items(items = group, key = { it.id }) { item ->
-                        ScheduleCard(item, schedulesByTodoInfo, onCheckedChange, onEdit)
+                        ScheduleCard(item, schedulesByTodoInfo, onCheckedChange, onEdit, editMenu)
                     }
                 }
             } else {
                 items(items = todos, key = { it.id }) { item ->
-                    ScheduleCard(item, schedulesByTodoInfo, onCheckedChange, onEdit)
+                    ScheduleCard(item, schedulesByTodoInfo, onCheckedChange, onEdit, editMenu)
                 }
             }
 
@@ -235,12 +239,14 @@ private fun ScheduleCard(
     schedulesByTodoInfo: Map<Int, List<TodoScheduleUiModel>>,
     onCheckedChange: (TodoScheduleUiModel) -> Unit,
     onEdit: (TodoScheduleUiModel) -> Unit,
+    editMenu: ScheduleEditMenu?,
 ) {
     TodoListCard(
         todo = item,
         todosWithSameInfo = schedulesByTodoInfo[item.infoId] ?: emptyList(),
         onCheckedChange = onCheckedChange,
         onEditScheduleClick = onEdit,
+        editMenu = editMenu,
     )
 }
 

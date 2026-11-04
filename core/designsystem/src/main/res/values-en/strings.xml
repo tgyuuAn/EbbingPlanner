@@ -153,6 +153,8 @@
     <string name="home_update_info">Edit task details</string>
     <string name="home_update_repeat_cycle">Reset the repeat cycle of linked tasks</string>
     <string name="home_options_title">Edit</string>
+    <string name="home_dropdown_add_tag">Add new tag</string>
+    <string name="home_dropdown_add_repeat_cycle">Add new repeat cycle</string>
     <string name="home_options_subtitle">What would you like to do with the %1$s task?</string>
     <string name="home_options_edit">Edit</string>
     <string name="home_options_delete">Delete</string>

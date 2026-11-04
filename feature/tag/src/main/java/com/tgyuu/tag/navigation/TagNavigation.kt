@@ -1,7 +1,9 @@
 package com.tgyuu.tag.navigation
 
 import androidx.navigation.NavGraphBuilder
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import com.tgyuu.analytics.TrackScreenViewEvent
 import com.tgyuu.navigation.TagBaseRoute
@@ -19,6 +21,12 @@ fun NavGraphBuilder.tagGraph() {
 
         composable<TagGraph.AddTagRoute> {
             AddTagRoute()
+        }
+
+        dialog<TagGraph.AddTagPopupRoute>(
+            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
+            AddTagRoute(isPopup = true)
         }
 
         composable<TagGraph.EditTagRoute> {

@@ -308,6 +308,10 @@ class AddTodoViewModel @Inject constructor(
             AddTodoIntent.OnAddTagClick -> onAddTagClick()
             AddTodoIntent.OnSaveClick -> onSaveClick()
             AddTodoIntent.OnAddRepeatCycleClick -> onAddRepeatCycleClick()
+            AddTodoIntent.OnAddTagPopupClick -> navigationBus.navigate(NavigationEvent.To(TagGraph.AddTagPopupRoute))
+            AddTodoIntent.OnAddRepeatCyclePopupClick -> navigationBus.navigate(
+                NavigationEvent.To(RepeatCycleGraph.AddRepeatCyclePopupRoute)
+            )
 
             // Notification 관련 Intent
             AddTodoIntent.OnNotificationToggleClick -> onNotificationToggleClick()

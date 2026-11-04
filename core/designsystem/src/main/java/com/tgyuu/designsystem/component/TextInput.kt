@@ -2,6 +2,7 @@ package com.tgyuu.designsystem.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -142,13 +143,20 @@ fun EbbingTextInputDropDown(
     modifier: Modifier = Modifier,
     hint: String = "",
     color: Int? = null,
+    expanded: Boolean = false,
 ) {
+    val shape = RoundedCornerShape(6.dp)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .height(48.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(EbbingTheme.colors.fillTextfield)
+            .clip(shape)
+            .background(if (expanded) EbbingTheme.colors.background else EbbingTheme.colors.fillTextfield)
+            .then(
+                if (expanded) Modifier.border(1.dp, EbbingTheme.colors.strokePrimary, shape)
+                else Modifier
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .clickable { onDropDownClick() },
     ) {

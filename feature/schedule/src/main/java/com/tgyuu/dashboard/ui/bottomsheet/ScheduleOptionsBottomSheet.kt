@@ -41,6 +41,7 @@ import com.tgyuu.common.util.clickable
 import com.tgyuu.common.util.ebbingAnimateColorAsState
 import com.tgyuu.common.util.verticalScrollbar
 import com.tgyuu.designsystem.R
+import com.tgyuu.designsystem.component.EbbingOptionsDropdownItem
 import com.tgyuu.designsystem.component.EbbingSolidButton
 import com.tgyuu.designsystem.component.EbbingTextInputDefault
 import com.tgyuu.designsystem.component.bottomsheet.EbbingBottomSheetHeader
@@ -199,14 +200,19 @@ internal fun TagEditBottomSheet(
     }
 }
 
+/** 일정 편집 액션. 폰 바텀시트와 태블릿 드롭다운이 같은 동작을 공유해요 */
+internal class ScheduleOptionActions(
+    val onClickUpdate: (TodoScheduleUiModel) -> Unit,
+    val onClickDelete: (TodoScheduleUiModel) -> Unit,
+    val onClickDelay: (TodoScheduleUiModel) -> Unit,
+    val onClickMemo: (TodoScheduleUiModel) -> Unit,
+    val onClickDeleteMemo: (TodoScheduleUiModel) -> Unit,
+)
+
 @Composable
 internal fun ScheduleOptionsBottomSheet(
     selectedSchedule: TodoScheduleUiModel,
-    onClickUpdate: (TodoScheduleUiModel) -> Unit,
-    onClickDelete: (TodoScheduleUiModel) -> Unit,
-    onClickDelay: (TodoScheduleUiModel) -> Unit,
-    onClickMemo: (TodoScheduleUiModel) -> Unit,
-    onClickDeleteMemo: (TodoScheduleUiModel) -> Unit,
+    actions: ScheduleOptionActions,
 ) {
     Column(
         modifier = Modifier
@@ -228,17 +234,17 @@ internal fun ScheduleOptionsBottomSheet(
         ) {
             BottomSheetOptionItem(
                 text = stringResource(R.string.schedule_option_edit),
-                onClick = { onClickUpdate(selectedSchedule) },
+                onClick = { actions.onClickUpdate(selectedSchedule) },
             )
 
             BottomSheetOptionItem(
                 text = stringResource(R.string.schedule_option_delete),
-                onClick = { onClickDelete(selectedSchedule) },
+                onClick = { actions.onClickDelete(selectedSchedule) },
             )
 
             BottomSheetOptionItem(
                 text = stringResource(R.string.schedule_option_delay_tomorrow),
-                onClick = { onClickDelay(selectedSchedule) },
+                onClick = { actions.onClickDelay(selectedSchedule) },
             )
 
             BottomSheetOptionItem(
@@ -247,13 +253,13 @@ internal fun ScheduleOptionsBottomSheet(
                 } else {
                     stringResource(R.string.schedule_option_edit_memo)
                 },
-                onClick = { onClickMemo(selectedSchedule) },
+                onClick = { actions.onClickMemo(selectedSchedule) },
             )
 
             if (selectedSchedule.memo.originalText.isNotEmpty()) {
                 BottomSheetOptionItem(
                     text = stringResource(R.string.schedule_option_delete_memo),
-                    onClick = { onClickDeleteMemo(selectedSchedule) },
+                    onClick = { actions.onClickDeleteMemo(selectedSchedule) },
                 )
             }
         }
@@ -371,6 +377,36 @@ private fun BottomSheetOptionItem(
             color = EbbingTheme.colors.textOnBackground,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/** 태블릿 미트볼 드롭다운 항목. 고르면 드롭다운을 닫고, 한 단계 더 들어가는 액션은 가운데 팝업으로 이어져요 */
+@Composable
+internal fun ScheduleOptionsDropdownItems(
+    selectedSchedule: TodoScheduleUiModel,
+    actions: ScheduleOptionActions,
+    onDismiss: () -> Unit,
+) {
+    val hasMemo = selectedSchedule.memo.originalText.isNotEmpty()
+    val items = buildList {
+        add(stringResource(R.string.schedule_option_edit) to actions.onClickUpdate)
+        add(stringResource(R.string.schedule_option_delete) to actions.onClickDelete)
+        add(stringResource(R.string.schedule_option_delay_tomorrow) to actions.onClickDelay)
+        add(
+            stringResource(if (hasMemo) R.string.schedule_option_edit_memo else R.string.schedule_option_add_memo)
+                to actions.onClickMemo
+        )
+        if (hasMemo) add(stringResource(R.string.schedule_option_delete_memo) to actions.onClickDeleteMemo)
+    }
+
+    items.forEach { (label, action) ->
+        EbbingOptionsDropdownItem(
+            label = label,
+            onClick = {
+                onDismiss()
+                action(selectedSchedule)
+            },
         )
     }
 }

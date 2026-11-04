@@ -7,9 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tgyuu.designsystem.R
-import com.tgyuu.designsystem.component.EbbingTextInputDropDown
-import com.tgyuu.designsystem.foundation.EbbingTheme
+import com.tgyuu.designsystem.component.EbbingSelectDropdownAddItem
+import com.tgyuu.designsystem.component.EbbingSelectDropdownItem
 import com.tgyuu.designsystem.model.TodoTagUiModel
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 internal fun TagContent(
@@ -17,6 +18,7 @@ internal fun TagContent(
     onTagDropDownClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFromLast: Boolean = false,
+    dropdown: SelectDropdownContent? = null,
 ) {
     FieldLabel(
         label = stringResource(R.string.home_tag),
@@ -24,12 +26,36 @@ internal fun TagContent(
         modifier = Modifier.padding(top = 32.dp),
     )
 
-    EbbingTextInputDropDown(
+    SelectDropdownField(
         value = tag?.name ?: "",
         color = tag?.color,
-        onDropDownClick = onTagDropDownClick,
+        onClick = onTagDropDownClick,
+        dropdown = dropdown,
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth(),
+    )
+}
+
+/** 태블릿 태그 드롭다운 항목: 태그 목록 + 새 태그 추가 */
+@Composable
+internal fun TagDropdownItems(
+    tagList: ImmutableList<TodoTagUiModel>,
+    selectedTag: TodoTagUiModel?,
+    onTagClick: (TodoTagUiModel) -> Unit,
+    onAddTagClick: () -> Unit,
+) {
+    tagList.forEach { tag ->
+        EbbingSelectDropdownItem(
+            label = tag.name,
+            color = tag.color,
+            selected = tag.id == selectedTag?.id,
+            onClick = { onTagClick(tag) },
+        )
+    }
+
+    EbbingSelectDropdownAddItem(
+        label = stringResource(R.string.home_dropdown_add_tag),
+        onClick = onAddTagClick,
     )
 }
