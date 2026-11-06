@@ -1,0 +1,56 @@
+name: CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Create local.properties
+        run: |
+          cat <<EOF > local.properties
+          sdk.dir=$ANDROID_HOME
+          AMPLITUDE_API_KEY=${{ secrets.AMPLITUDE_API_KEY }}
+          EBBING_TALK_URL=${{ secrets.EBBING_TALK_URL }}
+          EBBING_NOTICE_URL=${{ secrets.EBBING_NOTICE_URL }}
+          EBBING_PRIVACY_AND_POLICY_URL=${{ secrets.EBBING_PRIVACY_AND_POLICY_URL }}
+          EBBING_TERMS_OF_USE_URL=${{ secrets.EBBING_TERMS_OF_USE_URL }}
+          EOF
+
+      - name: Create keystore.properties
+        run: |
+          cat <<EOF > keystore.properties
+          STORE_FILE_PATH=upload-keystore.jks
+          STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS_RELEASE=${{ secrets.KEY_ALIAS_RELEASE }}
+          KEY_PASSWORD_RELEASE=${{ secrets.KEY_PASSWORD_RELEASE }}
+          EOF
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/upload-keystore.jks
+
+      - name: Create google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
+
+      - name: Build Release AAB
+        run: ./gradlew :app:bundleRelease
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab
+          path: app/build/outputs/bundle/release/*.aab
